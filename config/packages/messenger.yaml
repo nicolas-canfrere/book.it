@@ -1,5 +1,10 @@
 framework:
     messenger:
+        default_bus: messenger.bus.default
+        buses:
+            sync.command.bus:
+            sync.query.bus:
+            messenger.bus.default:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         # failure_transport: failed
 
