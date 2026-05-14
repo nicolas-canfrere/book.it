@@ -1,0 +1,13 @@
+{
+    "mcpServers": {
+        "postgres": {
+            "command": "postgres-mcp",
+            "args": [],
+            "env": {
+                "POSTGRES_URL": "postgresql://admin:admin@localhost:15432/bookit",
+                "POSTGRES_SCHEMAS": "public",
+                "POSTGRES_READONLY": "true"
+            }
+        }
+    }
+}
