@@ -1,0 +1,35 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+
+    App\Hotel\Domain\:
+        resource: '../../src/Hotel/Domain/'
+        exclude:
+            - '../../src/Hotel/Domain/Model/'
+
+    App\Hotel\Application\:
+        resource: '../../src/Hotel/Application/'
+        exclude:
+            - '../../src/Hotel/Application/**/*Exception.php'
+            - '../../src/Hotel/Application/**/*Command.php'
+            - '../../src/Hotel/Application/**/*Query.php'
+
+    App\Hotel\Infrastructure\:
+        resource: '../../src/Hotel/Infrastructure/'
+        exclude:
+            - '../../src/Hotel/Infrastructure/**/*Exception.php'
+
+    App\Hotel\UI\:
+        resource: '../../src/Hotel/UI/'
+        exclude:
+            - '../../src/Hotel/UI/**/*Request.php'

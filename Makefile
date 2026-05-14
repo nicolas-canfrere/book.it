@@ -61,23 +61,35 @@ apply-cs: ## Apply coding standards with PHP CS Fixer
 lint: static-code-analysis apply-cs ## Full code analysis
 
 ##@ Tests
-unit-test: DOCKER_COMPOSE_FILE=compose.test.yaml
-unit-test: ## Run unit tests
-	@$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/phpunit $(ARGS)
+test: unit-test functional-test
 
-unit-test-quiet: DOCKER_COMPOSE_FILE=compose.test.yaml
+DOCKER_COMPOSE_TEST = docker compose --progress quiet -p bookit-test -f compose.test.yaml --env-file .env --env-file .env.compose
+
+unit-test: ## Run unit tests
+	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --group=unit --group=integration $(ARGS)
+
 unit-test-quiet: ## Run unit tests silently
-	@$(DOCKER_COMPOSE_RUN) --no-deps php sh -c \
-		"vendor/bin/phpunit --no-progress $(ARGS) > /tmp/.phpunit_out 2>&1; \
+	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test sh -c \
+		"vendor/bin/phpunit --no-progress --group=unit --group=integration $(ARGS) > /tmp/.phpunit_out 2>&1; \
 		 CODE=$$?; \
 		 awk '/^There (was|were) [0-9]/{p=1;next} /^OK /{print} /^FAILURES!/{p=2;print;next} p==2{print;p=0;next} p' /tmp/.phpunit_out; \
 		 exit $$CODE"
+
+functional-test: ## Run functional tests
+	@$(DOCKER_COMPOSE_TEST) up -d
+	@$(DOCKER_COMPOSE_TEST) run --rm php-test bin/console doctrine:migrations:migrate -n -q
+	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --group=functional $(ARGS)
+	@$(DOCKER_COMPOSE_TEST) down --remove-orphans
 
 ##@ Docker
 up: ## Start all services (creates shared network if needed)
 	docker network create bookit-nw 2>/dev/null || true
 	$(DOCKER_COMPOSE) up -d
-	#$(MAKE) migrate
+	$(MAKE) migrate
 
 down: ## Stop all services
 	$(DOCKER_COMPOSE) down --remove-orphans
+
+##@ OpenApi doc
+openapi:
+	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml

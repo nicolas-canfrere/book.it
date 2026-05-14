@@ -1,0 +1,50 @@
+openapi: 3.0.0
+info:
+  title: Book.it
+  description: 'Hotels management!'
+  version: 1.0.0
+paths:
+  /api/hotels:
+    post:
+      tags:
+        - Hotels
+      summary: 'Register a new hotel'
+      operationId: post_hotel_register_hotel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterHotelRequest'
+      responses:
+        '201':
+          description: 'Hotel registered'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid, example: f47ac10b-58cc-4372-a567-0e02b2c3d479 }
+                  name: { type: string, example: 'Hotel Ibis Paris' }
+                  createdAt: { description: 'Unix timestamp', type: integer, example: 1747216800 }
+                type: object
+        '422':
+          description: 'Validation error'
+        '404':
+          description: 'Not found error'
+components:
+  schemas:
+    RegisterHotelRequest:
+      required:
+        - name
+      properties:
+        name:
+          type: string
+          example: 'Hotel Ibis Paris'
+          maxLength: 255
+          minLength: 2
+      type: object
+tags:
+  -
+    name: Hotels
+    description: Hotels
+
