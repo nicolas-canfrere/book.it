@@ -1,0 +1,15 @@
+services:
+    php:
+        image: ${PHP_IMAGE}
+        container_name: ${PHP_CONTAINER_NAME:-php-dev}
+        build:
+            context: ./../..
+            target: ${PHP_BUILD_TARGET:-dev}
+        volumes:
+            - ./../../:/app
+        working_dir: /app
+        env_file:
+            - ./../../.env
+            - ./../../.env.dev
+        networks:
+            - ${NETWORK_NAME:-default-nw}

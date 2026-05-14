@@ -1,0 +1,24 @@
+services:
+    rabbitmq:
+        image: ${RABBITMQ_IMAGE:-rabbitmq:management}
+        container_name: ${RABBITMQ_CONTAINER_NAME:-rabbitmq-dev}
+        ports:
+            - "${RABBITMQ_AMQP_PORT:-5672}:5672"   # AMQP protocol port
+            - "${RABBITMQ_MGMT_PORT:-15672}:15672"  # Management UI port
+        environment:
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_DEFAULT_USER:-admin}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_DEFAULT_PASS:-admin}
+        volumes:
+            - rabbitmq_data:/var/lib/rabbitmq
+            - ../rabbitmq/rabbitmq.conf:/etc/rabbitmq/rabbitmq.conf:ro
+            - ../rabbitmq/definitions.json:/etc/rabbitmq/definitions.json:ro
+        healthcheck:
+            test: [ "CMD", "rabbitmq-diagnostics", "ping" ]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        networks:
+            - ${NETWORK_NAME:-default-nw}
+
+volumes:
+    rabbitmq_data:

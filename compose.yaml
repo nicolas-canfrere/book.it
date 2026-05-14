@@ -1,0 +1,10 @@
+include:
+  - .docker/compose/database.yaml
+  - .docker/compose/rabbitmq.yaml
+  - .docker/compose/php.yaml
+  - .docker/compose/php.override.yaml
+  - .docker/compose/nginx.yaml
+
+networks:
+  bookit-nw:
+    external: true

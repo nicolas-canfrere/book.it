@@ -1,0 +1,54 @@
+{
+    "rabbit_version": "4.2.4",
+    "rabbitmq_version": "4.2.4",
+    "users": [
+        {
+            "name": "admin",
+            "password_hash": "e8yTrBy3tEJOORzgqi0j4fR6ycy8nG1FpqOu8xrdjtVCcNlY",
+            "hashing_algorithm": "rabbit_password_hashing_sha256",
+            "tags": [
+                "administrator"
+            ]
+        }
+    ],
+    "vhosts": [
+        {
+            "name": "/"
+        }
+    ],
+    "permissions": [
+        {
+            "user": "admin",
+            "vhost": "/",
+            "configure": ".*",
+            "write": ".*",
+            "read": ".*"
+        }
+    ],
+    "parameters": [],
+    "global_parameters": [],
+    "policies": [],
+    "queues": [
+        {
+            "name": "bookit.external.events",
+            "vhost": "/",
+            "durable": true,
+            "auto_delete": false,
+            "type": "classic",
+            "arguments": {}
+        }
+    ],
+    "exchanges": [
+        {
+            "name": "delays",
+            "vhost": "/",
+            "type": "direct",
+            "durable": true,
+            "auto_delete": false,
+            "internal": false,
+            "arguments": {}
+        }
+    ],
+    "bindings": [
+    ]
+}
