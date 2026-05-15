@@ -6,6 +6,7 @@ namespace App\Tests\Hotel\Infrastructure\Persistence\InMemory;
 
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
+use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 
 final class InMemoryHotelRepository implements HotelRepositoryInterface
@@ -34,6 +35,23 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
         }
 
         return false;
+    }
+
+    public function list(int $page, int $limit, ?string $city, ?string $country): HotelPage
+    {
+        $filtered = array_values(array_filter(
+            $this->hotels,
+            static fn(Hotel $h) =>
+                (null === $city || strtolower($h->address->city) === strtolower($city)) &&
+                (null === $country || strtolower($h->address->country) === strtolower($country)),
+        ));
+
+        usort($filtered, static fn(Hotel $a, Hotel $b) => strcmp($a->name, $b->name));
+
+        $total = count($filtered);
+        $hotels = array_slice($filtered, ($page - 1) * $limit, $limit);
+
+        return new HotelPage($hotels, $total);
     }
 
     private function normalize(string $name, Address $address): string

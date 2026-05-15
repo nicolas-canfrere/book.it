@@ -6,6 +6,7 @@ namespace App\Hotel\Domain\Port;
 
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
+use App\Hotel\Domain\Model\HotelPage;
 
 interface HotelRepositoryInterface
 {
@@ -14,4 +15,6 @@ interface HotelRepositoryInterface
     public function get(string $id): ?Hotel;
 
     public function existsByNameAndAddress(string $name, Address $address): bool;
+
+    public function list(int $page, int $limit, ?string $city, ?string $country): HotelPage;
 }

@@ -26,6 +26,10 @@ _Avoid_: hotel creation, hotel addition
 > **Dev:** "What if the operator registers 'Hôtel Ibis' twice?"
 > **Domain expert:** "If it's the same address, it's a duplicate — reject it. If it's a different city, it's two different hotels."
 
+**Hotel Catalogue**:
+A paginated, filterable list of all registered Hotels. Supports filtering by city and country. Sorted alphabetically by name. Public — no authentication required.
+_Avoid_: hotel list, hotel search, hotel directory
+
 ## Flagged ambiguities
 
 - "unique hotel" was initially defined by name alone — resolved: uniqueness is name + full address (street, postal code, city, country).
