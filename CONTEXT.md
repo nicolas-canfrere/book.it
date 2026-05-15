@@ -33,3 +33,27 @@ _Avoid_: hotel list, hotel search, hotel directory
 ## Flagged ambiguities
 
 - "unique hotel" was initially defined by name alone — resolved: uniqueness is name + full address (street, postal code, city, country).
+
+---
+
+**Room**:
+A physical guest room belonging to a Hotel, uniquely identified within that Hotel by its number.
+_Avoid_: chamber, unit, space
+
+**Room Number**:
+A string identifier assigned to a Room within a Hotel. Unique per Hotel. May be alphanumeric (e.g. "101", "2A", "Penthouse").
+_Avoid_: room id, room code
+
+**Room Registration**:
+The act of declaring a new Room in a Hotel. Rejected if a Room with the same number already exists in that Hotel, or if the referenced Hotel does not exist.
+_Avoid_: room creation, room addition
+
+**Room Catalogue**:
+A paginated list of all Rooms belonging to a given Hotel, sorted alphabetically by number.
+_Avoid_: room list, room inventory
+
+## Relationships
+
+- A **Room** belongs to exactly one **Hotel** (referenced by Hotel id across context boundaries)
+- A **Room Registration** produces exactly one **Room**, or raises a conflict if the **Room** number already exists in that **Hotel**
+- A **Room Catalogue** always belongs to exactly one **Hotel**
