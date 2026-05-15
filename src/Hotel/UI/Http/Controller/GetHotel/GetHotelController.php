@@ -21,7 +21,7 @@ final readonly class GetHotelController
     ) {
     }
 
-    #[Route('/api/hotels/{id}', name: 'hotel_get_hotel', methods: ['GET'])]
+    #[Route('/api/hotels/{id}', name: 'hotel_get_hotel', methods: ['GET'], requirements: ['id' => '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'])]
     #[OA\Get(
         summary: 'Get a hotel by ID',
         tags: ['Hotels'],

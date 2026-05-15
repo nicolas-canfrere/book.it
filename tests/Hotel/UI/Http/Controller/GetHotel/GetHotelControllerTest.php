@@ -63,4 +63,14 @@ final class GetHotelControllerTest extends WebTestCase
         self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
         self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
     }
+
+    #[Test]
+    public function itReturns404WhenIdIsNotAValidUuidV4(): void
+    {
+        $client = static::createClient();
+
+        $client->request('GET', '/api/hotels/not-a-uuid');
+
+        self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
+    }
 }
