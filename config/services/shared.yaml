@@ -8,3 +8,7 @@ services:
         resource: '../../src/Shared/'
         exclude:
             - '../../src/Shared/**/*Exception.php'
+
+    App\Shared\Infrastructure\Http\ExceptionProblemRegistry:
+        arguments:
+            $map: []

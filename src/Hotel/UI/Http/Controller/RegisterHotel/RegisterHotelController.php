@@ -6,7 +6,6 @@ namespace App\Hotel\UI\Http\Controller\RegisterHotel;
 
 use App\Hotel\Application\Service\RegisterHotelCommandFactory;
 use App\Hotel\Application\UseCase\GetHotel\GetHotelQuery;
-use App\Hotel\Domain\Exception\HotelAlreadyExistsException;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
@@ -14,6 +13,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 
 final readonly class RegisterHotelController
@@ -50,31 +50,48 @@ final readonly class RegisterHotelController
                     ],
                 ),
             ),
-            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Not found error'),
-            new OA\Response(response: Response::HTTP_CONFLICT, description: 'Hotel already exists'),
-            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error'),
+            new OA\Response(
+                response: Response::HTTP_NOT_FOUND,
+                description: 'Not found',
+                content: new OA\MediaType(
+                    mediaType: 'application/problem+json',
+                    schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'),
+                ),
+            ),
+            new OA\Response(
+                response: Response::HTTP_CONFLICT,
+                description: 'Hotel already exists',
+                content: new OA\MediaType(
+                    mediaType: 'application/problem+json',
+                    schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'),
+                ),
+            ),
+            new OA\Response(
+                response: Response::HTTP_UNPROCESSABLE_ENTITY,
+                description: 'Validation error',
+                content: new OA\MediaType(
+                    mediaType: 'application/problem+json',
+                    schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'),
+                ),
+            ),
         ],
     )]
     public function __invoke(
         #[MapRequestPayload(acceptFormat: 'json')]
         RegisterHotelRequest $request,
     ): Response {
-        try {
-            $command = $this->commandFactory->create(
-                $request->name,
-                $request->streetAddress,
-                $request->postalCode,
-                $request->city,
-                $request->country,
-            );
-            $this->commandBus->execute($command);
-        } catch (HotelAlreadyExistsException $e) {
-            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
-        }
+        $command = $this->commandFactory->create(
+            $request->name,
+            $request->streetAddress,
+            $request->postalCode,
+            $request->city,
+            $request->country,
+        );
+        $this->commandBus->execute($command);
 
         $hotel = $this->queryBus->ask(new GetHotelQuery($command->id));
         if (null === $hotel) {
-            return new JsonResponse(null, Response::HTTP_NOT_FOUND);
+            throw new NotFoundHttpException();
         }
 
         return new JsonResponse(

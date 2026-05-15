@@ -31,12 +31,66 @@ paths:
                   country: { type: string, example: FR }
                   createdAt: { description: 'Unix timestamp', type: integer }
                 type: object
+        '404':
+          description: 'Not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '409':
           description: 'Hotel already exists'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '422':
           description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
 components:
   schemas:
+    ProblemDetail:
+      required:
+        - type
+        - title
+        - status
+        - detail
+      properties:
+        type:
+          type: string
+          format: uri
+          example: 'about:blank'
+        title:
+          type: string
+          example: Conflict
+        status:
+          type: integer
+          example: 409
+        detail:
+          type: string
+          example: 'A hotel named "Ibis" already exists in Paris.'
+      type: object
+    ValidationProblemDetail:
+      allOf:
+        -
+          $ref: '#/components/schemas/ProblemDetail'
+        -
+          required:
+            - violations
+          properties:
+            violations:
+              type: array
+              items:
+                required:
+                  - field
+                  - message
+                properties:
+                  field: { type: string, example: name }
+                  message: { type: string, example: 'This value should not be blank.' }
+                type: object
+          type: object
     RegisterHotelRequest:
       required:
         - name

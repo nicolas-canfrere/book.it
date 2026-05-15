@@ -17,12 +17,16 @@ final readonly class RegisterHotelCommandFactory
     }
 
     public function create(
-        string $name,
-        string $streetAddress,
-        string $postalCode,
-        string $city,
-        string $country,
+        ?string $name,
+        ?string $streetAddress,
+        ?string $postalCode,
+        ?string $city,
+        ?string $country,
     ): RegisterHotelCommand {
+        if (null === $name || null === $streetAddress || null === $postalCode || null === $city || null === $country) {
+            throw new \InvalidArgumentException('All hotel fields are required.');
+        }
+
         return new RegisterHotelCommand(
             $this->hotelIdGenerator->generate(),
             $name,

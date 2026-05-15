@@ -67,7 +67,66 @@ final class RegisterHotelControllerTest extends WebTestCase
             content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
         );
 
-        self::assertSame(Response::HTTP_CONFLICT, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CONFLICT, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+
+        /** @var array{type: string, title: string, status: int, detail: string} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('https://book.it/problems/hotel-already-exists', $body['type']);
+        self::assertSame('Hotel Already Exists', $body['title']);
+        self::assertSame(Response::HTTP_CONFLICT, $body['status']);
+        self::assertNotEmpty($body['detail']);
+    }
+
+    #[Test]
+    public function itReturns422AsAProblemDetailWithViolations(): void
+    {
+        $client = static::createClient();
+
+        $payload = self::VALID_PAYLOAD;
+        unset($payload['name']);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+
+        /** @var array{type: string, title: string, status: int, detail: string, violations: list<array{field: string, message: string}>} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('about:blank', $body['type']);
+        self::assertSame('Unprocessable Content', $body['title']);
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $body['status']);
+        self::assertNotEmpty($body['violations']);
+    }
+
+    #[Test]
+    public function itReturnsAllViolationsSimultaneously(): void
+    {
+        $client = static::createClient();
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(['name' => 'A'], \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        /** @var array{violations: list<array{field: string, message: string}>} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $fields = array_column($body['violations'], 'field');
+        self::assertContains('name', $fields);
+        self::assertContains('streetAddress', $fields);
+        self::assertContains('city', $fields);
     }
 
     #[Test]

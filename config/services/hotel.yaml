@@ -33,3 +33,11 @@ services:
         resource: '../../src/Hotel/UI/'
         exclude:
             - '../../src/Hotel/UI/**/*Request.php'
+
+    App\Shared\Infrastructure\Http\ExceptionProblemRegistry:
+        arguments:
+            $map:
+                App\Hotel\Domain\Exception\HotelAlreadyExistsException:
+                    type: 'https://book.it/problems/hotel-already-exists'
+                    title: 'Hotel Already Exists'
+                    status: 409
