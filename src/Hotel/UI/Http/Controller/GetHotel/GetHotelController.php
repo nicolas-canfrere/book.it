@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Requirement\Requirement;
 
 final readonly class GetHotelController
 {
@@ -21,7 +22,7 @@ final readonly class GetHotelController
     ) {
     }
 
-    #[Route('/api/hotels/{id}', name: 'hotel_get_hotel', methods: ['GET'], requirements: ['id' => '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'])]
+    #[Route('/api/hotels/{id}', name: 'hotel_get_hotel', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get a hotel by ID',
         tags: ['Hotels'],
