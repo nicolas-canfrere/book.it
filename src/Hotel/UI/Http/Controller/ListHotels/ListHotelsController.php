@@ -24,12 +24,6 @@ final readonly class ListHotelsController
     #[OA\Get(
         summary: 'List hotels (paginated)',
         tags: ['Hotels'],
-        parameters: [
-            new OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1, minimum: 1)),
-            new OA\Parameter(name: 'limit', in: 'query', schema: new OA\Schema(type: 'integer', default: 20, minimum: 1, maximum: 100)),
-            new OA\Parameter(name: 'city', in: 'query', required: false, schema: new OA\Schema(type: 'string')),
-            new OA\Parameter(name: 'country', in: 'query', required: false, schema: new OA\Schema(type: 'string', example: 'FR')),
-        ],
         responses: [
             new OA\Response(
                 response: Response::HTTP_OK,

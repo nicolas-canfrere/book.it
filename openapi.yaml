@@ -34,13 +34,18 @@ paths:
           required: false
           schema:
             type: string
+            nullable: true
+            default: null
+            maxLength: 255
+            minLength: 1
         -
           name: country
           in: query
           required: false
           schema:
             type: string
-            example: FR
+            nullable: true
+            default: null
       responses:
         '200':
           description: 'Paginated hotel catalogue'
