@@ -41,9 +41,8 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
     {
         $filtered = array_values(array_filter(
             $this->hotels,
-            static fn(Hotel $h) =>
-                (null === $city || strtolower($h->address->city) === strtolower($city)) &&
-                (null === $country || strtolower($h->address->country) === strtolower($country)),
+            static fn(Hotel $h) => (null === $city || strtolower($h->address->city) === strtolower($city))
+                && (null === $country || strtolower($h->address->country) === strtolower($country)),
         ));
 
         usort($filtered, static fn(Hotel $a, Hotel $b) => strcmp($a->name, $b->name));

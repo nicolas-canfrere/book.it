@@ -6,6 +6,7 @@ namespace App\Hotel\Infrastructure\Persistence\Doctrine;
 
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
+use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -60,6 +61,52 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         );
 
         return $count > 0;
+    }
+
+    public function list(int $page, int $limit, ?string $city, ?string $country): HotelPage
+    {
+        $conditions = [];
+        $params = [];
+
+        if (null !== $city) {
+            $conditions[] = 'city = :city';
+            $params['city'] = $city;
+        }
+
+        if (null !== $country) {
+            $conditions[] = 'country = :country';
+            $params['country'] = $country;
+        }
+
+        $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
+
+        /** @var int|string $count */
+        $count = $this->bookit->fetchOne(
+            "SELECT COUNT(*) FROM hotel {$where}",
+            $params,
+        );
+        $total = (int) $count;
+
+        $params['limit'] = $limit;
+        $params['offset'] = ($page - 1) * $limit;
+
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            "SELECT id, name, street_address, postal_code, city, country, created_at FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
+            $params,
+        );
+
+        $hotels = array_map(
+            fn(array $row) => new Hotel(
+                $row['id'],
+                $row['name'],
+                new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
+                new \DateTimeImmutable($row['created_at']),
+            ),
+            $rows,
+        );
+
+        return new HotelPage($hotels, $total);
     }
 
     private function buildSearchKey(string $name, Address $address): string

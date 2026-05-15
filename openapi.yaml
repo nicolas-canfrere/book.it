@@ -5,6 +5,58 @@ info:
   version: 1.0.0
 paths:
   /api/hotels:
+    get:
+      tags:
+        - Hotels
+      summary: 'List hotels (paginated)'
+      operationId: get_hotel_list_hotels
+      parameters:
+        -
+          name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        -
+          name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+            minimum: 1
+        -
+          name: city
+          in: query
+          required: false
+          schema:
+            type: string
+        -
+          name: country
+          in: query
+          required: false
+          schema:
+            type: string
+            example: FR
+      responses:
+        '200':
+          description: 'Paginated hotel catalogue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, name: { type: string }, streetAddress: { type: string }, postalCode: { type: string }, city: { type: string }, country: { type: string }, createdAt: { type: integer } }, type: object } }
+                  meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 143 }, totalPages: { type: integer, example: 8 } }, type: object }
+                type: object
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
     post:
       tags:
         - Hotels
@@ -91,37 +143,63 @@ components:
                   message: { type: string, example: 'This value should not be blank.' }
                 type: object
           type: object
+    ListHotelsRequest:
+      properties:
+        page:
+          type: integer
+          default: 1
+          minimum: 1
+        limit:
+          type: integer
+          default: 20
+          maximum: 100
+          minimum: 1
+        city:
+          type: string
+          nullable: true
+          default: null
+          maxLength: 255
+          minLength: 1
+        country:
+          type: string
+          nullable: true
+          default: null
+      type: object
     RegisterHotelRequest:
-      required:
-        - name
-        - streetAddress
-        - postalCode
-        - city
-        - country
       properties:
         name:
           type: string
           example: 'Hotel Ibis Paris'
+          nullable: true
+          default: null
           maxLength: 255
           minLength: 2
         streetAddress:
           type: string
           example: '15 rue de Rivoli'
+          nullable: true
+          default: null
           maxLength: 255
           minLength: 2
         postalCode:
           type: string
           example: '75001'
+          nullable: true
+          default: null
           maxLength: 20
           minLength: 1
         city:
           type: string
           example: Paris
+          nullable: true
+          default: null
           maxLength: 255
           minLength: 1
         country:
           type: string
           example: FR
+          nullable: true
+          default: null
           maxLength: 2
           minLength: 2
       type: object
