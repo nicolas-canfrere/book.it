@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Room\UI\Http\Controller\BatchRegisterRooms;
 
-use App\Room\Application\Exception\InvalidCsvFormatException;
 use App\Room\Application\Service\BatchRegisterRoomsCommandFactory;
 use App\Room\Application\Service\CsvRoomNumbersParser;
 use App\Room\Domain\Model\Room;
@@ -95,11 +94,7 @@ final readonly class BatchRegisterRoomsController
             return $this->invalidCsvResponse('A CSV file is required.');
         }
 
-        try {
-            $numbers = $this->csvParser->parse($file);
-        } catch (InvalidCsvFormatException $e) {
-            return $this->invalidCsvResponse($e->getMessage());
-        }
+        $numbers = $this->csvParser->parse($file);
 
         $command = $this->commandFactory->create($hotelId, $numbers);
 

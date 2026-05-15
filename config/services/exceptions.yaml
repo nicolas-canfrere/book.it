@@ -20,3 +20,7 @@ services:
                     type: 'https://book.it/problems/room-batch-invalid'
                     title: 'Room Batch Import Failed'
                     status: 422
+                App\Room\Application\Exception\InvalidCsvFormatException:
+                    type: 'about:blank'
+                    title: 'Unprocessable Content'
+                    status: 422
