@@ -4,6 +4,13 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
 
     App\Room\Domain\:
         resource: '../../src/Room/Domain/'

@@ -15,9 +15,9 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class ListRoomsQueryHandlerTest extends TestCase
 {
+    private const string HOTEL_ID = '550e8400-e29b-41d4-a716-446655440000';
     private InMemoryRoomRepository $repository;
     private ListRoomsQueryHandler $handler;
-    private const string HOTEL_ID = '550e8400-e29b-41d4-a716-446655440000';
 
     protected function setUp(): void
     {
