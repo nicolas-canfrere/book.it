@@ -16,7 +16,7 @@ final readonly class RegisterRoomRequest
         public ?string $number = null,
         #[Assert\NotNull]
         #[Assert\Range(min: -20, max: 300)]
-        #[OA\Property(type: 'integer', example: 1, minimum: -20, maximum: 300)]
+        #[OA\Property(type: 'integer', example: 1, minimum: -20, maximum: 300, nullable: false)]
         public ?int $floor = null,
     ) {
     }

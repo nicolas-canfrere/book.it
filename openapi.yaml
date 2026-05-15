@@ -450,7 +450,6 @@ components:
         floor:
           type: integer
           example: 1
-          nullable: true
           default: null
           maximum: 300
           minimum: -20

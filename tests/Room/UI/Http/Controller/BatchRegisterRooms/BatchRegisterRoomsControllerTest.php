@@ -42,9 +42,13 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertCount(3, $body);
         $numbers = array_column($body, 'number');
+        $floors = array_column($body, 'floor');
         self::assertContains('101', $numbers);
         self::assertContains('102', $numbers);
         self::assertContains('2A', $numbers);
+        self::assertContains(1, $floors);
+        self::assertContains(2, $floors);
+        self::assertContains(-1, $floors);
         foreach ($body as $room) {
             self::assertNotEmpty($room['id']);
             self::assertSame($hotelId, $room['hotelId']);
