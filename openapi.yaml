@@ -142,6 +142,56 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/hotels/{hotelId}/rooms/batch':
+    post:
+      tags:
+        - Rooms
+      summary: 'Import multiple rooms in a hotel from a CSV file'
+      operationId: post_room_batch_register_rooms
+      parameters:
+        -
+          name: hotelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              required:
+                - csv
+              properties:
+                csv:
+                  description: 'CSV file with a "number" header column and one room number per row'
+                  type: string
+                  format: binary
+              type: object
+      responses:
+        '201':
+          description: 'All rooms registered'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string, example: '101' }, createdAt: { description: 'Unix timestamp', type: integer } }
+                  type: object
+        '404':
+          description: 'Hotel not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error (invalid CSV format or room constraint violations)'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/rooms/{id}':
     get:
       tags:
