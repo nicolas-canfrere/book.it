@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Hotel\Infrastructure\Persistence\Doctrine;
 
+use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use Doctrine\DBAL\Connection;
@@ -21,6 +22,11 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'name' => $hotel->name,
             'created_at' => $hotel->createdAt->format('Y-m-d H:i:s'),
         ]);
+    }
+
+    public function existsByNameAndAddress(string $name, Address $address): bool
+    {
+        return false; // implemented in Task 6
     }
 
     public function get(string $id): ?Hotel
