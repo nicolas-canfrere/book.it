@@ -13,14 +13,29 @@ framework:
         # failure_transport: failed
 
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
-            # async: '%env(MESSENGER_TRANSPORT_DSN)%'
-            # failed: 'doctrine://default?queue_name=failed'
-            sync: 'sync://'
+            commands:
+                dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
+                retry_strategy:
+                    max_retries: 3
+                    delay: 1000
+                    multiplier: 2
+                    max_delay: 10000
+                    jitter: 0.1
+                failure_transport: failed_commands
+                options:
+                    auto_setup: false
+                    exchange:
+                        name: 'bookit.commands.exchange'
+                    queues:
+                        bookit.commands: ~
+
+            failed_commands:
+                dsn: 'doctrine://bookit?table_name=bookit_failed_commands'
+                options:
+                    auto_setup: false
 
         routing:
-            # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            App\Shared\Application\Bus\AsyncCommandInterface: command
 
 # when@test:
 #    framework:

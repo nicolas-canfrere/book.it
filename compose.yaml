@@ -3,6 +3,8 @@ include:
   - .docker/compose/rabbitmq.yaml
   - .docker/compose/php.yaml
   - .docker/compose/php.override.yaml
+  - .docker/compose/consumer.commands.yaml
+  - .docker/compose/consumer.commands.override.yaml
   - .docker/compose/nginx.yaml
 
 networks:
