@@ -150,6 +150,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
 
         /** @var array{violations: list<array{field: string, message: string}>} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -172,6 +173,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
 
         /** @var array{violations: list<array{field: string, message: string}>} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -207,7 +209,9 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
             uri: "/api/hotels/{$hotelId}/rooms/batch",
         );
 
-        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
     }
 
     private function registerHotelAndGetId(KernelBrowser $client): string
