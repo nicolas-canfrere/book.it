@@ -64,9 +64,9 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
             createdAt: new \DateTimeImmutable(),
         );
 
-        ($this->handler)($command);
+        $this->expectNotToPerformAssertions();
 
-        self::assertTrue(true);
+        ($this->handler)($command);
     }
 
     #[Test]
