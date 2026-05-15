@@ -510,7 +510,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
 }
 ```
 
-- [ ] **Step 6: Run test to confirm it passes**
+- [x] **Step 6: Run test to confirm it passes**
 
 ```bash
 make unit-test-quiet ARGS="--filter RegisterRoomCommandHandlerTest"
@@ -518,7 +518,7 @@ make unit-test-quiet ARGS="--filter RegisterRoomCommandHandlerTest"
 
 Expected: 4 tests pass.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add src/Room/Application/ tests/Room/Application/UseCase/RegisterRoom/
@@ -536,7 +536,7 @@ git commit -m "feat(room): add RegisterRoom command and handler"
 - Create: `src/Room/Application/UseCase/ListRooms/ListRoomsQueryHandler.php`
 - Create: `tests/Room/Application/UseCase/ListRooms/ListRoomsQueryHandlerTest.php`
 
-- [ ] **Step 1: Write failing test for ListRooms**
+- [x] **Step 1: Write failing test for ListRooms**
 
 Create `tests/Room/Application/UseCase/ListRooms/ListRoomsQueryHandlerTest.php`:
 
@@ -635,7 +635,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to confirm it fails**
+- [x] **Step 2: Run test to confirm it fails**
 
 ```bash
 make unit-test-quiet ARGS="--filter ListRoomsQueryHandlerTest"
@@ -643,7 +643,7 @@ make unit-test-quiet ARGS="--filter ListRoomsQueryHandlerTest"
 
 Expected: FAIL — `ListRoomsQuery`, `ListRoomsQueryHandler` not found.
 
-- [ ] **Step 3: Create `src/Room/Application/UseCase/GetRoom/GetRoomQuery.php`**
+- [x] **Step 3: Create `src/Room/Application/UseCase/GetRoom/GetRoomQuery.php`**
 
 ```php
 <?php
@@ -667,7 +667,7 @@ final readonly class GetRoomQuery implements SyncQueryInterface
 }
 ```
 
-- [ ] **Step 4: Create `src/Room/Application/UseCase/GetRoom/GetRoomQueryHandler.php`**
+- [x] **Step 4: Create `src/Room/Application/UseCase/GetRoom/GetRoomQueryHandler.php`**
 
 ```php
 <?php
@@ -694,7 +694,7 @@ final readonly class GetRoomQueryHandler implements SyncQueryHandlerInterface
 }
 ```
 
-- [ ] **Step 5: Create `src/Room/Application/UseCase/ListRooms/ListRoomsQuery.php`**
+- [x] **Step 5: Create `src/Room/Application/UseCase/ListRooms/ListRoomsQuery.php`**
 
 ```php
 <?php
@@ -720,7 +720,7 @@ final readonly class ListRoomsQuery implements SyncQueryInterface
 }
 ```
 
-- [ ] **Step 6: Create `src/Room/Application/UseCase/ListRooms/ListRoomsQueryHandler.php`**
+- [x] **Step 6: Create `src/Room/Application/UseCase/ListRooms/ListRoomsQueryHandler.php`**
 
 ```php
 <?php
@@ -747,7 +747,7 @@ final readonly class ListRoomsQueryHandler implements SyncQueryHandlerInterface
 }
 ```
 
-- [ ] **Step 7: Run test to confirm it passes**
+- [x] **Step 7: Run test to confirm it passes**
 
 ```bash
 make unit-test-quiet ARGS="--filter ListRoomsQueryHandlerTest"
@@ -755,7 +755,7 @@ make unit-test-quiet ARGS="--filter ListRoomsQueryHandlerTest"
 
 Expected: 5 tests pass.
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/Room/Application/UseCase/GetRoom/ src/Room/Application/UseCase/ListRooms/ tests/Room/Application/UseCase/ListRooms/
@@ -770,7 +770,7 @@ git commit -m "feat(room): add GetRoom and ListRooms query handlers"
 - Create: `src/Room/Application/Service/RegisterRoomCommandFactory.php`
 - Create: `tests/Room/Application/Service/RegisterRoomCommandFactoryTest.php`
 
-- [ ] **Step 1: Write the failing test**
+- [x] **Step 1: Write the failing test**
 
 Create `tests/Room/Application/Service/RegisterRoomCommandFactoryTest.php`:
 
@@ -825,7 +825,7 @@ final class RegisterRoomCommandFactoryTest extends TestCase
 }
 ```
 
-- [ ] **Step 2: Run test to confirm it fails**
+- [x] **Step 2: Run test to confirm it fails**
 
 ```bash
 make unit-test-quiet ARGS="--filter RegisterRoomCommandFactoryTest"
@@ -833,7 +833,7 @@ make unit-test-quiet ARGS="--filter RegisterRoomCommandFactoryTest"
 
 Expected: FAIL — `RegisterRoomCommandFactory` not found.
 
-- [ ] **Step 3: Create `src/Room/Application/Service/RegisterRoomCommandFactory.php`**
+- [x] **Step 3: Create `src/Room/Application/Service/RegisterRoomCommandFactory.php`**
 
 ```php
 <?php
@@ -869,7 +869,7 @@ final readonly class RegisterRoomCommandFactory
 }
 ```
 
-- [ ] **Step 4: Run test to confirm it passes**
+- [x] **Step 4: Run test to confirm it passes**
 
 ```bash
 make unit-test-quiet ARGS="--filter RegisterRoomCommandFactoryTest"
@@ -877,7 +877,7 @@ make unit-test-quiet ARGS="--filter RegisterRoomCommandFactoryTest"
 
 Expected: 2 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add src/Room/Application/Service/ tests/Room/Application/Service/
@@ -891,7 +891,7 @@ git commit -m "feat(room): add RegisterRoomCommandFactory"
 **Files:**
 - Create: `migrations/Version20260516000000.php`
 
-- [ ] **Step 1: Create `migrations/Version20260516000000.php`**
+- [x] **Step 1: Create `migrations/Version20260516000000.php`**
 
 ```php
 <?php
@@ -932,7 +932,7 @@ final class Version20260516000000 extends AbstractMigration
 }
 ```
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add migrations/
@@ -948,7 +948,7 @@ git commit -m "feat(room): add room table migration"
 - Create: `src/Room/Infrastructure/Persistence/Doctrine/HotelExistenceChecker.php`
 - Create: `src/Room/Infrastructure/Service/RoomIdGenerator.php`
 
-- [ ] **Step 1: Create `src/Room/Infrastructure/Persistence/Doctrine/RoomRepository.php`**
+- [x] **Step 1: Create `src/Room/Infrastructure/Persistence/Doctrine/RoomRepository.php`**
 
 ```php
 <?php
@@ -1028,7 +1028,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 }
 ```
 
-- [ ] **Step 2: Create `src/Room/Infrastructure/Persistence/Doctrine/HotelExistenceChecker.php`**
+- [x] **Step 2: Create `src/Room/Infrastructure/Persistence/Doctrine/HotelExistenceChecker.php`**
 
 ```php
 <?php
@@ -1058,7 +1058,7 @@ final readonly class HotelExistenceChecker implements HotelExistsInterface
 }
 ```
 
-- [ ] **Step 3: Create `src/Room/Infrastructure/Service/RoomIdGenerator.php`**
+- [x] **Step 3: Create `src/Room/Infrastructure/Service/RoomIdGenerator.php`**
 
 ```php
 <?php
@@ -1079,7 +1079,7 @@ final class RoomIdGenerator implements RoomIdGeneratorInterface
 }
 ```
 
-- [ ] **Step 4: Commit**
+- [x] **Step 4: Commit**
 
 ```bash
 git add src/Room/Infrastructure/
@@ -1097,7 +1097,7 @@ git commit -m "feat(room): add Doctrine RoomRepository, HotelExistenceChecker, R
 - Modify: `config/services/hotel.yaml`
 - Modify: `config/services/shared.yaml`
 
-- [ ] **Step 1: Create `config/services/room.yaml`**
+- [x] **Step 1: Create `config/services/room.yaml`**
 
 ```yaml
 parameters: {}
@@ -1130,7 +1130,7 @@ services:
             - '../../src/Room/UI/**/*Request.php'
 ```
 
-- [ ] **Step 2: Create `config/services/exceptions.yaml`**
+- [x] **Step 2: Create `config/services/exceptions.yaml`**
 
 This file centralises all exception-to-ProblemDetail mappings so context-specific files don't override each other.
 
@@ -1155,7 +1155,7 @@ services:
                     status: 404
 ```
 
-- [ ] **Step 3: Remove `ExceptionProblemRegistry` definition from `config/services/shared.yaml`**
+- [x] **Step 3: Remove `ExceptionProblemRegistry` definition from `config/services/shared.yaml`**
 
 Remove these lines from `config/services/shared.yaml`:
 
@@ -1180,7 +1180,7 @@ services:
             - '../../src/Shared/**/*Exception.php'
 ```
 
-- [ ] **Step 4: Remove `ExceptionProblemRegistry` definition from `config/services/hotel.yaml`**
+- [x] **Step 4: Remove `ExceptionProblemRegistry` definition from `config/services/hotel.yaml`**
 
 Remove these lines from `config/services/hotel.yaml`:
 
@@ -1194,7 +1194,7 @@ Remove these lines from `config/services/hotel.yaml`:
                     status: 409
 ```
 
-- [ ] **Step 5: Update `config/services.yaml`**
+- [x] **Step 5: Update `config/services.yaml`**
 
 ```yaml
 imports:
@@ -1204,7 +1204,7 @@ imports:
     - { resource: './services/exceptions.yaml' }
 ```
 
-- [ ] **Step 6: Verify the config compiles**
+- [x] **Step 6: Verify the config compiles**
 
 ```bash
 make php-cli
@@ -1214,7 +1214,7 @@ bin/console debug:container App\\Shared\\Infrastructure\\Http\\ExceptionProblemR
 
 Expected: service shown with 3 mapped exceptions.
 
-- [ ] **Step 7: Commit**
+- [x] **Step 7: Commit**
 
 ```bash
 git add config/
@@ -1234,7 +1234,7 @@ git commit -m "feat(room): add room services config and consolidate exception re
 - Create: `src/Room/UI/Http/Controller/ListRooms/RoomCatalogueSerializer.php`
 - Create: `src/Room/UI/Http/Controller/ListRooms/ListRoomsController.php`
 
-- [ ] **Step 1: Create `src/Room/UI/Http/Controller/RoomSerializer.php`**
+- [x] **Step 1: Create `src/Room/UI/Http/Controller/RoomSerializer.php`**
 
 ```php
 <?php
@@ -1262,7 +1262,7 @@ final class RoomSerializer
 }
 ```
 
-- [ ] **Step 2: Create `src/Room/UI/Http/Controller/RegisterRoom/RegisterRoomRequest.php`**
+- [x] **Step 2: Create `src/Room/UI/Http/Controller/RegisterRoom/RegisterRoomRequest.php`**
 
 ```php
 <?php
@@ -1286,7 +1286,7 @@ final readonly class RegisterRoomRequest
 }
 ```
 
-- [ ] **Step 3: Create `src/Room/UI/Http/Controller/RegisterRoom/RegisterRoomController.php`**
+- [x] **Step 3: Create `src/Room/UI/Http/Controller/RegisterRoom/RegisterRoomController.php`**
 
 ```php
 <?php
@@ -1386,7 +1386,7 @@ final readonly class RegisterRoomController
 }
 ```
 
-- [ ] **Step 4: Create `src/Room/UI/Http/Controller/GetRoom/GetRoomController.php`**
+- [x] **Step 4: Create `src/Room/UI/Http/Controller/GetRoom/GetRoomController.php`**
 
 ```php
 <?php
@@ -1456,7 +1456,7 @@ final readonly class GetRoomController
 }
 ```
 
-- [ ] **Step 5: Create `src/Room/UI/Http/Controller/ListRooms/ListRoomsRequest.php`**
+- [x] **Step 5: Create `src/Room/UI/Http/Controller/ListRooms/ListRoomsRequest.php`**
 
 ```php
 <?php
@@ -1483,7 +1483,7 @@ final readonly class ListRoomsRequest
 }
 ```
 
-- [ ] **Step 6: Create `src/Room/UI/Http/Controller/ListRooms/RoomCatalogueSerializer.php`**
+- [x] **Step 6: Create `src/Room/UI/Http/Controller/ListRooms/RoomCatalogueSerializer.php`**
 
 ```php
 <?php
@@ -1522,7 +1522,7 @@ final class RoomCatalogueSerializer
 }
 ```
 
-- [ ] **Step 7: Create `src/Room/UI/Http/Controller/ListRooms/ListRoomsController.php`**
+- [x] **Step 7: Create `src/Room/UI/Http/Controller/ListRooms/ListRoomsController.php`**
 
 ```php
 <?php
@@ -1614,7 +1614,7 @@ final readonly class ListRoomsController
 }
 ```
 
-- [ ] **Step 8: Commit**
+- [x] **Step 8: Commit**
 
 ```bash
 git add src/Room/UI/
@@ -1628,7 +1628,7 @@ git commit -m "feat(room): add Room UI controllers and serializers"
 **Files:**
 - Create: `tests/Room/UI/Http/Controller/RegisterRoom/RegisterRoomControllerTest.php`
 
-- [ ] **Step 1: Run migration**
+- [x] **Step 1: Run migration**
 
 ```bash
 make migrate
@@ -1636,7 +1636,7 @@ make migrate
 
 Expected: migration `Version20260516000000` applied.
 
-- [ ] **Step 2: Write the failing functional test**
+- [x] **Step 2: Write the failing functional test**
 
 Create `tests/Room/UI/Http/Controller/RegisterRoom/RegisterRoomControllerTest.php`:
 
@@ -1776,7 +1776,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 }
 ```
 
-- [ ] **Step 3: Run test to confirm it fails**
+- [x] **Step 3: Run test to confirm it fails**
 
 ```bash
 make functional-test ARGS="--filter RegisterRoomControllerTest"
@@ -1784,7 +1784,7 @@ make functional-test ARGS="--filter RegisterRoomControllerTest"
 
 Expected: FAIL — route not found or service wiring issue.
 
-- [ ] **Step 4: Run test to confirm it passes**
+- [x] **Step 4: Run test to confirm it passes**
 
 After verifying the config from Task 8 is applied:
 
@@ -1794,7 +1794,7 @@ make functional-test ARGS="--filter RegisterRoomControllerTest"
 
 Expected: 5 tests pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/Room/UI/Http/Controller/RegisterRoom/
@@ -1808,7 +1808,7 @@ git commit -m "test(room): add RegisterRoom functional tests"
 **Files:**
 - Create: `tests/Room/UI/Http/Controller/GetRoom/GetRoomControllerTest.php`
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 Create `tests/Room/UI/Http/Controller/GetRoom/GetRoomControllerTest.php`:
 
@@ -1903,7 +1903,7 @@ final class GetRoomControllerTest extends WebTestCase
 }
 ```
 
-- [ ] **Step 2: Run the test**
+- [x] **Step 2: Run the test**
 
 ```bash
 make functional-test ARGS="--filter GetRoomControllerTest"
@@ -1911,7 +1911,7 @@ make functional-test ARGS="--filter GetRoomControllerTest"
 
 Expected: 3 tests pass.
 
-- [ ] **Step 3: Commit**
+- [x] **Step 3: Commit**
 
 ```bash
 git add tests/Room/UI/Http/Controller/GetRoom/
@@ -1925,7 +1925,7 @@ git commit -m "test(room): add GetRoom functional tests"
 **Files:**
 - Create: `tests/Room/UI/Http/Controller/ListRooms/ListRoomsControllerTest.php`
 
-- [ ] **Step 1: Write the test**
+- [x] **Step 1: Write the test**
 
 Create `tests/Room/UI/Http/Controller/ListRooms/ListRoomsControllerTest.php`:
 
@@ -2113,7 +2113,7 @@ final class ListRoomsControllerTest extends WebTestCase
 }
 ```
 
-- [ ] **Step 2: Run the test**
+- [x] **Step 2: Run the test**
 
 ```bash
 make functional-test ARGS="--filter ListRoomsControllerTest"
@@ -2121,7 +2121,7 @@ make functional-test ARGS="--filter ListRoomsControllerTest"
 
 Expected: 8 tests pass.
 
-- [ ] **Step 3: Run the full test suite**
+- [x] **Step 3: Run the full test suite**
 
 ```bash
 make test
@@ -2129,7 +2129,7 @@ make test
 
 Expected: all tests pass (unit + integration + functional).
 
-- [ ] **Step 4: Run linter**
+- [x] **Step 4: Run linter**
 
 ```bash
 make lint
@@ -2137,7 +2137,7 @@ make lint
 
 Expected: no PHPStan or CS Fixer errors.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
 ```bash
 git add tests/Room/UI/Http/Controller/ListRooms/
@@ -2148,7 +2148,7 @@ git commit -m "test(room): add ListRooms functional tests"
 
 ## Task 13: Regenerate OpenAPI spec
 
-- [ ] **Step 1: Regenerate**
+- [x] **Step 1: Regenerate**
 
 ```bash
 make openapi
@@ -2156,7 +2156,7 @@ make openapi
 
 Expected: `openapi.yaml` updated, no warnings.
 
-- [ ] **Step 2: Commit**
+- [x] **Step 2: Commit**
 
 ```bash
 git add openapi.yaml
