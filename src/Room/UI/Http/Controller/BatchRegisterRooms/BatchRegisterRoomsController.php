@@ -120,7 +120,7 @@ final readonly class BatchRegisterRoomsController
 
         $rooms = array_map(
             fn(array $entry) => $this->roomSerializer->serialize(
-                new Room($entry['id'], $command->hotelId, $entry['number'], $command->createdAt)
+                new Room($entry['id'], $command->hotelId, trim($entry['number']), $command->createdAt)
             ),
             $command->entries,
         );
