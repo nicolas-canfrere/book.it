@@ -45,7 +45,10 @@ make test             # Run unit + integration + functional (full suite)
 
 PHPUnit is configured with `DAMA\DoctrineTestBundle` — each test wraps DB operations in a transaction that is rolled back, so the database is reset between tests without truncation.
 
-Controller tests use `#[Group('functional')]` and require `make functional-test`, not `make unit-test-quiet`.
+`make unit-test-quiet` filters by `--group=unit --group=integration`. Tests without a `#[Group]` attribute are silently skipped. Convention:
+- `TestCase` (no Symfony kernel) → `#[Group('unit')]`
+- `KernelTestCase` (needs Symfony kernel) → `#[Group('integration')]`
+- Controller tests → `#[Group('functional')]`, require `make functional-test`
 
 ## Error Handling
 
@@ -71,6 +74,11 @@ When working on any API route, always keep the OpenAPI documentation up to date:
 - Add or update `#[OA\...]` attributes on the controller (request body, responses, status codes)
 - Add or update shared schemas in `config/packages/nelmio_api_doc.yaml` if the route introduces new reusable response shapes
 - Run `make openapi` to regenerate `openapi.yaml` and verify there are no warnings
+
+### Query string parameters (`#[MapQueryString]`)
+
+- Nelmio automatically reads `#[OA\Parameter]` from DTO properties — do **not** repeat them in the controller's `#[OA\Get(parameters: [...])]`.
+- `#[MapQueryString]` returns **404** on validation failure by default. Always set `validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY` to stay consistent with `#[MapRequestPayload]` behavior.
 
 ## Coding Standards
 
