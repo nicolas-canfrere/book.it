@@ -83,6 +83,18 @@ When working on any API route, always keep the OpenAPI documentation up to date:
 - Add or update shared schemas in `config/packages/nelmio_api_doc.yaml` if the route introduces new reusable response shapes
 - Run `make openapi` to regenerate `openapi.yaml` and verify there are no warnings
 
+### Route requirements
+
+Use constants from `Symfony\Component\Routing\Requirement\Requirement` instead of inline regex strings:
+
+```php
+use Symfony\Component\Routing\Requirement\Requirement;
+
+#[Route('/api/resources/{id}', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
+```
+
+Named arguments in `#[Route]` must follow the constructor parameter order: `path, name, requirements, options, defaults, host, methods, schemes, condition, priority`.
+
 ### Query string parameters (`#[MapQueryString]`)
 
 - Nelmio automatically reads `#[OA\Parameter]` from DTO properties — do **not** repeat them in the controller's `#[OA\Get(parameters: [...])]`.
