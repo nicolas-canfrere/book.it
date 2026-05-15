@@ -50,6 +50,7 @@ final readonly class RegisterHotelController
                     ],
                 ),
             ),
+            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Not found error'),
             new OA\Response(response: Response::HTTP_CONFLICT, description: 'Hotel already exists'),
             new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error'),
         ],

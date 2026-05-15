@@ -39,7 +39,7 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
     private function normalize(string $name, Address $address): string
     {
         return implode('|', array_map(
-            static fn (string $s) => strtolower(trim($s)),
+            static fn(string $s) => strtolower(trim($s)),
             [$name, $address->streetAddress, $address->postalCode, $address->city, $address->country],
         ));
     }
