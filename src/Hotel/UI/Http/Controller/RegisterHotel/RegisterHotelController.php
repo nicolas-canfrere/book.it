@@ -6,6 +6,7 @@ namespace App\Hotel\UI\Http\Controller\RegisterHotel;
 
 use App\Hotel\Application\Service\RegisterHotelCommandFactory;
 use App\Hotel\Application\UseCase\GetHotel\GetHotelQuery;
+use App\Hotel\UI\Http\Controller\HotelSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
@@ -22,7 +23,7 @@ final readonly class RegisterHotelController
         private RegisterHotelCommandFactory $commandFactory,
         private SyncCommandBusInterface $commandBus,
         private SyncQueryBusInterface $queryBus,
-        private RegisteredHotelSerializer $registeredHotelSerializer,
+        private HotelSerializer $hotelSerializer,
     ) {
     }
 
@@ -95,7 +96,7 @@ final readonly class RegisterHotelController
         }
 
         return new JsonResponse(
-            $this->registeredHotelSerializer->serialize($hotel),
+            $this->hotelSerializer->serialize($hotel),
             Response::HTTP_CREATED
         );
     }

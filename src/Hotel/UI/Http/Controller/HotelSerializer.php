@@ -2,22 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Hotel\UI\Http\Controller\RegisterHotel;
+namespace App\Hotel\UI\Http\Controller;
 
 use App\Hotel\Domain\Model\Hotel;
 
-final class RegisteredHotelSerializer
+final class HotelSerializer
 {
     /**
-     * @return array{
-     *     id: string,
-     *     name: string,
-     *     streetAddress: string,
-     *     postalCode: string,
-     *     city: string,
-     *     country: string,
-     *     createdAt: int
-     * }
+     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int}
      */
     public function serialize(Hotel $hotel): array
     {

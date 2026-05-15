@@ -6,9 +6,15 @@ namespace App\Hotel\UI\Http\Controller\ListHotels;
 
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
+use App\Hotel\UI\Http\Controller\HotelSerializer;
 
 final class HotelCatalogueSerializer
 {
+    public function __construct(
+        private HotelSerializer $hotelSerializer,
+    ) {
+    }
+
     /**
      * @return array{
      *     data: list<array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int}>,
@@ -19,15 +25,7 @@ final class HotelCatalogueSerializer
     {
         return [
             'data' => array_map(
-                static fn(Hotel $hotel) => [
-                    'id' => $hotel->id,
-                    'name' => $hotel->name,
-                    'streetAddress' => $hotel->address->streetAddress,
-                    'postalCode' => $hotel->address->postalCode,
-                    'city' => $hotel->address->city,
-                    'country' => $hotel->address->country,
-                    'createdAt' => $hotel->createdAt->getTimestamp(),
-                ],
+                fn(Hotel $hotel) => $this->hotelSerializer->serialize($hotel),
                 $hotelPage->hotels,
             ),
             'meta' => [
