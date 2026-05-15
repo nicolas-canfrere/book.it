@@ -6,6 +6,7 @@ namespace App\Hotel\UI\Http\Controller\RegisterHotel;
 
 use App\Hotel\Application\Service\RegisterHotelCommandFactory;
 use App\Hotel\Application\UseCase\GetHotel\GetHotelQuery;
+use App\Hotel\Domain\Exception\HotelAlreadyExistsException;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
@@ -39,28 +40,37 @@ final readonly class RegisterHotelController
                 description: 'Hotel registered',
                 content: new OA\JsonContent(
                     properties: [
-                        new OA\Property(property: 'id', type: 'string', format: 'uuid', example: 'f47ac10b-58cc-4372-a567-0e02b2c3d479'),
+                        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'name', type: 'string', example: 'Hotel Ibis Paris'),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer', example: 1747216800),
+                        new OA\Property(property: 'streetAddress', type: 'string', example: '15 rue de Rivoli'),
+                        new OA\Property(property: 'postalCode', type: 'string', example: '75001'),
+                        new OA\Property(property: 'city', type: 'string', example: 'Paris'),
+                        new OA\Property(property: 'country', type: 'string', example: 'FR'),
+                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
                     ],
                 ),
             ),
-            new OA\Response(
-                response: Response::HTTP_UNPROCESSABLE_ENTITY,
-                description: 'Validation error',
-            ),
-            new OA\Response(
-                response: Response::HTTP_NOT_FOUND,
-                description: 'Not found error',
-            ),
+            new OA\Response(response: Response::HTTP_CONFLICT, description: 'Hotel already exists'),
+            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error'),
         ],
     )]
     public function __invoke(
         #[MapRequestPayload(acceptFormat: 'json')]
         RegisterHotelRequest $request,
     ): Response {
-        $command = $this->commandFactory->create($request->name);
-        $this->commandBus->execute($command);
+        try {
+            $command = $this->commandFactory->create(
+                $request->name,
+                $request->streetAddress,
+                $request->postalCode,
+                $request->city,
+                $request->country,
+            );
+            $this->commandBus->execute($command);
+        } catch (HotelAlreadyExistsException $e) {
+            return new JsonResponse(['error' => $e->getMessage()], Response::HTTP_CONFLICT);
+        }
+
         $hotel = $this->queryBus->ask(new GetHotelQuery($command->id));
         if (null === $hotel) {
             return new JsonResponse(null, Response::HTTP_NOT_FOUND);

@@ -12,6 +12,10 @@ final class RegisteredHotelSerializer
      * @return array{
      *     id: string,
      *     name: string,
+     *     streetAddress: string,
+     *     postalCode: string,
+     *     city: string,
+     *     country: string,
      *     createdAt: int
      * }
      */
@@ -20,6 +24,10 @@ final class RegisteredHotelSerializer
         return [
             'id' => $hotel->id,
             'name' => $hotel->name,
+            'streetAddress' => $hotel->address->streetAddress,
+            'postalCode' => $hotel->address->postalCode,
+            'city' => $hotel->address->city,
+            'country' => $hotel->address->country,
             'createdAt' => $hotel->createdAt->getTimestamp(),
         ];
     }
