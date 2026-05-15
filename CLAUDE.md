@@ -100,6 +100,49 @@ Named arguments in `#[Route]` must follow the constructor parameter order: `path
 - Nelmio automatically reads `#[OA\Parameter]` from DTO properties — do **not** repeat them in the controller's `#[OA\Get(parameters: [...])]`.
 - `#[MapQueryString]` returns **404** on validation failure by default. Always set `validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY` to stay consistent with `#[MapRequestPayload]` behavior.
 
+## Service Configuration
+
+### `_instanceof` block is required in every context YAML
+
+Each context service file (e.g., `config/services/room.yaml`) **must** include the `_instanceof` block to tag command and query handlers on the Messenger buses:
+
+```yaml
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+```
+
+Without this block, handlers are silently not registered → `NoHandlerForMessageException` at runtime (500, no compile-time warning).
+
+### Exception mappings go in `config/services/exceptions.yaml`
+
+All `ExceptionProblemRegistry` `$map` entries are centralized in `config/services/exceptions.yaml` (imported last in `services.yaml`). Do **not** define `ExceptionProblemRegistry` in individual context YAML files — Symfony's DI container silently overwrites the service with the last definition it encounters, so any context-specific definition would erase all others.
+
+## Testing Conventions
+
+### Functional test helpers must accept `KernelBrowser` as a parameter
+
+`static::getClient()` returns `AbstractBrowser|null` — PHPStan rejects calls on it. Pass `$client` explicitly to any helper method:
+
+```php
+// correct
+private function registerHotelAndGetId(KernelBrowser $client): string { ... }
+
+// wrong — static::getClient() can be null
+private function registerHotelAndGetId(): string {
+    $client = static::getClient();
+    ...
+}
+```
+
 ## Coding Standards
 
 PHP CS Fixer enforces `@Symfony` + `@PSR2` rules with these notable additions:
