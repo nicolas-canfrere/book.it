@@ -1,0 +1,18 @@
+parameters: {}
+
+services:
+    App\Shared\Infrastructure\Http\ExceptionProblemRegistry:
+        arguments:
+            $map:
+                App\Hotel\Domain\Exception\HotelAlreadyExistsException:
+                    type: 'https://book.it/problems/hotel-already-exists'
+                    title: 'Hotel Already Exists'
+                    status: 409
+                App\Room\Domain\Exception\RoomAlreadyExistsException:
+                    type: 'https://book.it/problems/room-already-exists'
+                    title: 'Room Already Exists'
+                    status: 409
+                App\Room\Domain\Exception\HotelNotFoundException:
+                    type: 'https://book.it/problems/hotel-not-found'
+                    title: 'Hotel Not Found'
+                    status: 404

@@ -1,0 +1,28 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Room\Domain\:
+        resource: '../../src/Room/Domain/'
+        exclude:
+            - '../../src/Room/Domain/Model/'
+
+    App\Room\Application\:
+        resource: '../../src/Room/Application/'
+        exclude:
+            - '../../src/Room/Application/**/*Exception.php'
+            - '../../src/Room/Application/**/*Command.php'
+            - '../../src/Room/Application/**/*Query.php'
+
+    App\Room\Infrastructure\:
+        resource: '../../src/Room/Infrastructure/'
+        exclude:
+            - '../../src/Room/Infrastructure/**/*Exception.php'
+
+    App\Room\UI\:
+        resource: '../../src/Room/UI/'
+        exclude:
+            - '../../src/Room/UI/**/*Request.php'
