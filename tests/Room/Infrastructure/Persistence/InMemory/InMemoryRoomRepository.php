@@ -18,6 +18,13 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
         $this->rooms[$room->id] = $room;
     }
 
+    public function addAll(array $rooms): void
+    {
+        foreach ($rooms as $room) {
+            $this->add($room);
+        }
+    }
+
     public function get(string $id): ?Room
     {
         return $this->rooms[$id] ?? null;

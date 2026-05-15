@@ -11,6 +11,9 @@ interface RoomRepositoryInterface
 {
     public function add(Room $room): void;
 
+    /** @param list<Room> $rooms */
+    public function addAll(array $rooms): void;
+
     public function get(string $id): ?Room;
 
     public function existsByHotelIdAndNumber(string $hotelId, string $number): bool;

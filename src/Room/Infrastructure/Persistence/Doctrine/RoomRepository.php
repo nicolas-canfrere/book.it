@@ -25,6 +25,20 @@ final readonly class RoomRepository implements RoomRepositoryInterface
         ]);
     }
 
+    public function addAll(array $rooms): void
+    {
+        $this->bookit->transactional(function () use ($rooms): void {
+            foreach ($rooms as $room) {
+                $this->bookit->insert('room', [
+                    'id' => $room->id,
+                    'hotel_id' => $room->hotelId,
+                    'number' => $room->number,
+                    'created_at' => $room->createdAt->format('Y-m-d H:i:s'),
+                ]);
+            }
+        });
+    }
+
     public function get(string $id): ?Room
     {
         /** @var array{id: string, hotel_id: string, number: string, created_at: string}|false $row */
