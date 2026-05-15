@@ -1,5 +1,13 @@
 # CLAUDE.md
 
+## Branching Policy
+
+**Never implement directly on `main`.** Before any planning or implementation work (including when using superpowers skills such as `writing-plans`, `executing-plans`, or `subagent-driven-development`), check the current branch with `git branch --show-current`. If on `main`, create a feature branch first:
+
+```bash
+git checkout -b feat/<short-description>
+```
+
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Tech Stack
