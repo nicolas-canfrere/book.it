@@ -79,7 +79,7 @@ functional-test: ## Run functional tests
 	@$(DOCKER_COMPOSE_TEST) up -d
 	@$(DOCKER_COMPOSE_TEST) run --rm php-test bin/console doctrine:migrations:migrate -n -q
 	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --group=functional $(ARGS)
-	@$(DOCKER_COMPOSE_TEST) down --remove-orphans
+	@$(DOCKER_COMPOSE_TEST) down --remove-orphans -v
 
 ##@ Docker
 up: ## Start all services (creates shared network if needed)
