@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Hotel\UI\Http\Controller\ListHotels;
 
 use App\Hotel\Application\UseCase\ListHotels\ListHotelsQuery;
-use App\Hotel\Domain\Model\Hotel;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +16,7 @@ final readonly class ListHotelsController
 {
     public function __construct(
         private SyncQueryBusInterface $queryBus,
+        private HotelCatalogueSerializer $serializer,
     ) {
     }
 
@@ -79,25 +79,8 @@ final readonly class ListHotelsController
             $request->country,
         ));
 
-        return new JsonResponse([
-            'data' => array_map(
-                fn(Hotel $hotel) => [
-                    'id' => $hotel->id,
-                    'name' => $hotel->name,
-                    'streetAddress' => $hotel->address->streetAddress,
-                    'postalCode' => $hotel->address->postalCode,
-                    'city' => $hotel->address->city,
-                    'country' => $hotel->address->country,
-                    'createdAt' => $hotel->createdAt->getTimestamp(),
-                ],
-                $hotelPage->hotels,
-            ),
-            'meta' => [
-                'page' => $request->page,
-                'limit' => $request->limit,
-                'total' => $hotelPage->total,
-                'totalPages' => (int) ceil($hotelPage->total / $request->limit),
-            ],
-        ]);
+        return new JsonResponse(
+            $this->serializer->serialize($hotelPage, $request->page, $request->limit),
+        );
     }
 }
