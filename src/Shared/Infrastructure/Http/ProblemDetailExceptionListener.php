@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Http;
 
+use App\Shared\Domain\Exception\ViolationsCarrierInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -29,6 +30,7 @@ final readonly class ProblemDetailExceptionListener
                 title: $mapping['title'],
                 status: $mapping['status'],
                 detail: $exception->getMessage(),
+                violations: $exception instanceof ViolationsCarrierInterface ? $exception->getViolations() : null,
             );
             $event->setResponse($this->toResponse($problem));
 

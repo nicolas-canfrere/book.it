@@ -16,3 +16,7 @@ services:
                     type: 'https://book.it/problems/hotel-not-found'
                     title: 'Hotel Not Found'
                     status: 404
+                App\Room\Domain\Exception\RoomBatchInvalidException:
+                    type: 'https://book.it/problems/room-batch-invalid'
+                    title: 'Room Batch Import Failed'
+                    status: 422

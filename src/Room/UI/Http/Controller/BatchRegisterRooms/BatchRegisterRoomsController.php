@@ -7,7 +7,6 @@ namespace App\Room\UI\Http\Controller\BatchRegisterRooms;
 use App\Room\Application\Exception\InvalidCsvFormatException;
 use App\Room\Application\Service\BatchRegisterRoomsCommandFactory;
 use App\Room\Application\Service\CsvRoomNumbersParser;
-use App\Room\Domain\Exception\RoomBatchInvalidException;
 use App\Room\Domain\Model\Room;
 use App\Room\UI\Http\Controller\RoomSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
@@ -104,19 +103,7 @@ final readonly class BatchRegisterRoomsController
 
         $command = $this->commandFactory->create($hotelId, $numbers);
 
-        try {
-            $this->commandBus->execute($command);
-        } catch (RoomBatchInvalidException $e) {
-            $problem = new ProblemDetail(
-                type: 'https://book.it/problems/room-batch-invalid',
-                title: 'Room Batch Import Failed',
-                status: Response::HTTP_UNPROCESSABLE_ENTITY,
-                detail: 'One or more rooms could not be registered.',
-                violations: $e->violations,
-            );
-
-            return new JsonResponse($problem->toArray(), $problem->status, ['Content-Type' => 'application/problem+json']);
-        }
+        $this->commandBus->execute($command);
 
         $rooms = array_map(
             fn(array $entry) => $this->roomSerializer->serialize(
