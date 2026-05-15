@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Room\Application\Service;
 
 use App\Room\Application\Exception\InvalidCsvFormatException;
 use App\Room\Application\Service\CsvRoomNumbersParser;
-use App\Room\Application\Service\RoomCsvRow;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

@@ -9,14 +9,15 @@ use App\Room\Domain\Model\Room;
 final class RoomSerializer
 {
     /**
-     * @return array{id: string, hotelId: string, number: string, createdAt: int}
+     * @return array{id: string, hotelId: string, number: string, floor: int, createdAt: int}
      */
     public function serialize(Room $room): array
     {
         return [
             'id' => $room->id,
             'hotelId' => $room->hotelId,
-            'number' => $room->number,
+            'number' => $room->number->value,
+            'floor' => $room->floor->value,
             'createdAt' => $room->createdAt->getTimestamp(),
         ];
     }

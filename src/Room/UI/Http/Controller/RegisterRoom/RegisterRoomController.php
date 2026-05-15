@@ -48,6 +48,7 @@ final readonly class RegisterRoomController
                         new OA\Property(property: 'id', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'number', type: 'string', example: '101'),
+                        new OA\Property(property: 'floor', type: 'integer', example: 1),
                         new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
                     ],
                 ),
@@ -82,7 +83,7 @@ final readonly class RegisterRoomController
         string $hotelId,
         #[MapRequestPayload(acceptFormat: 'json')] RegisterRoomRequest $request,
     ): Response {
-        $command = $this->commandFactory->create($hotelId, $request->number);
+        $command = $this->commandFactory->create($hotelId, $request->number, $request->floor);
         $this->commandBus->execute($command);
 
         $room = $this->queryBus->ask(new GetRoomQuery($command->id));

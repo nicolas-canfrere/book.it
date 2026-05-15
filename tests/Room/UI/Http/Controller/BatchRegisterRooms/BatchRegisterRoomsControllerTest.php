@@ -28,7 +28,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number\n101\n102\n2A\n");
+        $csv = $this->makeCsvFile("number,floor\n101,1\n102,2\n2A,-1\n");
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms/batch",
@@ -38,7 +38,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var list<array{id: string, hotelId: string, number: string, createdAt: int}> $body */
+        /** @var list<array{id: string, hotelId: string, number: string, floor: int, createdAt: int}> $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertCount(3, $body);
         $numbers = array_column($body, 'number');
@@ -58,7 +58,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number\n");
+        $csv = $this->makeCsvFile("number,floor\n");
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms/batch",
@@ -78,7 +78,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $csv = $this->makeCsvFile("number\n101\n");
+        $csv = $this->makeCsvFile("number,floor\n101,1\n");
         $client->request(
             method: 'POST',
             uri: '/api/hotels/00000000-0000-4000-8000-000000000000/rooms/batch',
@@ -93,7 +93,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $csv = $this->makeCsvFile("number\n101\n");
+        $csv = $this->makeCsvFile("number,floor\n101,1\n");
         $client->request(
             method: 'POST',
             uri: '/api/hotels/not-a-uuid/rooms/batch',
@@ -109,7 +109,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number\n101\n101\n");
+        $csv = $this->makeCsvFile("number,floor\n101,1\n101,2\n");
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms/batch",
@@ -133,15 +133,14 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        // pre-register room 101
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
 
-        $csv = $this->makeCsvFile("number\n101\n102\n");
+        $csv = $this->makeCsvFile("number,floor\n101,1\n102,2\n");
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms/batch",
@@ -164,7 +163,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number\n\n101\n101\n");
+        $csv = $this->makeCsvFile("number,floor\n,1\n101,1\n101,2\n");
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms/batch",
@@ -186,7 +185,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("room_number\n101\n");
+        $csv = $this->makeCsvFile("number\n101\n");
         $client->request(
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms/batch",

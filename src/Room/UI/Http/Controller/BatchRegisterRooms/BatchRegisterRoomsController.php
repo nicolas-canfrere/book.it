@@ -8,6 +8,8 @@ use App\Room\Application\Exception\InvalidCsvFormatException;
 use App\Room\Application\Service\BatchRegisterRoomsCommandFactory;
 use App\Room\Application\Service\CsvRoomNumbersParser;
 use App\Room\Domain\Model\Room;
+use App\Room\Domain\ValueObject\RoomFloor;
+use App\Room\Domain\ValueObject\RoomNumber;
 use App\Room\UI\Http\Controller\RoomSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use OpenApi\Attributes as OA;
@@ -40,7 +42,7 @@ final readonly class BatchRegisterRoomsController
                     properties: [
                         new OA\Property(
                             property: 'csv',
-                            description: 'CSV file with a "number" header column and one room number per row',
+                            description: 'CSV file with "number,floor" header columns and one room per row',
                             type: 'string',
                             format: 'binary',
                         ),
@@ -64,6 +66,7 @@ final readonly class BatchRegisterRoomsController
                             new OA\Property(property: 'id', type: 'string', format: 'uuid'),
                             new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                             new OA\Property(property: 'number', type: 'string', example: '101'),
+                            new OA\Property(property: 'floor', type: 'integer', example: 1),
                             new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
                         ],
                     ),
@@ -94,15 +97,21 @@ final readonly class BatchRegisterRoomsController
             throw new InvalidCsvFormatException('A CSV file is required.');
         }
 
-        $numbers = $this->csvParser->parse($file);
+        $rows = $this->csvParser->parse($file);
 
-        $command = $this->commandFactory->create($hotelId, $numbers);
+        $command = $this->commandFactory->create($hotelId, $rows);
 
         $this->commandBus->execute($command);
 
         $rooms = array_map(
             fn(array $entry) => $this->roomSerializer->serialize(
-                new Room($entry['id'], $command->hotelId, $entry['number'], $command->createdAt)
+                new Room(
+                    $entry['id'],
+                    $command->hotelId,
+                    new RoomNumber($entry['number']),
+                    new RoomFloor($entry['floor']),
+                    $command->createdAt,
+                )
             ),
             $command->entries,
         );

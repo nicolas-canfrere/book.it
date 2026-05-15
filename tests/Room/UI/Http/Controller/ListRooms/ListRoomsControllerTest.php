@@ -119,7 +119,7 @@ final class ListRoomsControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => $number], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => $number, 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
     }
 }

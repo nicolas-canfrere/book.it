@@ -80,7 +80,7 @@ final class GetRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
 
         /** @var array{id: string} $room */

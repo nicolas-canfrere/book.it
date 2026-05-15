@@ -166,7 +166,7 @@ paths:
                 - csv
               properties:
                 csv:
-                  description: 'CSV file with a "number" header column and one room number per row'
+                  description: 'CSV file with "number,floor" header columns and one room per row'
                   type: string
                   format: binary
               type: object
@@ -178,7 +178,7 @@ paths:
               schema:
                 type: array
                 items:
-                  properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string, example: '101' }, createdAt: { description: 'Unix timestamp', type: integer } }
+                  properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string, example: '101' }, floor: { type: integer, example: 1 }, createdAt: { description: 'Unix timestamp', type: integer } }
                   type: object
         '404':
           description: 'Hotel not found'
@@ -303,6 +303,7 @@ paths:
                   id: { type: string, format: uuid }
                   hotelId: { type: string, format: uuid }
                   number: { type: string, example: '101' }
+                  floor: { type: integer, example: 1 }
                   createdAt: { description: 'Unix timestamp', type: integer }
                 type: object
         '404':
@@ -446,6 +447,13 @@ components:
           default: null
           maxLength: 50
           minLength: 1
+        floor:
+          type: integer
+          example: 1
+          nullable: true
+          default: null
+          maximum: 300
+          minimum: -20
       type: object
 tags:
   -
