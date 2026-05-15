@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Hotel\UI\Http\Controller\ListHotels;
 
-use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\UI\Http\Controller\HotelSerializer;
 
@@ -24,10 +23,7 @@ final class HotelCatalogueSerializer
     public function serialize(HotelPage $hotelPage, int $page, int $limit): array
     {
         return [
-            'data' => array_map(
-                fn(Hotel $hotel) => $this->hotelSerializer->serialize($hotel),
-                $hotelPage->hotels,
-            ),
+            'data' => array_map($this->hotelSerializer->serialize(...), $hotelPage->hotels),
             'meta' => [
                 'page' => $page,
                 'limit' => $limit,
