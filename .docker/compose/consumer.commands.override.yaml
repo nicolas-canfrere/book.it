@@ -1,0 +1,7 @@
+services:
+    consumer_commands:
+        depends_on:
+            rabbitmq:
+                condition: service_healthy
+            database:
+                condition: service_healthy

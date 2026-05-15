@@ -1,0 +1,19 @@
+services:
+    consumer_commands:
+        image: ${PHP_IMAGE}
+        container_name: ${PHP_CONSUMER_COMMANDS_NAME:-php-dev}
+        build:
+            context: ./../..
+            target: ${PHP_BUILD_TARGET:-dev}
+        volumes:
+            - ./../../:/app
+        working_dir: /app
+        environment:
+            APP_DEBUG: "0"
+        env_file:
+            - ./../../.env
+            - ./../../.env.dev
+        command: php bin/console messenger:consume commands --queues=bookit.commands --time-limit=3600 -vv
+        restart: unless-stopped
+        networks:
+            - ${NETWORK_NAME:-default-nw}
