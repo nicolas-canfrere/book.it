@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Room\UI\Http\Controller\BatchRegisterRooms;
 
+use App\Room\Application\Exception\InvalidCsvFormatException;
 use App\Room\Application\Service\BatchRegisterRoomsCommandFactory;
 use App\Room\Application\Service\CsvRoomNumbersParser;
 use App\Room\Domain\Model\Room;
 use App\Room\UI\Http\Controller\RoomSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
-use App\Shared\Infrastructure\Http\ProblemDetail;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -91,7 +91,7 @@ final readonly class BatchRegisterRoomsController
     {
         $file = $request->files->get('csv');
         if (!$file instanceof UploadedFile) {
-            return $this->invalidCsvResponse('A CSV file is required.');
+            throw new InvalidCsvFormatException('A CSV file is required.');
         }
 
         $numbers = $this->csvParser->parse($file);
@@ -108,17 +108,5 @@ final readonly class BatchRegisterRoomsController
         );
 
         return new JsonResponse($rooms, Response::HTTP_CREATED);
-    }
-
-    private function invalidCsvResponse(string $detail): JsonResponse
-    {
-        $problem = new ProblemDetail(
-            type: 'about:blank',
-            title: 'Unprocessable Content',
-            status: Response::HTTP_UNPROCESSABLE_ENTITY,
-            detail: $detail,
-        );
-
-        return new JsonResponse($problem->toArray(), $problem->status, ['Content-Type' => 'application/problem+json']);
     }
 }
