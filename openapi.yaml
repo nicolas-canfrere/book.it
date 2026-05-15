@@ -4,6 +4,41 @@ info:
   description: 'Hotels management!'
   version: 1.0.0
 paths:
+  '/api/hotels/{id}':
+    get:
+      tags:
+        - Hotels
+      summary: 'Get a hotel by ID'
+      operationId: get_hotel_get_hotel
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      responses:
+        '200':
+          description: 'Hotel found'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  name: { type: string, example: 'Hotel Ibis Paris' }
+                  streetAddress: { type: string, example: '15 rue de Rivoli' }
+                  postalCode: { type: string, example: '75001' }
+                  city: { type: string, example: Paris }
+                  country: { type: string, example: FR }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Hotel not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /api/hotels:
     get:
       tags:
