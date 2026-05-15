@@ -12,6 +12,7 @@ final readonly class RegisterRoomCommand implements SyncCommandInterface
         public string $id,
         public string $hotelId,
         public string $number,
+        public int $floor,
         public \DateTimeImmutable $createdAt,
     ) {
     }

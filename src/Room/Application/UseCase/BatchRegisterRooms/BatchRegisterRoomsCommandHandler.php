@@ -9,6 +9,8 @@ use App\Room\Domain\Exception\RoomBatchInvalidException;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Port\HotelExistsInterface;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Room\Domain\ValueObject\RoomFloor;
+use App\Room\Domain\ValueObject\RoomNumber;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 
 final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHandlerInterface
@@ -31,6 +33,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
         foreach ($command->entries as $index => $entry) {
             $lineField = \sprintf('line[%d]', $index + 2);
             $number = $entry['number'];
+            $floor = $entry['floor'];
 
             if ('' === $number) {
                 $violations[] = ['field' => $lineField, 'message' => 'Room number must not be blank.'];
@@ -39,6 +42,11 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
 
             if (mb_strlen($number) > 50) {
                 $violations[] = ['field' => $lineField, 'message' => 'Room number must not exceed 50 characters.'];
+                continue;
+            }
+
+            if ($floor < -20 || $floor > 300) {
+                $violations[] = ['field' => $lineField, 'message' => 'Room floor must be between -20 and 300.'];
                 continue;
             }
 
@@ -60,7 +68,13 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
         }
 
         $rooms = array_map(
-            fn(array $entry) => new Room($entry['id'], $command->hotelId, trim($entry['number']), $command->createdAt),
+            fn(array $entry) => new Room(
+                $entry['id'],
+                $command->hotelId,
+                new RoomNumber(trim($entry['number'])),
+                new RoomFloor($entry['floor']),
+                $command->createdAt,
+            ),
             $command->entries,
         );
 

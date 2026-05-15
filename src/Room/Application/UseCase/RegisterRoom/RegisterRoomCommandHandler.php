@@ -9,6 +9,8 @@ use App\Room\Domain\Exception\RoomAlreadyExistsException;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Port\HotelExistsInterface;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Room\Domain\ValueObject\RoomFloor;
+use App\Room\Domain\ValueObject\RoomNumber;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 
 final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInterface
@@ -32,7 +34,8 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
         $this->roomRepository->add(new Room(
             $command->id,
             $command->hotelId,
-            $command->number,
+            new RoomNumber($command->number),
+            new RoomFloor($command->floor),
             $command->createdAt,
         ));
     }
