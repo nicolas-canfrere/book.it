@@ -36,11 +36,41 @@ make apply-cs         # PHP CS Fixer only
 ### Tests
 
 ```bash
-make unit-test-quiet  # Run tests with summarized output
+make unit-test-quiet  # Run unit + integration tests with summarized output
 make unit-test-quiet ARGS="--filter TestClassName"  # Run a single test or filter
+make functional-test  # Run functional tests (spins up full Docker stack + DB)
+make functional-test ARGS="--filter TestClassName"  # Filter functional tests
+make test             # Run unit + integration + functional (full suite)
 ```
 
 PHPUnit is configured with `DAMA\DoctrineTestBundle` — each test wraps DB operations in a transaction that is rolled back, so the database is reset between tests without truncation.
+
+Controller tests use `#[Group('functional')]` and require `make functional-test`, not `make unit-test-quiet`.
+
+## Error Handling
+
+All HTTP error responses follow RFC 7807 (`application/problem+json`). A centralized `ProblemDetailExceptionListener` in `Shared/Infrastructure/Http/` handles all exceptions.
+
+To map a new domain exception to a typed Problem Detail, add an entry to the context's service config (e.g., `config/services/hotel.yaml`):
+
+```yaml
+App\Shared\Infrastructure\Http\ExceptionProblemRegistry:
+    arguments:
+        $map:
+            App\SomeContext\Domain\Exception\SomeException:
+                type: 'https://book.it/problems/some-problem'
+                title: 'Some Problem'
+                status: 409
+```
+
+Unmapped exceptions fall back to `"type": "about:blank"` with a 500 status. Validation errors (422) automatically include a `violations` array with per-field messages.
+
+OpenAPI schemas for error responses (`ProblemDetail`, `ValidationProblemDetail`) are defined in `config/packages/nelmio_api_doc.yaml` and referenced by `$ref` string in controller annotations.
+
+When working on any API route, always keep the OpenAPI documentation up to date:
+- Add or update `#[OA\...]` attributes on the controller (request body, responses, status codes)
+- Add or update shared schemas in `config/packages/nelmio_api_doc.yaml` if the route introduces new reusable response shapes
+- Run `make openapi` to regenerate `openapi.yaml` and verify there are no warnings
 
 ## Coding Standards
 
