@@ -30,7 +30,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
 
         foreach ($command->entries as $index => $entry) {
             $lineField = \sprintf('line[%d]', $index + 2);
-            $number = $entry['number'];
+            $number = trim($entry['number']);
 
             if ('' === trim($number)) {
                 $violations[] = ['field' => $lineField, 'message' => 'Room number must not be blank.'];
@@ -60,7 +60,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
         }
 
         $rooms = array_map(
-            fn(array $entry) => new Room($entry['id'], $command->hotelId, $entry['number'], $command->createdAt),
+            fn(array $entry) => new Room($entry['id'], $command->hotelId, trim($entry['number']), $command->createdAt),
             $command->entries,
         );
 

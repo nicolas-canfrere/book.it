@@ -83,6 +83,18 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
     }
 
     #[Test]
+    public function itRejectsBlankNumberAfterTrimming(): void
+    {
+        $this->expectException(RoomBatchInvalidException::class);
+
+        ($this->handler)(new BatchRegisterRoomsCommand(
+            hotelId: self::HOTEL_ID,
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '   ']],
+            createdAt: new \DateTimeImmutable(),
+        ));
+    }
+
+    #[Test]
     public function itRejectsBlankNumber(): void
     {
         $this->expectException(RoomBatchInvalidException::class);
