@@ -19,7 +19,7 @@ final readonly class BatchRegisterRoomsCommandFactory
     public function create(string $hotelId, array $numbers): BatchRegisterRoomsCommand
     {
         $entries = array_map(
-            fn(string $number) => ['id' => $this->roomIdGenerator->generate(), 'number' => $number],
+            fn(string $number) => ['id' => $this->roomIdGenerator->generate(), 'number' => trim($number)],
             $numbers,
         );
 

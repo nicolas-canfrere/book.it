@@ -30,7 +30,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
 
         foreach ($command->entries as $index => $entry) {
             $lineField = \sprintf('line[%d]', $index + 2);
-            $number = trim($entry['number']);
+            $number = $entry['number'];
 
             if ('' === $number) {
                 $violations[] = ['field' => $lineField, 'message' => 'Room number must not be blank.'];
