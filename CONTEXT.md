@@ -83,3 +83,33 @@ _Avoid_: booker creation, account creation, sign-up
 ## Flagged ambiguities
 
 - B2B (company) Bookers are explicitly out of scope for now — only natural persons are supported
+
+---
+
+**Blocked Period** *(Période de blocage)* :
+Une plage de nuits consécutives pendant laquelle une Room est indisponible à la réservation. Exprimée par une date de check-in (inclusive) et une date de check-out (exclusive). Une Room est disponible par défaut — un Blocked Period en suspend explicitement la disponibilité.
+_Avoid_: unavailability, closure, restriction, fermeture
+
+**Check-in Date** :
+La première nuit couverte par un Blocked Period (borne inclusive).
+_Avoid_: start date, from date, début
+
+**Check-out Date** :
+Le lendemain de la dernière nuit couverte par un Blocked Period (borne exclusive). La Room est libre ce soir-là.
+_Avoid_: end date, to date, fin
+
+**Availability Check** *(Vérification de disponibilité)* :
+Une requête booléenne — "cette Room est-elle disponible sur cette période ?" — qui répond vrai si aucun Blocked Period ne chevauche la plage demandée.
+_Avoid_: availability query, dispo check
+
+**Availability Calendar** *(Calendrier de disponibilité)* :
+La liste de tous les Blocked Periods d'une Room sur une période donnée, destinée à l'affichage et à la gestion par l'opérateur.
+_Avoid_: availability grid, calendar view, planning
+
+## Relationships
+
+- Une **Room** a zéro ou plusieurs **Blocked Periods**
+- Deux **Blocked Periods** d'une même **Room** ne peuvent pas se chevaucher — toute tentative est rejetée
+- Un **Blocked Period** est immuable après création — pour corriger, on le supprime et on en recrée un
+- Un **Availability Check** porte sur une **Room** et une plage check-in/check-out
+- Un **Availability Calendar** porte sur une **Room** et une fenêtre temporelle
