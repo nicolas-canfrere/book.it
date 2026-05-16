@@ -324,6 +324,42 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/bookers/{id}':
+    get:
+      tags:
+        - Bookers
+      summary: 'Get a booker by ID'
+      operationId: get_booker_get_booker
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'Booker found'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  firstName: { type: string, example: Jane }
+                  lastName: { type: string, example: Doe }
+                  email: { type: string, format: email, example: jane.doe@example.com }
+                  phone: { type: string, example: '+33612345678' }
+                  dateOfBirth: { type: string, format: date, example: '1990-01-15' }
+                  registeredAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Booker not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /api/bookers:
     post:
       tags:
