@@ -58,19 +58,19 @@ static-code-analysis: ## Code analysis
 apply-cs: ## Apply coding standards with PHP CS Fixer
 	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/php-cs-fixer fix --show-progress=dots --diff --config=.php-cs-fixer.dist.php
 
-lint: static-code-analysis apply-cs ## Full code analysis
+lint: static-code-analysis apply-cs ## Full code analysis (cs fixer and phpstan)
 
 ##@ Tests
-test: unit-test functional-test
-
 DOCKER_COMPOSE_TEST = docker compose --progress quiet -p bookit-test -f compose.test.yaml --env-file .env --env-file .env.compose
 
+test: unit-test functional-test ## Run all tests unit/integration/functional
+
 unit-test: ## Run unit tests
-	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --group=unit --group=integration $(ARGS)
+	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --stop-on-defect --group=unit --group=integration $(ARGS)
 
 unit-test-quiet: ## Run unit tests silently
 	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test sh -c \
-		"vendor/bin/phpunit --no-progress --group=unit --group=integration $(ARGS) > /tmp/.phpunit_out 2>&1; \
+		"vendor/bin/phpunit --no-progress --stop-on-defect --group=unit --group=integration $(ARGS) > /tmp/.phpunit_out 2>&1; \
 		 CODE=$$?; \
 		 awk '/^There (was|were) [0-9]/{p=1;next} /^OK /{print} /^FAILURES!/{p=2;print;next} p==2{print;p=0;next} p' /tmp/.phpunit_out; \
 		 exit $$CODE"
@@ -78,7 +78,7 @@ unit-test-quiet: ## Run unit tests silently
 functional-test: ## Run functional tests
 	@$(DOCKER_COMPOSE_TEST) up -d
 	@$(DOCKER_COMPOSE_TEST) run --rm php-test bin/console doctrine:migrations:migrate -n -q
-	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --group=functional $(ARGS)
+	@$(DOCKER_COMPOSE_TEST) run --rm --no-deps php-test vendor/bin/phpunit --stop-on-defect --group=functional $(ARGS)
 	@$(DOCKER_COMPOSE_TEST) down --remove-orphans -v
 
 ##@ Docker
@@ -91,5 +91,5 @@ down: ## Stop all services
 	$(DOCKER_COMPOSE) down --remove-orphans
 
 ##@ OpenApi doc
-openapi:
+openapi: ## write openapi doc in yaml file at the root directory: openapi.yaml
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
