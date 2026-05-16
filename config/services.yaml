@@ -2,5 +2,6 @@ imports:
     - { resource: './services/shared.yaml' }
     - { resource: './services/hotel.yaml' }
     - { resource: './services/room.yaml' }
+    - { resource: './services/booker.yaml' }
     - { resource: './services/exceptions.yaml' }
 

@@ -324,6 +324,51 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  /api/bookers:
+    post:
+      tags:
+        - Bookers
+      summary: 'Register a new booker'
+      operationId: post_booker_register_booker
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterBookerRequest'
+      responses:
+        '201':
+          description: 'Booker registered'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  firstName: { type: string, example: Jean }
+                  lastName: { type: string, example: Dupont }
+                  email: { type: string, format: email, example: jean.dupont@example.com }
+                  phone: { type: string, example: '+33612345678' }
+                  dateOfBirth: { type: string, format: date, example: '1990-05-15' }
+                  registeredAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '409':
+          description: 'Email already taken'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error or underage applicant'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+        '404':
+          description: 'Not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -454,6 +499,42 @@ components:
           maximum: 300
           minimum: -20
       type: object
+    RegisterBookerRequest:
+      properties:
+        firstName:
+          type: string
+          example: Jean
+          nullable: true
+          default: null
+          maxLength: 100
+          minLength: 1
+        lastName:
+          type: string
+          example: Dupont
+          nullable: true
+          default: null
+          maxLength: 100
+          minLength: 1
+        email:
+          type: string
+          format: email
+          example: jean.dupont@example.com
+          nullable: true
+          default: null
+        phone:
+          type: string
+          example: '+33612345678'
+          nullable: true
+          default: null
+          maxLength: 50
+          minLength: 5
+        dateOfBirth:
+          type: string
+          format: date
+          example: '1990-05-15'
+          nullable: true
+          default: null
+      type: object
 tags:
   -
     name: Hotels
@@ -461,4 +542,7 @@ tags:
   -
     name: Rooms
     description: Rooms
+  -
+    name: Bookers
+    description: Bookers
 

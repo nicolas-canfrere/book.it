@@ -1,0 +1,35 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+
+    App\Booker\Domain\:
+        resource: '../../src/Booker/Domain/'
+        exclude:
+            - '../../src/Booker/Domain/Model/'
+
+    App\Booker\Application\:
+        resource: '../../src/Booker/Application/'
+        exclude:
+            - '../../src/Booker/Application/**/*Exception.php'
+            - '../../src/Booker/Application/**/*Command.php'
+            - '../../src/Booker/Application/**/*Query.php'
+
+    App\Booker\Infrastructure\:
+        resource: '../../src/Booker/Infrastructure/'
+        exclude:
+            - '../../src/Booker/Infrastructure/**/*Exception.php'
+
+    App\Booker\UI\:
+        resource: '../../src/Booker/UI/'
+        exclude:
+            - '../../src/Booker/UI/**/*Request.php'
