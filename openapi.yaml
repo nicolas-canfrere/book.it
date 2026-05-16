@@ -405,6 +405,151 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  '/api/rooms/{roomId}/blocked-periods':
+    get:
+      tags:
+        - Availability
+      summary: 'Get all blocked periods for a room'
+      operationId: get_availability_get_calendar
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'Availability calendar'
+          content:
+            application/json:
+              schema:
+                properties:
+                  blockedPeriods: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-06-10' }, checkOut: { type: string, format: date, example: '2025-06-13' }, createdAt: { type: integer } }, type: object } }
+                type: object
+    post:
+      tags:
+        - Availability
+      summary: 'Block a period for a room'
+      operationId: post_availability_block_period
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BlockPeriodRequest'
+      responses:
+        '201':
+          description: 'Period blocked'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  roomId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date, example: '2025-06-10' }
+                  checkOut: { type: string, format: date, example: '2025-06-13' }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Period overlaps existing block'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/rooms/{roomId}/availability':
+    get:
+      tags:
+        - Availability
+      summary: 'Check whether a room is available for a given period'
+      operationId: get_availability_check
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: checkIn
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+        -
+          name: checkOut
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+      responses:
+        '200':
+          description: 'Availability result'
+          content:
+            application/json:
+              schema:
+                properties:
+                  available: { type: boolean }
+                type: object
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/blocked-periods/{id}':
+    delete:
+      tags:
+        - Availability
+      summary: 'Delete a blocked period'
+      operationId: delete_availability_delete_blocked_period
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'Blocked period deleted'
+        '404':
+          description: 'Blocked period not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -571,6 +716,32 @@ components:
           nullable: true
           default: null
       type: object
+    BlockPeriodRequest:
+      properties:
+        checkIn:
+          type: string
+          format: date
+          example: '2025-06-10'
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          format: date
+          example: '2025-06-13'
+          nullable: true
+          default: null
+      type: object
+    CheckAvailabilityRequest:
+      properties:
+        checkIn:
+          type: string
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          nullable: true
+          default: null
+      type: object
 tags:
   -
     name: Hotels
@@ -581,4 +752,7 @@ tags:
   -
     name: Bookers
     description: Bookers
+  -
+    name: Availability
+    description: Availability
 
