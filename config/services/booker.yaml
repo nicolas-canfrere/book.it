@@ -28,8 +28,3 @@ services:
         resource: '../../src/Booker/Infrastructure/'
         exclude:
             - '../../src/Booker/Infrastructure/**/*Exception.php'
-
-    App\Booker\UI\:
-        resource: '../../src/Booker/UI/'
-        exclude:
-            - '../../src/Booker/UI/**/*Request.php'
