@@ -62,3 +62,24 @@ _Avoid_: room list, room inventory
 - A **Room** has exactly one **Room Number** and exactly one **Room Floor**
 - A **Room Registration** produces exactly one **Room**, or raises a conflict if the **Room** number already exists in that **Hotel**
 - A **Room Catalogue** always belongs to exactly one **Hotel**
+
+---
+
+**Booker**:
+A registered individual (natural person) who makes and pays for Reservations and is the contractual and financial responsible party. A Booker is a persistent account, not a per-Reservation identity.
+_Avoid_: customer, client, guest, user
+
+**Booker Registration**:
+The act of a natural person registering their own Booker account (self-registration). Rejected if a Booker with the same email already exists, or if the applicant is under 18 years of age.
+_Avoid_: booker creation, account creation, sign-up
+
+## Relationships
+
+- A **Booker** is uniquely identified by their email address
+- A **Booker** has a first name, last name, email, phone number, and date of birth
+- A **Booker Registration** produces exactly one **Booker**, or raises a conflict if the email is already taken
+- A **Booker Registration** is rejected if the date of birth indicates the applicant is under 18 years old
+
+## Flagged ambiguities
+
+- B2B (company) Bookers are explicitly out of scope for now — only natural persons are supported
