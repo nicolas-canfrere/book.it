@@ -24,3 +24,11 @@ services:
                     type: 'about:blank'
                     title: 'Unprocessable Content'
                     status: 422
+                App\Booker\Domain\Exception\BookerAlreadyExistsException:
+                    type: 'https://book.it/problems/booker-already-exists'
+                    title: 'Booker Already Exists'
+                    status: 409
+                App\Booker\Domain\Exception\BookerUnderageException:
+                    type: 'https://book.it/problems/booker-underage'
+                    title: 'Booker Underage'
+                    status: 422
