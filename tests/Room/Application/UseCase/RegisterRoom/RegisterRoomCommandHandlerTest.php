@@ -35,6 +35,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
+            floor: 1,
             createdAt: new \DateTimeImmutable('2024-01-01 10:00:00'),
         );
 
@@ -44,7 +45,8 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         self::assertNotNull($room);
         self::assertSame($command->id, $room->id);
         self::assertSame($command->hotelId, $room->hotelId);
-        self::assertSame('101', $room->number);
+        self::assertSame('101', $room->number->value);
+        self::assertSame(1, $room->floor->value);
         self::assertEquals($command->createdAt, $room->createdAt);
     }
 
@@ -58,6 +60,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
+            floor: 1,
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -69,6 +72,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
+            floor: 1,
             createdAt: new \DateTimeImmutable(),
         );
         ($this->handler)($command);
@@ -79,6 +83,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
+            floor: 2,
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -90,12 +95,14 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             hotelId: '550e8400-e29b-41d4-a716-446655440001',
             number: '101',
+            floor: 1,
             createdAt: new \DateTimeImmutable(),
         );
         $command2 = new RegisterRoomCommand(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
             hotelId: '550e8400-e29b-41d4-a716-446655440002',
             number: '101',
+            floor: 1,
             createdAt: new \DateTimeImmutable(),
         );
 

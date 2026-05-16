@@ -33,7 +33,7 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
     public function existsByHotelIdAndNumber(string $hotelId, string $number): bool
     {
         foreach ($this->rooms as $room) {
-            if ($room->hotelId === $hotelId && $room->number === $number) {
+            if ($room->hotelId === $hotelId && $room->number->value === $number) {
                 return true;
             }
         }
@@ -48,7 +48,7 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
             static fn(Room $r) => $r->hotelId === $hotelId,
         ));
 
-        usort($filtered, static fn(Room $a, Room $b) => strcmp($a->number, $b->number));
+        usort($filtered, static fn(Room $a, Room $b) => strcmp($a->number->value, $b->number->value));
 
         $total = count($filtered);
         $rooms = array_slice($filtered, ($page - 1) * $limit, $limit);

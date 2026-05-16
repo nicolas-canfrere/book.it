@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final readonly class CsvRoomNumbersParser
 {
-    /** @return list<string> */
+    /** @return list<RoomCsvRow> */
     public function parse(UploadedFile $file): array
     {
         $handle = fopen($file->getPathname(), 'r');
@@ -18,17 +18,23 @@ final readonly class CsvRoomNumbersParser
         }
 
         $header = fgetcsv($handle, escape: '');
-        if ($header !== ['number']) {
+        if ($header !== ['number', 'floor']) {
             fclose($handle);
-            throw new InvalidCsvFormatException('Invalid CSV format: expected a single "number" header column.');
+            throw new InvalidCsvFormatException('Invalid CSV format: expected "number,floor" header columns.');
         }
 
-        $numbers = [];
+        $rows = [];
         while (false !== ($row = fgetcsv($handle, escape: ''))) {
-            $numbers[] = $row[0] ?? '';
+            $rawFloor = trim($row[1] ?? '');
+            $floor = filter_var($rawFloor, FILTER_VALIDATE_INT);
+            if (false === $floor) {
+                fclose($handle);
+                throw new InvalidCsvFormatException(\sprintf('Invalid CSV format: floor value "%s" is not a valid integer.', $rawFloor));
+            }
+            $rows[] = new RoomCsvRow($row[0] ?? '', $floor);
         }
         fclose($handle);
 
-        return $numbers;
+        return $rows;
     }
 }

@@ -22,19 +22,34 @@ final class CsvRoomNumbersParserTest extends TestCase
     }
 
     #[Test]
-    public function itParsesValidCsvAndReturnsNumbers(): void
+    public function itParsesValidCsvAndReturnsRows(): void
     {
-        $numbers = $this->parser->parse($this->makeCsvFile("number\n101\n102\n2A\n"));
+        $rows = $this->parser->parse($this->makeCsvFile("number,floor\n101,1\n102,2\n2A,-1\n"));
 
-        self::assertSame(['101', '102', '2A'], $numbers);
+        self::assertCount(3, $rows);
+        self::assertSame('101', $rows[0]->number);
+        self::assertSame(1, $rows[0]->floor);
+        self::assertSame('102', $rows[1]->number);
+        self::assertSame(2, $rows[1]->floor);
+        self::assertSame('2A', $rows[2]->number);
+        self::assertSame(-1, $rows[2]->floor);
     }
 
     #[Test]
     public function itReturnsEmptyArrayForHeaderOnlyCsv(): void
     {
-        $numbers = $this->parser->parse($this->makeCsvFile("number\n"));
+        $rows = $this->parser->parse($this->makeCsvFile("number,floor\n"));
 
-        self::assertSame([], $numbers);
+        self::assertSame([], $rows);
+    }
+
+    #[Test]
+    public function itAcceptsNegativeAndZeroFloors(): void
+    {
+        $rows = $this->parser->parse($this->makeCsvFile("number,floor\n101,0\n102,-5\n"));
+
+        self::assertSame(0, $rows[0]->floor);
+        self::assertSame(-5, $rows[1]->floor);
     }
 
     #[Test]
@@ -42,7 +57,23 @@ final class CsvRoomNumbersParserTest extends TestCase
     {
         $this->expectException(InvalidCsvFormatException::class);
 
-        $this->parser->parse($this->makeCsvFile("room_number\n101\n"));
+        $this->parser->parse($this->makeCsvFile("number\n101\n"));
+    }
+
+    #[Test]
+    public function itThrowsWhenFloorIsNotAnInteger(): void
+    {
+        $this->expectException(InvalidCsvFormatException::class);
+
+        $this->parser->parse($this->makeCsvFile("number,floor\n101,abc\n"));
+    }
+
+    #[Test]
+    public function itThrowsWhenFloorIsDecimal(): void
+    {
+        $this->expectException(InvalidCsvFormatException::class);
+
+        $this->parser->parse($this->makeCsvFile("number,floor\n101,1.5\n"));
     }
 
     private function makeCsvFile(string $content): UploadedFile

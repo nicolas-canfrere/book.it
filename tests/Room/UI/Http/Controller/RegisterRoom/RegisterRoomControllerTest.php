@@ -31,17 +31,18 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{id: string, hotelId: string, number: string, createdAt: int} $body */
+        /** @var array{id: string, hotelId: string, number: string, floor: int, createdAt: int} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertNotEmpty($body['id']);
         self::assertSame($hotelId, $body['hotelId']);
         self::assertSame('101', $body['number']);
+        self::assertSame(1, $body['floor']);
         self::assertGreaterThan(0, $body['createdAt']);
     }
 
@@ -55,7 +56,7 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
         self::assertSame(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
 
@@ -63,7 +64,7 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 2], \JSON_THROW_ON_ERROR),
         );
 
         $response = $client->getResponse();
@@ -86,7 +87,7 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: '/api/hotels/00000000-0000-4000-8000-000000000000/rooms',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
 
         $response = $client->getResponse();
@@ -110,7 +111,43 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode([], \JSON_THROW_ON_ERROR),
+            content: json_encode(['floor' => 1], \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+    }
+
+    #[Test]
+    public function itReturns422WhenFloorIsMissing(): void
+    {
+        $client = static::createClient();
+        $hotelId = $this->registerHotelAndGetId($client);
+
+        $client->request(
+            method: 'POST',
+            uri: "/api/hotels/{$hotelId}/rooms",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+    }
+
+    #[Test]
+    public function itReturns422WhenFloorIsOutOfRange(): void
+    {
+        $client = static::createClient();
+        $hotelId = $this->registerHotelAndGetId($client);
+
+        $client->request(
+            method: 'POST',
+            uri: "/api/hotels/{$hotelId}/rooms",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(['number' => '101', 'floor' => 301], \JSON_THROW_ON_ERROR),
         );
 
         $response = $client->getResponse();
@@ -127,7 +164,7 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: '/api/hotels/not-a-uuid/rooms',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
@@ -153,7 +190,7 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId1}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
         self::assertSame(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
 
@@ -161,7 +198,7 @@ final class RegisterRoomControllerTest extends WebTestCase
             method: 'POST',
             uri: "/api/hotels/{$hotelId2}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
         self::assertSame(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
     }

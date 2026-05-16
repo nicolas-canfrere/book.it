@@ -41,8 +41,12 @@ A physical guest room belonging to a Hotel, uniquely identified within that Hote
 _Avoid_: chamber, unit, space
 
 **Room Number**:
-A string identifier assigned to a Room within a Hotel. Unique per Hotel. May be alphanumeric (e.g. "101", "2A", "Penthouse").
+A string identifier assigned to a Room within a Hotel. Unique per Hotel. Any non-blank string up to 50 characters (e.g. "101", "2A", "Penthouse", "Suite #3").
 _Avoid_: room id, room code
+
+**Room Floor**:
+The floor level of a Room within a Hotel building, expressed as a signed integer. Zero is ground floor; negative values denote basement levels. Valid range: -20 to 300.
+_Avoid_: level, storey, story
 
 **Room Registration**:
 The act of declaring a new Room in a Hotel. Rejected if a Room with the same number already exists in that Hotel, or if the referenced Hotel does not exist.
@@ -55,5 +59,6 @@ _Avoid_: room list, room inventory
 ## Relationships
 
 - A **Room** belongs to exactly one **Hotel** (referenced by Hotel id across context boundaries)
+- A **Room** has exactly one **Room Number** and exactly one **Room Floor**
 - A **Room Registration** produces exactly one **Room**, or raises a conflict if the **Room** number already exists in that **Hotel**
 - A **Room Catalogue** always belongs to exactly one **Hotel**

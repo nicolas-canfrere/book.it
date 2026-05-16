@@ -7,6 +7,8 @@ namespace App\Tests\Room\Application\UseCase\ListRooms;
 use App\Room\Application\UseCase\ListRooms\ListRoomsQuery;
 use App\Room\Application\UseCase\ListRooms\ListRoomsQueryHandler;
 use App\Room\Domain\Model\Room;
+use App\Room\Domain\ValueObject\RoomFloor;
+use App\Room\Domain\ValueObject\RoomNumber;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -43,8 +45,8 @@ final class ListRoomsQueryHandlerTest extends TestCase
         $result = ($this->handler)(new ListRoomsQuery(self::HOTEL_ID));
 
         self::assertCount(2, $result->rooms);
-        self::assertSame('101', $result->rooms[0]->number);
-        self::assertSame('202', $result->rooms[1]->number);
+        self::assertSame('101', $result->rooms[0]->number->value);
+        self::assertSame('202', $result->rooms[1]->number->value);
     }
 
     #[Test]
@@ -58,7 +60,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
 
         self::assertCount(1, $result->rooms);
         self::assertSame(1, $result->total);
-        self::assertSame('101', $result->rooms[0]->number);
+        self::assertSame('101', $result->rooms[0]->number->value);
     }
 
     #[Test]
@@ -87,6 +89,6 @@ final class ListRoomsQueryHandlerTest extends TestCase
 
     private function makeRoom(string $id, string $hotelId, string $number): Room
     {
-        return new Room($id, $hotelId, $number, new \DateTimeImmutable('2024-01-01'));
+        return new Room($id, $hotelId, new RoomNumber($number), new RoomFloor(1), new \DateTimeImmutable('2024-01-01'));
     }
 }

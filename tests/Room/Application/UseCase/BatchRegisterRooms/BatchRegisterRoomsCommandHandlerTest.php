@@ -39,8 +39,8 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
         $command = new BatchRegisterRoomsCommand(
             hotelId: self::HOTEL_ID,
             entries: [
-                ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101'],
-                ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '102'],
+                ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 1],
+                ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '102', 'floor' => 1],
             ],
             createdAt: new \DateTimeImmutable('2024-01-01 10:00:00'),
         );
@@ -51,8 +51,9 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
         $room2 = $this->roomRepository->get('aaaaaaaa-0000-4000-8000-000000000002');
         self::assertNotNull($room1);
         self::assertNotNull($room2);
-        self::assertSame('101', $room1->number);
-        self::assertSame('102', $room2->number);
+        self::assertSame('101', $room1->number->value);
+        self::assertSame('102', $room2->number->value);
+        self::assertSame(1, $room1->floor->value);
     }
 
     #[Test]
@@ -77,7 +78,7 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
 
         ($this->handler)(new BatchRegisterRoomsCommand(
             hotelId: self::HOTEL_ID,
-            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101']],
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 1]],
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -89,7 +90,7 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
 
         ($this->handler)(new BatchRegisterRoomsCommand(
             hotelId: self::HOTEL_ID,
-            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '']],
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '', 'floor' => 1]],
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -101,7 +102,31 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
 
         ($this->handler)(new BatchRegisterRoomsCommand(
             hotelId: self::HOTEL_ID,
-            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => str_repeat('X', 51)]],
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => str_repeat('X', 51), 'floor' => 1]],
+            createdAt: new \DateTimeImmutable(),
+        ));
+    }
+
+    #[Test]
+    public function itRejectsFloorBelowMinimum(): void
+    {
+        $this->expectException(RoomBatchInvalidException::class);
+
+        ($this->handler)(new BatchRegisterRoomsCommand(
+            hotelId: self::HOTEL_ID,
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => -21]],
+            createdAt: new \DateTimeImmutable(),
+        ));
+    }
+
+    #[Test]
+    public function itRejectsFloorAboveMaximum(): void
+    {
+        $this->expectException(RoomBatchInvalidException::class);
+
+        ($this->handler)(new BatchRegisterRoomsCommand(
+            hotelId: self::HOTEL_ID,
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 301]],
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -114,8 +139,8 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
             ($this->handler)(new BatchRegisterRoomsCommand(
                 hotelId: self::HOTEL_ID,
                 entries: [
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101'],
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '101'],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 1],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '101', 'floor' => 1],
                 ],
                 createdAt: new \DateTimeImmutable(),
             ));
@@ -131,10 +156,9 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
     #[Test]
     public function itRejectsDuplicateAlreadyInRepository(): void
     {
-        // pre-seed room 101
         ($this->handler)(new BatchRegisterRoomsCommand(
             hotelId: self::HOTEL_ID,
-            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101']],
+            entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 1]],
             createdAt: new \DateTimeImmutable(),
         ));
 
@@ -142,7 +166,7 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
         try {
             ($this->handler)(new BatchRegisterRoomsCommand(
                 hotelId: self::HOTEL_ID,
-                entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '101']],
+                entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '101', 'floor' => 1]],
                 createdAt: new \DateTimeImmutable(),
             ));
         } catch (RoomBatchInvalidException $e) {
@@ -162,10 +186,10 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
             ($this->handler)(new BatchRegisterRoomsCommand(
                 hotelId: self::HOTEL_ID,
                 entries: [
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => ''],
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => str_repeat('X', 51)],
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000003', 'number' => '101'],
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000004', 'number' => '101'],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '', 'floor' => 1],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => str_repeat('X', 51), 'floor' => 1],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000003', 'number' => '101', 'floor' => 1],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000004', 'number' => '101', 'floor' => 1],
                 ],
                 createdAt: new \DateTimeImmutable(),
             ));
@@ -187,8 +211,8 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
             ($this->handler)(new BatchRegisterRoomsCommand(
                 hotelId: self::HOTEL_ID,
                 entries: [
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101'],
-                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => ''],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 1],
+                    ['id' => 'aaaaaaaa-0000-4000-8000-000000000002', 'number' => '', 'floor' => 1],
                 ],
                 createdAt: new \DateTimeImmutable(),
             ));
