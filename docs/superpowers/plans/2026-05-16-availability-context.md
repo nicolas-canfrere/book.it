@@ -81,6 +81,13 @@ git checkout -b feat/availability-context
 
 Expected: you are now on `feat/availability-context`.
 
+- [ ] **Step 2: Commit the domain documentation produced during design**
+
+```bash
+git add CONTEXT.md docs/adr/0005-availability-as-separate-context-with-opaque-blocks.md
+git commit -m "docs(availability): add domain glossary terms and ADR-0005"
+```
+
 ---
 
 ## Task 2: DatePeriod value object

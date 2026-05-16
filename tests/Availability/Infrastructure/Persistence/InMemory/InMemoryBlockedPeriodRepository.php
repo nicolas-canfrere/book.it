@@ -46,10 +46,10 @@ final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryIn
     {
         $filtered = array_values(array_filter(
             $this->periods,
-            static fn (BlockedPeriod $p) => $p->roomId === $roomId,
+            static fn(BlockedPeriod $p) => $p->roomId === $roomId,
         ));
 
-        usort($filtered, static fn (BlockedPeriod $a, BlockedPeriod $b) => $a->period->checkIn <=> $b->period->checkIn);
+        usort($filtered, static fn(BlockedPeriod $a, BlockedPeriod $b) => $a->period->checkIn <=> $b->period->checkIn);
 
         return $filtered;
     }
