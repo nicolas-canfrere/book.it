@@ -14,22 +14,18 @@ final readonly class RegisterBookerRequest
         #[Assert\Length(min: 1, max: 100)]
         #[OA\Property(type: 'string', example: 'Jean', maxLength: 100, minLength: 1)]
         public ?string $firstName = null,
-
         #[Assert\NotBlank]
         #[Assert\Length(min: 1, max: 100)]
         #[OA\Property(type: 'string', example: 'Dupont', maxLength: 100, minLength: 1)]
         public ?string $lastName = null,
-
         #[Assert\NotBlank]
         #[Assert\Email]
         #[OA\Property(type: 'string', format: 'email', example: 'jean.dupont@example.com')]
         public ?string $email = null,
-
         #[Assert\NotBlank]
         #[Assert\Length(min: 5, max: 50)]
         #[OA\Property(type: 'string', example: '+33612345678', maxLength: 50, minLength: 5)]
         public ?string $phone = null,
-
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Property(type: 'string', format: 'date', example: '1990-05-15')]
