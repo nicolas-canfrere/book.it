@@ -26,3 +26,8 @@ services:
     App\Availability\Infrastructure\:
         resource: '../../src/Availability/Infrastructure/'
 
+    App\Availability\UI\:
+        resource: '../../src/Availability/UI/'
+        exclude:
+            - '../../src/Availability/UI/**/*Request.php'
+
