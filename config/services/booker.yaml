@@ -29,7 +29,7 @@ services:
         exclude:
             - '../../src/Booker/Infrastructure/**/*Exception.php'
 
-    # Declared public to prevent the DI compiler from inlining this service
-    # before the RegisterBooker HTTP controller is wired up.
-    App\Booker\Application\Service\RegisterBookerCommandFactory:
-        public: true
+    App\Booker\UI\:
+        resource: '../../src/Booker/UI/'
+        exclude:
+            - '../../src/Booker/UI/**/*Request.php'
