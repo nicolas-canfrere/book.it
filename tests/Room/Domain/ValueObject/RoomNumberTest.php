@@ -60,4 +60,11 @@ final class RoomNumberTest extends TestCase
         $this->expectException(\InvalidArgumentException::class);
         new RoomNumber(str_repeat('X', 51));
     }
+
+    #[Test]
+    public function itTrimsPaddedValue(): void
+    {
+        $vo = new RoomNumber('  101  ');
+        self::assertSame('101', $vo->value);
+    }
 }

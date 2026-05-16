@@ -10,12 +10,13 @@ final readonly class RoomNumber
 
     public function __construct(string $value)
     {
-        if ('' === trim($value)) {
+        $trimmed = trim($value);
+        if ('' === $trimmed) {
             throw new \InvalidArgumentException('Room number must not be blank.');
         }
-        if (mb_strlen($value) > 50) {
+        if (mb_strlen($trimmed) > 50) {
             throw new \InvalidArgumentException('Room number must not exceed 50 characters.');
         }
-        $this->value = $value;
+        $this->value = $trimmed;
     }
 }

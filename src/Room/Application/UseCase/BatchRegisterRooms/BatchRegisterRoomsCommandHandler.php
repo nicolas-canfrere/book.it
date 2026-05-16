@@ -32,7 +32,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
 
         foreach ($command->entries as $index => $entry) {
             $lineField = \sprintf('line[%d]', $index + 2);
-            $number = $entry['number'];
+            $number = trim($entry['number']);
             $floor = $entry['floor'];
 
             if ('' === $number) {
