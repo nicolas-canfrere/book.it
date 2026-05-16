@@ -3,5 +3,6 @@ imports:
     - { resource: './services/hotel.yaml' }
     - { resource: './services/room.yaml' }
     - { resource: './services/booker.yaml' }
+    - { resource: './services/availability.yaml' }
     - { resource: './services/exceptions.yaml' }
 

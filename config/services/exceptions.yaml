@@ -32,3 +32,15 @@ services:
                     type: 'https://book.it/problems/booker-underage'
                     title: 'Booker Underage'
                     status: 422
+                App\Availability\Domain\Exception\RoomNotFoundException:
+                    type: 'https://book.it/problems/room-not-found'
+                    title: 'Room Not Found'
+                    status: 404
+                App\Availability\Domain\Exception\BlockedPeriodOverlapException:
+                    type: 'https://book.it/problems/blocked-period-overlap'
+                    title: 'Blocked Period Overlap'
+                    status: 409
+                App\Availability\Domain\Exception\BlockedPeriodNotFoundException:
+                    type: 'https://book.it/problems/blocked-period-not-found'
+                    title: 'Blocked Period Not Found'
+                    status: 404

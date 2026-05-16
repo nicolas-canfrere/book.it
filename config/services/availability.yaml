@@ -1,0 +1,28 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+
+    App\Availability\Domain\:
+        resource: '../../src/Availability/Domain/'
+        exclude:
+            - '../../src/Availability/Domain/Model/'
+
+    App\Availability\Application\:
+        resource: '../../src/Availability/Application/'
+        exclude:
+            - '../../src/Availability/Application/**/*Command.php'
+            - '../../src/Availability/Application/**/*Query.php'
+
+    App\Availability\Infrastructure\:
+        resource: '../../src/Availability/Infrastructure/'
+
