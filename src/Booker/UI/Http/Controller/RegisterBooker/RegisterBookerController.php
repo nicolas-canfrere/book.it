@@ -67,6 +67,14 @@ final readonly class RegisterBookerController
                     schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'),
                 ),
             ),
+            new OA\Response(
+                response: Response::HTTP_NOT_FOUND,
+                description: 'Not found',
+                content: new OA\MediaType(
+                    mediaType: 'application/problem+json',
+                    schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'),
+                ),
+            ),
         ],
     )]
     public function __invoke(
