@@ -554,6 +554,249 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  '/api/rooms/{roomId}/rate-periods':
+    get:
+      tags:
+        - Pricing
+      summary: 'Get rate periods for a room'
+      operationId: get_pricing_get_rate_periods
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'List of rate periods'
+          content:
+            application/json:
+              schema:
+                properties:
+                  ratePeriods: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, amountCents: { type: integer, example: 15000 }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                type: object
+    post:
+      tags:
+        - Pricing
+      summary: 'Create a rate period for a room'
+      operationId: post_pricing_create_rate_period
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateRatePeriodRequest'
+      responses:
+        '201':
+          description: 'Rate period created'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  roomId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date, example: '2025-07-01' }
+                  checkOut: { type: string, format: date, example: '2025-08-31' }
+                  amountCents: { type: integer, example: 15000 }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Period overlaps existing rate period'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/rooms/{roomId}/rate-periods/{ratePeriodId}':
+    put:
+      tags:
+        - Pricing
+      summary: 'Update a rate period for a room'
+      operationId: put_pricing_update_rate_period
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: ratePeriodId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateRatePeriodRequest'
+      responses:
+        '200':
+          description: 'Rate period updated'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  roomId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date, example: '2025-07-01' }
+                  checkOut: { type: string, format: date, example: '2025-09-01' }
+                  amountCents: { type: integer, example: 16000 }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Rate period not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Period overlaps existing rate period'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+    delete:
+      tags:
+        - Pricing
+      summary: 'Delete a rate period'
+      operationId: delete_pricing_delete_rate_period
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: ratePeriodId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'Rate period deleted'
+        '404':
+          description: 'Rate period not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+  '/api/rooms/{roomId}/base-rate':
+    get:
+      tags:
+        - Pricing
+      summary: 'Get the base rate for a room'
+      operationId: get_pricing_get_base_rate
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'Base rate retrieved'
+          content:
+            application/json:
+              schema:
+                properties:
+                  roomId: { type: string, format: uuid }
+                  amountCents: { type: integer, example: 12000 }
+                  updatedAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Room not found or base rate not configured'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    put:
+      tags:
+        - Pricing
+      summary: 'Set the base rate for a room'
+      operationId: put_pricing_set_base_rate
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetBaseRateRequest'
+      responses:
+        '200':
+          description: 'Base rate set'
+          content:
+            application/json:
+              schema:
+                properties:
+                  roomId: { type: string, format: uuid }
+                  amountCents: { type: integer, example: 12000 }
+                  updatedAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -746,6 +989,63 @@ components:
           nullable: true
           default: null
       type: object
+    CreateRatePeriodRequest:
+      properties:
+        checkIn:
+          type: string
+          format: date
+          example: '2025-07-01'
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          format: date
+          example: '2025-08-31'
+          nullable: true
+          default: null
+        amount:
+          type: number
+          format: float
+          example: 150
+          nullable: true
+          default: null
+          minimum: 0
+          exclusiveMinimum: true
+      type: object
+    SetBaseRateRequest:
+      properties:
+        amount:
+          type: number
+          format: float
+          example: 120
+          nullable: true
+          default: null
+          minimum: 0
+          exclusiveMinimum: true
+      type: object
+    UpdateRatePeriodRequest:
+      properties:
+        checkIn:
+          type: string
+          format: date
+          example: '2025-07-01'
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          format: date
+          example: '2025-08-31'
+          nullable: true
+          default: null
+        amount:
+          type: number
+          format: float
+          example: 160
+          nullable: true
+          default: null
+          minimum: 0
+          exclusiveMinimum: true
+      type: object
 tags:
   -
     name: Hotels
@@ -759,4 +1059,7 @@ tags:
   -
     name: Availability
     description: Availability
+  -
+    name: Pricing
+    description: Pricing
 
