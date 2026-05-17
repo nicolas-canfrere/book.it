@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pricing\UI\Http\Controller\GetBaseRate;
 
 use App\Pricing\Application\UseCase\GetBaseRate\GetBaseRateQuery;
+use App\Pricing\UI\Http\Controller\BaseRateSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -16,6 +17,7 @@ final readonly class GetBaseRateController
 {
     public function __construct(
         private SyncQueryBusInterface $queryBus,
+        private BaseRateSerializer $serializer,
     ) {
     }
 
@@ -45,10 +47,6 @@ final readonly class GetBaseRateController
     {
         $baseRate = $this->queryBus->ask(new GetBaseRateQuery($roomId));
 
-        return new JsonResponse([
-            'roomId' => $baseRate->roomId,
-            'amountCents' => $baseRate->amountCents,
-            'updatedAt' => $baseRate->updatedAt->getTimestamp(),
-        ]);
+        return new JsonResponse($this->serializer->serialize($baseRate));
     }
 }

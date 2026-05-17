@@ -6,6 +6,7 @@ namespace App\Pricing\UI\Http\Controller\UpdateRatePeriod;
 
 use App\Pricing\Application\Service\UpdateRatePeriodCommandFactory;
 use App\Pricing\Domain\Port\RatePeriodRepositoryInterface;
+use App\Pricing\UI\Http\Controller\RatePeriodSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -21,6 +22,7 @@ final readonly class UpdateRatePeriodController
         private UpdateRatePeriodCommandFactory $commandFactory,
         private SyncCommandBusInterface $commandBus,
         private RatePeriodRepositoryInterface $repository,
+        private RatePeriodSerializer $serializer,
     ) {
     }
 
@@ -66,13 +68,6 @@ final readonly class UpdateRatePeriodController
 
         $ratePeriod = $this->repository->findById($command->ratePeriodId);
 
-        return new JsonResponse([
-            'id' => $ratePeriod->id,
-            'roomId' => $ratePeriod->roomId,
-            'checkIn' => $ratePeriod->checkIn->format('Y-m-d'),
-            'checkOut' => $ratePeriod->checkOut->format('Y-m-d'),
-            'amountCents' => $ratePeriod->amountCents,
-            'createdAt' => $ratePeriod->createdAt->getTimestamp(),
-        ]);
+        return new JsonResponse($this->serializer->serialize($ratePeriod));
     }
 }

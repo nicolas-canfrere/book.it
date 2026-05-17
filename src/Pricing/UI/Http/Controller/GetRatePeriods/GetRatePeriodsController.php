@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Pricing\UI\Http\Controller\GetRatePeriods;
 
 use App\Pricing\Application\UseCase\GetRatePeriods\GetRatePeriodsQuery;
-use App\Pricing\Domain\Model\RatePeriod;
+use App\Pricing\UI\Http\Controller\RatePeriodSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,6 +17,7 @@ final readonly class GetRatePeriodsController
 {
     public function __construct(
         private SyncQueryBusInterface $queryBus,
+        private RatePeriodSerializer $serializer,
     ) {
     }
 
@@ -57,14 +58,7 @@ final readonly class GetRatePeriodsController
         $ratePeriods = $this->queryBus->ask(new GetRatePeriodsQuery($roomId));
 
         return new JsonResponse([
-            'ratePeriods' => array_map(fn (RatePeriod $rp) => [
-                'id' => $rp->id,
-                'roomId' => $rp->roomId,
-                'checkIn' => $rp->checkIn->format('Y-m-d'),
-                'checkOut' => $rp->checkOut->format('Y-m-d'),
-                'amountCents' => $rp->amountCents,
-                'createdAt' => $rp->createdAt->getTimestamp(),
-            ], $ratePeriods),
+            'ratePeriods' => array_map($this->serializer->serialize(...), $ratePeriods),
         ]);
     }
 }

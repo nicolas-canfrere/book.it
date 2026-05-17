@@ -5,7 +5,10 @@ declare(strict_types=1);
 namespace App\Pricing\UI\Http\Controller\SetBaseRate;
 
 use App\Pricing\Application\Service\SetBaseRateCommandFactory;
+use App\Pricing\Application\UseCase\GetBaseRate\GetBaseRateQuery;
+use App\Pricing\UI\Http\Controller\BaseRateSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Application\Bus\SyncQueryBusInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -19,6 +22,8 @@ final readonly class SetBaseRateController
     public function __construct(
         private SetBaseRateCommandFactory $commandFactory,
         private SyncCommandBusInterface $commandBus,
+        private SyncQueryBusInterface $queryBus,
+        private BaseRateSerializer $serializer,
     ) {
     }
 
@@ -56,10 +61,8 @@ final readonly class SetBaseRateController
         $command = $this->commandFactory->create($roomId, (float) $request->amount);
         $this->commandBus->execute($command);
 
-        return new JsonResponse([
-            'roomId' => $command->roomId,
-            'amountCents' => $command->amountCents,
-            'updatedAt' => $command->updatedAt->getTimestamp(),
-        ]);
+        $baseRate = $this->queryBus->ask(new GetBaseRateQuery($roomId));
+
+        return new JsonResponse($this->serializer->serialize($baseRate));
     }
 }

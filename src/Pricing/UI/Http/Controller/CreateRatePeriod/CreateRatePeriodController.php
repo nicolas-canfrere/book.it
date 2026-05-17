@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Pricing\UI\Http\Controller\CreateRatePeriod;
 
 use App\Pricing\Application\Service\CreateRatePeriodCommandFactory;
+use App\Pricing\Domain\Model\RatePeriod;
+use App\Pricing\UI\Http\Controller\RatePeriodSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
@@ -19,6 +21,7 @@ final readonly class CreateRatePeriodController
     public function __construct(
         private CreateRatePeriodCommandFactory $commandFactory,
         private SyncCommandBusInterface $commandBus,
+        private RatePeriodSerializer $serializer,
     ) {
     }
 
@@ -60,13 +63,16 @@ final readonly class CreateRatePeriodController
         $command = $this->commandFactory->create($roomId, (string) $request->checkIn, (string) $request->checkOut, (float) $request->amount);
         $this->commandBus->execute($command);
 
-        return new JsonResponse([
-            'id' => $command->id,
-            'roomId' => $command->roomId,
-            'checkIn' => $command->checkIn->format('Y-m-d'),
-            'checkOut' => $command->checkOut->format('Y-m-d'),
-            'amountCents' => $command->amountCents,
-            'createdAt' => $command->createdAt->getTimestamp(),
-        ], Response::HTTP_CREATED);
+        $ratePeriod = new RatePeriod(
+            id: $command->id,
+            roomId: $command->roomId,
+            checkIn: $command->checkIn,
+            checkOut: $command->checkOut,
+            amountCents: $command->amountCents,
+            createdAt: $command->createdAt,
+            updatedAt: $command->updatedAt,
+        );
+
+        return new JsonResponse($this->serializer->serialize($ratePeriod), Response::HTTP_CREATED);
     }
 }
