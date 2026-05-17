@@ -7,11 +7,11 @@ description: "Use when writing or debugging tests in this project — choosing t
 
 ## Test groups
 
-| Test class | Attribute | Run with |
-|---|---|---|
-| `TestCase` (no Symfony kernel) | `#[Group('unit')]` | `make unit-test-quiet` |
+| Test class                      | Attribute                 | Run with               |
+|---------------------------------|---------------------------|------------------------|
+| `TestCase` (no Symfony kernel)  | `#[Group('unit')]`        | `make unit-test-quiet` |
 | `KernelTestCase` (needs kernel) | `#[Group('integration')]` | `make unit-test-quiet` |
-| Controller tests | `#[Group('functional')]` | `make functional-test` |
+| Controller tests                | `#[Group('functional')]`  | `make functional-test` |
 
 Tests without a `#[Group]` attribute are silently skipped by `unit-test-quiet`.
 
