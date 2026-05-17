@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Application\Service;
 
+use App\Pricing\Application\Service\IdGeneratorInterface;
 use App\Pricing\Application\UseCase\CreatePromotion\CreatePromotionCommand;
 use Psr\Clock\ClockInterface;
 
