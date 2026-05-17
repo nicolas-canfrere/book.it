@@ -35,6 +35,3 @@ services:
     App\Pricing\Domain\Port\PromotionRepositoryInterface:
         alias: App\Pricing\Infrastructure\Persistence\Doctrine\DoctrinePromotionRepository
 
-    # Promotion command factories
-    App\Pricing\Application\Service\CreatePromotionCommandFactory: ~
-    App\Pricing\Application\Service\UpdatePromotionCommandFactory: ~
