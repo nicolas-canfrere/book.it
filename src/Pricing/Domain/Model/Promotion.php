@@ -14,7 +14,16 @@ final class Promotion
         private int $discountPercent,
         public readonly \DateTimeImmutable $createdAt,
         private \DateTimeImmutable $updatedAt,
-    ) {}
+    ) {
+        if ($discountPercent < 1 || $discountPercent > 99) {
+            throw new \InvalidArgumentException(
+                sprintf('Discount percent must be between 1 and 99, %d given.', $discountPercent)
+            );
+        }
+        if ($checkIn >= $checkOut) {
+            throw new \InvalidArgumentException('Check-in date must be before check-out date.');
+        }
+    }
 
     public function getCheckIn(): \DateTimeImmutable
     {
@@ -42,6 +51,14 @@ final class Promotion
         int $discountPercent,
         \DateTimeImmutable $updatedAt,
     ): void {
+        if ($discountPercent < 1 || $discountPercent > 99) {
+            throw new \InvalidArgumentException(
+                sprintf('Discount percent must be between 1 and 99, %d given.', $discountPercent)
+            );
+        }
+        if ($checkIn >= $checkOut) {
+            throw new \InvalidArgumentException('Check-in date must be before check-out date.');
+        }
         $this->checkIn = $checkIn;
         $this->checkOut = $checkOut;
         $this->discountPercent = $discountPercent;
