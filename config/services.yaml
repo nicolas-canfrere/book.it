@@ -4,5 +4,6 @@ imports:
     - { resource: './services/room.yaml' }
     - { resource: './services/booker.yaml' }
     - { resource: './services/availability.yaml' }
+    - { resource: './services/pricing.yaml' }
     - { resource: './services/exceptions.yaml' }
 

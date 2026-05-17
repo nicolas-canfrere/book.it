@@ -44,3 +44,11 @@ services:
                     type: 'https://book.it/problems/blocked-period-not-found'
                     title: 'Blocked Period Not Found'
                     status: 404
+                App\Pricing\Domain\Exception\RoomNotFoundException:
+                    type: 'https://book.it/problems/room-not-found'
+                    title: 'Room Not Found'
+                    status: 404
+                App\Pricing\Domain\Exception\BaseRateNotFoundException:
+                    type: 'https://book.it/problems/base-rate-not-found'
+                    title: 'Base Rate Not Found'
+                    status: 404
