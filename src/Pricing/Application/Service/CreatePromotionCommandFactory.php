@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Pricing\Application\Service;
 
-use App\Pricing\Application\Service\IdGeneratorInterface;
 use App\Pricing\Application\UseCase\CreatePromotion\CreatePromotionCommand;
 use Psr\Clock\ClockInterface;
 
@@ -21,8 +20,8 @@ final readonly class CreatePromotionCommandFactory
         return new CreatePromotionCommand(
             id: $this->idGenerator->generate(),
             roomId: $roomId,
-            checkIn: $checkIn,
-            checkOut: $checkOut,
+            checkIn: new \DateTimeImmutable($checkIn),
+            checkOut: new \DateTimeImmutable($checkOut),
             discountPercent: $discountPercent,
             createdAt: $this->clock->now(),
         );

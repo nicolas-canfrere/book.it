@@ -11,8 +11,8 @@ final readonly class CreatePromotionCommand implements SyncCommandInterface
     public function __construct(
         public string $id,
         public string $roomId,
-        public string $checkIn,
-        public string $checkOut,
+        public \DateTimeImmutable $checkIn,
+        public \DateTimeImmutable $checkOut,
         public int $discountPercent,
         public \DateTimeImmutable $createdAt,
     ) {
