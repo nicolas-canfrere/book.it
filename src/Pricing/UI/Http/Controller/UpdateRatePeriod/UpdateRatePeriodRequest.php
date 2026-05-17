@@ -16,6 +16,7 @@ final readonly class UpdateRatePeriodRequest
         public ?string $checkIn = null,
         #[Assert\NotBlank]
         #[Assert\Date]
+        #[Assert\GreaterThan(propertyPath: 'checkIn')]
         #[OA\Property(type: 'string', format: 'date', example: '2025-08-31')]
         public ?string $checkOut = null,
         #[Assert\NotBlank]
