@@ -11,23 +11,23 @@ use App\Pricing\Domain\ValueObject\DatePeriod;
 final class InMemoryPromotionRepository implements PromotionRepositoryInterface
 {
     /** @var array<string, Promotion> */
-    private array $store = [];
+    private array $promotions = [];
 
     public function save(Promotion $promotion): void
     {
-        $this->store[$promotion->id] = $promotion;
+        $this->promotions[$promotion->id] = $promotion;
     }
 
     public function findById(string $id): ?Promotion
     {
-        return $this->store[$id] ?? null;
+        return $this->promotions[$id] ?? null;
     }
 
     /** @return list<Promotion> */
     public function findByRoomId(string $roomId): array
     {
         $results = array_values(array_filter(
-            $this->store,
+            $this->promotions,
             static fn(Promotion $p) => $p->roomId === $roomId,
         ));
 
@@ -38,7 +38,7 @@ final class InMemoryPromotionRepository implements PromotionRepositoryInterface
 
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
-        foreach ($this->store as $promotion) {
+        foreach ($this->promotions as $promotion) {
             if ($promotion->roomId !== $roomId) {
                 continue;
             }
@@ -55,6 +55,6 @@ final class InMemoryPromotionRepository implements PromotionRepositoryInterface
 
     public function delete(Promotion $promotion): void
     {
-        unset($this->store[$promotion->id]);
+        unset($this->promotions[$promotion->id]);
     }
 }
