@@ -113,3 +113,35 @@ _Avoid_: availability grid, calendar view, planning
 - Un **Blocked Period** est immuable après création — pour corriger, on le supprime et on en recrée un
 - Un **Availability Check** porte sur une **Room** et une plage check-in/check-out
 - Un **Availability Calendar** porte sur une **Room** et une fenêtre temporelle
+
+---
+
+**Base Rate**:
+The default per-night price of a Room, expressed in EUR. Applied whenever no Rate Period covers the night in question. A Room without a Base Rate is not bookable.
+_Avoid_: default price, standard rate, tarif de base
+
+**Rate Period**:
+A date range (check-in inclusive, check-out exclusive) assigned to a Room, carrying an explicit per-night price in EUR. Overrides the Base Rate for the nights it covers.
+_Avoid_: seasonal rate, pricing rule, plage tarifaire
+
+**Promotion**:
+A date range (check-in inclusive, check-out exclusive) assigned to a Room, carrying a percentage discount applied on top of the current applicable price (Base Rate or Rate Period price). Independent of Rate Periods — a Promotion may overlap any Rate Period.
+_Avoid_: discount, offer, reduction, rabais
+
+**Pricing Quote**:
+The result of a price enquiry for a Room over a stay period: a total amount and a per-night breakdown, computed night by night as (Base Rate or Rate Period price) × (1 − Promotion discount if active).
+_Avoid_: price estimate, stay price, devis
+
+## Relationships
+
+- A **Room** has at most one **Base Rate** (referenced by Room id across context boundaries)
+- A **Room** has zero or more **Rate Periods**; no two **Rate Periods** for the same **Room** may overlap
+- A **Room** has zero or more **Promotions**; no two **Promotions** for the same **Room** may overlap
+- **Rate Periods** and **Promotions** are independent layers — a **Promotion** may overlap any **Rate Period**
+- A **Pricing Quote** covers exactly one **Room** and one stay period; price is calculated night by night
+- A **Room** with no **Base Rate** cannot produce a **Pricing Quote**
+- A **Base Rate**, **Rate Period**, and **Promotion** are all mutable after creation (unlike **Blocked Periods**, which are immutable)
+
+## Flagged ambiguities
+
+- "occasional price increase" (e.g. festival demand) was considered as a third layer ("Surge") — resolved: delete-and-recreate of the affected Rate Period is the intended workflow; operators need control over the exact price, not just a percentage increase.

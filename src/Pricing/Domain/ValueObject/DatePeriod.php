@@ -1,0 +1,22 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Pricing\Domain\ValueObject;
+
+final readonly class DatePeriod
+{
+    public function __construct(
+        public \DateTimeImmutable $checkIn,
+        public \DateTimeImmutable $checkOut,
+    ) {
+        if ($checkIn >= $checkOut) {
+            throw new \InvalidArgumentException('Check-in must be strictly before check-out.');
+        }
+    }
+
+    public function overlaps(DatePeriod $other): bool
+    {
+        return $this->checkIn < $other->checkOut && $other->checkIn < $this->checkOut;
+    }
+}
