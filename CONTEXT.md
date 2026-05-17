@@ -132,6 +132,14 @@ _Avoid_: discount, offer, reduction, rabais
 The result of a price enquiry for a Room over a stay period: a total amount and a per-night breakdown, computed night by night as (Base Rate or Rate Period price) × (1 − Promotion discount if active).
 _Avoid_: price estimate, stay price, devis
 
+**Cancellation Policy**:
+A per-Room rule, configured by the operator alongside rates, defining refund eligibility when a Reservation is cancelled. Expressed as a time window in hours before the check-in date. Cancellations made before the window closes are fully refunded; cancellations within the window receive no refund. The operator may update or delete a Cancellation Policy at any time — changes only affect future Reservations.
+_Avoid_: refund policy, cancellation rule, cancellation terms
+
+**Cancellation Terms**:
+A snapshot of the Cancellation Policy captured at Reservation creation time. Forms part of the contract between the Booker and the operator. Immutable for the lifetime of the Reservation — changes to the Room's Cancellation Policy have no effect on existing Reservations.
+_Avoid_: cancellation policy snapshot, refund terms
+
 ## Relationships
 
 - A **Room** has at most one **Base Rate** (referenced by Room id across context boundaries)
@@ -140,8 +148,31 @@ _Avoid_: price estimate, stay price, devis
 - **Rate Periods** and **Promotions** are independent layers — a **Promotion** may overlap any **Rate Period**
 - A **Pricing Quote** covers exactly one **Room** and one stay period; price is calculated night by night
 - A **Room** with no **Base Rate** cannot produce a **Pricing Quote**
-- A **Base Rate**, **Rate Period**, and **Promotion** are all mutable after creation (unlike **Blocked Periods**, which are immutable)
+- A **Room** may have at most one **Cancellation Policy**; a Room with no Cancellation Policy is always fully refundable on cancellation
+- A **Base Rate**, **Rate Period**, **Promotion**, and **Cancellation Policy** are all mutable after creation (unlike **Blocked Periods**, which are immutable)
 
 ## Flagged ambiguities
 
 - "occasional price increase" (e.g. festival demand) was considered as a third layer ("Surge") — resolved: delete-and-recreate of the affected Rate Period is the intended workflow; operators need control over the exact price, not just a percentage increase.
+
+---
+
+**Reservation**:
+A confirmed or pending booking of a Room by a Booker for a specific stay period. A Reservation captures a snapshot of the total price at creation time and tracks a lifecycle status.
+_Avoid_: booking, order, stay
+
+**Reservation Status**:
+The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` or `cancelled`; `confirmed` → `cancelled`. No other transitions are allowed.
+_Avoid_: reservation state, booking status
+
+**Stay Period**:
+The date range of a Reservation, defined by a check-in date (inclusive) and a check-out date (exclusive). The check-out date must be strictly after the check-in date.
+_Avoid_: reservation period, booking dates, stay dates
+
+## Relationships (Reservation)
+
+- A **Reservation** references exactly one **Room** and exactly one **Booker**
+- A **Reservation** covers exactly one **Stay Period**
+- A **Reservation** captures a **Total Price** snapshot at creation time (in EUR cents) — immutable after creation
+- A **Reservation** captures a snapshot of the **Cancellation Policy** as **Cancellation Terms** at creation time — immutable for the lifetime of the Reservation
+- Refund eligibility on cancellation is determined by the **Cancellation Terms** stored on the Reservation, not the current Room policy
