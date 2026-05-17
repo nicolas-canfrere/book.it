@@ -554,6 +554,82 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  '/api/rooms/{roomId}/promotions':
+    get:
+      tags:
+        - Pricing
+      summary: 'Get promotions for a room'
+      operationId: get_pricing_get_promotions
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'List of promotions'
+          content:
+            application/json:
+              schema:
+                properties:
+                  promotions: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, discountPercent: { type: integer, example: 20 }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                type: object
+    post:
+      tags:
+        - Pricing
+      summary: 'Create a promotion for a room'
+      operationId: post_pricing_create_promotion
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePromotionRequest'
+      responses:
+        '201':
+          description: 'Promotion created'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  roomId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date, example: '2025-07-01' }
+                  checkOut: { type: string, format: date, example: '2025-08-31' }
+                  discountPercent: { type: integer, example: 20 }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Promotion overlaps existing promotion'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/rooms/{roomId}/rate-periods':
     get:
       tags:
@@ -630,6 +706,98 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/rooms/{roomId}/promotions/{promotionId}':
+    put:
+      tags:
+        - Pricing
+      summary: 'Update a promotion for a room'
+      operationId: put_pricing_update_promotion
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: promotionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePromotionRequest'
+      responses:
+        '200':
+          description: 'Promotion updated'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  roomId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date, example: '2025-07-01' }
+                  checkOut: { type: string, format: date, example: '2025-09-01' }
+                  discountPercent: { type: integer, example: 25 }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
+        '404':
+          description: 'Promotion not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Promotion overlaps existing promotion'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+    delete:
+      tags:
+        - Pricing
+      summary: 'Delete a promotion'
+      operationId: delete_pricing_delete_promotion
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: promotionId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'Promotion deleted'
+        '404':
+          description: 'Promotion not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   '/api/rooms/{roomId}/rate-periods/{ratePeriodId}':
     put:
       tags:
@@ -793,6 +961,62 @@ paths:
                 $ref: '#/components/schemas/ProblemDetail'
         '422':
           description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/rooms/{roomId}/pricing-quote':
+    get:
+      tags:
+        - Pricing
+      summary: 'Get pricing quote for a room'
+      operationId: get_pricing_get_pricing_quote
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: checkIn
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+        -
+          name: checkOut
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+      responses:
+        '200':
+          description: 'Pricing quote'
+          content:
+            application/json:
+              schema:
+                properties:
+                  roomId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date }
+                  checkOut: { type: string, format: date }
+                  totalAmountCents: { type: integer }
+                  nights: { type: array, items: { properties: { date: { type: string, format: date }, rateAmountCents: { type: integer }, discountPercent: { type: integer, nullable: true }, effectiveAmountCents: { type: integer } }, type: object } }
+                type: object
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'No base rate or validation error'
           content:
             application/problem+json:
               schema:
@@ -989,6 +1213,28 @@ components:
           nullable: true
           default: null
       type: object
+    CreatePromotionRequest:
+      properties:
+        checkIn:
+          type: string
+          format: date
+          example: '2025-07-01'
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          format: date
+          example: '2025-08-31'
+          nullable: true
+          default: null
+        discountPercent:
+          type: integer
+          example: 20
+          nullable: true
+          default: null
+          maximum: 99
+          minimum: 1
+      type: object
     CreateRatePeriodRequest:
       properties:
         checkIn:
@@ -1012,6 +1258,17 @@ components:
           minimum: 0
           exclusiveMinimum: true
       type: object
+    GetPricingQuoteRequest:
+      properties:
+        checkIn:
+          type: string
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          nullable: true
+          default: null
+      type: object
     SetBaseRateRequest:
       properties:
         amount:
@@ -1022,6 +1279,28 @@ components:
           default: null
           minimum: 0
           exclusiveMinimum: true
+      type: object
+    UpdatePromotionRequest:
+      properties:
+        checkIn:
+          type: string
+          format: date
+          example: '2025-07-01'
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          format: date
+          example: '2025-08-31'
+          nullable: true
+          default: null
+        discountPercent:
+          type: integer
+          example: 20
+          nullable: true
+          default: null
+          maximum: 99
+          minimum: 1
       type: object
     UpdateRatePeriodRequest:
       properties:
