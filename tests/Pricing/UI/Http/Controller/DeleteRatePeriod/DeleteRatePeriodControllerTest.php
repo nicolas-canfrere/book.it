@@ -64,7 +64,9 @@ final class DeleteRatePeriodControllerTest extends WebTestCase
 
     private function createRatePeriod(KernelBrowser $client, string $roomId, string $checkIn, string $checkOut, float $amount): string
     {
-        $client->request('POST', "/api/rooms/{$roomId}/rate-periods",
+        $client->request(
+            'POST',
+            "/api/rooms/{$roomId}/rate-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => $checkIn, 'checkOut' => $checkOut, 'amount' => $amount], \JSON_THROW_ON_ERROR),
         );
