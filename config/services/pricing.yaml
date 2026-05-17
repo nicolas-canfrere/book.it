@@ -23,6 +23,9 @@ services:
             - '../../src/Pricing/Application/**/*Command.php'
             - '../../src/Pricing/Application/**/*Query.php'
 
+    App\Pricing\Infrastructure\:
+        resource: '../../src/Pricing/Infrastructure/'
+
     App\Pricing\UI\:
         resource: '../../src/Pricing/UI/'
         exclude:

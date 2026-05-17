@@ -52,3 +52,11 @@ services:
                     type: 'https://book.it/problems/base-rate-not-found'
                     title: 'Base Rate Not Found'
                     status: 404
+                App\Pricing\Domain\Exception\RatePeriodNotFoundException:
+                    type: 'https://book.it/problems/rate-period-not-found'
+                    title: 'Rate Period Not Found'
+                    status: 404
+                App\Pricing\Domain\Exception\RatePeriodOverlapException:
+                    type: 'https://book.it/problems/rate-period-overlap'
+                    title: 'Rate Period Overlap'
+                    status: 409
