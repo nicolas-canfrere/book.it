@@ -60,3 +60,15 @@ services:
                     type: 'https://book.it/problems/rate-period-overlap'
                     title: 'Rate Period Overlap'
                     status: 409
+                App\Pricing\Domain\Exception\PromotionNotFoundException:
+                    type: 'https://book.it/problems/promotion-not-found'
+                    title: 'Promotion Not Found'
+                    status: 404
+                App\Pricing\Domain\Exception\PromotionOverlapException:
+                    type: 'https://book.it/problems/promotion-overlap'
+                    title: 'Promotion Overlap'
+                    status: 409
+                App\Pricing\Domain\Exception\RoomHasNoBaseRateException:
+                    type: 'https://book.it/problems/room-has-no-base-rate'
+                    title: 'Room Has No Base Rate'
+                    status: 422

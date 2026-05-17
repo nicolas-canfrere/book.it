@@ -30,3 +30,11 @@ services:
         resource: '../../src/Pricing/UI/'
         exclude:
             - '../../src/Pricing/UI/**/*Request.php'
+
+    # Promotion repository alias
+    App\Pricing\Domain\Port\PromotionRepositoryInterface:
+        alias: App\Pricing\Infrastructure\Persistence\Doctrine\DoctrinePromotionRepository
+
+    # Promotion command factories
+    App\Pricing\Application\Service\CreatePromotionCommandFactory: ~
+    App\Pricing\Application\Service\UpdatePromotionCommandFactory: ~
