@@ -13,6 +13,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Routing\Requirement\Requirement;
 
@@ -67,6 +68,9 @@ final readonly class UpdateRatePeriodController
         $this->commandBus->execute($command);
 
         $ratePeriod = $this->repository->findById($command->ratePeriodId);
+        if (null === $ratePeriod) {
+            throw new NotFoundHttpException();
+        }
 
         return new JsonResponse($this->serializer->serialize($ratePeriod));
     }

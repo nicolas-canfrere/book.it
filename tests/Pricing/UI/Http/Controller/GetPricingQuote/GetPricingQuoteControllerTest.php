@@ -157,6 +157,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
         self::assertStringContainsString('application/problem+json', (string) $client->getResponse()->headers->get('Content-Type'));
+        /** @var array<mixed> $data */
         $data = json_decode((string) $client->getResponse()->getContent(), true);
         self::assertArrayHasKey('violations', $data);
     }

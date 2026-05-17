@@ -116,6 +116,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => $checkIn, 'checkOut' => $checkOut, 'amount' => $amount], \JSON_THROW_ON_ERROR),
         );
+        /** @var array{id: string} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
         return $body['id'];

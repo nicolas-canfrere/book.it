@@ -63,8 +63,8 @@ final readonly class GetPricingQuoteController
     ): Response {
         $query = new GetPricingQuoteQuery(
             roomId: $roomId,
-            checkIn: new \DateTimeImmutable($request->checkIn),
-            checkOut: new \DateTimeImmutable($request->checkOut),
+            checkIn: new \DateTimeImmutable((string) $request->checkIn),
+            checkOut: new \DateTimeImmutable((string) $request->checkOut),
         );
 
         /** @var array{roomId: string, checkIn: string, checkOut: string, totalAmountCents: int, nights: list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}>} $quote */

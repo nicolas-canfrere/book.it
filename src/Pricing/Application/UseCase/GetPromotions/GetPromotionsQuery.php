@@ -4,8 +4,10 @@ declare(strict_types=1);
 
 namespace App\Pricing\Application\UseCase\GetPromotions;
 
+use App\Pricing\Domain\Model\Promotion;
 use App\Shared\Application\Bus\SyncQueryInterface;
 
+/** @implements SyncQueryInterface<list<Promotion>> */
 final readonly class GetPromotionsQuery implements SyncQueryInterface
 {
     public function __construct(
