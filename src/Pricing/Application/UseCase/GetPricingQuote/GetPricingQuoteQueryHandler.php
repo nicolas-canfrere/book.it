@@ -10,6 +10,7 @@ use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
 use App\Pricing\Domain\Port\PromotionRepositoryInterface;
 use App\Pricing\Domain\Port\RatePeriodRepositoryInterface;
 use App\Pricing\Domain\Port\RoomExistsInterface;
+use App\Pricing\Domain\ValueObject\DatePeriod;
 use App\Shared\Application\Bus\SyncQueryHandlerInterface;
 
 final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInterface
@@ -42,8 +43,9 @@ final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInte
             throw new RoomHasNoBaseRateException($query->roomId);
         }
 
-        $ratePeriods = $this->ratePeriodRepository->findByRoomId($query->roomId);
-        $promotions = $this->promotionRepository->findByRoomId($query->roomId);
+        $stayPeriod = new DatePeriod($query->checkIn, $query->checkOut);
+        $ratePeriods = $this->ratePeriodRepository->findOverlappingByRoomId($query->roomId, $stayPeriod);
+        $promotions = $this->promotionRepository->findOverlappingByRoomId($query->roomId, $stayPeriod);
 
         $nights = [];
         $total = 0;

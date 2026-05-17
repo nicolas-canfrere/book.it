@@ -36,6 +36,20 @@ final class InMemoryPromotionRepository implements PromotionRepositoryInterface
         return $results;
     }
 
+    /** @return list<Promotion> */
+    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    {
+        $filtered = array_values(array_filter(
+            $this->promotions,
+            static fn(Promotion $p) => $p->roomId === $roomId
+                && $period->overlaps(new DatePeriod($p->getCheckIn(), $p->getCheckOut())),
+        ));
+
+        usort($filtered, static fn(Promotion $a, Promotion $b) => $a->getCheckIn() <=> $b->getCheckIn());
+
+        return $filtered;
+    }
+
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         foreach ($this->promotions as $promotion) {

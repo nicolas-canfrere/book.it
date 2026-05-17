@@ -16,6 +16,9 @@ interface RatePeriodRepositoryInterface
     /** @return list<RatePeriod> */
     public function findByRoomId(string $roomId): array;
 
+    /** @return list<RatePeriod> */
+    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array;
+
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool;
 
     public function delete(RatePeriod $ratePeriod): void;

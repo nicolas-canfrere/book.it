@@ -36,6 +36,20 @@ final class InMemoryRatePeriodRepository implements RatePeriodRepositoryInterfac
         return $filtered;
     }
 
+    /** @return list<RatePeriod> */
+    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    {
+        $filtered = array_values(array_filter(
+            $this->periods,
+            static fn(RatePeriod $rp) => $rp->roomId === $roomId
+                && $period->overlaps(new DatePeriod($rp->checkIn, $rp->checkOut)),
+        ));
+
+        usort($filtered, static fn(RatePeriod $a, RatePeriod $b) => $a->checkIn <=> $b->checkIn);
+
+        return $filtered;
+    }
+
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         foreach ($this->periods as $rp) {

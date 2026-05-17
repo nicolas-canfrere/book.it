@@ -62,6 +62,26 @@ final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositor
         return array_map($this->hydrate(...), $rows);
     }
 
+    /** @return list<RatePeriod> */
+    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    {
+        /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, amount_cents: int, created_at: string, updated_at: string}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM pricing_rate_period
+             WHERE room_id = :roomId
+               AND check_in < :checkOut
+               AND check_out > :checkIn
+             ORDER BY check_in ASC',
+            [
+                'roomId' => $roomId,
+                'checkIn' => $period->checkIn->format('Y-m-d'),
+                'checkOut' => $period->checkOut->format('Y-m-d'),
+            ],
+        );
+
+        return array_map($this->hydrate(...), $rows);
+    }
+
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM pricing_rate_period

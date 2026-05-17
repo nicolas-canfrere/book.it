@@ -62,6 +62,26 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
         return array_map($this->hydrate(...), $rows);
     }
 
+    /** @return list<Promotion> */
+    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    {
+        /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, discount_percent: int, created_at: string, updated_at: string}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM pricing_promotion
+             WHERE room_id = :roomId
+               AND check_in < :checkOut
+               AND check_out > :checkIn
+             ORDER BY check_in ASC',
+            [
+                'roomId' => $roomId,
+                'checkIn' => $period->checkIn->format('Y-m-d'),
+                'checkOut' => $period->checkOut->format('Y-m-d'),
+            ],
+        );
+
+        return array_map($this->hydrate(...), $rows);
+    }
+
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM pricing_promotion
