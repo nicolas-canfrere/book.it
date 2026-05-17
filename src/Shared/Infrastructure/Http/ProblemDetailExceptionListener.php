@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Shared\Infrastructure\Http;
 
 use App\Shared\Domain\Exception\ViolationsCarrierInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -15,8 +16,10 @@ use Symfony\Component\Validator\Exception\ValidationFailedException;
 #[AsEventListener]
 final readonly class ProblemDetailExceptionListener
 {
-    public function __construct(private ExceptionProblemRegistry $registry)
-    {
+    public function __construct(
+        private ExceptionProblemRegistry $registry,
+        private LoggerInterface $logger,
+    ) {
     }
 
     public function __invoke(ExceptionEvent $event): void
@@ -42,6 +45,8 @@ final readonly class ProblemDetailExceptionListener
 
             return;
         }
+
+        $this->logger->critical($exception->getMessage(), ['exception' => $exception]);
 
         $event->setResponse($this->toResponse(new ProblemDetail(
             type: 'about:blank',
