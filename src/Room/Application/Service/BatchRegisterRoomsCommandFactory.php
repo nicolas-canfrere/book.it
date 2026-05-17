@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Room\Application\Service;
 
 use App\Room\Application\UseCase\BatchRegisterRooms\BatchRegisterRoomsCommand;
+use App\Room\Domain\Port\RoomIdGeneratorInterface;
 use Psr\Clock\ClockInterface;
 
 final readonly class BatchRegisterRoomsCommandFactory

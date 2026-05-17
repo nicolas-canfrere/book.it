@@ -9,7 +9,6 @@ use App\Room\Application\Service\CsvRoomNumbersParser;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 #[Group('unit')]
 final class CsvRoomNumbersParserTest extends TestCase
@@ -76,11 +75,11 @@ final class CsvRoomNumbersParserTest extends TestCase
         $this->parser->parse($this->makeCsvFile("number,floor\n101,1.5\n"));
     }
 
-    private function makeCsvFile(string $content): UploadedFile
+    private function makeCsvFile(string $content): string
     {
         $path = tempnam(sys_get_temp_dir(), 'rooms_') . '.csv';
         file_put_contents($path, $content);
 
-        return new UploadedFile($path, 'rooms.csv', 'text/csv', null, true);
+        return $path;
     }
 }

@@ -52,7 +52,7 @@ All development tasks run via `make`. Run `make help` for the full list.
 | `make install`            | Install PHP dependencies                        |
 | `make migrate`            | Run database migrations                         |
 | `make generate-migration` | Generate a new migration from schema diff       |
-| `make lint`               | Run PHPStan + PHP CS Fixer                      |
+| `make lint`               | Run PHPStan + PHP CS Fixer + deptrac            |
 | `make apply-cs`           | Auto-fix coding style                           |
 | `make test`               | Run all tests (unit + functional)               |
 | `make unit-test`          | Run unit tests only                             |
@@ -65,7 +65,23 @@ The REST API follows [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) (`applic
 
 ## Architecture
 
-The codebase follows **Domain-Driven Design** with a layered architecture (Domain / Application / Infrastructure) per bounded context. Dependency rules between layers are enforced by [deptrac](https://github.com/deptrac/deptrac).
+The codebase follows **Domain-Driven Design** with a hexagonal architecture per bounded context. Each context (`Hotel`, `Room`, `Availability`, `Pricing`, `Booker`) is structured into four layers:
+
+| Layer | Role |
+|---|---|
+| `UI` | HTTP controllers — entry points only |
+| `Application` | Use cases, command/query factories |
+| `Domain` | Entities, value objects, domain ports (interfaces) |
+| `Infrastructure` | Doctrine repositories, external service adapters |
+
+A `Shared` context holds cross-cutting concerns (bus interfaces, HTTP error handling).
+
+Dependency rules are enforced by [deptrac](https://github.com/deptrac/deptrac) (`make deptrac`):
+
+- **UI** → Application, Domain, Shared, any vendor
+- **Application** → Domain, Shared, PSR interfaces only (no Symfony/Doctrine)
+- **Domain** → Shared only — no framework dependencies
+- **Infrastructure** → Domain, Shared, any vendor
 
 ## Development
 

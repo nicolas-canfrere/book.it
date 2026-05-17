@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Room\Application\Service;
 
 use App\Room\Application\UseCase\RegisterRoom\RegisterRoomCommand;
+use App\Room\Domain\Port\RoomIdGeneratorInterface;
 use Psr\Clock\ClockInterface;
 
 final readonly class RegisterRoomCommandFactory

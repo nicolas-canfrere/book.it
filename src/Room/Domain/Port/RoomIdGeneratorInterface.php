@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Room\Application\Service;
+namespace App\Room\Domain\Port;
 
 interface RoomIdGeneratorInterface
 {

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Availability\Application\Service;
+namespace App\Availability\Domain\Port;
 
 interface BlockedPeriodIdGeneratorInterface
 {

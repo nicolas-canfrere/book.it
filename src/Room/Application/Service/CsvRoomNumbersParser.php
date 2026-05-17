@@ -5,14 +5,13 @@ declare(strict_types=1);
 namespace App\Room\Application\Service;
 
 use App\Room\Application\Exception\InvalidCsvFormatException;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 final readonly class CsvRoomNumbersParser
 {
     /** @return list<RoomCsvRow> */
-    public function parse(UploadedFile $file): array
+    public function parse(string $filePath): array
     {
-        $handle = fopen($file->getPathname(), 'r');
+        $handle = fopen($filePath, 'r');
         if (false === $handle) {
             throw new InvalidCsvFormatException('Could not read the uploaded file.');
         }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Booker\Application\Service;
 
 use App\Booker\Application\UseCase\RegisterBooker\RegisterBookerCommand;
+use App\Booker\Domain\Port\BookerIdGeneratorInterface;
 use Psr\Clock\ClockInterface;
 
 final readonly class RegisterBookerCommandFactory

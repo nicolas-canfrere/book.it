@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Availability\Infrastructure\Service;
 
-use App\Availability\Application\Service\BlockedPeriodIdGeneratorInterface;
+use App\Availability\Domain\Port\BlockedPeriodIdGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class BlockedPeriodIdGenerator implements BlockedPeriodIdGeneratorInterface

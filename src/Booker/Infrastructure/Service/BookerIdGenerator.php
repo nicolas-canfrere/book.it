@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Booker\Infrastructure\Service;
 
-use App\Booker\Application\Service\BookerIdGeneratorInterface;
+use App\Booker\Domain\Port\BookerIdGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class BookerIdGenerator implements BookerIdGeneratorInterface

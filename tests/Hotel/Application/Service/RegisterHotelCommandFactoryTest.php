@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\Application\Service;
 
-use App\Hotel\Application\Service\HotelIdGeneratorInterface;
 use App\Hotel\Application\Service\RegisterHotelCommandFactory;
+use App\Hotel\Domain\Port\HotelIdGeneratorInterface;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;

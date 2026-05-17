@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Booker\Application\Service;
+namespace App\Booker\Domain\Port;
 
 interface BookerIdGeneratorInterface
 {

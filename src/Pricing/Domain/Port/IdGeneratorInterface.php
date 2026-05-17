@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Pricing\Application\Service;
+namespace App\Pricing\Domain\Port;
 
 interface IdGeneratorInterface
 {

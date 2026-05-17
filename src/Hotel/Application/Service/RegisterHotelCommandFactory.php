@@ -6,6 +6,7 @@ namespace App\Hotel\Application\Service;
 
 use App\Hotel\Application\UseCase\RegisterHotel\RegisterHotelCommand;
 use App\Hotel\Domain\Model\Address;
+use App\Hotel\Domain\Port\HotelIdGeneratorInterface;
 use Psr\Clock\ClockInterface;
 
 final readonly class RegisterHotelCommandFactory

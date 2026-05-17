@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Hotel\Application\Service;
+namespace App\Hotel\Domain\Port;
 
 interface HotelIdGeneratorInterface
 {

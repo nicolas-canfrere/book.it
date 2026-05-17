@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Room\Infrastructure\Service;
 
-use App\Room\Application\Service\RoomIdGeneratorInterface;
+use App\Room\Domain\Port\RoomIdGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class RoomIdGenerator implements RoomIdGeneratorInterface

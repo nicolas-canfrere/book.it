@@ -2,29 +2,108 @@ deptrac:
     paths:
         - ./src
     exclude_files:
-        - '#.*test.*#'
+        - '#.*[Tt]est.*#'
     layers:
         -
-            name: Controller
+            name: UI
             collectors:
                 -
-                    type: classLike
-                    value: .*Controller.*
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\.*\\UI\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Shared\\.*'
         -
-            name: Repository
+            name: Application
             collectors:
                 -
-                    type: classLike
-                    value: .*Repository.*
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\.*\\Application\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Shared\\.*'
         -
-            name: Service
+            name: Domain
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\.*\\Domain\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Shared\\.*'
+        -
+            name: Infrastructure
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\.*\\Infrastructure\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Shared\\.*'
+        -
+            name: Shared
             collectors:
                 -
                     type: classLike
-                    value: .*Service.*
+                    value: 'App\\Shared\\.*'
+        -
+            name: ExternalPsr
+            collectors:
+                -
+                    type: classLike
+                    value: 'Psr\\.*'
+        -
+            name: External
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: '.*\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\.*'
+                        -
+                            type: classLike
+                            value: 'Psr\\.*'
     ruleset:
-        Controller:
-            - Service
-        Service:
-            - Repository
-        Repository:
+        UI:
+            - Application
+            - Domain
+            - Shared
+            - ExternalPsr
+            - External
+        Application:
+            - Domain
+            - Shared
+            - ExternalPsr
+        Domain:
+            - Shared
+        Infrastructure:
+            - Domain
+            - Shared
+            - ExternalPsr
+            - External
+        Shared:
+            - ExternalPsr
+            - External
+        ExternalPsr: ~
+        External: ~

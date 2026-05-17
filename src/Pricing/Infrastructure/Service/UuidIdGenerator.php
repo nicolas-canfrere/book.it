@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Infrastructure\Service;
 
-use App\Pricing\Application\Service\IdGeneratorInterface;
+use App\Pricing\Domain\Port\IdGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
 final class UuidIdGenerator implements IdGeneratorInterface

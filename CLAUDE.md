@@ -3,7 +3,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **book.it** (2455 symbols, 5165 relationships, 12 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **book.it** (2500 symbols, 5315 relationships, 14 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -63,6 +63,21 @@ git checkout -b feat/<short-description>
 - **RabbitMQ 4** via Symfony Messenger + AMQP transport
 - **Doctrine ORM** with migrations
 - All tooling runs inside Docker — there is no local PHP runtime assumed
+
+## Architecture
+
+Each bounded context (examples: `Hotel`, `Room`, `Availability`, `Pricing`, `Booker`) has four layers:
+
+| Layer            | Namespace pattern               | Allowed dependencies                    |
+|------------------|---------------------------------|-----------------------------------------|
+| `UI`             | `App\{Context}\UI\`             | Application, Domain, Shared, any vendor |
+| `Application`    | `App\{Context}\Application\`    | Domain, Shared, `Psr\*` only            |
+| `Domain`         | `App\{Context}\Domain\`         | Shared only — no framework              |
+| `Infrastructure` | `App\{Context}\Infrastructure\` | Domain, Shared, any vendor              |
+
+- Domain port interfaces (e.g. `*RepositoryInterface`, `*IdGeneratorInterface`) live in `Domain\Port\`, **not** `Application\Service\`
+- `Shared` (`App\Shared\`) is a cross-cutting context — usable by all layers
+- Architecture rules are enforced by deptrac: `make deptrac` (also runs as part of `make lint`)
 
 ## Commands
 

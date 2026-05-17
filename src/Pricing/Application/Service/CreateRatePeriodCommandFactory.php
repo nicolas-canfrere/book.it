@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pricing\Application\Service;
 
 use App\Pricing\Application\UseCase\CreateRatePeriod\CreateRatePeriodCommand;
+use App\Pricing\Domain\Port\IdGeneratorInterface;
 use App\Pricing\Domain\ValueObject\Money;
 use Psr\Clock\ClockInterface;
 

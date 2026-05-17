@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Availability\Application\Service;
 
 use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommand;
+use App\Availability\Domain\Port\BlockedPeriodIdGeneratorInterface;
 use Psr\Clock\ClockInterface;
 
 final readonly class BlockPeriodCommandFactory

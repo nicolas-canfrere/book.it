@@ -97,7 +97,7 @@ final readonly class BatchRegisterRoomsController
             throw new InvalidCsvFormatException('A CSV file is required.');
         }
 
-        $rows = $this->csvParser->parse($file);
+        $rows = $this->csvParser->parse($file->getPathname());
 
         $command = $this->commandFactory->create($hotelId, $rows);
 
