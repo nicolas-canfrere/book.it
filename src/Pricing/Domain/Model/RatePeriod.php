@@ -15,5 +15,11 @@ final readonly class RatePeriod
         public \DateTimeImmutable $createdAt,
         public \DateTimeImmutable $updatedAt,
     ) {
+        if ($amountCents <= 0) {
+            throw new \InvalidArgumentException('Amount in cents must be greater than zero.');
+        }
+        if ($checkIn >= $checkOut) {
+            throw new \InvalidArgumentException('Check-in date must be before check-out date.');
+        }
     }
 }

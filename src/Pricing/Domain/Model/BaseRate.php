@@ -11,5 +11,8 @@ final readonly class BaseRate
         public int $amountCents,
         public \DateTimeImmutable $updatedAt,
     ) {
+        if ($amountCents <= 0) {
+            throw new \InvalidArgumentException('Amount in cents must be greater than zero.');
+        }
     }
 }
