@@ -156,6 +156,9 @@ final class GetPricingQuoteControllerTest extends WebTestCase
         );
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $client->getResponse()->headers->get('Content-Type'));
+        $data = json_decode((string) $client->getResponse()->getContent(), true);
+        self::assertArrayHasKey('violations', $data);
     }
 
     #[Test]
@@ -166,7 +169,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01",
+            uri: "/api/rooms/{$roomId}/pricing-quote",
         );
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());

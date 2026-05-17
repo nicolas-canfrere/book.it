@@ -26,8 +26,6 @@ final readonly class GetPricingQuoteController
         tags: ['Pricing'],
         parameters: [
             new OA\Parameter(name: 'roomId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
-            new OA\Parameter(name: 'checkIn', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2025-07-01')),
-            new OA\Parameter(name: 'checkOut', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2025-07-05')),
         ],
         responses: [
             new OA\Response(
@@ -39,7 +37,19 @@ final readonly class GetPricingQuoteController
                         new OA\Property(property: 'checkIn', type: 'string', format: 'date'),
                         new OA\Property(property: 'checkOut', type: 'string', format: 'date'),
                         new OA\Property(property: 'totalAmountCents', type: 'integer'),
-                        new OA\Property(property: 'nights', type: 'array', items: new OA\Items(type: 'object')),
+                        new OA\Property(
+                            property: 'nights',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'date', type: 'string', format: 'date'),
+                                    new OA\Property(property: 'rateAmountCents', type: 'integer'),
+                                    new OA\Property(property: 'discountPercent', type: 'integer', nullable: true),
+                                    new OA\Property(property: 'effectiveAmountCents', type: 'integer'),
+                                ],
+                                type: 'object',
+                            ),
+                        ),
                     ],
                 ),
             ),
@@ -49,7 +59,7 @@ final readonly class GetPricingQuoteController
     )]
     public function __invoke(
         string $roomId,
-        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] GetPricingQuoteRequest $request = new GetPricingQuoteRequest(),
+        #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] GetPricingQuoteRequest $request,
     ): Response {
         $query = new GetPricingQuoteQuery(
             roomId: $roomId,
@@ -57,7 +67,7 @@ final readonly class GetPricingQuoteController
             checkOut: new \DateTimeImmutable($request->checkOut),
         );
 
-        /** @var array $quote */
+        /** @var array{roomId: string, checkIn: string, checkOut: string, totalAmountCents: int, nights: list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}>} $quote */
         $quote = $this->queryBus->ask($query);
 
         return new JsonResponse([
