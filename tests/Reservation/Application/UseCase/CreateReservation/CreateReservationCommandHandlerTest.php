@@ -56,18 +56,6 @@ final class CreateReservationCommandHandlerTest extends TestCase
         );
     }
 
-    private function makeCommand(string $id = self::RESERVATION_ID): CreateReservationCommand
-    {
-        return new CreateReservationCommand(
-            id: $id,
-            roomId: self::ROOM_ID,
-            bookerId: self::BOOKER_ID,
-            checkIn: new \DateTimeImmutable('2026-06-01'),
-            checkOut: new \DateTimeImmutable('2026-06-05'),
-            createdAt: new \DateTimeImmutable('2026-05-18T10:00:00Z'),
-        );
-    }
-
     #[Test]
     public function itCreatesAReservationInPendingStateAndDispatchesEvent(): void
     {
@@ -137,5 +125,17 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->expectException(RoomNotBookableException::class);
 
         ($this->handler)($this->makeCommand());
+    }
+
+    private function makeCommand(string $id = self::RESERVATION_ID): CreateReservationCommand
+    {
+        return new CreateReservationCommand(
+            id: $id,
+            roomId: self::ROOM_ID,
+            bookerId: self::BOOKER_ID,
+            checkIn: new \DateTimeImmutable('2026-06-01'),
+            checkOut: new \DateTimeImmutable('2026-06-05'),
+            createdAt: new \DateTimeImmutable('2026-05-18T10:00:00Z'),
+        );
     }
 }

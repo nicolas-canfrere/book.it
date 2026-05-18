@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Reservation\Infrastructure;
@@ -17,7 +18,7 @@ final class FakePriceCalculator implements PriceCalculatorInterface
 
     public function calculate(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): int
     {
-        if ($this->price === null) {
+        if (null === $this->price) {
             throw new RoomNotBookableException($roomId);
         }
 
