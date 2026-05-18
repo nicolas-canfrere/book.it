@@ -8,6 +8,11 @@ framework:
             sync.query.bus:
                 middleware:
                     - 'App\Shared\Infrastructure\Bus\Middleware\ExceptionThrowerMiddleware'
+            domain.event.bus:
+                default_middleware:
+                    enabled: true
+                    allow_no_handlers: true
+                    allow_no_senders: true
             messenger.bus.default:
         # Uncomment this (and the failed transport below) to send failed messages to this transport for later handling.
         # failure_transport: failed
