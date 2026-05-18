@@ -1021,6 +1021,52 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  /api/reservations:
+    post:
+      tags:
+        - Reservation
+      summary: 'Create a reservation'
+      operationId: post_reservation_create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateReservationRequest'
+      responses:
+        '201':
+          description: 'Reservation created'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  roomId: { type: string, format: uuid }
+                  bookerId: { type: string, format: uuid }
+                  checkIn: { type: string, format: date, example: '2026-06-01' }
+                  checkOut: { type: string, format: date, example: '2026-06-05' }
+                  totalPrice: { type: integer, example: 42000 }
+                  status: { type: string, example: pending }
+                  createdAt: { type: string, format: date-time }
+                type: object
+        '404':
+          description: 'Room or booker not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Room not available'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'No pricing configured or validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -1325,6 +1371,31 @@ components:
           minimum: 0
           exclusiveMinimum: true
       type: object
+    CreateReservationRequest:
+      properties:
+        roomId:
+          type: string
+          format: uuid
+          nullable: true
+          default: null
+        bookerId:
+          type: string
+          format: uuid
+          nullable: true
+          default: null
+        checkIn:
+          type: string
+          format: date
+          example: '2026-06-01'
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          format: date
+          example: '2026-06-05'
+          nullable: true
+          default: null
+      type: object
 tags:
   -
     name: Hotels
@@ -1341,4 +1412,7 @@ tags:
   -
     name: Pricing
     description: Pricing
+  -
+    name: Reservation
+    description: Reservation
 
