@@ -72,3 +72,27 @@ services:
                     type: 'https://book.it/problems/room-has-no-base-rate'
                     title: 'Room Has No Base Rate'
                     status: 422
+                App\Reservation\Domain\Exception\RoomNotFoundException:
+                    type: 'https://book.it/problems/room-not-found'
+                    title: 'Room Not Found'
+                    status: 404
+                App\Reservation\Domain\Exception\BookerNotFoundException:
+                    type: 'https://book.it/problems/booker-not-found'
+                    title: 'Booker Not Found'
+                    status: 404
+                App\Reservation\Domain\Exception\RoomNotAvailableException:
+                    type: 'https://book.it/problems/room-not-available'
+                    title: 'Room Not Available'
+                    status: 409
+                App\Reservation\Domain\Exception\RoomNotBookableException:
+                    type: 'https://book.it/problems/room-not-bookable'
+                    title: 'Room Not Bookable'
+                    status: 422
+                App\Reservation\Domain\Exception\InvalidReservationTransitionException:
+                    type: 'https://book.it/problems/invalid-reservation-transition'
+                    title: 'Invalid Reservation Transition'
+                    status: 409
+                App\Reservation\Domain\Exception\ReservationNotFoundException:
+                    type: 'https://book.it/problems/reservation-not-found'
+                    title: 'Reservation Not Found'
+                    status: 404
