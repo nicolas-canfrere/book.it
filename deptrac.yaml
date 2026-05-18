@@ -107,3 +107,9 @@ deptrac:
             - External
         ExternalPsr: ~
         External: ~
+    # Query DTOs from other contexts used as cross-context message contracts via query bus
+    skip_violations:
+        App\Reservation\Infrastructure\Service\AvailabilityChecker:
+            - App\Availability\Application\UseCase\CheckAvailability\CheckAvailabilityQuery
+        App\Reservation\Infrastructure\Service\PricingCalculator:
+            - App\Pricing\Application\UseCase\GetPricingQuote\GetPricingQuoteQuery
