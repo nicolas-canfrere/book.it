@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Reservation\Infrastructure;
+namespace App\Tests\Fake;
 
-use App\Shared\Application\Bus\DomainEventBusInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
-final class FakeDomainEventBus implements DomainEventBusInterface
+final class FakeEventDispatcher implements EventDispatcherInterface
 {
     /** @var list<object> */
     private array $dispatched = [];
 
-    public function dispatch(object $event): void
+    public function dispatch(object $event): object
     {
         $this->dispatched[] = $event;
+
+        return $event;
     }
 
     /** @return list<object> */

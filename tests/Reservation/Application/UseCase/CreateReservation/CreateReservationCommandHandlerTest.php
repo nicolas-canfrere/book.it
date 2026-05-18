@@ -12,8 +12,8 @@ use App\Reservation\Domain\Exception\RoomNotAvailableException;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\ReservationStatus;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Reservation\Infrastructure\FakeBookerExistenceChecker;
-use App\Tests\Reservation\Infrastructure\FakeDomainEventBus;
 use App\Tests\Reservation\Infrastructure\FakePriceCalculator;
 use App\Tests\Reservation\Infrastructure\FakeRoomAvailabilityChecker;
 use App\Tests\Reservation\Infrastructure\FakeRoomExistenceChecker;
@@ -34,7 +34,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     private FakeBookerExistenceChecker $bookerExists;
     private FakeRoomAvailabilityChecker $availabilityChecker;
     private FakePriceCalculator $priceCalculator;
-    private FakeDomainEventBus $eventBus;
+    private FakeEventDispatcher $eventDispatcher;
     private CreateReservationCommandHandler $handler;
 
     protected function setUp(): void
@@ -44,7 +44,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->bookerExists = new FakeBookerExistenceChecker();
         $this->availabilityChecker = new FakeRoomAvailabilityChecker();
         $this->priceCalculator = new FakePriceCalculator();
-        $this->eventBus = new FakeDomainEventBus();
+        $this->eventDispatcher = new FakeEventDispatcher();
 
         $this->handler = new CreateReservationCommandHandler(
             $this->repository,
@@ -52,7 +52,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
             $this->bookerExists,
             $this->availabilityChecker,
             $this->priceCalculator,
-            $this->eventBus,
+            $this->eventDispatcher,
         );
     }
 
@@ -71,7 +71,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame(42000, $reservation->totalPrice);
         self::assertSame(ReservationStatus::Pending, $reservation->status);
 
-        $event = $this->eventBus->getLastDispatched();
+        $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(ReservationCreated::class, $event);
         self::assertSame(self::RESERVATION_ID, $event->reservationId);
         self::assertSame(self::ROOM_ID, $event->roomId);

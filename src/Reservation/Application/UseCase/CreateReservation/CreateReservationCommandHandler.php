@@ -15,8 +15,8 @@ use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\Port\RoomAvailabilityCheckerInterface;
 use App\Reservation\Domain\Port\RoomExistsInterface;
 use App\Reservation\Domain\ValueObject\DatePeriod;
-use App\Shared\Application\Bus\DomainEventBusInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class CreateReservationCommandHandler implements SyncCommandHandlerInterface
 {
@@ -26,7 +26,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
         private BookerExistsInterface $bookerExists,
         private RoomAvailabilityCheckerInterface $availabilityChecker,
         private PriceCalculatorInterface $priceCalculator,
-        private DomainEventBusInterface $eventBus,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -57,7 +57,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
 
         $this->repository->add($reservation);
 
-        $this->eventBus->dispatch(new ReservationCreated(
+        $this->eventDispatcher->dispatch(new ReservationCreated(
             reservationId: $reservation->id,
             roomId: $reservation->roomId,
             bookerId: $reservation->bookerId,
