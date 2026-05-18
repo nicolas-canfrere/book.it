@@ -3,7 +3,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **book.it** (2500 symbols, 5315 relationships, 14 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **book.it** (2625 symbols, 5500 relationships, 14 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -82,6 +82,8 @@ Each bounded context (examples: `Hotel`, `Room`, `Availability`, `Pricing`, `Boo
 ## Commands
 
 All commands run via `make`. Run `make help` for the full list.
+
+Important for test and code analysis use make commands !
 
 ## Error Handling
 
