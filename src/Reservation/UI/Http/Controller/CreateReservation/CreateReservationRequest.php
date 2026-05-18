@@ -15,17 +15,14 @@ final readonly class CreateReservationRequest
         #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
         #[OA\Property(type: 'string', format: 'uuid')]
         public ?string $roomId = null,
-
         #[Assert\NotBlank]
         #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
         #[OA\Property(type: 'string', format: 'uuid')]
         public ?string $bookerId = null,
-
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Property(type: 'string', format: 'date', example: '2026-06-01')]
         public ?string $checkIn = null,
-
         #[Assert\NotBlank]
         #[Assert\Date]
         #[Assert\GreaterThan(propertyPath: 'checkIn')]
@@ -37,7 +34,7 @@ final readonly class CreateReservationRequest
     #[Assert\Callback]
     public function validateCheckInNotInPast(ExecutionContextInterface $context): void
     {
-        if ($this->checkIn === null) {
+        if (null === $this->checkIn) {
             return;
         }
 
