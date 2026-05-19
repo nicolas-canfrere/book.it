@@ -25,6 +25,10 @@ services:
             - '../../src/Reservation/Application/**/*Command.php'
             - '../../src/Reservation/Application/**/*Query.php'
 
+    App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommandHandler:
+        tags:
+            - {name: messenger.message_handler, bus: messenger.bus.default}
+
     App\Reservation\Infrastructure\:
         resource: '../../src/Reservation/Infrastructure/'
 
