@@ -21,12 +21,13 @@ final class CancellationPolicyTest extends TestCase
 
         self::assertSame('f47ac10b-58cc-4372-a567-0e02b2c3d479', $policy->roomId);
         self::assertSame(14, $policy->daysThreshold);
+        self::assertSame('2026-05-19T00:00:00+00:00', $policy->updatedAt->format(\DateTimeInterface::ATOM));
     }
 
     public function test_throws_on_zero_threshold(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Days threshold must be at least 1.');
+        $this->expectExceptionMessage('Days threshold must be greater than zero.');
 
         new CancellationPolicy(
             roomId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
@@ -38,7 +39,7 @@ final class CancellationPolicyTest extends TestCase
     public function test_throws_on_negative_threshold(): void
     {
         $this->expectException(\InvalidArgumentException::class);
-        $this->expectExceptionMessage('Days threshold must be at least 1.');
+        $this->expectExceptionMessage('Days threshold must be greater than zero.');
 
         new CancellationPolicy(
             roomId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',

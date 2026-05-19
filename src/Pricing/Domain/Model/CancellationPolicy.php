@@ -11,8 +11,8 @@ final readonly class CancellationPolicy
         public int $daysThreshold,
         public \DateTimeImmutable $updatedAt,
     ) {
-        if ($daysThreshold < 1) {
-            throw new \InvalidArgumentException('Days threshold must be at least 1.');
+        if ($daysThreshold <= 0) {
+            throw new \InvalidArgumentException('Days threshold must be greater than zero.');
         }
     }
 }
