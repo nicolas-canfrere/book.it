@@ -1,0 +1,91 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Tests\Reservation\Application\UseCase\ExpireReservation;
+
+use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
+use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommandHandler;
+use App\Reservation\Domain\Event\ReservationExpired;
+use App\Reservation\Domain\Model\Reservation;
+use App\Reservation\Domain\Model\ReservationStatus;
+use App\Reservation\Domain\Port\ReservationRepositoryInterface;
+use App\Reservation\Domain\ValueObject\DatePeriod;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\MockObject\MockObject;
+use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
+
+#[Group('unit')]
+final class ExpireReservationCommandHandlerTest extends TestCase
+{
+    private MockObject&ReservationRepositoryInterface $repository;
+    private MockObject&EventDispatcherInterface $eventDispatcher;
+    private ExpireReservationCommandHandler $handler;
+
+    protected function setUp(): void
+    {
+        $this->repository = $this->createMock(ReservationRepositoryInterface::class);
+        $this->eventDispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->handler = new ExpireReservationCommandHandler($this->repository, $this->eventDispatcher);
+    }
+
+    public function test_expires_pending_reservation_and_dispatches_event(): void
+    {
+        $reservation = $this->makePendingReservation();
+        $this->repository->method('get')->willReturn($reservation);
+        $this->repository->expects(self::once())->method('add')->with($reservation);
+        $this->eventDispatcher->expects(self::once())->method('dispatch')
+            ->with(self::isInstanceOf(ReservationExpired::class));
+
+        ($this->handler)(new ExpireReservationCommand('res-uuid'));
+
+        self::assertSame(ReservationStatus::Expired, $reservation->status);
+    }
+
+    public function test_is_noop_when_reservation_not_found(): void
+    {
+        $this->repository->method('get')->willReturn(null);
+        $this->repository->expects(self::never())->method('add');
+        $this->eventDispatcher->expects(self::never())->method('dispatch');
+
+        ($this->handler)(new ExpireReservationCommand('res-uuid'));
+    }
+
+    public function test_is_noop_when_reservation_already_confirmed(): void
+    {
+        $reservation = $this->makePendingReservation();
+        $reservation->status = ReservationStatus::Confirmed;
+        $this->repository->method('get')->willReturn($reservation);
+        $this->repository->expects(self::never())->method('add');
+        $this->eventDispatcher->expects(self::never())->method('dispatch');
+
+        ($this->handler)(new ExpireReservationCommand('res-uuid'));
+    }
+
+    public function test_is_noop_when_reservation_already_expired(): void
+    {
+        $reservation = $this->makePendingReservation();
+        $reservation->status = ReservationStatus::Expired;
+        $this->repository->method('get')->willReturn($reservation);
+        $this->repository->expects(self::never())->method('add');
+        $this->eventDispatcher->expects(self::never())->method('dispatch');
+
+        ($this->handler)(new ExpireReservationCommand('res-uuid'));
+    }
+
+    private function makePendingReservation(): Reservation
+    {
+        return new Reservation(
+            id: 'res-uuid',
+            roomId: 'room-uuid',
+            bookerId: 'booker-uuid',
+            period: new DatePeriod(
+                new \DateTimeImmutable('2030-06-01'),
+                new \DateTimeImmutable('2030-06-05'),
+            ),
+            totalPrice: 40000,
+            createdAt: new \DateTimeImmutable(),
+        );
+    }
+}
