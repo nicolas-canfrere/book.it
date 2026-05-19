@@ -1137,6 +1137,7 @@ paths:
                   checkOut: { type: string, format: date, example: '2026-06-05' }
                   totalPrice: { type: integer, example: 42000 }
                   status: { type: string, example: pending }
+                  cancellationTerms: { properties: { daysThreshold: { type: integer, example: 7, nullable: true } }, type: object }
                   createdAt: { type: string, format: date-time }
                 type: object
         '404':

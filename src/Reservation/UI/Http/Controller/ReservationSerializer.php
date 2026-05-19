@@ -9,7 +9,7 @@ use App\Reservation\Domain\Model\Reservation;
 final readonly class ReservationSerializer
 {
     /**
-     * @return array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, createdAt: string}
+     * @return array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, cancellationTerms: array{daysThreshold: int|null}, createdAt: string}
      */
     public function serialize(Reservation $reservation): array
     {
@@ -21,6 +21,9 @@ final readonly class ReservationSerializer
             'checkOut' => $reservation->period->checkOut->format('Y-m-d'),
             'totalPrice' => $reservation->totalPrice,
             'status' => $reservation->status->value,
+            'cancellationTerms' => [
+                'daysThreshold' => $reservation->cancellationTerms->daysThreshold,
+            ],
             'createdAt' => $reservation->createdAt
                 ->setTimezone(new \DateTimeZone('UTC'))
                 ->format('Y-m-d\TH:i:s\Z'),

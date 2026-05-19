@@ -48,6 +48,13 @@ final readonly class CreateReservationController
                         new OA\Property(property: 'checkOut', type: 'string', format: 'date', example: '2026-06-05'),
                         new OA\Property(property: 'totalPrice', type: 'integer', example: 42000),
                         new OA\Property(property: 'status', type: 'string', example: 'pending'),
+                        new OA\Property(
+                            property: 'cancellationTerms',
+                            properties: [
+                                new OA\Property(property: 'daysThreshold', type: 'integer', nullable: true, example: 7),
+                            ],
+                            type: 'object',
+                        ),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
