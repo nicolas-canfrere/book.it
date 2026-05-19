@@ -26,7 +26,7 @@ final readonly class ExpireReservationCommandHandler
         }
 
         $reservation->expire();
-        $this->repository->add($reservation);
+        $this->repository->save($reservation);
 
         $this->eventDispatcher->dispatch(new ReservationExpired(
             reservationId: $reservation->id,

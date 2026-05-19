@@ -36,7 +36,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
     {
         $reservation = $this->makePendingReservation();
         $this->repository->method('get')->willReturn($reservation);
-        $this->repository->expects(self::once())->method('add')->with($reservation);
+        $this->repository->expects(self::once())->method('save')->with($reservation);
         $this->eventDispatcher->expects(self::once())->method('dispatch')
             ->with(self::isInstanceOf(ReservationExpired::class));
 
@@ -48,7 +48,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
     public function test_is_noop_when_reservation_not_found(): void
     {
         $this->repository->method('get')->willReturn(null);
-        $this->repository->expects(self::never())->method('add');
+        $this->repository->expects(self::never())->method('save');
         $this->eventDispatcher->expects(self::never())->method('dispatch');
 
         ($this->handler)(new ExpireReservationCommand('res-uuid'));
@@ -59,7 +59,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         $reservation = $this->makePendingReservation();
         $reservation->status = ReservationStatus::Confirmed;
         $this->repository->method('get')->willReturn($reservation);
-        $this->repository->expects(self::never())->method('add');
+        $this->repository->expects(self::never())->method('save');
         $this->eventDispatcher->expects(self::never())->method('dispatch');
 
         ($this->handler)(new ExpireReservationCommand('res-uuid'));
@@ -70,7 +70,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         $reservation = $this->makePendingReservation();
         $reservation->status = ReservationStatus::Expired;
         $this->repository->method('get')->willReturn($reservation);
-        $this->repository->expects(self::never())->method('add');
+        $this->repository->expects(self::never())->method('save');
         $this->eventDispatcher->expects(self::never())->method('dispatch');
 
         ($this->handler)(new ExpireReservationCommand('res-uuid'));

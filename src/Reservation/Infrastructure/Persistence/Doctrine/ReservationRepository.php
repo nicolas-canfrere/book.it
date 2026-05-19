@@ -34,6 +34,11 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         ]);
     }
 
+    public function save(Reservation $reservation): void
+    {
+        $this->bookit->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
+    }
+
     public function get(string $id): ?Reservation
     {
         /** @var array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string}|false $row */

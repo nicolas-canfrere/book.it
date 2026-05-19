@@ -10,5 +10,7 @@ interface ReservationRepositoryInterface
 {
     public function add(Reservation $reservation): void;
 
+    public function save(Reservation $reservation): void;
+
     public function get(string $id): ?Reservation;
 }
