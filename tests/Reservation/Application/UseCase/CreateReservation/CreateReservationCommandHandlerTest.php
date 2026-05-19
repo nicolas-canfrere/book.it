@@ -6,13 +6,16 @@ namespace App\Tests\Reservation\Application\UseCase\CreateReservation;
 
 use App\Reservation\Application\UseCase\CreateReservation\CreateReservationCommand;
 use App\Reservation\Application\UseCase\CreateReservation\CreateReservationCommandHandler;
+use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
 use App\Reservation\Domain\Event\ReservationCreated;
 use App\Reservation\Domain\Exception\BookerNotFoundException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\ReservationStatus;
+use App\Tests\Fake\FakeAsyncCommandDispatcher;
 use App\Tests\Fake\FakeEventDispatcher;
+use App\Tests\Fake\FakeTransactionManager;
 use App\Tests\Reservation\Infrastructure\FakeBookerExistenceChecker;
 use App\Tests\Reservation\Infrastructure\FakePriceCalculator;
 use App\Tests\Reservation\Infrastructure\FakeRoomAvailabilityChecker;
@@ -35,6 +38,8 @@ final class CreateReservationCommandHandlerTest extends TestCase
     private FakeRoomAvailabilityChecker $availabilityChecker;
     private FakePriceCalculator $priceCalculator;
     private FakeEventDispatcher $eventDispatcher;
+    private FakeTransactionManager $transactionManager;
+    private FakeAsyncCommandDispatcher $asyncDispatcher;
     private CreateReservationCommandHandler $handler;
 
     protected function setUp(): void
@@ -45,6 +50,8 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->availabilityChecker = new FakeRoomAvailabilityChecker();
         $this->priceCalculator = new FakePriceCalculator();
         $this->eventDispatcher = new FakeEventDispatcher();
+        $this->transactionManager = new FakeTransactionManager();
+        $this->asyncDispatcher = new FakeAsyncCommandDispatcher();
 
         $this->handler = new CreateReservationCommandHandler(
             $this->repository,
@@ -53,6 +60,8 @@ final class CreateReservationCommandHandlerTest extends TestCase
             $this->availabilityChecker,
             $this->priceCalculator,
             $this->eventDispatcher,
+            $this->transactionManager,
+            $this->asyncDispatcher,
         );
     }
 
@@ -125,6 +134,16 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->expectException(RoomNotBookableException::class);
 
         ($this->handler)($this->makeCommand());
+    }
+
+    #[Test]
+    public function itDispatchesDelayedExpireCommandAfterCreation(): void
+    {
+        ($this->handler)($this->makeCommand());
+
+        $dispatched = $this->asyncDispatcher->getLastDispatched();
+        self::assertInstanceOf(ExpireReservationCommand::class, $dispatched);
+        self::assertSame(self::RESERVATION_ID, $dispatched->reservationId);
     }
 
     private function makeCommand(string $id = self::RESERVATION_ID): CreateReservationCommand

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\UseCase\CreateReservation;
 
+use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
 use App\Reservation\Domain\Event\ReservationCreated;
 use App\Reservation\Domain\Exception\BookerNotFoundException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
@@ -15,7 +16,9 @@ use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\Port\RoomAvailabilityCheckerInterface;
 use App\Reservation\Domain\Port\RoomExistsInterface;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Application\Transaction\TransactionManagerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class CreateReservationCommandHandler implements SyncCommandHandlerInterface
@@ -27,6 +30,8 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
         private RoomAvailabilityCheckerInterface $availabilityChecker,
         private PriceCalculatorInterface $priceCalculator,
         private EventDispatcherInterface $eventDispatcher,
+        private TransactionManagerInterface $transactionManager,
+        private AsyncCommandDispatcherInterface $asyncDispatcher,
     ) {
     }
 
@@ -55,15 +60,22 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
             createdAt: $command->createdAt,
         );
 
-        $this->repository->add($reservation);
+        $this->transactionManager->transactional(function () use ($reservation): void {
+            $this->repository->add($reservation);
 
-        $this->eventDispatcher->dispatch(new ReservationCreated(
-            reservationId: $reservation->id,
-            roomId: $reservation->roomId,
-            bookerId: $reservation->bookerId,
-            checkIn: $reservation->period->checkIn,
-            checkOut: $reservation->period->checkOut,
-            totalPrice: $reservation->totalPrice,
-        ));
+            $this->eventDispatcher->dispatch(new ReservationCreated(
+                reservationId: $reservation->id,
+                roomId: $reservation->roomId,
+                bookerId: $reservation->bookerId,
+                checkIn: $reservation->period->checkIn,
+                checkOut: $reservation->period->checkOut,
+                totalPrice: $reservation->totalPrice,
+            ));
+        });
+
+        $this->asyncDispatcher->dispatch(
+            new ExpireReservationCommand($reservation->id),
+            900_000,
+        );
     }
 }
