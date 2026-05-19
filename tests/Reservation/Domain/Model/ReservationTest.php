@@ -7,6 +7,7 @@ namespace App\Tests\Reservation\Domain\Model;
 use App\Reservation\Domain\Exception\InvalidReservationTransitionException;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
+use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -31,6 +32,7 @@ final class ReservationTest extends TestCase
                 new \DateTimeImmutable('2026-06-05'),
             ),
             totalPrice: 42000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
             createdAt: new \DateTimeImmutable('2026-05-18T10:00:00Z'),
         );
 
@@ -88,6 +90,7 @@ final class ReservationTest extends TestCase
                 new \DateTimeImmutable('2026-06-05'),
             ),
             totalPrice: 0,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
             createdAt: new \DateTimeImmutable(),
         );
 
@@ -106,6 +109,7 @@ final class ReservationTest extends TestCase
                 new \DateTimeImmutable('2030-06-05'),
             ),
             totalPrice: 40000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
             createdAt: new \DateTimeImmutable(),
         );
     }

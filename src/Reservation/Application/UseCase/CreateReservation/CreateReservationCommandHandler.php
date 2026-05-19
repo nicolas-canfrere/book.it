@@ -11,6 +11,7 @@ use App\Reservation\Domain\Exception\RoomNotAvailableException;
 use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Port\BookerExistsInterface;
+use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
 use App\Reservation\Domain\Port\PriceCalculatorInterface;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\Port\RoomAvailabilityCheckerInterface;
@@ -29,6 +30,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
         private BookerExistsInterface $bookerExists,
         private RoomAvailabilityCheckerInterface $availabilityChecker,
         private PriceCalculatorInterface $priceCalculator,
+        private CancellationPolicyFetcherInterface $cancellationPolicyFetcher,
         private EventDispatcherInterface $eventDispatcher,
         private TransactionManagerInterface $transactionManager,
         private AsyncCommandDispatcherInterface $asyncDispatcher,
@@ -50,6 +52,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
         }
 
         $totalPrice = $this->priceCalculator->calculate($command->roomId, $command->checkIn, $command->checkOut);
+        $cancellationTerms = $this->cancellationPolicyFetcher->fetch($command->roomId);
 
         $reservation = new Reservation(
             id: $command->id,
@@ -57,6 +60,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
             bookerId: $command->bookerId,
             period: new DatePeriod($command->checkIn, $command->checkOut),
             totalPrice: $totalPrice,
+            cancellationTerms: $cancellationTerms,
             createdAt: $command->createdAt,
         );
 
@@ -70,6 +74,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
                 checkIn: $reservation->period->checkIn,
                 checkOut: $reservation->period->checkOut,
                 totalPrice: $reservation->totalPrice,
+                cancellationTerms: $reservation->cancellationTerms,
             ));
         });
 

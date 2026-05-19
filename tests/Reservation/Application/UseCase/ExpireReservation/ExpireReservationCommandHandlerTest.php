@@ -10,6 +10,7 @@ use App\Reservation\Domain\Event\ReservationExpired;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
+use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -85,6 +86,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
                 new \DateTimeImmutable('2030-06-05'),
             ),
             totalPrice: 40000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
             createdAt: new \DateTimeImmutable(),
         );
     }

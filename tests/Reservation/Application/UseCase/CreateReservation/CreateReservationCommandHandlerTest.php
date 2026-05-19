@@ -13,10 +13,12 @@ use App\Reservation\Domain\Exception\RoomNotAvailableException;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\ReservationStatus;
+use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Tests\Fake\FakeAsyncCommandDispatcher;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Fake\FakeTransactionManager;
 use App\Tests\Reservation\Infrastructure\FakeBookerExistenceChecker;
+use App\Tests\Reservation\Infrastructure\FakeCancellationPolicyFetcher;
 use App\Tests\Reservation\Infrastructure\FakePriceCalculator;
 use App\Tests\Reservation\Infrastructure\FakeRoomAvailabilityChecker;
 use App\Tests\Reservation\Infrastructure\FakeRoomExistenceChecker;
@@ -37,6 +39,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     private FakeBookerExistenceChecker $bookerExists;
     private FakeRoomAvailabilityChecker $availabilityChecker;
     private FakePriceCalculator $priceCalculator;
+    private FakeCancellationPolicyFetcher $cancellationPolicyFetcher;
     private FakeEventDispatcher $eventDispatcher;
     private FakeTransactionManager $transactionManager;
     private FakeAsyncCommandDispatcher $asyncDispatcher;
@@ -49,6 +52,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->bookerExists = new FakeBookerExistenceChecker();
         $this->availabilityChecker = new FakeRoomAvailabilityChecker();
         $this->priceCalculator = new FakePriceCalculator();
+        $this->cancellationPolicyFetcher = new FakeCancellationPolicyFetcher();
         $this->eventDispatcher = new FakeEventDispatcher();
         $this->transactionManager = new FakeTransactionManager();
         $this->asyncDispatcher = new FakeAsyncCommandDispatcher();
@@ -59,6 +63,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
             $this->bookerExists,
             $this->availabilityChecker,
             $this->priceCalculator,
+            $this->cancellationPolicyFetcher,
             $this->eventDispatcher,
             $this->transactionManager,
             $this->asyncDispatcher,
@@ -79,6 +84,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame('2026-06-05', $reservation->period->checkOut->format('Y-m-d'));
         self::assertSame(42000, $reservation->totalPrice);
         self::assertSame(ReservationStatus::Pending, $reservation->status);
+        self::assertNull($reservation->cancellationTerms->daysThreshold);
 
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(ReservationCreated::class, $event);
@@ -86,6 +92,23 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame(self::ROOM_ID, $event->roomId);
         self::assertSame(self::BOOKER_ID, $event->bookerId);
         self::assertSame(42000, $event->totalPrice);
+        self::assertNull($event->cancellationTerms->daysThreshold);
+    }
+
+    #[Test]
+    public function itStoresCancellationTermsWithThresholdWhenPolicyIsSet(): void
+    {
+        $this->cancellationPolicyFetcher->setTerms(CancellationTerms::withThreshold(7));
+
+        ($this->handler)($this->makeCommand());
+
+        $reservation = $this->repository->get(self::RESERVATION_ID);
+        self::assertNotNull($reservation);
+        self::assertSame(7, $reservation->cancellationTerms->daysThreshold);
+
+        $event = $this->eventDispatcher->getLastDispatched();
+        self::assertInstanceOf(ReservationCreated::class, $event);
+        self::assertSame(7, $event->cancellationTerms->daysThreshold);
     }
 
     #[Test]
