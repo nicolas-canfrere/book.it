@@ -19,7 +19,7 @@ final readonly class PriceBreakdown
     {
         return new self(
             array_map(
-                static fn (array $n) => new NightPrice(
+                static fn(array $n) => new NightPrice(
                     $n['date'],
                     $n['rateAmountCents'],
                     $n['discountPercent'],
@@ -36,7 +36,7 @@ final readonly class PriceBreakdown
     public function toArray(): array
     {
         return array_map(
-            static fn (NightPrice $n) => [
+            static fn(NightPrice $n) => [
                 'date' => $n->date,
                 'rateAmountCents' => $n->rateAmountCents,
                 'discountPercent' => $n->discountPercent,
