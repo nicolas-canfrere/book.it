@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Reservation\UI\Http\Controller;
 
 use App\Reservation\Domain\Model\Reservation;
-use App\Reservation\Domain\ValueObject\NightPrice;
 
 final readonly class ReservationSerializer
 {
@@ -36,15 +35,7 @@ final readonly class ReservationSerializer
             'cancellationTerms' => [
                 'daysThreshold' => $reservation->cancellationTerms->daysThreshold,
             ],
-            'priceBreakdown' => array_map(
-                static fn(NightPrice $night) => [
-                    'date' => $night->date,
-                    'rateAmountCents' => $night->rateAmountCents,
-                    'discountPercent' => $night->discountPercent,
-                    'effectiveAmountCents' => $night->effectiveAmountCents,
-                ],
-                $reservation->priceBreakdown->nights,
-            ),
+            'priceBreakdown' => $reservation->priceBreakdown->toArray(),
             'createdAt' => $reservation->createdAt
                 ->setTimezone(new \DateTimeZone('UTC'))
                 ->format('Y-m-d\TH:i:s\Z'),

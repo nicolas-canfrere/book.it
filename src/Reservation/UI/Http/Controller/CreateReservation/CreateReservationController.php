@@ -60,7 +60,7 @@ final readonly class CreateReservationController
                             type: 'array',
                             items: new OA\Items(
                                 properties: [
-                                    new OA\Property(property: 'date', type: 'string', example: '2026-06-01'),
+                                    new OA\Property(property: 'date', type: 'string', format: 'date', example: '2026-06-01'),
                                     new OA\Property(property: 'rateAmountCents', type: 'integer', example: 10000),
                                     new OA\Property(property: 'discountPercent', type: 'integer', nullable: true, example: 10),
                                     new OA\Property(property: 'effectiveAmountCents', type: 'integer', example: 9000),
