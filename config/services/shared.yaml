@@ -9,3 +9,7 @@ services:
         exclude:
             - '../../src/Shared/**/*Exception.php'
 
+    App\Shared\Infrastructure\Transaction\DoctrineTransactionManager:
+        arguments:
+            $bookit: '@doctrine.dbal.bookit_connection'
+

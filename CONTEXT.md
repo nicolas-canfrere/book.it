@@ -98,8 +98,12 @@ _Avoid_: start date, from date, début
 Le lendemain de la dernière nuit couverte par un Blocked Period (borne exclusive). La Room est libre ce soir-là.
 _Avoid_: end date, to date, fin
 
+**Availability Hold** *(Blocage temporaire)* :
+Une réservation temporaire de disponibilité posée sur une Room pour une Stay Period, au moment où le Booker engage le processus de paiement. Expire automatiquement au bout de 15 minutes si la Reservation n'est pas confirmée. Empêche toute nouvelle Reservation ou tout nouvel Availability Hold sur la même Room pour une période chevauchante pendant sa durée de vie.
+_Avoid_: soft block, temporary lock, hold, blocage
+
 **Availability Check** *(Vérification de disponibilité)* :
-Une requête booléenne — "cette Room est-elle disponible sur cette période ?" — qui répond vrai si aucun Blocked Period ne chevauche la plage demandée.
+Une requête booléenne — "cette Room est-elle disponible sur cette période ?" — qui répond vrai si aucun Blocked Period et aucun Availability Hold actif ne chevauche la plage demandée.
 _Avoid_: availability query, dispo check
 
 **Availability Calendar** *(Calendrier de disponibilité)* :
@@ -111,6 +115,10 @@ _Avoid_: availability grid, calendar view, planning
 - Une **Room** a zéro ou plusieurs **Blocked Periods**
 - Deux **Blocked Periods** d'une même **Room** ne peuvent pas se chevaucher — toute tentative est rejetée
 - Un **Blocked Period** est immuable après création — pour corriger, on le supprime et on en recrée un
+- Une **Room** a zéro ou plusieurs **Availability Holds** actifs ; deux **Availability Holds** sur la même **Room** ne peuvent pas se chevaucher
+- Un **Availability Hold** est lié à exactement une **Reservation** (par reservation_id, référence cross-context)
+- Un **Availability Hold** expire automatiquement 15 minutes après sa création s'il n'est pas converti en **Blocked Period**
+- Un **Availability Hold** est converti en **Blocked Period** à la confirmation de la **Reservation** (paiement autorisé)
 - Un **Availability Check** porte sur une **Room** et une plage check-in/check-out
 - Un **Availability Calendar** porte sur une **Room** et une fenêtre temporelle
 
@@ -173,6 +181,10 @@ _Avoid_: booking cancellation, cancel booking
 The unilateral act of an operator terminating a Reservation. Always triggers a full refund regardless of the Cancellation Terms. Permitted at any time while the Reservation is not yet cancelled. Produces a `ReservationRevoked` event.
 _Avoid_: operator cancellation, forced cancellation
 
+**Expiration** *(by System)*:
+The automatic termination of a `pending` Reservation by the system when its Availability Hold reaches its expiry time without having been confirmed. Distinct from Cancellation (Booker-initiated) and Revocation (Operator-initiated). Produces a `ReservationExpired` event. The associated Availability Hold is deleted at the same time.
+_Avoid_: revocation, cancellation, timeout, expiry
+
 **Stay Period**:
 The date range of a Reservation, defined by a check-in date (inclusive) and a check-out date (exclusive). The check-out date must be strictly after the check-in date.
 _Avoid_: reservation period, booking dates, stay dates
@@ -187,4 +199,7 @@ _Avoid_: reservation period, booking dates, stay dates
 - A **Reservation** records `cancelledAt` and `cancelledBy` (Booker or Operator) when cancelled or revoked
 - A **Cancellation** (by Booker) is only permitted strictly before the check-in date
 - A **Revocation** (by Operator) is permitted at any time while the Reservation is active
-- `ReservationCreated` causes Availability to create a **Blocked Period** for the Stay Period; `ReservationCancelled` and `ReservationRevoked` cause Availability to remove it
+- `ReservationCreated` causes Availability to create an **Availability Hold** for the Stay Period; the Reservation context simultaneously schedules an `ExpireReservation` delayed message (15 min)
+- `ReservationConfirmed` causes Availability to convert the **Availability Hold** into a **Blocked Period**
+- `ReservationExpired` causes Availability to delete the **Availability Hold**; `ReservationCancelled` and `ReservationRevoked` cause Availability to remove the **Blocked Period**
+- An **Expiration** only applies to a `pending` Reservation — if the Reservation was already confirmed when the delayed message arrives, it is a no-op
