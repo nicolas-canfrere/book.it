@@ -1138,6 +1138,7 @@ paths:
                   totalPrice: { type: integer, example: 42000 }
                   status: { type: string, example: pending }
                   cancellationTerms: { properties: { daysThreshold: { type: integer, example: 7, nullable: true } }, type: object }
+                  priceBreakdown: { type: array, items: { properties: { date: { type: string, example: '2026-06-01' }, rateAmountCents: { type: integer, example: 10000 }, discountPercent: { type: integer, example: 10, nullable: true }, effectiveAmountCents: { type: integer, example: 9000 } }, type: object } }
                   createdAt: { type: string, format: date-time }
                 type: object
         '404':
