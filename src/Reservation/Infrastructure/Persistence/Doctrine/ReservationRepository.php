@@ -28,7 +28,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             'check_out' => $reservation->period->checkOut->format('Y-m-d'),
             'total_price' => $reservation->totalPrice,
             'cancellation_terms_days_threshold' => $reservation->cancellationTerms->daysThreshold,
-            'price_breakdown' => json_encode($reservation->priceBreakdown->toArray()),
+            'price_breakdown' => json_encode($reservation->priceBreakdown->toArray()) ?: '[]',
             'status' => $reservation->status->value,
             'created_at' => $reservation->createdAt->format('Y-m-d H:i:s'),
         ]);

@@ -148,10 +148,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     public function itAcceptsZeroPrice(): void
     {
         $this->pricingQuoteFetcher->setSnapshot(
-            new \App\Reservation\Domain\ValueObject\PricingQuoteSnapshot(
-                0,
-                new \App\Reservation\Domain\ValueObject\PriceBreakdown([]),
-            ),
+            new PricingQuoteSnapshot(0, new PriceBreakdown([])),
         );
 
         ($this->handler)($this->makeCommand());
