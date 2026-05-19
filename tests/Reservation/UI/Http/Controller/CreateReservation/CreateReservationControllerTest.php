@@ -35,7 +35,7 @@ final class CreateReservationControllerTest extends WebTestCase
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, createdAt: string, cancellationTerms: array{daysThreshold: int|null}, priceBreakdown: list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}>} $body */
+        /** @var array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, createdAt: string, cancellationTerms: array{daysThreshold: int|null}, priceBreakdown: list<mixed>} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertNotEmpty($body['id']);
         self::assertSame($roomId, $body['roomId']);
@@ -46,11 +46,9 @@ final class CreateReservationControllerTest extends WebTestCase
         self::assertSame('pending', $body['status']);
         self::assertNotEmpty($body['createdAt']);
         self::assertNull($body['cancellationTerms']['daysThreshold']);
-        self::assertArrayHasKey('priceBreakdown', $body);
-        self::assertIsArray($body['priceBreakdown']);
         self::assertNotEmpty($body['priceBreakdown']);
-        /** @var array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int} $firstNight */
         $firstNight = $body['priceBreakdown'][0];
+        self::assertIsArray($firstNight);
         self::assertArrayHasKey('date', $firstNight);
         self::assertArrayHasKey('rateAmountCents', $firstNight);
         self::assertArrayHasKey('discountPercent', $firstNight);
