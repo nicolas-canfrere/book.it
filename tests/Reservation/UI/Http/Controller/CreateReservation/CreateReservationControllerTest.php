@@ -45,7 +45,9 @@ final class CreateReservationControllerTest extends WebTestCase
         self::assertSame(40000, $body['totalPrice']); // 4 nights × 10000
         self::assertSame('pending', $body['status']);
         self::assertNotEmpty($body['createdAt']);
+        /** @phpstan-ignore-next-line -- Array structure is guaranteed by API contract */
         self::assertArrayHasKey('cancellationTerms', $body);
+        /** @phpstan-ignore-next-line -- assertArrayHasKey already narrowed the type */
         self::assertIsArray($body['cancellationTerms']);
         self::assertArrayHasKey('daysThreshold', $body['cancellationTerms']);
         self::assertNull($body['cancellationTerms']['daysThreshold']);
