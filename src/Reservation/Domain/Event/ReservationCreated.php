@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Reservation\Domain\Event;
 
+use App\Reservation\Domain\ValueObject\CancellationTerms;
+
 final readonly class ReservationCreated
 {
     public function __construct(
@@ -13,6 +15,7 @@ final readonly class ReservationCreated
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
         public int $totalPrice,
+        public CancellationTerms $cancellationTerms,
     ) {
     }
 }
