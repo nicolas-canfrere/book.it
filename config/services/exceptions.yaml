@@ -96,3 +96,7 @@ services:
                     type: 'https://book.it/problems/reservation-not-found'
                     title: 'Reservation Not Found'
                     status: 404
+                App\Pricing\Domain\Exception\CancellationPolicyNotFoundException:
+                    type: 'https://book.it/problems/cancellation-policy-not-found'
+                    title: 'Cancellation Policy Not Found'
+                    status: 404

@@ -35,3 +35,7 @@ services:
     App\Pricing\Domain\Port\PromotionRepositoryInterface:
         alias: App\Pricing\Infrastructure\Persistence\Doctrine\DoctrinePromotionRepository
 
+    # CancellationPolicy repository alias
+    App\Pricing\Domain\Port\CancellationPolicyRepositoryInterface:
+        alias: App\Pricing\Infrastructure\Persistence\Doctrine\DoctrineCancellationPolicyRepository
+
