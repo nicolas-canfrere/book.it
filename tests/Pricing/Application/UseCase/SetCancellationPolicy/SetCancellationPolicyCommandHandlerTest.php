@@ -25,14 +25,6 @@ final class SetCancellationPolicyCommandHandlerTest extends TestCase
         $this->handler = $this->makeHandler(true);
     }
 
-    private function makeHandler(bool $roomExists): SetCancellationPolicyCommandHandler
-    {
-        $mock = $this->createMock(RoomExistsInterface::class);
-        $mock->method('exists')->willReturn($roomExists);
-
-        return new SetCancellationPolicyCommandHandler($this->repository, $mock);
-    }
-
     #[Test]
     public function itCreatesCancellationPolicy(): void
     {
@@ -66,5 +58,13 @@ final class SetCancellationPolicyCommandHandlerTest extends TestCase
 
         $this->expectException(RoomNotFoundException::class);
         ($handler)(new SetCancellationPolicyCommand('f47ac10b-58cc-4372-a567-0e02b2c3d479', 14));
+    }
+
+    private function makeHandler(bool $roomExists): SetCancellationPolicyCommandHandler
+    {
+        $mock = $this->createMock(RoomExistsInterface::class);
+        $mock->method('exists')->willReturn($roomExists);
+
+        return new SetCancellationPolicyCommandHandler($this->repository, $mock);
     }
 }
