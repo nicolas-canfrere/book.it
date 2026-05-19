@@ -11,16 +11,16 @@ final class Version20260519180000 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add cancellation_days_threshold column to reservation table';
+        return 'Add cancellation_terms_days_threshold column to reservation table';
     }
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE reservation ADD COLUMN cancellation_days_threshold INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE reservation ADD COLUMN cancellation_terms_days_threshold INT DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE reservation DROP COLUMN cancellation_days_threshold');
+        $this->addSql('ALTER TABLE reservation DROP COLUMN cancellation_terms_days_threshold');
     }
 }
