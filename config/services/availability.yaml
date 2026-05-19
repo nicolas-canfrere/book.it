@@ -26,10 +26,6 @@ services:
     App\Availability\Infrastructure\:
         resource: '../../src/Availability/Infrastructure/'
 
-    App\Availability\Infrastructure\Persistence\Doctrine\AvailabilityHoldRepository:
-        arguments:
-            $bookit: '@doctrine.dbal.bookit_connection'
-
     App\Availability\UI\:
         resource: '../../src/Availability/UI/'
         exclude:
