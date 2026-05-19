@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Availability\Application\UseCase\CreateAvailabilityHold;
 
-final readonly class CreateAvailabilityHoldCommand
+use App\Shared\Application\Bus\SyncCommandInterface;
+
+final readonly class CreateAvailabilityHoldCommand implements SyncCommandInterface
 {
     public function __construct(
         public string $id,
