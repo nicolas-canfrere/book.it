@@ -35,7 +35,7 @@ final class CreateReservationControllerTest extends WebTestCase
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, createdAt: string} $body */
+        /** @var array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, createdAt: string, cancellationTerms: array{daysThreshold: int|null}} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertNotEmpty($body['id']);
         self::assertSame($roomId, $body['roomId']);
@@ -45,6 +45,10 @@ final class CreateReservationControllerTest extends WebTestCase
         self::assertSame(40000, $body['totalPrice']); // 4 nights × 10000
         self::assertSame('pending', $body['status']);
         self::assertNotEmpty($body['createdAt']);
+        self::assertArrayHasKey('cancellationTerms', $body);
+        self::assertIsArray($body['cancellationTerms']);
+        self::assertArrayHasKey('daysThreshold', $body['cancellationTerms']);
+        self::assertNull($body['cancellationTerms']['daysThreshold']);
     }
 
     #[Test]
