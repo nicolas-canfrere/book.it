@@ -59,7 +59,7 @@ final readonly class DoctrineCancellationPolicyRepository implements Cancellatio
     {
         return new CancellationPolicy(
             $row['room_id'],
-            (int) $row['days_threshold'],
+            $row['days_threshold'],
             new \DateTimeImmutable($row['updated_at']),
         );
     }
