@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Domain\Model;
 
+use App\Reservation\Domain\Exception\InvalidReservationTransitionException;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 
 final class Reservation
@@ -19,5 +20,14 @@ final class Reservation
         public readonly \DateTimeImmutable $createdAt,
     ) {
         $this->status = ReservationStatus::Pending;
+    }
+
+    public function expire(): void
+    {
+        if (ReservationStatus::Pending !== $this->status) {
+            throw new InvalidReservationTransitionException($this->status, ReservationStatus::Expired);
+        }
+
+        $this->status = ReservationStatus::Expired;
     }
 }
