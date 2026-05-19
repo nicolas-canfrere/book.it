@@ -136,9 +136,17 @@ _Avoid_: seasonal rate, pricing rule, plage tarifaire
 A date range (check-in inclusive, check-out exclusive) assigned to a Room, carrying a percentage discount applied on top of the current applicable price (Base Rate or Rate Period price). Independent of Rate Periods — a Promotion may overlap any Rate Period.
 _Avoid_: discount, offer, reduction, rabais
 
+**Night Price**:
+A single night's pricing detail within a Pricing Quote or Price Breakdown: the calendar date, the applicable rate before discount (`rateAmountCents`), the discount percentage if a Promotion was active (`discountPercent`, nullable), and the effective amount charged (`effectiveAmountCents`).
+_Avoid_: night rate, nightly price, night entry
+
 **Pricing Quote**:
-The result of a price enquiry for a Room over a stay period: a total amount and a per-night breakdown, computed night by night as (Base Rate or Rate Period price) × (1 − Promotion discount if active).
+The result of a price enquiry for a Room over a stay period: a total amount and a list of Night Prices, computed night by night as (Base Rate or Rate Period price) × (1 − Promotion discount if active).
 _Avoid_: price estimate, stay price, devis
+
+**Price Breakdown**:
+A snapshot of the Pricing Quote's Night Price list captured at Reservation creation time. Immutable for the lifetime of the Reservation — changes to rates or promotions have no effect on existing Reservations. Stored alongside the Total Price to support detailed invoicing without querying the Pricing context.
+_Avoid_: night breakdown, price detail, pricing snapshot
 
 **Cancellation Policy**:
 A per-Room rule, configured by the operator alongside rates, defining refund eligibility when a Reservation is cancelled by the Booker. Expressed as a number of calendar days before the check-in date. Cancellations made strictly before that day threshold are fully refunded; cancellations on or after that threshold receive no refund. The operator may update or delete a Cancellation Policy at any time — changes only affect future Reservations.
@@ -154,7 +162,7 @@ _Avoid_: cancellation policy snapshot, refund terms
 - A **Room** has zero or more **Rate Periods**; no two **Rate Periods** for the same **Room** may overlap
 - A **Room** has zero or more **Promotions**; no two **Promotions** for the same **Room** may overlap
 - **Rate Periods** and **Promotions** are independent layers — a **Promotion** may overlap any **Rate Period**
-- A **Pricing Quote** covers exactly one **Room** and one stay period; price is calculated night by night
+- A **Pricing Quote** covers exactly one **Room** and one stay period; it produces one **Night Price** per calendar night
 - A **Room** with no **Base Rate** cannot produce a **Pricing Quote**
 - A **Room** may have at most one **Cancellation Policy**; a Room with no Cancellation Policy is always fully refundable on cancellation
 - A **Base Rate**, **Rate Period**, **Promotion**, and **Cancellation Policy** are all mutable after creation (unlike **Blocked Periods**, which are immutable)
@@ -194,6 +202,7 @@ _Avoid_: reservation period, booking dates, stay dates
 - A **Reservation** references exactly one **Room** and exactly one **Booker**
 - A **Reservation** covers exactly one **Stay Period**
 - A **Reservation** captures a **Total Price** snapshot at creation time (in EUR cents) — immutable after creation
+- A **Reservation** captures a **Price Breakdown** snapshot at creation time — immutable for the lifetime of the Reservation
 - A **Reservation** captures a snapshot of the **Cancellation Policy** as **Cancellation Terms** at creation time — immutable for the lifetime of the Reservation
 - Refund eligibility on cancellation is determined by the **Cancellation Terms** stored on the Reservation, not the current Room policy
 - A **Reservation** records `cancelledAt` and `cancelledBy` (Booker or Operator) when cancelled or revoked
