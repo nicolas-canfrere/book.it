@@ -706,6 +706,96 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/rooms/{roomId}/cancellation-policy':
+    get:
+      tags:
+        - Pricing
+      summary: 'Get the cancellation policy for a room'
+      operationId: get_pricing_get_cancellation_policy
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '200':
+          description: 'Cancellation policy'
+          content:
+            application/json:
+              schema:
+                properties:
+                  room_id: { type: string, format: uuid }
+                  days_threshold: { type: integer, example: 14 }
+                  updated_at: { type: string, format: date-time }
+                type: object
+        '404':
+          description: 'No cancellation policy set for this room'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+    put:
+      tags:
+        - Pricing
+      summary: 'Set or update the cancellation policy for a room'
+      operationId: put_pricing_set_cancellation_policy
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SetCancellationPolicyRequest'
+      responses:
+        '204':
+          description: 'Cancellation policy set'
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+    delete:
+      tags:
+        - Pricing
+      summary: 'Delete the cancellation policy for a room'
+      operationId: delete_pricing_delete_cancellation_policy
+      parameters:
+        -
+          name: roomId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'Cancellation policy deleted'
+        '404':
+          description: 'Cancellation policy not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   '/api/rooms/{roomId}/promotions/{promotionId}':
     put:
       tags:
@@ -1323,6 +1413,16 @@ components:
           example: 120
           nullable: true
           default: null
+          minimum: 0
+          exclusiveMinimum: true
+      type: object
+    SetCancellationPolicyRequest:
+      required:
+        - daysThreshold
+      properties:
+        daysThreshold:
+          type: integer
+          example: 14
           minimum: 0
           exclusiveMinimum: true
       type: object
