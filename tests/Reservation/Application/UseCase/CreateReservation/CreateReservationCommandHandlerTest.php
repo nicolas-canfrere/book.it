@@ -14,6 +14,9 @@ use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
+use App\Reservation\Domain\ValueObject\NightPrice;
+use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Reservation\Domain\ValueObject\PricingQuoteSnapshot;
 use App\Tests\Fake\FakeAsyncCommandDispatcher;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Fake\FakeTransactionManager;
@@ -85,6 +88,8 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame(42000, $reservation->totalPrice);
         self::assertSame(ReservationStatus::Pending, $reservation->status);
         self::assertNull($reservation->cancellationTerms->daysThreshold);
+        self::assertCount(4, $reservation->priceBreakdown->nights);
+        self::assertSame('2026-06-01', $reservation->priceBreakdown->nights[0]->date);
 
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(ReservationCreated::class, $event);
@@ -93,6 +98,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame(self::BOOKER_ID, $event->bookerId);
         self::assertSame(42000, $event->totalPrice);
         self::assertNull($event->cancellationTerms->daysThreshold);
+        self::assertCount(4, $event->priceBreakdown->nights);
     }
 
     #[Test]
@@ -109,6 +115,33 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(ReservationCreated::class, $event);
         self::assertSame(7, $event->cancellationTerms->daysThreshold);
+    }
+
+    #[Test]
+    public function itStoresPriceBreakdownFromQuote(): void
+    {
+        $this->pricingQuoteFetcher->setSnapshot(new PricingQuoteSnapshot(
+            19000,
+            new PriceBreakdown([
+                new NightPrice('2026-06-01', 10000, null, 10000),
+                new NightPrice('2026-06-02', 10000, 10, 9000),
+            ]),
+        ));
+
+        ($this->handler)($this->makeCommand());
+
+        $reservation = $this->repository->get(self::RESERVATION_ID);
+        self::assertNotNull($reservation);
+        self::assertSame(19000, $reservation->totalPrice);
+        self::assertCount(2, $reservation->priceBreakdown->nights);
+        self::assertSame(10000, $reservation->priceBreakdown->nights[0]->effectiveAmountCents);
+        self::assertSame(10, $reservation->priceBreakdown->nights[1]->discountPercent);
+        self::assertSame(9000, $reservation->priceBreakdown->nights[1]->effectiveAmountCents);
+
+        $event = $this->eventDispatcher->getLastDispatched();
+        self::assertInstanceOf(ReservationCreated::class, $event);
+        self::assertSame(19000, $event->totalPrice);
+        self::assertCount(2, $event->priceBreakdown->nights);
     }
 
     #[Test]
