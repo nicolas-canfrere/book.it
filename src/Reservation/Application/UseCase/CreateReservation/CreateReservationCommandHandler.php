@@ -12,7 +12,7 @@ use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Port\BookerExistsInterface;
 use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
-use App\Reservation\Domain\Port\PriceCalculatorInterface;
+use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\Port\RoomAvailabilityCheckerInterface;
 use App\Reservation\Domain\Port\RoomExistsInterface;
@@ -29,7 +29,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
         private RoomExistsInterface $roomExists,
         private BookerExistsInterface $bookerExists,
         private RoomAvailabilityCheckerInterface $availabilityChecker,
-        private PriceCalculatorInterface $priceCalculator,
+        private PricingQuoteFetcherInterface $pricingQuoteFetcher,
         private CancellationPolicyFetcherInterface $cancellationPolicyFetcher,
         private EventDispatcherInterface $eventDispatcher,
         private TransactionManagerInterface $transactionManager,
@@ -51,7 +51,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
             throw new RoomNotAvailableException($command->roomId);
         }
 
-        $totalPrice = $this->priceCalculator->calculate($command->roomId, $command->checkIn, $command->checkOut);
+        $pricingQuote = $this->pricingQuoteFetcher->fetch($command->roomId, $command->checkIn, $command->checkOut);
         $cancellationTerms = $this->cancellationPolicyFetcher->fetch($command->roomId);
 
         $reservation = new Reservation(
@@ -59,8 +59,9 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
             roomId: $command->roomId,
             bookerId: $command->bookerId,
             period: new DatePeriod($command->checkIn, $command->checkOut),
-            totalPrice: $totalPrice,
+            totalPrice: $pricingQuote->totalAmountCents,
             cancellationTerms: $cancellationTerms,
+            priceBreakdown: $pricingQuote->breakdown,
             createdAt: $command->createdAt,
         );
 
@@ -75,6 +76,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
                 checkOut: $reservation->period->checkOut,
                 totalPrice: $reservation->totalPrice,
                 cancellationTerms: $reservation->cancellationTerms,
+                priceBreakdown: $reservation->priceBreakdown,
             ));
         });
 

@@ -9,6 +9,7 @@ use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -33,6 +34,7 @@ final class ReservationTest extends TestCase
             ),
             totalPrice: 42000,
             cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
             createdAt: new \DateTimeImmutable('2026-05-18T10:00:00Z'),
         );
 
@@ -91,6 +93,7 @@ final class ReservationTest extends TestCase
             ),
             totalPrice: 0,
             cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
             createdAt: new \DateTimeImmutable(),
         );
 
@@ -110,6 +113,7 @@ final class ReservationTest extends TestCase
             ),
             totalPrice: 40000,
             cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
             createdAt: new \DateTimeImmutable(),
         );
     }

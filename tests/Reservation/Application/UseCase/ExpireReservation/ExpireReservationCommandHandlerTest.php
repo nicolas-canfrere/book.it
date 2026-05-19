@@ -12,6 +12,7 @@ use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -87,6 +88,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
             ),
             totalPrice: 40000,
             cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
             createdAt: new \DateTimeImmutable(),
         );
     }

@@ -19,7 +19,7 @@ use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Fake\FakeTransactionManager;
 use App\Tests\Reservation\Infrastructure\FakeBookerExistenceChecker;
 use App\Tests\Reservation\Infrastructure\FakeCancellationPolicyFetcher;
-use App\Tests\Reservation\Infrastructure\FakePriceCalculator;
+use App\Tests\Reservation\Infrastructure\FakePricingQuoteFetcher;
 use App\Tests\Reservation\Infrastructure\FakeRoomAvailabilityChecker;
 use App\Tests\Reservation\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
@@ -38,7 +38,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     private FakeRoomExistenceChecker $roomExists;
     private FakeBookerExistenceChecker $bookerExists;
     private FakeRoomAvailabilityChecker $availabilityChecker;
-    private FakePriceCalculator $priceCalculator;
+    private FakePricingQuoteFetcher $pricingQuoteFetcher;
     private FakeCancellationPolicyFetcher $cancellationPolicyFetcher;
     private FakeEventDispatcher $eventDispatcher;
     private FakeTransactionManager $transactionManager;
@@ -51,7 +51,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->roomExists = new FakeRoomExistenceChecker();
         $this->bookerExists = new FakeBookerExistenceChecker();
         $this->availabilityChecker = new FakeRoomAvailabilityChecker();
-        $this->priceCalculator = new FakePriceCalculator();
+        $this->pricingQuoteFetcher = new FakePricingQuoteFetcher();
         $this->cancellationPolicyFetcher = new FakeCancellationPolicyFetcher();
         $this->eventDispatcher = new FakeEventDispatcher();
         $this->transactionManager = new FakeTransactionManager();
@@ -62,7 +62,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
             $this->roomExists,
             $this->bookerExists,
             $this->availabilityChecker,
-            $this->priceCalculator,
+            $this->pricingQuoteFetcher,
             $this->cancellationPolicyFetcher,
             $this->eventDispatcher,
             $this->transactionManager,
@@ -114,7 +114,12 @@ final class CreateReservationCommandHandlerTest extends TestCase
     #[Test]
     public function itAcceptsZeroPrice(): void
     {
-        $this->priceCalculator->setPrice(0);
+        $this->pricingQuoteFetcher->setSnapshot(
+            new \App\Reservation\Domain\ValueObject\PricingQuoteSnapshot(
+                0,
+                new \App\Reservation\Domain\ValueObject\PriceBreakdown([]),
+            ),
+        );
 
         ($this->handler)($this->makeCommand());
 
@@ -153,7 +158,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     #[Test]
     public function itThrowsWhenRoomHasNoPricing(): void
     {
-        $this->priceCalculator->setPrice(null);
+        $this->pricingQuoteFetcher->setSnapshot(null);
         $this->expectException(RoomNotBookableException::class);
 
         ($this->handler)($this->makeCommand());
