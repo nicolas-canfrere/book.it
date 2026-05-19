@@ -8,10 +8,10 @@ The platform is organized around the following bounded contexts:
 
 - **Hotel** — Hotel registration and catalogue (name, address, uniqueness)
 - **Room** — Room registration and catalogue per hotel
-- **Availability** — Blocked periods, availability checks and calendar
+- **Availability** — Blocked periods, availability holds, availability checks and calendar
 - **Pricing** — Base rates, rate periods, promotions, pricing quotes, cancellation policies
 - **Booker** — Booker self-registration (natural persons, 18+)
-- **Reservation** — Reservation lifecycle (pending → confirmed / cancelled), price snapshot, cancellation terms
+- **Reservation** — Reservation lifecycle (pending → confirmed / cancelled / expired), price snapshot, cancellation terms, expiration and revocation
 
 See [CONTEXT.md](CONTEXT.md) for the full ubiquitous language and domain model.
 
