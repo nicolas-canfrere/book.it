@@ -3,7 +3,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **book.it** (3263 symbols, 7032 relationships, 18 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **book.it** (3263 symbols, 7033 relationships, 18 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -119,6 +119,18 @@ See skill `symfony-service-config` for details. Key rules:
 - **`_instanceof` required in every context YAML** — without it, handlers silently fail at runtime (`NoHandlerForMessageException`)
 - **Never add `resource:` for directories that don't exist** — Symfony throws `FileLocatorFileNotFoundException` at container build time
 - **Exception mappings → `config/services/exceptions.yaml` only** — context YAMLs silently overwrite each other
+- **`#[AsMessageHandler]` is forbidden in the Application layer** — deptrac rejects Symfony vendor dependencies there. Wire async handlers explicitly in the context YAML instead:
+  ```yaml
+  App\Some\Application\UseCase\Foo\FooCommandHandler:
+      tags:
+          - {name: messenger.message_handler, bus: messenger.bus.default}
+  ```
+- **DBAL `Connection::transactional()` expects a `Closure`, not `callable`** — PHPStan rejects a bare callable. Always wrap:
+  ```php
+  $this->connection->transactional(static function () use ($callback): void {
+      $callback();
+  });
+  ```
 
 ## Testing
 
@@ -127,6 +139,20 @@ See skill `symfony-testing` for details. Key rules:
 - `TestCase` → `#[Group('unit')]`, `KernelTestCase` → `#[Group('integration')]`, controllers → `#[Group('functional')]`
 - Integration tests need a compilable DI container — create Doctrine repos before writing tests that use the handler
 - Functional test helpers must accept `KernelBrowser $client` as a parameter (not `static::getClient()`)
+- The `unit-test` Docker service has **no database** — integration tests that need persistence must use in-memory test doubles, not real Doctrine repos
+- To generate a new migration: `make generate-migration` (not `make migration`)
+
+### Messenger in tests
+
+Any async dispatch via `AsyncCommandDispatcherInterface` will attempt a real AMQP connection in functional tests and return 500. Always override the transport in `config/packages/messenger.yaml`:
+
+```yaml
+when@test:
+    framework:
+        messenger:
+            transports:
+                commands: 'in-memory://'
+```
 
 ## Coding Standards
 
