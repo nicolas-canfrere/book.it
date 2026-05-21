@@ -20,7 +20,7 @@ final readonly class ListHotelsController
     ) {
     }
 
-    #[Route('/api/hotels', name: 'hotel_list_hotels', methods: ['GET'])]
+    #[Route('/hotels', name: 'hotel_list_hotels', methods: ['GET'])]
     #[OA\Get(
         summary: 'List hotels (paginated)',
         tags: ['Hotels'],

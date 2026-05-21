@@ -28,7 +28,7 @@ final readonly class BlockPeriodController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/blocked-periods', name: 'availability_block_period', requirements: ['roomId' => Requirement::UUID_V4], methods: ['POST'])]
+    #[Route('/rooms/{roomId}/blocked-periods', name: 'availability_block_period', requirements: ['roomId' => Requirement::UUID_V4], methods: ['POST'])]
     #[OA\Post(
         summary: 'Block a period for a room',
         requestBody: new OA\RequestBody(

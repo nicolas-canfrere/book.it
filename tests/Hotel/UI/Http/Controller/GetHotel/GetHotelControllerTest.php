@@ -27,7 +27,7 @@ final class GetHotelControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
         );
@@ -36,7 +36,7 @@ final class GetHotelControllerTest extends WebTestCase
         $registered = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         $id = $registered['id'];
 
-        $client->request('GET', "/api/hotels/{$id}");
+        $client->request('GET', "/api/v1/hotels/{$id}");
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -57,7 +57,7 @@ final class GetHotelControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/hotels/00000000-0000-0000-0000-000000000000');
+        $client->request('GET', '/api/v1/hotels/00000000-0000-0000-0000-000000000000');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
@@ -69,7 +69,7 @@ final class GetHotelControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/hotels/not-a-uuid');
+        $client->request('GET', '/api/v1/hotels/not-a-uuid');
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }

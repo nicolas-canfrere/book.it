@@ -27,7 +27,7 @@ final class GetBookerControllerTest extends WebTestCase
         $client = static::createClient();
         $id = $this->registerBookerAndGetId($client);
 
-        $client->request('GET', "/api/bookers/{$id}");
+        $client->request('GET', "/api/v1/bookers/{$id}");
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -48,7 +48,7 @@ final class GetBookerControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/bookers/00000000-0000-0000-0000-000000000000');
+        $client->request('GET', '/api/v1/bookers/00000000-0000-0000-0000-000000000000');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
@@ -60,7 +60,7 @@ final class GetBookerControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/bookers/not-a-uuid');
+        $client->request('GET', '/api/v1/bookers/not-a-uuid');
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }
@@ -69,7 +69,7 @@ final class GetBookerControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
         );

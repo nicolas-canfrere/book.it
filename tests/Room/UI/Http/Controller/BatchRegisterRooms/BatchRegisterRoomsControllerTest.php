@@ -31,7 +31,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n101,1\n102,2\n2A,-1\n");
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
             files: ['csv' => $csv],
         );
 
@@ -65,7 +65,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n");
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
             files: ['csv' => $csv],
         );
 
@@ -85,7 +85,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n101,1\n");
         $client->request(
             method: 'POST',
-            uri: '/api/hotels/00000000-0000-4000-8000-000000000000/rooms/batch',
+            uri: '/api/v1/hotels/00000000-0000-4000-8000-000000000000/rooms/batch',
             files: ['csv' => $csv],
         );
 
@@ -100,7 +100,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n101,1\n");
         $client->request(
             method: 'POST',
-            uri: '/api/hotels/not-a-uuid/rooms/batch',
+            uri: '/api/v1/hotels/not-a-uuid/rooms/batch',
             files: ['csv' => $csv],
         );
 
@@ -116,7 +116,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n101,1\n101,2\n");
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
             files: ['csv' => $csv],
         );
 
@@ -139,7 +139,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -147,7 +147,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n101,1\n102,2\n");
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
             files: ['csv' => $csv],
         );
 
@@ -170,7 +170,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number,floor\n,1\n101,1\n101,2\n");
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
             files: ['csv' => $csv],
         );
 
@@ -192,7 +192,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $csv = $this->makeCsvFile("number\n101\n");
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
             files: ['csv' => $csv],
         );
 
@@ -209,7 +209,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms/batch",
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
         );
 
         $response = $client->getResponse();
@@ -221,7 +221,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::HOTEL_PAYLOAD, \JSON_THROW_ON_ERROR),
         );

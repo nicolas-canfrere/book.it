@@ -18,7 +18,7 @@ final readonly class DeleteRatePeriodController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/rate-periods/{ratePeriodId}', name: 'pricing_delete_rate_period', requirements: ['roomId' => Requirement::UUID_V4, 'ratePeriodId' => Requirement::UUID_V4], methods: ['DELETE'])]
+    #[Route('/rooms/{roomId}/rate-periods/{ratePeriodId}', name: 'pricing_delete_rate_period', requirements: ['roomId' => Requirement::UUID_V4, 'ratePeriodId' => Requirement::UUID_V4], methods: ['DELETE'])]
     #[OA\Delete(
         summary: 'Delete a rate period',
         tags: ['Pricing'],

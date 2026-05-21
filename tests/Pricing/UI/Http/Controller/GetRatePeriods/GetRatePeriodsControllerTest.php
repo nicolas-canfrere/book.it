@@ -21,7 +21,7 @@ final class GetRatePeriodsControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/rate-periods",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods",
         );
 
         $response = $client->getResponse();
@@ -40,7 +40,7 @@ final class GetRatePeriodsControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/rate-periods",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-09-01', 'checkOut' => '2025-09-30', 'amount' => 200.00], \JSON_THROW_ON_ERROR),
         );
@@ -48,7 +48,7 @@ final class GetRatePeriodsControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/rate-periods",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-07-31', 'amount' => 150.00], \JSON_THROW_ON_ERROR),
         );
@@ -56,7 +56,7 @@ final class GetRatePeriodsControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/rate-periods",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods",
         );
 
         $response = $client->getResponse();
@@ -73,7 +73,7 @@ final class GetRatePeriodsControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -89,7 +89,7 @@ final class GetRatePeriodsControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

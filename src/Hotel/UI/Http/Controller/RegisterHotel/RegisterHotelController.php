@@ -27,7 +27,7 @@ final readonly class RegisterHotelController
     ) {
     }
 
-    #[Route('/api/hotels', name: 'hotel_register_hotel', methods: ['POST'])]
+    #[Route('/hotels', name: 'hotel_register_hotel', methods: ['POST'])]
     #[OA\Post(
         summary: 'Register a new hotel',
         requestBody: new OA\RequestBody(

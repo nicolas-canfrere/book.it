@@ -21,7 +21,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR),
         );
@@ -46,7 +46,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-15'], \JSON_THROW_ON_ERROR),
         );
@@ -54,7 +54,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-12', 'checkOut' => '2025-06-17'], \JSON_THROW_ON_ERROR),
         );
@@ -77,7 +77,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/rooms/00000000-0000-4000-8000-000000000000/blocked-periods',
+            uri: '/api/v1/rooms/00000000-0000-4000-8000-000000000000/blocked-periods',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR),
         );
@@ -100,7 +100,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR),
         );
@@ -116,7 +116,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-10'], \JSON_THROW_ON_ERROR),
         );
@@ -132,7 +132,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => 'not-a-date', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR),
         );
@@ -147,7 +147,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/rooms/not-a-uuid/blocked-periods',
+            uri: '/api/v1/rooms/not-a-uuid/blocked-periods',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR),
         );
@@ -159,7 +159,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -175,7 +175,7 @@ final class BlockPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

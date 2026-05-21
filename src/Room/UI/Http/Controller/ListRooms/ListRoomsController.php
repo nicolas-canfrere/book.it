@@ -21,7 +21,7 @@ final readonly class ListRoomsController
     ) {
     }
 
-    #[Route('/api/hotels/{hotelId}/rooms', name: 'room_list_rooms', requirements: ['hotelId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/hotels/{hotelId}/rooms', name: 'room_list_rooms', requirements: ['hotelId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'List rooms of a hotel (paginated)',
         tags: ['Rooms'],

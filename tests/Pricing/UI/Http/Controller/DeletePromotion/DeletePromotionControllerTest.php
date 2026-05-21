@@ -22,14 +22,14 @@ final class DeletePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'DELETE',
-            uri: "/api/rooms/{$roomId}/promotions/{$promotionId}",
+            uri: "/api/v1/rooms/{$roomId}/promotions/{$promotionId}",
         );
 
         self::assertSame(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/promotions",
+            uri: "/api/v1/rooms/{$roomId}/promotions",
         );
 
         $response = $client->getResponse();
@@ -48,7 +48,7 @@ final class DeletePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'DELETE',
-            uri: "/api/rooms/{$roomId}/promotions/00000000-0000-4000-8000-000000000001",
+            uri: "/api/v1/rooms/{$roomId}/promotions/00000000-0000-4000-8000-000000000001",
         );
 
         $response = $client->getResponse();
@@ -66,7 +66,7 @@ final class DeletePromotionControllerTest extends WebTestCase
     {
         $client->request(
             'POST',
-            "/api/rooms/{$roomId}/promotions",
+            "/api/v1/rooms/{$roomId}/promotions",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => $checkIn, 'checkOut' => $checkOut, 'discountPercent' => $discountPercent], \JSON_THROW_ON_ERROR),
         );
@@ -80,7 +80,7 @@ final class DeletePromotionControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -96,7 +96,7 @@ final class DeletePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

@@ -25,7 +25,7 @@ final readonly class CreateRatePeriodController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/rate-periods', name: 'pricing_create_rate_period', requirements: ['roomId' => Requirement::UUID_V4], methods: ['POST'])]
+    #[Route('/rooms/{roomId}/rate-periods', name: 'pricing_create_rate_period', requirements: ['roomId' => Requirement::UUID_V4], methods: ['POST'])]
     #[OA\Post(
         summary: 'Create a rate period for a room',
         requestBody: new OA\RequestBody(

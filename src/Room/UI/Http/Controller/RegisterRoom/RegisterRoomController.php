@@ -28,7 +28,7 @@ final readonly class RegisterRoomController
     ) {
     }
 
-    #[Route('/api/hotels/{hotelId}/rooms', name: 'room_register_room', requirements: ['hotelId' => Requirement::UUID_V4], methods: ['POST'])]
+    #[Route('/hotels/{hotelId}/rooms', name: 'room_register_room', requirements: ['hotelId' => Requirement::UUID_V4], methods: ['POST'])]
     #[OA\Post(
         summary: 'Register a new room in a hotel',
         requestBody: new OA\RequestBody(

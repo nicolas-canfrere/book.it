@@ -25,7 +25,7 @@ final readonly class CreatePromotionController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/promotions', name: 'pricing_create_promotion', requirements: ['roomId' => Requirement::UUID_V4], methods: ['POST'])]
+    #[Route('/rooms/{roomId}/promotions', name: 'pricing_create_promotion', requirements: ['roomId' => Requirement::UUID_V4], methods: ['POST'])]
     #[OA\Post(
         summary: 'Create a promotion for a room',
         requestBody: new OA\RequestBody(

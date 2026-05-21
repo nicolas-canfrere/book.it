@@ -21,7 +21,7 @@ final readonly class GetPromotionsController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/promotions', name: 'pricing_get_promotions', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{roomId}/promotions', name: 'pricing_get_promotions', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get promotions for a room',
         tags: ['Pricing'],

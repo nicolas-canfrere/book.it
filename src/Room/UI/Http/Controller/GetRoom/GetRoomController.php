@@ -22,7 +22,7 @@ final readonly class GetRoomController
     ) {
     }
 
-    #[Route('/api/rooms/{id}', name: 'room_get_room', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{id}', name: 'room_get_room', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get a room by ID',
         tags: ['Rooms'],

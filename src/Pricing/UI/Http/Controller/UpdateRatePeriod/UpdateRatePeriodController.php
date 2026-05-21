@@ -27,7 +27,7 @@ final readonly class UpdateRatePeriodController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/rate-periods/{ratePeriodId}', name: 'pricing_update_rate_period', requirements: ['roomId' => Requirement::UUID_V4, 'ratePeriodId' => Requirement::UUID_V4], methods: ['PUT'])]
+    #[Route('/rooms/{roomId}/rate-periods/{ratePeriodId}', name: 'pricing_update_rate_period', requirements: ['roomId' => Requirement::UUID_V4, 'ratePeriodId' => Requirement::UUID_V4], methods: ['PUT'])]
     #[OA\Put(
         summary: 'Update a rate period for a room',
         requestBody: new OA\RequestBody(

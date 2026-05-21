@@ -27,7 +27,7 @@ final readonly class SetBaseRateController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/base-rate', name: 'pricing_set_base_rate', requirements: ['roomId' => Requirement::UUID_V4], methods: ['PUT'])]
+    #[Route('/rooms/{roomId}/base-rate', name: 'pricing_set_base_rate', requirements: ['roomId' => Requirement::UUID_V4], methods: ['PUT'])]
     #[OA\Put(
         summary: 'Set the base rate for a room',
         requestBody: new OA\RequestBody(

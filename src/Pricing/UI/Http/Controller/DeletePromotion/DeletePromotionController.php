@@ -18,7 +18,7 @@ final readonly class DeletePromotionController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/promotions/{promotionId}', name: 'pricing_delete_promotion', requirements: ['roomId' => Requirement::UUID_V4, 'promotionId' => Requirement::UUID_V4], methods: ['DELETE'])]
+    #[Route('/rooms/{roomId}/promotions/{promotionId}', name: 'pricing_delete_promotion', requirements: ['roomId' => Requirement::UUID_V4, 'promotionId' => Requirement::UUID_V4], methods: ['DELETE'])]
     #[OA\Delete(
         summary: 'Delete a promotion',
         tags: ['Pricing'],

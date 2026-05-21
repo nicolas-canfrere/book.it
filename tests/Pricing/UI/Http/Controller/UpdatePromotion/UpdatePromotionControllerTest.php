@@ -22,7 +22,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/promotions/{$promotionId}",
+            uri: "/api/v1/rooms/{$roomId}/promotions/{$promotionId}",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-01', 'discountPercent' => 25], \JSON_THROW_ON_ERROR),
         );
@@ -48,7 +48,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/promotions/00000000-0000-4000-8000-000000000001",
+            uri: "/api/v1/rooms/{$roomId}/promotions/00000000-0000-4000-8000-000000000001",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-01', 'discountPercent' => 25], \JSON_THROW_ON_ERROR),
         );
@@ -75,7 +75,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/promotions/{$promotionId}",
+            uri: "/api/v1/rooms/{$roomId}/promotions/{$promotionId}",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-15', 'discountPercent' => 20], \JSON_THROW_ON_ERROR),
         );
@@ -95,7 +95,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
     {
         $client->request(
             'POST',
-            "/api/rooms/{$roomId}/promotions",
+            "/api/v1/rooms/{$roomId}/promotions",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => $checkIn, 'checkOut' => $checkOut, 'discountPercent' => $discountPercent], \JSON_THROW_ON_ERROR),
         );
@@ -109,7 +109,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -125,7 +125,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

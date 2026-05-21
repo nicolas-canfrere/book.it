@@ -8,7 +8,7 @@ servers:
     url: 'http://localhost:8080'
     description: 'Local development server'
 paths:
-  '/api/hotels/{id}':
+  '/api/v1/hotels/{id}':
     get:
       tags:
         - Hotels
@@ -44,7 +44,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  /api/hotels:
+  /api/v1/hotels:
     get:
       tags:
         - Hotels
@@ -146,7 +146,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/hotels/{hotelId}/rooms/batch':
+  '/api/v1/hotels/{hotelId}/rooms/batch':
     post:
       tags:
         - Rooms
@@ -196,7 +196,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/rooms/{id}':
+  '/api/v1/rooms/{id}':
     get:
       tags:
         - Rooms
@@ -229,7 +229,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  '/api/hotels/{hotelId}/rooms':
+  '/api/v1/hotels/{hotelId}/rooms':
     get:
       tags:
         - Rooms
@@ -328,7 +328,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/bookers/{id}':
+  '/api/v1/bookers/{id}':
     get:
       tags:
         - Bookers
@@ -364,7 +364,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  /api/bookers:
+  /api/v1/bookers:
     post:
       tags:
         - Bookers
@@ -409,7 +409,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  '/api/rooms/{roomId}/blocked-periods':
+  '/api/v1/rooms/{roomId}/blocked-periods':
     get:
       tags:
         - Availability
@@ -484,7 +484,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/rooms/{roomId}/availability':
+  '/api/v1/rooms/{roomId}/availability':
     get:
       tags:
         - Availability
@@ -530,7 +530,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/blocked-periods/{id}':
+  '/api/v1/blocked-periods/{id}':
     delete:
       tags:
         - Availability
@@ -554,7 +554,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  '/api/rooms/{roomId}/promotions':
+  '/api/v1/rooms/{roomId}/promotions':
     get:
       tags:
         - Pricing
@@ -630,7 +630,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/rooms/{roomId}/rate-periods':
+  '/api/v1/rooms/{roomId}/rate-periods':
     get:
       tags:
         - Pricing
@@ -706,7 +706,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/rooms/{roomId}/cancellation-policy':
+  '/api/v1/rooms/{roomId}/cancellation-policy':
     get:
       tags:
         - Pricing
@@ -796,7 +796,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  '/api/rooms/{roomId}/promotions/{promotionId}':
+  '/api/v1/rooms/{roomId}/promotions/{promotionId}':
     put:
       tags:
         - Pricing
@@ -888,7 +888,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  '/api/rooms/{roomId}/rate-periods/{ratePeriodId}':
+  '/api/v1/rooms/{roomId}/rate-periods/{ratePeriodId}':
     put:
       tags:
         - Pricing
@@ -980,7 +980,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
-  '/api/rooms/{roomId}/base-rate':
+  '/api/v1/rooms/{roomId}/base-rate':
     get:
       tags:
         - Pricing
@@ -1055,7 +1055,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  '/api/rooms/{roomId}/pricing-quote':
+  '/api/v1/rooms/{roomId}/pricing-quote':
     get:
       tags:
         - Pricing
@@ -1111,7 +1111,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
-  /api/reservations:
+  /api/v1/reservations:
     post:
       tags:
         - Reservation

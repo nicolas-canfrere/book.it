@@ -27,7 +27,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
         );
@@ -53,7 +53,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
         );
@@ -61,7 +61,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
         );
@@ -87,7 +87,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($payload, \JSON_THROW_ON_ERROR),
         );
@@ -113,7 +113,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($payload, \JSON_THROW_ON_ERROR),
         );
@@ -137,7 +137,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($payload, \JSON_THROW_ON_ERROR),
         );
@@ -154,7 +154,7 @@ final class RegisterBookerControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($payload, \JSON_THROW_ON_ERROR),
         );

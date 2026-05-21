@@ -27,7 +27,7 @@ final readonly class CreateReservationController
     ) {
     }
 
-    #[Route('/api/reservations', name: 'reservation_create', methods: ['POST'])]
+    #[Route('/reservations', name: 'reservation_create', methods: ['POST'])]
     #[OA\Post(
         summary: 'Create a reservation',
         requestBody: new OA\RequestBody(

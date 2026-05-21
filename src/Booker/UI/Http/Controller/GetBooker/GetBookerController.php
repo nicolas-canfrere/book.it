@@ -22,7 +22,7 @@ final readonly class GetBookerController
     ) {
     }
 
-    #[Route('/api/bookers/{id}', name: 'booker_get_booker', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/bookers/{id}', name: 'booker_get_booker', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get a booker by ID',
         tags: ['Bookers'],

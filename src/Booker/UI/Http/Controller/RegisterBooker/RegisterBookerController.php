@@ -27,7 +27,7 @@ final readonly class RegisterBookerController
     ) {
     }
 
-    #[Route('/api/bookers', name: 'booker_register_booker', methods: ['POST'])]
+    #[Route('/bookers', name: 'booker_register_booker', methods: ['POST'])]
     #[OA\Post(
         summary: 'Register a new booker',
         requestBody: new OA\RequestBody(

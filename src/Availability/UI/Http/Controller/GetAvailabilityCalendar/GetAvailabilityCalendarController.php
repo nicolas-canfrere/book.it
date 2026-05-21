@@ -21,7 +21,7 @@ final readonly class GetAvailabilityCalendarController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/blocked-periods', name: 'availability_get_calendar', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{roomId}/blocked-periods', name: 'availability_get_calendar', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get all blocked periods for a room',
         tags: ['Availability'],

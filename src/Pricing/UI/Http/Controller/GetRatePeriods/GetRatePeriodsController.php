@@ -21,7 +21,7 @@ final readonly class GetRatePeriodsController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/rate-periods', name: 'pricing_get_rate_periods', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{roomId}/rate-periods', name: 'pricing_get_rate_periods', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get rate periods for a room',
         tags: ['Pricing'],

@@ -20,7 +20,7 @@ final readonly class GetPricingQuoteController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/pricing-quote', name: 'pricing_get_pricing_quote', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{roomId}/pricing-quote', name: 'pricing_get_pricing_quote', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get pricing quote for a room',
         tags: ['Pricing'],

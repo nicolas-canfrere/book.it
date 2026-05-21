@@ -23,7 +23,7 @@ final readonly class GetCancellationPolicyController
     }
 
     #[Route(
-        path: '/api/rooms/{roomId}/cancellation-policy',
+        path: '/rooms/{roomId}/cancellation-policy',
         name: 'pricing_get_cancellation_policy',
         requirements: ['roomId' => Requirement::UUID_V4],
         methods: ['GET'],

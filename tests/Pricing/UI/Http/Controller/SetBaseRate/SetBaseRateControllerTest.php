@@ -21,7 +21,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => 120.00], \JSON_THROW_ON_ERROR),
         );
@@ -44,7 +44,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => 120.00], \JSON_THROW_ON_ERROR),
         );
@@ -52,7 +52,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => 99.00], \JSON_THROW_ON_ERROR),
         );
@@ -72,7 +72,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: '/api/rooms/00000000-0000-4000-8000-000000000000/base-rate',
+            uri: '/api/v1/rooms/00000000-0000-4000-8000-000000000000/base-rate',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => 120.00], \JSON_THROW_ON_ERROR),
         );
@@ -96,7 +96,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => -10.0], \JSON_THROW_ON_ERROR),
         );
@@ -112,7 +112,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([], \JSON_THROW_ON_ERROR),
         );
@@ -124,7 +124,7 @@ final class SetBaseRateControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -140,7 +140,7 @@ final class SetBaseRateControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

@@ -22,7 +22,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/rate-periods/{$ratePeriodId}",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods/{$ratePeriodId}",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-01', 'amount' => 160.00], \JSON_THROW_ON_ERROR),
         );
@@ -48,7 +48,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/rate-periods/00000000-0000-4000-8000-000000000001",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods/00000000-0000-4000-8000-000000000001",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-01', 'amount' => 160.00], \JSON_THROW_ON_ERROR),
         );
@@ -75,7 +75,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/rate-periods/{$ratePeriodId}",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods/{$ratePeriodId}",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-15', 'amount' => 155.00], \JSON_THROW_ON_ERROR),
         );
@@ -100,7 +100,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/rate-periods/{$ratePeriodId}",
+            uri: "/api/v1/rooms/{$roomId}/rate-periods/{$ratePeriodId}",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-01', 'checkOut' => '2025-09-01', 'amount' => -10.0], \JSON_THROW_ON_ERROR),
         );
@@ -112,7 +112,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
     {
         $client->request(
             'POST',
-            "/api/rooms/{$roomId}/rate-periods",
+            "/api/v1/rooms/{$roomId}/rate-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => $checkIn, 'checkOut' => $checkOut, 'amount' => $amount], \JSON_THROW_ON_ERROR),
         );
@@ -126,7 +126,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -142,7 +142,7 @@ final class UpdateRatePeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

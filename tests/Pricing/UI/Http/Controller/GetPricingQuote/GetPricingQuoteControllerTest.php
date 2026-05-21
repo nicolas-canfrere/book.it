@@ -21,7 +21,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => 100.00], \JSON_THROW_ON_ERROR),
         );
@@ -29,7 +29,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04",
+            uri: "/api/v1/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04",
         );
 
         $response = $client->getResponse();
@@ -57,7 +57,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => 100.00], \JSON_THROW_ON_ERROR),
         );
@@ -65,7 +65,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/promotions",
+            uri: "/api/v1/rooms/{$roomId}/promotions",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-07-02', 'checkOut' => '2025-07-04', 'discountPercent' => 20], \JSON_THROW_ON_ERROR),
         );
@@ -73,7 +73,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04",
+            uri: "/api/v1/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04",
         );
 
         $response = $client->getResponse();
@@ -108,7 +108,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: '/api/rooms/00000000-0000-4000-8000-000000000000/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04',
+            uri: '/api/v1/rooms/00000000-0000-4000-8000-000000000000/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04',
         );
 
         $response = $client->getResponse();
@@ -130,7 +130,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04",
+            uri: "/api/v1/rooms/{$roomId}/pricing-quote?checkIn=2025-07-01&checkOut=2025-07-04",
         );
 
         $response = $client->getResponse();
@@ -152,7 +152,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/pricing-quote?checkIn=2025-07-04&checkOut=2025-07-01",
+            uri: "/api/v1/rooms/{$roomId}/pricing-quote?checkIn=2025-07-04&checkOut=2025-07-01",
         );
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
@@ -170,7 +170,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'GET',
-            uri: "/api/rooms/{$roomId}/pricing-quote",
+            uri: "/api/v1/rooms/{$roomId}/pricing-quote",
         );
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
@@ -180,7 +180,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -196,7 +196,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

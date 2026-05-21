@@ -21,7 +21,7 @@ final readonly class GetBaseRateController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/base-rate', name: 'pricing_get_base_rate', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{roomId}/base-rate', name: 'pricing_get_base_rate', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get the base rate for a room',
         tags: ['Pricing'],

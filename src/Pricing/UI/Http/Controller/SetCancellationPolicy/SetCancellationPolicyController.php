@@ -20,7 +20,7 @@ final readonly class SetCancellationPolicyController
     }
 
     #[Route(
-        path: '/api/rooms/{roomId}/cancellation-policy',
+        path: '/rooms/{roomId}/cancellation-policy',
         name: 'pricing_set_cancellation_policy',
         requirements: ['roomId' => Requirement::UUID_V4],
         methods: ['PUT'],

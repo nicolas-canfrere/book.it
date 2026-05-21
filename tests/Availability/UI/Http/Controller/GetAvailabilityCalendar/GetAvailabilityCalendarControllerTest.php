@@ -19,10 +19,10 @@ final class GetAvailabilityCalendarControllerTest extends WebTestCase
         $client = static::createClient();
         $roomId = $this->registerRoomAndGetId($client);
 
-        $client->request('POST', "/api/rooms/{$roomId}/blocked-periods", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['checkIn' => '2025-06-15', 'checkOut' => '2025-06-18'], \JSON_THROW_ON_ERROR));
-        $client->request('POST', "/api/rooms/{$roomId}/blocked-periods", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR));
+        $client->request('POST', "/api/v1/rooms/{$roomId}/blocked-periods", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['checkIn' => '2025-06-15', 'checkOut' => '2025-06-18'], \JSON_THROW_ON_ERROR));
+        $client->request('POST', "/api/v1/rooms/{$roomId}/blocked-periods", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR));
 
-        $client->request('GET', "/api/rooms/{$roomId}/blocked-periods");
+        $client->request('GET', "/api/v1/rooms/{$roomId}/blocked-periods");
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -41,7 +41,7 @@ final class GetAvailabilityCalendarControllerTest extends WebTestCase
         $client = static::createClient();
         $roomId = $this->registerRoomAndGetId($client);
 
-        $client->request('GET', "/api/rooms/{$roomId}/blocked-periods");
+        $client->request('GET', "/api/v1/rooms/{$roomId}/blocked-periods");
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -56,7 +56,7 @@ final class GetAvailabilityCalendarControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/rooms/not-a-uuid/blocked-periods');
+        $client->request('GET', '/api/v1/rooms/not-a-uuid/blocked-periods');
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }
@@ -65,7 +65,7 @@ final class GetAvailabilityCalendarControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -80,7 +80,7 @@ final class GetAvailabilityCalendarControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelBody['id']}/rooms",
+            uri: "/api/v1/hotels/{$hotelBody['id']}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

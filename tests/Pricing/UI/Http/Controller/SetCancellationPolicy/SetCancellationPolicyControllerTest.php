@@ -21,7 +21,7 @@ final class SetCancellationPolicyControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/cancellation-policy",
+            uri: "/api/v1/rooms/{$roomId}/cancellation-policy",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['daysThreshold' => 14], \JSON_THROW_ON_ERROR),
         );
@@ -37,7 +37,7 @@ final class SetCancellationPolicyControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/cancellation-policy",
+            uri: "/api/v1/rooms/{$roomId}/cancellation-policy",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['daysThreshold' => 0], \JSON_THROW_ON_ERROR),
         );
@@ -57,7 +57,7 @@ final class SetCancellationPolicyControllerTest extends WebTestCase
 
         $client->request(
             method: 'PUT',
-            uri: '/api/rooms/00000000-0000-4000-8000-000000000000/cancellation-policy',
+            uri: '/api/v1/rooms/00000000-0000-4000-8000-000000000000/cancellation-policy',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['daysThreshold' => 14], \JSON_THROW_ON_ERROR),
         );
@@ -77,7 +77,7 @@ final class SetCancellationPolicyControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -93,7 +93,7 @@ final class SetCancellationPolicyControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );

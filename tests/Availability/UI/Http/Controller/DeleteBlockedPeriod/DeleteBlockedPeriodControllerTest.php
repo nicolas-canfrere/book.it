@@ -19,7 +19,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
         $client = static::createClient();
         $blockedPeriodId = $this->blockPeriodAndGetId($client);
 
-        $client->request('DELETE', "/api/blocked-periods/{$blockedPeriodId}");
+        $client->request('DELETE', "/api/v1/blocked-periods/{$blockedPeriodId}");
 
         self::assertSame(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
     }
@@ -29,7 +29,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('DELETE', '/api/blocked-periods/00000000-0000-4000-8000-000000000000');
+        $client->request('DELETE', '/api/v1/blocked-periods/00000000-0000-4000-8000-000000000000');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
@@ -47,7 +47,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('DELETE', '/api/blocked-periods/not-a-uuid');
+        $client->request('DELETE', '/api/v1/blocked-periods/not-a-uuid');
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }
@@ -56,7 +56,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Hotel Test',
@@ -71,7 +71,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelBody['id']}/rooms",
+            uri: "/api/v1/hotels/{$hotelBody['id']}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -80,7 +80,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomBody['id']}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomBody['id']}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => '2025-06-10', 'checkOut' => '2025-06-13'], \JSON_THROW_ON_ERROR),
         );

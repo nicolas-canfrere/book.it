@@ -19,7 +19,7 @@ final readonly class CheckAvailabilityController
     {
     }
 
-    #[Route('/api/rooms/{roomId}/availability', name: 'availability_check', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
+    #[Route('/rooms/{roomId}/availability', name: 'availability_check', requirements: ['roomId' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Check whether a room is available for a given period',
         tags: ['Availability'],

@@ -29,7 +29,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -54,7 +54,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -62,7 +62,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 2], \JSON_THROW_ON_ERROR),
         );
@@ -85,7 +85,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/hotels/00000000-0000-4000-8000-000000000000/rooms',
+            uri: '/api/v1/hotels/00000000-0000-4000-8000-000000000000/rooms',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -109,7 +109,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -127,7 +127,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101'], \JSON_THROW_ON_ERROR),
         );
@@ -145,7 +145,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId}/rooms",
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 301], \JSON_THROW_ON_ERROR),
         );
@@ -162,7 +162,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/hotels/not-a-uuid/rooms',
+            uri: '/api/v1/hotels/not-a-uuid/rooms',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -178,7 +178,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(array_merge(self::HOTEL_PAYLOAD, ['name' => 'Hotel Test 2']), \JSON_THROW_ON_ERROR),
         );
@@ -188,7 +188,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId1}/rooms",
+            uri: "/api/v1/hotels/{$hotelId1}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -196,7 +196,7 @@ final class RegisterRoomControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelId2}/rooms",
+            uri: "/api/v1/hotels/{$hotelId2}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -207,7 +207,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::HOTEL_PAYLOAD, \JSON_THROW_ON_ERROR),
         );

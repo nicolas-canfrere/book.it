@@ -22,7 +22,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/reservations',
+            uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'roomId' => $roomId,
@@ -63,7 +63,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/reservations',
+            uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'roomId' => '00000000-0000-4000-8000-000000000001',
@@ -91,7 +91,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/reservations',
+            uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'roomId' => $roomId,
@@ -119,7 +119,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/reservations',
+            uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'roomId' => $roomId,
@@ -146,7 +146,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/reservations',
+            uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'roomId' => $roomId,
@@ -171,7 +171,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/reservations',
+            uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['roomId' => 'not-a-uuid', 'checkIn' => '2030-06-01'], \JSON_THROW_ON_ERROR),
         );
@@ -184,7 +184,7 @@ final class CreateReservationControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'name' => 'Test Hotel',
@@ -199,7 +199,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: "/api/hotels/{$hotelBody['id']}/rooms",
+            uri: "/api/v1/hotels/{$hotelBody['id']}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
         );
@@ -208,7 +208,7 @@ final class CreateReservationControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
-            uri: '/api/bookers',
+            uri: '/api/v1/bookers',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
                 'firstName' => 'Alice',
@@ -228,7 +228,7 @@ final class CreateReservationControllerTest extends WebTestCase
     {
         $client->request(
             method: 'PUT',
-            uri: "/api/rooms/{$roomId}/base-rate",
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amount' => $amountCents / 100], \JSON_THROW_ON_ERROR),
         );
@@ -239,7 +239,7 @@ final class CreateReservationControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: "/api/rooms/{$roomId}/blocked-periods",
+            uri: "/api/v1/rooms/{$roomId}/blocked-periods",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['checkIn' => $checkIn, 'checkOut' => $checkOut], \JSON_THROW_ON_ERROR),
         );

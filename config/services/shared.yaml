@@ -1,4 +1,6 @@
-parameters: {}
+parameters:
+    app.api.current_version: 'v1'
+    app.api.deprecated_versions: {}
 
 services:
     _defaults:
@@ -12,4 +14,14 @@ services:
     App\Shared\Infrastructure\Transaction\DoctrineTransactionManager:
         arguments:
             $bookit: '@doctrine.dbal.bookit_connection'
+
+    App\Shared\Infrastructure\Http\ApiVersionRedirectListener:
+        arguments:
+            $currentApiVersion: '%app.api.current_version%'
+            $deprecatedVersions: '%app.api.deprecated_versions%'
+
+    App\Shared\Infrastructure\Http\ApiDeprecationResponseListener:
+        arguments:
+            $currentApiVersion: '%app.api.current_version%'
+            $deprecatedVersions: '%app.api.deprecated_versions%'
 

@@ -17,7 +17,7 @@ final readonly class DeleteBlockedPeriodController
     {
     }
 
-    #[Route('/api/blocked-periods/{id}', name: 'availability_delete_blocked_period', requirements: ['id' => Requirement::UUID_V4], methods: ['DELETE'])]
+    #[Route('/blocked-periods/{id}', name: 'availability_delete_blocked_period', requirements: ['id' => Requirement::UUID_V4], methods: ['DELETE'])]
     #[OA\Delete(
         summary: 'Delete a blocked period',
         tags: ['Availability'],

@@ -27,7 +27,7 @@ final readonly class UpdatePromotionController
     ) {
     }
 
-    #[Route('/api/rooms/{roomId}/promotions/{promotionId}', name: 'pricing_update_promotion', requirements: ['roomId' => Requirement::UUID_V4, 'promotionId' => Requirement::UUID_V4], methods: ['PUT'])]
+    #[Route('/rooms/{roomId}/promotions/{promotionId}', name: 'pricing_update_promotion', requirements: ['roomId' => Requirement::UUID_V4, 'promotionId' => Requirement::UUID_V4], methods: ['PUT'])]
     #[OA\Put(
         summary: 'Update a promotion for a room',
         requestBody: new OA\RequestBody(

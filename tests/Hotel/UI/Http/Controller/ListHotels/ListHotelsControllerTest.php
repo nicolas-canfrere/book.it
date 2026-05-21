@@ -42,7 +42,7 @@ final class ListHotelsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/hotels');
+        $client->request('GET', '/api/v1/hotels');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -64,7 +64,7 @@ final class ListHotelsControllerTest extends WebTestCase
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_LYON);
 
-        $client->request('GET', '/api/hotels');
+        $client->request('GET', '/api/v1/hotels');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_OK, $response->getStatusCode());
@@ -83,7 +83,7 @@ final class ListHotelsControllerTest extends WebTestCase
         $client = static::createClient();
         $this->registerHotel($client, self::HOTEL_PARIS);
 
-        $client->request('GET', '/api/hotels');
+        $client->request('GET', '/api/v1/hotels');
 
         /** @var array{data: list<array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int}>} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -113,7 +113,7 @@ final class ListHotelsControllerTest extends WebTestCase
             ]);
         }
 
-        $client->request('GET', '/api/hotels');
+        $client->request('GET', '/api/v1/hotels');
 
         /** @var array{data: list<mixed>, meta: array{page: int, limit: int, total: int, totalPages: int}} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -137,7 +137,7 @@ final class ListHotelsControllerTest extends WebTestCase
             ]);
         }
 
-        $client->request('GET', '/api/hotels?page=2&limit=2');
+        $client->request('GET', '/api/v1/hotels?page=2&limit=2');
 
         /** @var array{data: list<array{name: string}>, meta: array{page: int, total: int, totalPages: int}} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -157,7 +157,7 @@ final class ListHotelsControllerTest extends WebTestCase
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_LYON);
 
-        $client->request('GET', '/api/hotels?city=Lyon');
+        $client->request('GET', '/api/v1/hotels?city=Lyon');
 
         /** @var array{data: list<array{city: string}>, meta: array{total: int}} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -173,7 +173,7 @@ final class ListHotelsControllerTest extends WebTestCase
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_BERLIN);
 
-        $client->request('GET', '/api/hotels?country=DE');
+        $client->request('GET', '/api/v1/hotels?country=DE');
 
         /** @var array{data: list<array{country: string}>, meta: array{total: int}} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -189,7 +189,7 @@ final class ListHotelsControllerTest extends WebTestCase
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_BERLIN);
 
-        $client->request('GET', '/api/hotels?city=Paris&country=FR');
+        $client->request('GET', '/api/v1/hotels?city=Paris&country=FR');
 
         /** @var array{data: list<array{name: string}>, meta: array{total: int}} $body */
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
@@ -202,7 +202,7 @@ final class ListHotelsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/hotels?page=0');
+        $client->request('GET', '/api/v1/hotels?page=0');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
@@ -214,7 +214,7 @@ final class ListHotelsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $client->request('GET', '/api/hotels?limit=101');
+        $client->request('GET', '/api/v1/hotels?limit=101');
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
@@ -228,7 +228,7 @@ final class ListHotelsControllerTest extends WebTestCase
     {
         $client->request(
             method: 'POST',
-            uri: '/api/hotels',
+            uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode($payload, \JSON_THROW_ON_ERROR),
         );

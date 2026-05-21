@@ -30,7 +30,7 @@ final readonly class BatchRegisterRoomsController
     ) {
     }
 
-    #[Route('/api/hotels/{hotelId}/rooms/batch', name: 'room_batch_register_rooms', requirements: ['hotelId' => Requirement::UUID_V4], methods: ['POST'])]
+    #[Route('/hotels/{hotelId}/rooms/batch', name: 'room_batch_register_rooms', requirements: ['hotelId' => Requirement::UUID_V4], methods: ['POST'])]
     #[OA\Post(
         summary: 'Import multiple rooms in a hotel from a CSV file',
         requestBody: new OA\RequestBody(
