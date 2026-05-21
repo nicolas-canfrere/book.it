@@ -17,6 +17,11 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
         $this->store[$reservation->id] = $reservation;
     }
 
+    public function save(Reservation $reservation): void
+    {
+        $this->store[$reservation->id] = $reservation;
+    }
+
     public function get(string $id): ?Reservation
     {
         return $this->store[$id] ?? null;
