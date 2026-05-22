@@ -22,7 +22,7 @@ final readonly class RegisterHotelCommandHandler implements SyncCommandHandlerIn
             throw new HotelAlreadyExistsException($command->name, $command->address->city);
         }
 
-        $hotel = new Hotel($command->id, $command->name, $command->address, $command->createdAt);
+        $hotel = new Hotel($command->id, $command->name, $command->address, $command->createdAt, $command->starRating);
 
         $this->hotelRepository->add($hotel);
     }

@@ -7,6 +7,7 @@ namespace App\Hotel\Application\Service;
 use App\Hotel\Application\UseCase\RegisterHotel\RegisterHotelCommand;
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Port\HotelIdGeneratorInterface;
+use App\Hotel\Domain\ValueObject\StarRating;
 use Psr\Clock\ClockInterface;
 
 final readonly class RegisterHotelCommandFactory
@@ -23,16 +24,21 @@ final readonly class RegisterHotelCommandFactory
         ?string $postalCode,
         ?string $city,
         ?string $country,
+        ?int $stars = null,
+        bool $superior = false,
     ): RegisterHotelCommand {
         if (null === $name || null === $streetAddress || null === $postalCode || null === $city || null === $country) {
             throw new \InvalidArgumentException('All hotel fields are required.');
         }
+
+        $starRating = null !== $stars ? new StarRating($stars, $superior) : null;
 
         return new RegisterHotelCommand(
             $this->hotelIdGenerator->generate(),
             $name,
             new Address($streetAddress, $postalCode, $city, $country),
             $this->clock->now(),
+            $starRating,
         );
     }
 }

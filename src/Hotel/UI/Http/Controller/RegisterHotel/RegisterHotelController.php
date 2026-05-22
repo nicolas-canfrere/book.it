@@ -87,6 +87,8 @@ final readonly class RegisterHotelController
             $request->postalCode,
             $request->city,
             $request->country,
+            $request->stars,
+            $request->superior,
         );
         $this->commandBus->execute($command);
 
