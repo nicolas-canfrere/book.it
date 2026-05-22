@@ -134,5 +134,6 @@ final class ListHotelsTest extends WebTestCase
                 'superior' => $superior,
             ], \JSON_THROW_ON_ERROR),
         );
+        self::assertSame(Response::HTTP_NO_CONTENT, $client->getResponse()->getStatusCode());
     }
 }
