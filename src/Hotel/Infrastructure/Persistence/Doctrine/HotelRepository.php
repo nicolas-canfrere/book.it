@@ -51,7 +51,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
 
     public function get(string $id): ?Hotel
     {
-        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string}|false $row */
+        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool}|false $row */
         $row = $this->bookit->fetchAssociative(
             'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel WHERE id = :id',
             ['id' => $id],
@@ -106,7 +106,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $params['limit'] = $limit;
         $params['offset'] = ($page - 1) * $limit;
 
-        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string}> $rows */
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool}> $rows */
         $rows = $this->bookit->fetchAllAssociative(
             "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
             $params,
