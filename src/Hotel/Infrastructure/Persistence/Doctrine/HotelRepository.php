@@ -46,7 +46,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
 
     public function get(string $id): ?Hotel
     {
-        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: bool}|false $row */
+        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string}|false $row */
         $row = $this->bookit->fetchAssociative(
             'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel WHERE id = :id',
             ['id' => $id],
@@ -101,7 +101,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $params['limit'] = $limit;
         $params['offset'] = ($page - 1) * $limit;
 
-        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: bool}> $rows */
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string}> $rows */
         $rows = $this->bookit->fetchAllAssociative(
             "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
             $params,
@@ -111,12 +111,12 @@ final readonly class HotelRepository implements HotelRepositoryInterface
     }
 
     /**
-     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: bool} $row
+     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string} $row
      */
     private function hydrate(array $row): Hotel
     {
         $starRating = null !== $row['stars']
-            ? new StarRating((int) $row['stars'], (bool) $row['superior'])
+            ? new StarRating((int) $row['stars'], 't' === $row['superior'])
             : null;
 
         return new Hotel(
