@@ -9,7 +9,7 @@ use App\Hotel\Domain\Model\Hotel;
 final class HotelSerializer
 {
     /**
-     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int}
+     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int, starRating: array{stars: int, superior: bool}|null}
      */
     public function serialize(Hotel $hotel): array
     {
@@ -21,6 +21,9 @@ final class HotelSerializer
             'city' => $hotel->address->city,
             'country' => $hotel->address->country,
             'createdAt' => $hotel->createdAt->getTimestamp(),
+            'starRating' => null !== $hotel->starRating
+                ? ['stars' => $hotel->starRating->stars, 'superior' => $hotel->starRating->superior]
+                : null,
         ];
     }
 }
