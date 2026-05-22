@@ -6,8 +6,8 @@ namespace App\Hotel\Domain\Exception;
 
 final class HotelNotFoundException extends \DomainException
 {
-    public static function withId(string $id): self
+    public function __construct(string $id)
     {
-        return new self(sprintf('Hotel "%s" not found.', $id));
+        parent::__construct(sprintf('Hotel "%s" not found.', $id));
     }
 }

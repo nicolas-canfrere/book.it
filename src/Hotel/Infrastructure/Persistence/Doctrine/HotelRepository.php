@@ -10,6 +10,7 @@ use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\StarRating;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
 final readonly class HotelRepository implements HotelRepositoryInterface
@@ -33,6 +34,8 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'created_at' => $hotel->createdAt->format('Y-m-d H:i:s'),
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
+        ], [
+            'superior' => Types::BOOLEAN,
         ]);
     }
 
@@ -41,7 +44,9 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $this->bookit->update('hotel', [
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
-        ], ['id' => $hotel->id]);
+        ], ['id' => $hotel->id], [
+            'superior' => Types::BOOLEAN,
+        ]);
     }
 
     public function get(string $id): ?Hotel
@@ -111,12 +116,12 @@ final readonly class HotelRepository implements HotelRepositoryInterface
     }
 
     /**
-     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string} $row
+     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool} $row
      */
     private function hydrate(array $row): Hotel
     {
         $starRating = null !== $row['stars']
-            ? new StarRating((int) $row['stars'], 't' === $row['superior'])
+            ? new StarRating((int) $row['stars'], 't' === $row['superior'] || true === $row['superior'])
             : null;
 
         return new Hotel(

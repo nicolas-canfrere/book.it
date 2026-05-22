@@ -8,6 +8,26 @@ servers:
     url: 'http://localhost:8080'
     description: 'Local development server'
 paths:
+  '/api/v1/hotels/{id}/star-rating':
+    patch:
+      operationId: patch_hotel_classify
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClassifyHotelRequest'
+      responses:
+        default:
+          description: ''
   '/api/v1/hotels/{id}':
     get:
       tags:
@@ -1201,6 +1221,20 @@ components:
                   message: { type: string, example: 'This value should not be blank.' }
                 type: object
           type: object
+    ClassifyHotelRequest:
+      properties:
+        stars:
+          type: integer
+          example: 4
+          nullable: true
+          default: null
+          maximum: 5
+          minimum: 1
+        superior:
+          type: boolean
+          example: false
+          default: false
+      type: object
     ListHotelsRequest:
       properties:
         page:
@@ -1260,6 +1294,17 @@ components:
           default: null
           maxLength: 2
           minLength: 2
+        stars:
+          type: integer
+          example: 4
+          nullable: true
+          default: null
+          maximum: 5
+          minimum: 1
+        superior:
+          type: boolean
+          example: false
+          default: false
       type: object
     ListRoomsRequest:
       properties:

@@ -21,7 +21,7 @@ final readonly class ClassifyHotelCommandHandler implements SyncCommandHandlerIn
         $hotel = $this->hotelRepository->get($command->hotelId);
 
         if (null === $hotel) {
-            throw HotelNotFoundException::withId($command->hotelId);
+            throw new HotelNotFoundException($command->hotelId);
         }
 
         $starRating = null !== $command->stars

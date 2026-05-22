@@ -11,7 +11,7 @@ final readonly class ClassifyHotelCommand implements SyncCommandInterface
     public function __construct(
         public string $hotelId,
         public ?int $stars,
-        public bool $superior,
+        public bool $superior = false,
     ) {
     }
 }
