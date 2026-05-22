@@ -1,6 +1,5 @@
 <?php
 
-// tests/Hotel/Unit/Domain/ValueObject/StarRatingTest.php
 declare(strict_types=1);
 
 namespace App\Tests\Hotel\Unit\Domain\ValueObject;
