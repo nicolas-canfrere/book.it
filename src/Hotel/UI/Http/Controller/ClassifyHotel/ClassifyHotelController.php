@@ -27,18 +27,35 @@ final readonly class ClassifyHotelController
         methods: ['PATCH'],
     )]
     #[OA\Patch(
-        path: '/hotels/{id}/star-rating',
         summary: 'Set or update the Star Rating of a Hotel',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: new Model(type: ClassifyHotelRequest::class)),
+        ),
         tags: ['Hotels'],
+        parameters: [
+            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+        ],
+        responses: [
+            new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Star Rating updated'),
+            new OA\Response(
+                response: Response::HTTP_NOT_FOUND,
+                description: 'Hotel not found',
+                content: new OA\MediaType(
+                    mediaType: 'application/problem+json',
+                    schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'),
+                ),
+            ),
+            new OA\Response(
+                response: Response::HTTP_UNPROCESSABLE_ENTITY,
+                description: 'Validation error',
+                content: new OA\MediaType(
+                    mediaType: 'application/problem+json',
+                    schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'),
+                ),
+            ),
+        ],
     )]
-    #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
-    #[OA\RequestBody(
-        required: true,
-        content: new OA\JsonContent(ref: new Model(type: ClassifyHotelRequest::class)),
-    )]
-    #[OA\Response(response: 204, description: 'Star Rating updated')]
-    #[OA\Response(response: 404, description: 'Hotel not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail')))]
-    #[OA\Response(response: 422, description: 'Validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail')))]
     public function __invoke(
         string $id,
         #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
