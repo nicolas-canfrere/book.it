@@ -180,4 +180,86 @@ final class RegisterHotelControllerTest extends WebTestCase
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
     }
+
+    #[Test]
+    public function itRegistersAHotelWithStarsAndSuperiorAndReturns201(): void
+    {
+        $client = static::createClient();
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['stars' => 4, 'superior' => false]);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+
+        /** @var array{starRating: array{stars: int, superior: bool}|null} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertNotNull($body['starRating']);
+        self::assertSame(4, $body['starRating']['stars']);
+        self::assertFalse($body['starRating']['superior']);
+    }
+
+    #[Test]
+    public function itReturns422WhenSuperiorIsTrueAndStarsIsNull(): void
+    {
+        $client = static::createClient();
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['superior' => true]);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+    }
+
+    #[Test]
+    public function itReturns422WhenStarsIsOutOfRange(): void
+    {
+        $client = static::createClient();
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['stars' => 6]);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+    }
+
+    #[Test]
+    public function itRegistersAHotelWithStarsOnlyAndDefaultsSuperiorToFalse(): void
+    {
+        $client = static::createClient();
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['stars' => 3]);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+
+        /** @var array{starRating: array{stars: int, superior: bool}|null} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertNotNull($body['starRating']);
+        self::assertSame(3, $body['starRating']['stars']);
+        self::assertFalse($body['starRating']['superior']);
+    }
 }

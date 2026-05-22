@@ -8,7 +8,7 @@ use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[Assert\Expression(
-    expression: 'not (this.superior === true and this.stars === null)',
+    expression: 'not (this.superior and this.stars === null)',
     message: 'stars must be provided when superior is true.',
 )]
 final readonly class RegisterHotelRequest
