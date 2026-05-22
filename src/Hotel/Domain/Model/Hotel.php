@@ -17,6 +17,7 @@ final readonly class Hotel
     ) {
     }
 
+    /** Pass null to remove the Star Rating. */
     public function withStarRating(?StarRating $starRating): self
     {
         return new self(
