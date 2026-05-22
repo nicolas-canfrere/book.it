@@ -13,26 +13,41 @@ The physical location of a Hotel, composed of street address, postal code, city,
 _Avoid_: location, place
 
 **Hotel Registration**:
-The act of declaring a new Hotel in the system. Rejected if a Hotel with the same name and address already exists.
+The act of declaring a new Hotel in the system. Rejected if a Hotel with the same name and address already exists. A Star Rating may optionally be provided at registration time.
 _Avoid_: hotel creation, hotel addition
+
+**Star Rating**:
+An optional operator-declared classification of a Hotel according to the European Hotelstars Union scale. Composed of a number of stars (integer, 1–5) and a Superior distinction (boolean). Self-declared by the operator — the system performs no external validation. A Hotel without a Star Rating is valid and fully usable. The Superior distinction is only valid when a number of stars is present; removing the stars implicitly removes the Superior distinction.
+_Avoid_: HSU classification, hotel category, hotel stars
+
+**Star Rating Classification**:
+The act of setting or updating the Star Rating of a Hotel after registration. The operator may add, modify, or remove the classification at any time.
+_Avoid_: star update, rating update
 
 ## Relationships
 
 - A **Hotel** has exactly one **Address**
+- A **Hotel** has at most one **Star Rating** (optional)
 - A **Hotel Registration** produces exactly one **Hotel**, or raises a conflict if the **Hotel** already exists
+- A **Star Rating Classification** may be performed at any time after **Hotel Registration**
+- A **Star Rating** with `superior: true` requires a number of stars to be present; removing the stars implicitly sets `superior` to false
 
 ## Example dialogue
 
 > **Dev:** "What if the operator registers 'Hôtel Ibis' twice?"
 > **Domain expert:** "If it's the same address, it's a duplicate — reject it. If it's a different city, it's two different hotels."
 
+> **Dev:** "Can an operator declare '5 étoiles Superior' without proof?"
+> **Domain expert:** "Yes — it's self-declared. The operator is responsible for accuracy, like the name or address."
+
 **Hotel Catalogue**:
-A paginated, filterable list of all registered Hotels. Supports filtering by city and country. Sorted alphabetically by name. Public — no authentication required.
+A paginated, filterable list of all registered Hotels. Supports filtering by city, country, and minimum Star Rating (`minStars`). Sorted alphabetically by name. Public — no authentication required.
 _Avoid_: hotel list, hotel search, hotel directory
 
 ## Flagged ambiguities
 
 - "unique hotel" was initially defined by name alone — resolved: uniqueness is name + full address (street, postal code, city, country).
+- `superior` with no stars is not a valid state — the domain rejects it; removing stars implicitly clears `superior`.
 
 ---
 
