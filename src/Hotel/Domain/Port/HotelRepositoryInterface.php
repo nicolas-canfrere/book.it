@@ -12,9 +12,11 @@ interface HotelRepositoryInterface
 {
     public function add(Hotel $hotel): void;
 
+    public function save(Hotel $hotel): void;
+
     public function get(string $id): ?Hotel;
 
     public function existsByNameAndAddress(string $name, Address $address): bool;
 
-    public function list(int $page, int $limit, ?string $city, ?string $country): HotelPage;
+    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null): HotelPage;
 }

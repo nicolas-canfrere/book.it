@@ -19,6 +19,11 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
         $this->hotels[$hotel->id] = $hotel;
     }
 
+    public function save(Hotel $hotel): void
+    {
+        $this->hotels[$hotel->id] = $hotel;
+    }
+
     public function get(string $id): ?Hotel
     {
         return $this->hotels[$id] ?? null;
@@ -37,12 +42,13 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
         return false;
     }
 
-    public function list(int $page, int $limit, ?string $city, ?string $country): HotelPage
+    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null): HotelPage
     {
         $filtered = array_values(array_filter(
             $this->hotels,
             static fn(Hotel $h) => (null === $city || strtolower($h->address->city) === strtolower($city))
-                && (null === $country || strtolower($h->address->country) === strtolower($country)),
+                && (null === $country || strtolower($h->address->country) === strtolower($country))
+                && (null === $minStars || (null !== $h->starRating && $h->starRating->stars >= $minStars)),
         ));
 
         usort($filtered, static fn(Hotel $a, Hotel $b) => strcmp($a->name, $b->name));

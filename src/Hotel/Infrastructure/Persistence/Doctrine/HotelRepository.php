@@ -8,6 +8,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
+use App\Hotel\Domain\ValueObject\StarRating;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
@@ -30,14 +31,24 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'country' => $hotel->address->country,
             'search_key' => $this->buildSearchKey($hotel->name, $hotel->address),
             'created_at' => $hotel->createdAt->format('Y-m-d H:i:s'),
+            'stars' => $hotel->starRating?->stars,
+            'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
         ]);
+    }
+
+    public function save(Hotel $hotel): void
+    {
+        $this->bookit->update('hotel', [
+            'stars' => $hotel->starRating?->stars,
+            'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
+        ], ['id' => $hotel->id]);
     }
 
     public function get(string $id): ?Hotel
     {
-        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string}|false $row */
+        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: bool}|false $row */
         $row = $this->bookit->fetchAssociative(
-            'SELECT id, name, street_address, postal_code, city, country, created_at FROM hotel WHERE id = :id',
+            'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel WHERE id = :id',
             ['id' => $id],
         );
 
@@ -45,12 +56,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             return null;
         }
 
-        return new Hotel(
-            $row['id'],
-            $row['name'],
-            new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
-            new \DateTimeImmutable($row['created_at']),
-        );
+        return $this->hydrate($row);
     }
 
     public function existsByNameAndAddress(string $name, Address $address): bool
@@ -63,7 +69,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         return $count > 0;
     }
 
-    public function list(int $page, int $limit, ?string $city, ?string $country): HotelPage
+    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null): HotelPage
     {
         $conditions = [];
         $params = [];
@@ -78,6 +84,11 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             $params['country'] = $country;
         }
 
+        if (null !== $minStars) {
+            $conditions[] = 'stars >= :minStars';
+            $params['minStars'] = $minStars;
+        }
+
         $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
         /** @var int|string $count */
@@ -90,23 +101,31 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $params['limit'] = $limit;
         $params['offset'] = ($page - 1) * $limit;
 
-        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string}> $rows */
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: bool}> $rows */
         $rows = $this->bookit->fetchAllAssociative(
-            "SELECT id, name, street_address, postal_code, city, country, created_at FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
+            "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
             $params,
         );
 
-        $hotels = array_map(
-            fn(array $row) => new Hotel(
-                $row['id'],
-                $row['name'],
-                new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
-                new \DateTimeImmutable($row['created_at']),
-            ),
-            $rows,
-        );
+        return new HotelPage(array_map($this->hydrate(...), $rows), $total);
+    }
 
-        return new HotelPage($hotels, $total);
+    /**
+     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: bool} $row
+     */
+    private function hydrate(array $row): Hotel
+    {
+        $starRating = null !== $row['stars']
+            ? new StarRating((int) $row['stars'], (bool) $row['superior'])
+            : null;
+
+        return new Hotel(
+            $row['id'],
+            $row['name'],
+            new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
+            new \DateTimeImmutable($row['created_at']),
+            $starRating,
+        );
     }
 
     private function buildSearchKey(string $name, Address $address): string
