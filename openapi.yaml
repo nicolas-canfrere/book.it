@@ -106,6 +106,16 @@ paths:
             type: string
             nullable: true
             default: null
+        -
+          name: minStars
+          in: query
+          required: false
+          schema:
+            type: integer
+            nullable: true
+            default: null
+            maximum: 5
+            minimum: 1
       responses:
         '200':
           description: 'Paginated hotel catalogue'
@@ -113,7 +123,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, name: { type: string }, streetAddress: { type: string }, postalCode: { type: string }, city: { type: string }, country: { type: string }, createdAt: { type: integer } }, type: object } }
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, name: { type: string }, streetAddress: { type: string }, postalCode: { type: string }, city: { type: string }, country: { type: string }, createdAt: { type: integer }, starRating: { properties: { stars: { type: integer, maximum: 5, minimum: 1 }, superior: { type: boolean } }, type: object, nullable: true } }, type: object } }
                   meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 143 }, totalPages: { type: integer, example: 8 } }, type: object }
                 type: object
         '422':
@@ -1256,6 +1266,12 @@ components:
           type: string
           nullable: true
           default: null
+        minStars:
+          type: integer
+          nullable: true
+          default: null
+          maximum: 5
+          minimum: 1
       type: object
     RegisterHotelRequest:
       properties:

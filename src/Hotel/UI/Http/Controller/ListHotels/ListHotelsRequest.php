@@ -23,6 +23,9 @@ final readonly class ListHotelsRequest
         #[Assert\Country]
         #[OA\Parameter(name: 'country', in: 'query', schema: new OA\Schema(type: 'string', example: 'FR', nullable: true))]
         public ?string $country = null,
+        #[Assert\Range(min: 1, max: 5)]
+        #[OA\Parameter(name: 'minStars', in: 'query', schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 5, nullable: true))]
+        public ?int $minStars = null,
     ) {
     }
 }

@@ -42,6 +42,15 @@ final readonly class ListHotelsController
                                     new OA\Property(property: 'city', type: 'string'),
                                     new OA\Property(property: 'country', type: 'string'),
                                     new OA\Property(property: 'createdAt', type: 'integer'),
+                                    new OA\Property(
+                                        property: 'starRating',
+                                        properties: [
+                                            new OA\Property(property: 'stars', type: 'integer', minimum: 1, maximum: 5),
+                                            new OA\Property(property: 'superior', type: 'boolean'),
+                                        ],
+                                        type: 'object',
+                                        nullable: true,
+                                    ),
                                 ],
                                 type: 'object',
                             ),
@@ -77,6 +86,7 @@ final readonly class ListHotelsController
             $request->limit,
             $request->city,
             $request->country,
+            $request->minStars,
         ));
 
         return new JsonResponse(

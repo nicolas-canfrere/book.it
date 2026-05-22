@@ -17,6 +17,7 @@ final readonly class ListHotelsQuery implements SyncQueryInterface
         public int $limit = 20,
         public ?string $city = null,
         public ?string $country = null,
+        public ?int $minStars = null,
     ) {
     }
 }
