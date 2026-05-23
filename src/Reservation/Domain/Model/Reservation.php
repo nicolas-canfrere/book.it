@@ -34,4 +34,22 @@ final class Reservation
 
         $this->status = ReservationStatus::Expired;
     }
+
+    public function confirm(): void
+    {
+        if (ReservationStatus::Pending !== $this->status) {
+            throw new InvalidReservationTransitionException($this->status, ReservationStatus::Confirmed);
+        }
+
+        $this->status = ReservationStatus::Confirmed;
+    }
+
+    public function cancelPending(): void
+    {
+        if (ReservationStatus::Pending !== $this->status) {
+            throw new InvalidReservationTransitionException($this->status, ReservationStatus::Cancelled);
+        }
+
+        $this->status = ReservationStatus::Cancelled;
+    }
 }

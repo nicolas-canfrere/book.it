@@ -81,6 +81,40 @@ final class ReservationTest extends TestCase
     }
 
     #[Test]
+    public function itConfirmsPendingReservation(): void
+    {
+        $reservation = $this->makeReservation();
+        $reservation->confirm();
+        self::assertSame(ReservationStatus::Confirmed, $reservation->status);
+    }
+
+    #[Test]
+    public function itThrowsWhenConfirmingExpiredReservation(): void
+    {
+        $reservation = $this->makeReservation();
+        $reservation->expire();
+        $this->expectException(InvalidReservationTransitionException::class);
+        $reservation->confirm();
+    }
+
+    #[Test]
+    public function itCancelsPendingReservation(): void
+    {
+        $reservation = $this->makeReservation();
+        $reservation->cancelPending();
+        self::assertSame(ReservationStatus::Cancelled, $reservation->status);
+    }
+
+    #[Test]
+    public function itThrowsWhenCancellingExpiredReservation(): void
+    {
+        $reservation = $this->makeReservation();
+        $reservation->expire();
+        $this->expectException(InvalidReservationTransitionException::class);
+        $reservation->cancelPending();
+    }
+
+    #[Test]
     public function itAllowsZeroPrice(): void
     {
         $reservation = new Reservation(

@@ -193,7 +193,7 @@ A confirmed or pending booking of a Room by a Booker for a specific stay period.
 _Avoid_: booking, order, stay
 
 **Reservation Status**:
-The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` or `cancelled`; `confirmed` → `cancelled`. No other transitions are allowed.
+The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` (Payment Confirmation), `pending` → `cancelled` (Payment Abandonment or Expiration), `confirmed` → `cancelled` (Cancellation or Revocation). No other transitions are allowed.
 _Avoid_: reservation state, booking status
 
 **Cancellation** *(by Booker)*:
@@ -205,8 +205,20 @@ The unilateral act of an operator terminating a Reservation. Always triggers a f
 _Avoid_: operator cancellation, forced cancellation
 
 **Expiration** *(by System)*:
-The automatic termination of a `pending` Reservation by the system when its Availability Hold reaches its expiry time without having been confirmed. Distinct from Cancellation (Booker-initiated) and Revocation (Operator-initiated). Produces a `ReservationExpired` event. The associated Availability Hold is deleted at the same time.
+The automatic termination of a `pending` Reservation by the system when its Availability Hold reaches its expiry time without having been confirmed. Distinct from Cancellation (Booker-initiated), Revocation (Operator-initiated), and Payment Abandonment (provider-initiated). Produces a `ReservationExpired` event. The associated Availability Hold is deleted at the same time.
 _Avoid_: revocation, cancellation, timeout, expiry
+
+**Payment Confirmation** *(by Payment Provider)*:
+The external notification from the payment provider that a payment attempt succeeded. Triggers the transition `pending → confirmed` on the Reservation. Produces a `ReservationConfirmed` event, which causes Availability to convert the Availability Hold into a Blocked Period.
+_Avoid_: payment success, payment approval
+
+**Payment Failure** *(by Payment Provider)*:
+The external notification from the payment provider that a payment attempt failed (e.g. card declined, insufficient funds). The Reservation remains `pending` — the Booker may retry with another payment method until the Availability Hold expires. Produces no domain transition.
+_Avoid_: payment error, payment rejection
+
+**Payment Abandonment** *(by Booker)*:
+The act of a Booker leaving the payment flow without completing payment (e.g. closing the page, clicking back). Notified by the payment provider via a cancel webhook. Triggers the transition `pending → cancelled` on the Reservation. Produces a `ReservationPaymentCancelled` event, which causes Availability to delete the Availability Hold.
+_Avoid_: payment cancel, payment cancellation, booking abandonment
 
 **Stay Period**:
 The date range of a Reservation, defined by a check-in date (inclusive) and a check-out date (exclusive). The check-out date must be strictly after the check-in date.
@@ -225,5 +237,7 @@ _Avoid_: reservation period, booking dates, stay dates
 - A **Revocation** (by Operator) is permitted at any time while the Reservation is active
 - `ReservationCreated` causes Availability to create an **Availability Hold** for the Stay Period; the Reservation context simultaneously schedules an `ExpireReservation` delayed message (15 min)
 - `ReservationConfirmed` causes Availability to convert the **Availability Hold** into a **Blocked Period**
-- `ReservationExpired` causes Availability to delete the **Availability Hold**; `ReservationCancelled` and `ReservationRevoked` cause Availability to remove the **Blocked Period**
+- `ReservationExpired` causes Availability to delete the **Availability Hold**
+- `ReservationPaymentCancelled` causes Availability to delete the **Availability Hold** (Payment Abandonment path — symmetric to Expiration)
+- `ReservationCancelled` and `ReservationRevoked` cause Availability to remove the **Blocked Period** (only applicable to confirmed Reservations)
 - An **Expiration** only applies to a `pending` Reservation — if the Reservation was already confirmed when the delayed message arrives, it is a no-op
