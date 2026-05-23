@@ -12,6 +12,7 @@ The platform is organized around the following bounded contexts:
 - **Pricing** — Base rates, rate periods, promotions, pricing quotes, cancellation policies
 - **Booker** — Booker self-registration (natural persons, 18+)
 - **Reservation** — Reservation lifecycle (pending → confirmed / cancelled / expired), price snapshot, cancellation terms, expiration and revocation
+- **Payment** — Payment processing webhooks, confirmation and cancellation handling
 
 See [CONTEXT.md](CONTEXT.md) for the full ubiquitous language and domain model.
 
@@ -26,17 +27,11 @@ See [CONTEXT.md](CONTEXT.md) for the full ubiquitous language and domain model.
 ## Getting Started
 
 ```bash
-# Create the shared Docker network (once)
-docker network create bookit-nw
-
-# Start all services
-make up
-
 # Install dependencies
 make install
 
-# Run database migrations
-make migrate
+# Start all services (creates the Docker network and runs migrations automatically)
+make up
 ```
 
 The API is then available at `http://localhost` and the OpenAPI documentation at `http://localhost/api/doc`.
@@ -86,14 +81,11 @@ Dependency rules are enforced by [deptrac](https://github.com/deptrac/deptrac) (
 ## Development
 
 ```bash
-# Run static analysis
-make static-code-analysis
+# Full code analysis (PHPStan + CS Fixer + deptrac)
+make lint
 
 # Run all tests
 make test
-
-# Apply coding standards
-make apply-cs
 ```
 
 Coding standards enforce `@Symfony` + `@PSR2` rules via PHP CS Fixer. `declare(strict_types=1)` is required on all files.
