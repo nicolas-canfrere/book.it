@@ -1205,6 +1205,42 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  /api/v1/payment/webhooks/cancel:
+    post:
+      operationId: post_payment_webhook_cancel
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandlePaymentCancellationRequest'
+      responses:
+        default:
+          description: ''
+  /api/v1/payment/webhooks/failed:
+    post:
+      operationId: post_payment_webhook_failed
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandlePaymentFailureRequest'
+      responses:
+        default:
+          description: ''
+  /api/v1/payment/webhooks/success:
+    post:
+      operationId: post_payment_webhook_success
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/HandlePaymentSuccessRequest'
+      responses:
+        default:
+          description: ''
 components:
   schemas:
     ProblemDetail:
@@ -1574,6 +1610,24 @@ components:
           example: '2026-06-05'
           nullable: true
           default: null
+      type: object
+    HandlePaymentCancellationRequest:
+      properties:
+        reservation_id:
+          type: string
+          default: ''
+      type: object
+    HandlePaymentFailureRequest:
+      properties:
+        reservation_id:
+          type: string
+          default: ''
+      type: object
+    HandlePaymentSuccessRequest:
+      properties:
+        reservation_id:
+          type: string
+          default: ''
       type: object
 tags:
   -
