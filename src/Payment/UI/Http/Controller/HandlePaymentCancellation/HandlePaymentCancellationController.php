@@ -19,7 +19,6 @@ final readonly class HandlePaymentCancellationController
 
     #[Route('/payment/webhooks/cancel', name: 'payment_webhook_cancel', methods: ['POST'])]
     #[OA\Post(
-        path: '/payment/webhooks/cancel',
         summary: 'Payment cancellation webhook',
         requestBody: new OA\RequestBody(
             required: true,

@@ -19,7 +19,6 @@ final readonly class HandlePaymentFailureController
 
     #[Route('/payment/webhooks/failed', name: 'payment_webhook_failed', methods: ['POST'])]
     #[OA\Post(
-        path: '/payment/webhooks/failed',
         summary: 'Payment failure webhook',
         requestBody: new OA\RequestBody(
             required: true,

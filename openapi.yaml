@@ -1207,40 +1207,73 @@ paths:
                 $ref: '#/components/schemas/ValidationProblemDetail'
   /api/v1/payment/webhooks/cancel:
     post:
+      tags:
+        - Payment
+      summary: 'Payment cancellation webhook'
       operationId: post_payment_webhook_cancel
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HandlePaymentCancellationRequest'
+              required:
+                - reservation_id
+              properties:
+                reservation_id:
+                  type: string
+                  format: uuid
+              type: object
       responses:
-        default:
-          description: ''
+        '204':
+          description: Acknowledged
+        '422':
+          description: 'Validation error'
   /api/v1/payment/webhooks/failed:
     post:
+      tags:
+        - Payment
+      summary: 'Payment failure webhook'
       operationId: post_payment_webhook_failed
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HandlePaymentFailureRequest'
+              required:
+                - reservation_id
+              properties:
+                reservation_id:
+                  type: string
+                  format: uuid
+              type: object
       responses:
-        default:
-          description: ''
+        '204':
+          description: Acknowledged
+        '422':
+          description: 'Validation error'
   /api/v1/payment/webhooks/success:
     post:
+      tags:
+        - Payment
+      summary: 'Payment success webhook'
       operationId: post_payment_webhook_success
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/HandlePaymentSuccessRequest'
+              required:
+                - reservation_id
+              properties:
+                reservation_id:
+                  type: string
+                  format: uuid
+              type: object
       responses:
-        default:
-          description: ''
+        '204':
+          description: Acknowledged
+        '422':
+          description: 'Validation error'
 components:
   schemas:
     ProblemDetail:
@@ -1648,4 +1681,7 @@ tags:
   -
     name: Reservation
     description: Reservation
+  -
+    name: Payment
+    description: Payment
 

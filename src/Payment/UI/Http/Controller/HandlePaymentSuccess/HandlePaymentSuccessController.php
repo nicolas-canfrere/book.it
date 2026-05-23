@@ -19,7 +19,6 @@ final readonly class HandlePaymentSuccessController
 
     #[Route('/payment/webhooks/success', name: 'payment_webhook_success', methods: ['POST'])]
     #[OA\Post(
-        path: '/payment/webhooks/success',
         summary: 'Payment success webhook',
         requestBody: new OA\RequestBody(
             required: true,
