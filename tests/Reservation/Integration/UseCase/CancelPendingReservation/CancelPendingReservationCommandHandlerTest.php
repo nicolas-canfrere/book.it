@@ -39,7 +39,7 @@ final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
         $repository = new InMemoryReservationRepository($reservation);
         $dispatcher = new EventDispatcher();
         $dispatchedEvents = [];
-        $dispatcher->addListener(ReservationPaymentCancelled::class, function (ReservationPaymentCancelled $e) use (&$dispatchedEvents) {
+        $dispatcher->addListener(ReservationPaymentCancelled::class, function (ReservationPaymentCancelled $e) use (&$dispatchedEvents): void {
             $dispatchedEvents[] = $e;
         });
 
@@ -65,14 +65,20 @@ final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
 
 final class InMemoryReservationRepository implements ReservationRepositoryInterface
 {
-    public function __construct(private ?Reservation $reservation) {}
+    public function __construct(private ?Reservation $reservation)
+    {
+    }
 
     public function get(string $id): ?Reservation
     {
         return $this->reservation?->id === $id ? $this->reservation : null;
     }
 
-    public function add(Reservation $reservation): void {}
+    public function add(Reservation $reservation): void
+    {
+    }
 
-    public function save(Reservation $reservation): void {}
+    public function save(Reservation $reservation): void
+    {
+    }
 }
