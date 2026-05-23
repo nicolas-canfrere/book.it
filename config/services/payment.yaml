@@ -1,0 +1,26 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+
+    App\Payment\Domain\:
+        resource: '../../src/Payment/Domain/'
+
+    App\Payment\Application\:
+        resource: '../../src/Payment/Application/'
+        exclude:
+            - '../../src/Payment/Application/**/*Command.php'
+
+    App\Payment\Infrastructure\:
+        resource: '../../src/Payment/Infrastructure/'
+
+    App\Payment\UI\:
+        resource: '../../src/Payment/UI/'
+        exclude:
+            - '../../src/Payment/UI/**/*Request.php'

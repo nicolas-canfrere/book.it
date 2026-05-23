@@ -1,0 +1,45 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Payment\UI\Http\Controller\HandlePaymentCancellation;
+
+use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommand;
+use App\Shared\Application\Bus\SyncCommandBusInterface;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
+use Symfony\Component\Routing\Attribute\Route;
+
+final readonly class HandlePaymentCancellationController
+{
+    public function __construct(private SyncCommandBusInterface $commandBus)
+    {
+    }
+
+    #[Route('/payment/webhooks/cancel', name: 'payment_webhook_cancel', methods: ['POST'])]
+    #[OA\Post(
+        path: '/payment/webhooks/cancel',
+        summary: 'Payment cancellation webhook',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(
+                required: ['reservation_id'],
+                properties: [new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid')],
+            ),
+        ),
+        tags: ['Payment'],
+        responses: [
+            new OA\Response(response: 204, description: 'Acknowledged'),
+            new OA\Response(response: 422, description: 'Validation error'),
+        ],
+    )]
+    public function __invoke(
+        #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
+        HandlePaymentCancellationRequest $request,
+    ): Response {
+        $this->commandBus->execute(new HandlePaymentCancellationCommand($request->reservationId));
+
+        return new Response(null, Response::HTTP_NO_CONTENT);
+    }
+}

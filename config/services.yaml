@@ -7,4 +7,5 @@ imports:
     - { resource: './services/pricing.yaml' }
     - { resource: './services/reservation.yaml' }
     - { resource: './services/exceptions.yaml' }
+    - { resource: './services/payment.yaml' }
 
