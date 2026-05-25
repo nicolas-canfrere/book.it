@@ -108,3 +108,15 @@ services:
                     type: 'https://book.it/problems/cancellation-policy-not-found'
                     title: 'Cancellation Policy Not Found'
                     status: 404
+                App\Room\Domain\Exception\RoomTypeAlreadyExistsException:
+                    type: 'https://book.it/problems/room-type-already-exists'
+                    title: 'Room Type Already Exists'
+                    status: 409
+                App\Room\Domain\Exception\RoomTypeNotFoundException:
+                    type: 'https://book.it/problems/room-type-not-found'
+                    title: 'Room Type Not Found'
+                    status: 404
+                App\Room\Domain\Exception\RoomTypeHasRoomsException:
+                    type: 'https://book.it/problems/room-type-has-rooms'
+                    title: 'Room Type Has Rooms'
+                    status: 409
