@@ -33,3 +33,9 @@ services:
         resource: '../../src/Room/UI/'
         exclude:
             - '../../src/Room/UI/**/*Request.php'
+
+    App\Room\Domain\Port\RoomTypeIdGeneratorInterface:
+        class: App\Room\Infrastructure\Service\RoomTypeIdGenerator
+
+    App\Room\Domain\Port\RoomTypeHasRoomsInterface:
+        class: App\Room\Infrastructure\Persistence\Doctrine\RoomTypeHasRoomsChecker
