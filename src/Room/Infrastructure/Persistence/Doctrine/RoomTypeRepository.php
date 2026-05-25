@@ -1,0 +1,117 @@
+<?php
+
+declare(strict_types=1);
+
+namespace App\Room\Infrastructure\Persistence\Doctrine;
+
+use App\Room\Domain\Model\RoomType;
+use App\Room\Domain\Model\RoomTypePage;
+use App\Room\Domain\Port\RoomTypeRepositoryInterface;
+use App\Room\Domain\ValueObject\BedComposition;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Types\Types;
+
+final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
+{
+    public function __construct(private Connection $bookit) {}
+
+    public function add(RoomType $roomType): void
+    {
+        $this->bookit->insert('room_type', [
+            'id' => $roomType->id,
+            'hotel_id' => $roomType->hotelId,
+            'name' => $roomType->name,
+            'living_space_count' => $roomType->livingSpaceCount,
+            'surface_m2' => $roomType->surfaceM2,
+            'guest_capacity' => $roomType->guestCapacity,
+            'is_accessible' => $roomType->isAccessible,
+            'bed_composition' => json_encode($roomType->bedComposition->toArray(), \JSON_THROW_ON_ERROR),
+            'created_at' => $roomType->createdAt->format('Y-m-d H:i:s'),
+        ], [
+            'is_accessible' => Types::BOOLEAN,
+        ]);
+    }
+
+    public function get(string $id): ?RoomType
+    {
+        /** @var array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, created_at: string}|false $row */
+        $row = $this->bookit->fetchAssociative(
+            'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, created_at FROM room_type WHERE id = :id',
+            ['id' => $id],
+        );
+
+        if (false === $row) {
+            return null;
+        }
+
+        return $this->hydrate($row);
+    }
+
+    public function existsByHotelIdAndName(string $hotelId, string $name): bool
+    {
+        $count = $this->bookit->fetchOne(
+            'SELECT COUNT(*) FROM room_type WHERE hotel_id = :hotelId AND name = :name',
+            ['hotelId' => $hotelId, 'name' => $name],
+        );
+
+        return $count > 0;
+    }
+
+    public function update(RoomType $roomType): void
+    {
+        $this->bookit->update('room_type', [
+            'name' => $roomType->name,
+            'living_space_count' => $roomType->livingSpaceCount,
+            'surface_m2' => $roomType->surfaceM2,
+            'guest_capacity' => $roomType->guestCapacity,
+            'is_accessible' => $roomType->isAccessible,
+            'bed_composition' => json_encode($roomType->bedComposition->toArray(), \JSON_THROW_ON_ERROR),
+        ], ['id' => $roomType->id], [
+            'is_accessible' => Types::BOOLEAN,
+        ]);
+    }
+
+    public function delete(string $id): void
+    {
+        $this->bookit->delete('room_type', ['id' => $id]);
+    }
+
+    public function list(string $hotelId, int $page, int $limit): RoomTypePage
+    {
+        /** @var int|string $count */
+        $count = $this->bookit->fetchOne(
+            'SELECT COUNT(*) FROM room_type WHERE hotel_id = :hotelId',
+            ['hotelId' => $hotelId],
+        );
+        $total = (int) $count;
+
+        /** @var list<array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, created_at: string}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, created_at FROM room_type WHERE hotel_id = :hotelId ORDER BY name ASC LIMIT :limit OFFSET :offset',
+            ['hotelId' => $hotelId, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
+        );
+
+        return new RoomTypePage(array_map($this->hydrate(...), $rows), $total);
+    }
+
+    /**
+     * @param array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, created_at: string} $row
+     */
+    private function hydrate(array $row): RoomType
+    {
+        /** @var list<array{type: string, count: int}> $bedData */
+        $bedData = json_decode($row['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
+
+        return new RoomType(
+            $row['id'],
+            $row['hotel_id'],
+            $row['name'],
+            (int) $row['living_space_count'],
+            null !== $row['surface_m2'] ? (int) $row['surface_m2'] : null,
+            (int) $row['guest_capacity'],
+            't' === $row['is_accessible'] || true === $row['is_accessible'],
+            BedComposition::fromArray($bedData),
+            new \DateTimeImmutable($row['created_at']),
+        );
+    }
+}
