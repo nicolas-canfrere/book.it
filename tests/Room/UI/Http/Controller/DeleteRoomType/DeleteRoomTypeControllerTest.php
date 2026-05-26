@@ -32,6 +32,34 @@ final class DeleteRoomTypeControllerTest extends WebTestCase
     }
 
     #[Test]
+    public function itReturns409WhenRoomTypeHasRooms(): void
+    {
+        $client = static::createClient();
+        $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
+
+        $client->request(
+            method: 'POST',
+            uri: "/api/v1/hotels/{$hotelId}/rooms",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(['number' => '101', 'floor' => 1, 'roomTypeId' => $roomTypeId], \JSON_THROW_ON_ERROR),
+        );
+        self::assertSame(Response::HTTP_CREATED, $client->getResponse()->getStatusCode());
+
+        $client->request('DELETE', "/api/v1/hotels/{$hotelId}/room-types/{$roomTypeId}");
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CONFLICT, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+
+        /** @var array{type: string, title: string, status: int} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('https://book.it/problems/room-type-has-rooms', $body['type']);
+        self::assertSame('Room Type Has Rooms', $body['title']);
+        self::assertSame(Response::HTTP_CONFLICT, $body['status']);
+    }
+
+    #[Test]
     public function itReturns404WhenNotFound(): void
     {
         $client = static::createClient();
