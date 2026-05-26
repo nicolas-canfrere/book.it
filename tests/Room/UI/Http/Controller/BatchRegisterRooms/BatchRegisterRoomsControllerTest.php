@@ -22,13 +22,24 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         'country' => 'FR',
     ];
 
+    private const array ROOM_TYPE_PAYLOAD = [
+        'name' => 'Single',
+        'livingSpaceCount' => 1,
+        'guestCapacity' => 1,
+        'isAccessible' => false,
+        'bedComposition' => [['type' => 'single', 'count' => 1]],
+    ];
+
     #[Test]
     public function itImportsBatchAndReturns201(): void
     {
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
-        $csv = $this->makeCsvFile("number,floor\n101,1\n102,2\n2A,-1\n");
+        $csv = $this->makeCsvFile(
+            "number,floor,roomTypeId\n101,1,{$roomTypeId}\n102,2,{$roomTypeId}\n2A,-1,{$roomTypeId}\n"
+        );
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
@@ -38,7 +49,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var list<array{id: string, hotelId: string, number: string, floor: int, createdAt: int}> $body */
+        /** @var list<array{id: string, hotelId: string, number: string, floor: int, roomTypeId: string, createdAt: int}> $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertCount(3, $body);
         $numbers = array_column($body, 'number');
@@ -52,6 +63,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         foreach ($body as $room) {
             self::assertNotEmpty($room['id']);
             self::assertSame($hotelId, $room['hotelId']);
+            self::assertSame($roomTypeId, $room['roomTypeId']);
             self::assertGreaterThan(0, $room['createdAt']);
         }
     }
@@ -62,7 +74,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number,floor\n");
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n");
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
@@ -82,7 +94,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $csv = $this->makeCsvFile("number,floor\n101,1\n");
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,00000000-0000-4000-8000-000000000001\n");
         $client->request(
             method: 'POST',
             uri: '/api/v1/hotels/00000000-0000-4000-8000-000000000000/rooms/batch',
@@ -97,7 +109,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
 
-        $csv = $this->makeCsvFile("number,floor\n101,1\n");
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,00000000-0000-4000-8000-000000000001\n");
         $client->request(
             method: 'POST',
             uri: '/api/v1/hotels/not-a-uuid/rooms/batch',
@@ -108,12 +120,38 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     }
 
     #[Test]
-    public function itReturns422WithViolationsWhenDuplicateInBatch(): void
+    public function itReturns422WhenRoomTypeDoesNotExistInRow(): void
     {
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number,floor\n101,1\n101,2\n");
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,00000000-0000-4000-8000-000000000001\n");
+        $client->request(
+            method: 'POST',
+            uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
+            files: ['csv' => $csv],
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+
+        /** @var array{type: string, violations: list<array{field: string, message: string}>} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('https://book.it/problems/room-batch-invalid', $body['type']);
+        self::assertCount(1, $body['violations']);
+        self::assertSame('line[2]', $body['violations'][0]['field']);
+        self::assertStringContainsString('Room type not found', $body['violations'][0]['message']);
+    }
+
+    #[Test]
+    public function itReturns422WithViolationsWhenDuplicateInBatch(): void
+    {
+        $client = static::createClient();
+        $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
+
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,{$roomTypeId}\n101,2,{$roomTypeId}\n");
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
@@ -136,15 +174,16 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1, 'roomTypeId' => $roomTypeId], \JSON_THROW_ON_ERROR),
         );
 
-        $csv = $this->makeCsvFile("number,floor\n101,1\n102,2\n");
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,{$roomTypeId}\n102,2,{$roomTypeId}\n");
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
@@ -166,8 +205,9 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
-        $csv = $this->makeCsvFile("number,floor\n,1\n101,1\n101,2\n");
+        $csv = $this->makeCsvFile("number,floor,roomTypeId\n,1,{$roomTypeId}\n101,1,{$roomTypeId}\n101,2,{$roomTypeId}\n");
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
@@ -189,7 +229,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
-        $csv = $this->makeCsvFile("number\n101\n");
+        $csv = $this->makeCsvFile("number,floor\n101,1\n");
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms/batch",
@@ -224,6 +264,21 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
             uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(self::HOTEL_PAYLOAD, \JSON_THROW_ON_ERROR),
+        );
+
+        /** @var array{id: string} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        return $body['id'];
+    }
+
+    private function registerRoomTypeAndGetId(KernelBrowser $client, string $hotelId): string
+    {
+        $client->request(
+            method: 'POST',
+            uri: "/api/v1/hotels/{$hotelId}/room-types",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(self::ROOM_TYPE_PAYLOAD, \JSON_THROW_ON_ERROR),
         );
 
         /** @var array{id: string} $body */
