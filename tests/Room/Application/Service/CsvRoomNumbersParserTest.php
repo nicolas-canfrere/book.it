@@ -26,7 +26,7 @@ final class CsvRoomNumbersParserTest extends TestCase
     public function itParsesValidCsvAndReturnsRows(): void
     {
         $rows = $this->parser->parse($this->makeCsvFile(
-            "number,floor,roomTypeId\n101,1,".self::ROOM_TYPE_ID."\n102,2,".self::ROOM_TYPE_ID."\n2A,-1,".self::ROOM_TYPE_ID."\n"
+            "number,floor,roomTypeId\n101,1," . self::ROOM_TYPE_ID . "\n102,2," . self::ROOM_TYPE_ID . "\n2A,-1," . self::ROOM_TYPE_ID . "\n"
         ));
 
         self::assertCount(3, $rows);
@@ -51,7 +51,7 @@ final class CsvRoomNumbersParserTest extends TestCase
     public function itAcceptsNegativeAndZeroFloors(): void
     {
         $rows = $this->parser->parse($this->makeCsvFile(
-            "number,floor,roomTypeId\n101,0,".self::ROOM_TYPE_ID."\n102,-5,".self::ROOM_TYPE_ID."\n"
+            "number,floor,roomTypeId\n101,0," . self::ROOM_TYPE_ID . "\n102,-5," . self::ROOM_TYPE_ID . "\n"
         ));
 
         self::assertSame(0, $rows[0]->floor);
@@ -71,7 +71,7 @@ final class CsvRoomNumbersParserTest extends TestCase
     {
         $this->expectException(InvalidCsvFormatException::class);
 
-        $this->parser->parse($this->makeCsvFile("number,floor,roomTypeId\n101,abc,".self::ROOM_TYPE_ID."\n"));
+        $this->parser->parse($this->makeCsvFile("number,floor,roomTypeId\n101,abc," . self::ROOM_TYPE_ID . "\n"));
     }
 
     #[Test]
@@ -79,7 +79,7 @@ final class CsvRoomNumbersParserTest extends TestCase
     {
         $this->expectException(InvalidCsvFormatException::class);
 
-        $this->parser->parse($this->makeCsvFile("number,floor,roomTypeId\n101,1.5,".self::ROOM_TYPE_ID."\n"));
+        $this->parser->parse($this->makeCsvFile("number,floor,roomTypeId\n101,1.5," . self::ROOM_TYPE_ID . "\n"));
     }
 
     private function makeCsvFile(string $content): string
