@@ -17,9 +17,9 @@ final readonly class CsvRoomNumbersParser
         }
 
         $header = fgetcsv($handle, escape: '');
-        if ($header !== ['number', 'floor']) {
+        if ($header !== ['number', 'floor', 'roomTypeId']) {
             fclose($handle);
-            throw new InvalidCsvFormatException('Invalid CSV format: expected "number,floor" header columns.');
+            throw new InvalidCsvFormatException('Invalid CSV format: expected "number,floor,roomTypeId" header columns.');
         }
 
         $rows = [];
@@ -30,7 +30,7 @@ final readonly class CsvRoomNumbersParser
                 fclose($handle);
                 throw new InvalidCsvFormatException(\sprintf('Invalid CSV format: floor value "%s" is not a valid integer.', $rawFloor));
             }
-            $rows[] = new RoomCsvRow($row[0] ?? '', $floor);
+            $rows[] = new RoomCsvRow($row[0] ?? '', $floor, trim($row[2] ?? ''));
         }
         fclose($handle);
 

@@ -17,17 +17,18 @@ final readonly class BatchRegisterRoomsCommandFactory
     }
 
     /** @param list<RoomCsvRow> $rows */
-    public function create(string $hotelId, string $roomTypeId, array $rows): BatchRegisterRoomsCommand
+    public function create(string $hotelId, array $rows): BatchRegisterRoomsCommand
     {
         $entries = array_map(
             fn(RoomCsvRow $row) => [
                 'id' => $this->roomIdGenerator->generate(),
                 'number' => trim($row->number),
                 'floor' => $row->floor,
+                'roomTypeId' => $row->roomTypeId,
             ],
             $rows,
         );
 
-        return new BatchRegisterRoomsCommand($hotelId, $roomTypeId, $entries, $this->clock->now());
+        return new BatchRegisterRoomsCommand($hotelId, $entries, $this->clock->now());
     }
 }

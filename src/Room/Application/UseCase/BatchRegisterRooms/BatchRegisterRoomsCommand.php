@@ -9,11 +9,10 @@ use App\Shared\Application\Bus\SyncCommandInterface;
 final readonly class BatchRegisterRoomsCommand implements SyncCommandInterface
 {
     /**
-     * @param list<array{id: string, number: string, floor: int}> $entries
+     * @param list<array{id: string, number: string, floor: int, roomTypeId: string}> $entries
      */
     public function __construct(
         public string $hotelId,
-        public string $roomTypeId,
         public array $entries,
         public \DateTimeImmutable $createdAt,
     ) {
