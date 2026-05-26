@@ -36,6 +36,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
             $command->hotelId,
             new RoomNumber($command->number),
             new RoomFloor($command->floor),
+            $command->roomTypeId,
             $command->createdAt,
         ));
     }

@@ -13,6 +13,7 @@ final readonly class BatchRegisterRoomsCommand implements SyncCommandInterface
      */
     public function __construct(
         public string $hotelId,
+        public string $roomTypeId,
         public array $entries,
         public \DateTimeImmutable $createdAt,
     ) {

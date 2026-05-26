@@ -73,6 +73,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
                 $command->hotelId,
                 new RoomNumber(trim($entry['number'])),
                 new RoomFloor($entry['floor']),
+                $command->roomTypeId,
                 $command->createdAt,
             ),
             $command->entries,

@@ -17,6 +17,8 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class RegisterRoomCommandHandlerTest extends TestCase
 {
+    private const string ROOM_TYPE_ID = 'cccccccc-0000-4000-8000-000000000001';
+
     private InMemoryRoomRepository $roomRepository;
     private FakeHotelExistenceChecker $hotelExistenceChecker;
     private RegisterRoomCommandHandler $handler;
@@ -36,6 +38,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
+            roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable('2024-01-01 10:00:00'),
         );
 
@@ -47,6 +50,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         self::assertSame($command->hotelId, $room->hotelId);
         self::assertSame('101', $room->number->value);
         self::assertSame(1, $room->floor->value);
+        self::assertSame(self::ROOM_TYPE_ID, $room->roomTypeId);
         self::assertEquals($command->createdAt, $room->createdAt);
     }
 
@@ -61,6 +65,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
+            roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -73,6 +78,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
+            roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable(),
         );
         ($this->handler)($command);
@@ -84,6 +90,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 2,
+            roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -96,6 +103,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440001',
             number: '101',
             floor: 1,
+            roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable(),
         );
         $command2 = new RegisterRoomCommand(
@@ -103,6 +111,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440002',
             number: '101',
             floor: 1,
+            roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable(),
         );
 

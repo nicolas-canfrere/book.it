@@ -38,8 +38,14 @@ final readonly class BatchRegisterRoomsController
             content: new OA\MediaType(
                 mediaType: 'multipart/form-data',
                 schema: new OA\Schema(
-                    required: ['csv'],
+                    required: ['roomTypeId', 'csv'],
                     properties: [
+                        new OA\Property(
+                            property: 'roomTypeId',
+                            description: 'UUID v4 of the Room Type to assign to all imported rooms',
+                            type: 'string',
+                            format: 'uuid',
+                        ),
                         new OA\Property(
                             property: 'csv',
                             description: 'CSV file with "number,floor" header columns and one room per row',
@@ -67,6 +73,7 @@ final readonly class BatchRegisterRoomsController
                             new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                             new OA\Property(property: 'number', type: 'string', example: '101'),
                             new OA\Property(property: 'floor', type: 'integer', example: 1),
+                            new OA\Property(property: 'roomTypeId', type: 'string', format: 'uuid'),
                             new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
                         ],
                     ),
@@ -92,6 +99,11 @@ final readonly class BatchRegisterRoomsController
     )]
     public function __invoke(string $hotelId, Request $request): Response
     {
+        $roomTypeId = $request->request->get('roomTypeId');
+        if (!is_string($roomTypeId) || 1 !== preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $roomTypeId)) {
+            throw new InvalidCsvFormatException('roomTypeId must be a valid UUID v4.');
+        }
+
         $file = $request->files->get('csv');
         if (!$file instanceof UploadedFile) {
             throw new InvalidCsvFormatException('A CSV file is required.');
@@ -99,7 +111,7 @@ final readonly class BatchRegisterRoomsController
 
         $rows = $this->csvParser->parse($file->getPathname());
 
-        $command = $this->commandFactory->create($hotelId, $rows);
+        $command = $this->commandFactory->create($hotelId, $roomTypeId, $rows);
 
         $this->commandBus->execute($command);
 
@@ -110,6 +122,7 @@ final readonly class BatchRegisterRoomsController
                     $command->hotelId,
                     new RoomNumber($entry['number']),
                     new RoomFloor($entry['floor']),
+                    $command->roomTypeId,
                     $command->createdAt,
                 )
             ),

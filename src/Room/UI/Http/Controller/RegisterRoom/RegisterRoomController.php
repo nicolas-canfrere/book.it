@@ -49,13 +49,14 @@ final readonly class RegisterRoomController
                         new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'number', type: 'string', example: '101'),
                         new OA\Property(property: 'floor', type: 'integer', example: 1),
+                        new OA\Property(property: 'roomTypeId', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
                     ],
                 ),
             ),
             new OA\Response(
                 response: Response::HTTP_NOT_FOUND,
-                description: 'Hotel not found',
+                description: 'Hotel not found or Room Type not found',
                 content: new OA\MediaType(
                     mediaType: 'application/problem+json',
                     schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'),
@@ -83,7 +84,7 @@ final readonly class RegisterRoomController
         string $hotelId,
         #[MapRequestPayload(acceptFormat: 'json')] RegisterRoomRequest $request,
     ): Response {
-        $command = $this->commandFactory->create($hotelId, $request->number, $request->floor);
+        $command = $this->commandFactory->create($hotelId, $request->number, $request->floor, $request->roomTypeId);
         $this->commandBus->execute($command);
 
         $room = $this->queryBus->ask(new GetRoomQuery($command->id));
