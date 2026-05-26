@@ -24,6 +24,7 @@ final readonly class BatchRegisterRoomsCommandFactory
                 'id' => $this->roomIdGenerator->generate(),
                 'number' => trim($row->number),
                 'floor' => $row->floor,
+                'roomTypeId' => $row->roomTypeId,
             ],
             $rows,
         );

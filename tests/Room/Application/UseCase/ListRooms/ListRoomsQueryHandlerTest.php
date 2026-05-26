@@ -89,6 +89,6 @@ final class ListRoomsQueryHandlerTest extends TestCase
 
     private function makeRoom(string $id, string $hotelId, string $number): Room
     {
-        return new Room($id, $hotelId, new RoomNumber($number), new RoomFloor(1), new \DateTimeImmutable('2024-01-01'));
+        return new Room($id, $hotelId, new RoomNumber($number), new RoomFloor(1), 'cccccccc-0000-4000-8000-000000000001', new \DateTimeImmutable('2024-01-01'));
     }
 }

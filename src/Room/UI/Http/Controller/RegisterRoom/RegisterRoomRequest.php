@@ -18,6 +18,10 @@ final readonly class RegisterRoomRequest
         #[Assert\Range(min: -20, max: 300)]
         #[OA\Property(type: 'integer', example: 1, minimum: -20, maximum: 300, nullable: false)]
         public ?int $floor = null,
+        #[Assert\NotBlank]
+        #[Assert\Uuid(versions: [4])]
+        #[OA\Property(type: 'string', format: 'uuid', example: '7f4d1234-0000-4000-8000-000000000001')]
+        public ?string $roomTypeId = null,
     ) {
     }
 }

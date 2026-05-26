@@ -6,9 +6,11 @@ namespace App\Room\Application\UseCase\RegisterRoom;
 
 use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomAlreadyExistsException;
+use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Port\HotelExistsInterface;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Room\Domain\Port\RoomTypeExistsInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
@@ -18,6 +20,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
     public function __construct(
         private RoomRepositoryInterface $roomRepository,
         private HotelExistsInterface $hotelExists,
+        private RoomTypeExistsInterface $roomTypeExists,
     ) {
     }
 
@@ -25,6 +28,10 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
     {
         if (!$this->hotelExists->exists($command->hotelId)) {
             throw new HotelNotFoundException($command->hotelId);
+        }
+
+        if (!$this->roomTypeExists->exists($command->roomTypeId)) {
+            throw new RoomTypeNotFoundException($command->roomTypeId);
         }
 
         if ($this->roomRepository->existsByHotelIdAndNumber($command->hotelId, $command->number)) {
@@ -36,6 +43,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
             $command->hotelId,
             new RoomNumber($command->number),
             new RoomFloor($command->floor),
+            $command->roomTypeId,
             $command->createdAt,
         ));
     }

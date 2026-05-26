@@ -9,6 +9,7 @@ final readonly class RoomCsvRow
     public function __construct(
         public string $number,
         public int $floor,
+        public string $roomTypeId,
     ) {
     }
 }

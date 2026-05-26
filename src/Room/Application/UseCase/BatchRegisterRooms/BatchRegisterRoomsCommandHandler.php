@@ -9,6 +9,7 @@ use App\Room\Domain\Exception\RoomBatchInvalidException;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Port\HotelExistsInterface;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Room\Domain\Port\RoomTypeExistsInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
@@ -18,6 +19,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
     public function __construct(
         private RoomRepositoryInterface $roomRepository,
         private HotelExistsInterface $hotelExists,
+        private RoomTypeExistsInterface $roomTypeExists,
     ) {
     }
 
@@ -34,6 +36,11 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
             $lineField = \sprintf('line[%d]', $index + 2);
             $number = trim($entry['number']);
             $floor = $entry['floor'];
+
+            if (!$this->roomTypeExists->exists($entry['roomTypeId'])) {
+                $violations[] = ['field' => $lineField, 'message' => 'Room type not found.'];
+                continue;
+            }
 
             if ('' === $number) {
                 $violations[] = ['field' => $lineField, 'message' => 'Room number must not be blank.'];
@@ -73,6 +80,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
                 $command->hotelId,
                 new RoomNumber(trim($entry['number'])),
                 new RoomFloor($entry['floor']),
+                $entry['roomTypeId'],
                 $command->createdAt,
             ),
             $command->entries,

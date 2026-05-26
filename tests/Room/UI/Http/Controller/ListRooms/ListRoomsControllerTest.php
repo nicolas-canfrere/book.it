@@ -45,8 +45,9 @@ final class ListRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
-        $this->registerRoom($client, $hotelId, '202');
-        $this->registerRoom($client, $hotelId, '101');
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
+        $this->registerRoom($client, $hotelId, $roomTypeId, '202');
+        $this->registerRoom($client, $hotelId, $roomTypeId, '101');
 
         $client->request('GET', "/api/v1/hotels/{$hotelId}/rooms");
 
@@ -62,8 +63,9 @@ final class ListRoomsControllerTest extends WebTestCase
     {
         $client = static::createClient();
         $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
         for ($i = 1; $i <= 5; ++$i) {
-            $this->registerRoom($client, $hotelId, sprintf('%03d', $i));
+            $this->registerRoom($client, $hotelId, $roomTypeId, sprintf('%03d', $i));
         }
 
         $client->request('GET', "/api/v1/hotels/{$hotelId}/rooms?page=2&limit=2");
@@ -113,13 +115,33 @@ final class ListRoomsControllerTest extends WebTestCase
         return $body['id'];
     }
 
-    private function registerRoom(KernelBrowser $client, string $hotelId, string $number): void
+    private function registerRoomTypeAndGetId(KernelBrowser $client, string $hotelId): string
+    {
+        $client->request(
+            method: 'POST',
+            uri: "/api/v1/hotels/{$hotelId}/room-types",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'name' => 'Single',
+                'livingSpaceCount' => 1,
+                'guestCapacity' => 1,
+                'isAccessible' => false,
+                'bedComposition' => [['type' => 'single', 'count' => 1]],
+            ], \JSON_THROW_ON_ERROR),
+        );
+        /** @var array{id: string} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        return $body['id'];
+    }
+
+    private function registerRoom(KernelBrowser $client, string $hotelId, string $roomTypeId, string $number): void
     {
         $client->request(
             method: 'POST',
             uri: "/api/v1/hotels/{$hotelId}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => $number, 'floor' => 1], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => $number, 'floor' => 1, 'roomTypeId' => $roomTypeId], \JSON_THROW_ON_ERROR),
         );
     }
 }

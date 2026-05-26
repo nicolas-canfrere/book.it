@@ -14,6 +14,7 @@ final readonly class Room
         public string $hotelId,
         public RoomNumber $number,
         public RoomFloor $floor,
+        public string $roomTypeId,
         public \DateTimeImmutable $createdAt,
     ) {
     }

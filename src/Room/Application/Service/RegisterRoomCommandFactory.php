@@ -16,7 +16,7 @@ final readonly class RegisterRoomCommandFactory
     ) {
     }
 
-    public function create(string $hotelId, ?string $number, ?int $floor): RegisterRoomCommand
+    public function create(string $hotelId, ?string $number, ?int $floor, ?string $roomTypeId): RegisterRoomCommand
     {
         if (null === $number) {
             throw new \InvalidArgumentException('Room number is required.');
@@ -24,12 +24,16 @@ final readonly class RegisterRoomCommandFactory
         if (null === $floor) {
             throw new \InvalidArgumentException('Room floor is required.');
         }
+        if (null === $roomTypeId) {
+            throw new \InvalidArgumentException('Room type ID is required.');
+        }
 
         return new RegisterRoomCommand(
             $this->roomIdGenerator->generate(),
             $hotelId,
             $number,
             $floor,
+            $roomTypeId,
             $this->clock->now(),
         );
     }

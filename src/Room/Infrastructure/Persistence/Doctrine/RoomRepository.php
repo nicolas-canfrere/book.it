@@ -24,6 +24,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
             'hotel_id' => $room->hotelId,
             'room_number' => $room->number->value,
             'room_floor' => $room->floor->value,
+            'room_type_id' => $room->roomTypeId,
             'created_at' => $room->createdAt->format('Y-m-d H:i:s'),
         ]);
     }
@@ -37,6 +38,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
                     'hotel_id' => $room->hotelId,
                     'room_number' => $room->number->value,
                     'room_floor' => $room->floor->value,
+                    'room_type_id' => $room->roomTypeId,
                     'created_at' => $room->createdAt->format('Y-m-d H:i:s'),
                 ]);
             }
@@ -45,9 +47,9 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 
     public function get(string $id): ?Room
     {
-        /** @var array{id: string, hotel_id: string, room_number: string, room_floor: int|string, created_at: string}|false $row */
+        /** @var array{id: string, hotel_id: string, room_number: string, room_floor: int|string, room_type_id: string, created_at: string}|false $row */
         $row = $this->bookit->fetchAssociative(
-            'SELECT id, hotel_id, room_number, room_floor, created_at FROM room WHERE id = :id',
+            'SELECT id, hotel_id, room_number, room_floor, room_type_id, created_at FROM room WHERE id = :id',
             ['id' => $id],
         );
 
@@ -60,6 +62,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
             $row['hotel_id'],
             new RoomNumber($row['room_number']),
             new RoomFloor((int) $row['room_floor']),
+            $row['room_type_id'],
             new \DateTimeImmutable($row['created_at']),
         );
     }
@@ -83,9 +86,9 @@ final readonly class RoomRepository implements RoomRepositoryInterface
         );
         $total = (int) $count;
 
-        /** @var list<array{id: string, hotel_id: string, room_number: string, room_floor: int|string, created_at: string}> $rows */
+        /** @var list<array{id: string, hotel_id: string, room_number: string, room_floor: int|string, room_type_id: string, created_at: string}> $rows */
         $rows = $this->bookit->fetchAllAssociative(
-            'SELECT id, hotel_id, room_number, room_floor, created_at FROM room WHERE hotel_id = :hotelId ORDER BY room_number ASC LIMIT :limit OFFSET :offset',
+            'SELECT id, hotel_id, room_number, room_floor, room_type_id, created_at FROM room WHERE hotel_id = :hotelId ORDER BY room_number ASC LIMIT :limit OFFSET :offset',
             ['hotelId' => $hotelId, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
         );
 
@@ -95,6 +98,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
                 $row['hotel_id'],
                 new RoomNumber($row['room_number']),
                 new RoomFloor((int) $row['room_floor']),
+                $row['room_type_id'],
                 new \DateTimeImmutable($row['created_at']),
             ),
             $rows,

@@ -42,7 +42,7 @@ final readonly class BatchRegisterRoomsController
                     properties: [
                         new OA\Property(
                             property: 'csv',
-                            description: 'CSV file with "number,floor" header columns and one room per row',
+                            description: 'CSV file with "number,floor,roomTypeId" header columns and one room per row',
                             type: 'string',
                             format: 'binary',
                         ),
@@ -67,6 +67,7 @@ final readonly class BatchRegisterRoomsController
                             new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                             new OA\Property(property: 'number', type: 'string', example: '101'),
                             new OA\Property(property: 'floor', type: 'integer', example: 1),
+                            new OA\Property(property: 'roomTypeId', type: 'string', format: 'uuid'),
                             new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
                         ],
                     ),
@@ -110,6 +111,7 @@ final readonly class BatchRegisterRoomsController
                     $command->hotelId,
                     new RoomNumber($entry['number']),
                     new RoomFloor($entry['floor']),
+                    $entry['roomTypeId'],
                     $command->createdAt,
                 )
             ),
