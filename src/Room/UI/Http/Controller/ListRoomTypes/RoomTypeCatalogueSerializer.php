@@ -9,7 +9,9 @@ use App\Room\UI\Http\Controller\RoomTypeSerializer;
 
 final class RoomTypeCatalogueSerializer
 {
-    public function __construct(private RoomTypeSerializer $roomTypeSerializer) {}
+    public function __construct(private RoomTypeSerializer $roomTypeSerializer)
+    {
+    }
 
     /**
      * @return array{data: list<array<string, mixed>>, meta: array{page: int, limit: int, total: int, totalPages: int}}

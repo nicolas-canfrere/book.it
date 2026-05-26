@@ -10,7 +10,9 @@ use App\Shared\Application\Bus\SyncQueryHandlerInterface;
 
 final readonly class ListRoomTypesQueryHandler implements SyncQueryHandlerInterface
 {
-    public function __construct(private RoomTypeRepositoryInterface $roomTypeRepository) {}
+    public function __construct(private RoomTypeRepositoryInterface $roomTypeRepository)
+    {
+    }
 
     public function __invoke(ListRoomTypesQuery $query): RoomTypePage
     {

@@ -29,7 +29,7 @@ final readonly class BedComposition
     {
         return new self(array_map(
             fn(array $entry) => new BedEntry(BedType::from($entry['type']), $entry['count']),
-            array_values($data),
+            $data,
         ));
     }
 }

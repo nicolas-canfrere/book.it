@@ -52,7 +52,7 @@ _Avoid_: hotel list, hotel search, hotel directory
 ---
 
 **Room**:
-A physical guest room belonging to a Hotel, uniquely identified within that Hotel by its number.
+A physical guest room belonging to a Hotel, uniquely identified within that Hotel by its number. Every Room belongs to exactly one Room Type.
 _Avoid_: chamber, unit, space
 
 **Room Number**:
@@ -64,19 +64,50 @@ The floor level of a Room within a Hotel building, expressed as a signed integer
 _Avoid_: level, storey, story
 
 **Room Registration**:
-The act of declaring a new Room in a Hotel. Rejected if a Room with the same number already exists in that Hotel, or if the referenced Hotel does not exist.
+The act of declaring a new Room in a Hotel. Rejected if a Room with the same number already exists in that Hotel, if the referenced Hotel does not exist, or if the referenced Room Type does not exist in that Hotel.
 _Avoid_: room creation, room addition
 
 **Room Catalogue**:
 A paginated list of all Rooms belonging to a given Hotel, sorted alphabetically by number.
 _Avoid_: room list, room inventory
 
+**Room Type**:
+A named category defined by a Hotel operator, describing the physical characteristics shared by all Rooms of that type: living space count, surface area, bed composition, guest capacity, and accessibility. A Room Type is scoped to a single Hotel — two hotels may use the same name independently. A Room Type name is unique within a Hotel.
+_Avoid_: room category, room class, chambre type
+
+**Room Type Registration**:
+The act of declaring a new Room Type in a Hotel. Rejected if a Room Type with the same name already exists in that Hotel.
+_Avoid_: room type creation, room type addition
+
+**Living Space Count**:
+The number of distinct living spaces (bedroom, living room, study, etc.) in a Room Type, excluding bathrooms and toilets. Expressed as an integer between 1 and 20. Convention follows the French real-estate standard: a studio is 1, a suite with a separate lounge is 2.
+_Avoid_: room count, piece count, number of rooms
+
+**Bed Type**:
+An enumerated kind of bed available in a Room Type: `single` (~90 cm), `double` (~140 cm), `queen` (~160 cm), `king` (~180 cm+), `bunk` (bunk beds), `sofa_bed` (sofa bed), `baby_cot` (travel cot).
+_Avoid_: lit, bed kind, bed category
+
+**Bed Composition**:
+The list of `{BedType, count}` entries describing the beds in a Room Type. Must contain at least one entry. Each count is between 1 and 10.
+_Avoid_: bed list, lit configuration, bed setup
+
+**Guest Capacity**:
+The maximum number of guests a Room Type can accommodate, expressed as an integer between 1 and 20. Declared explicitly by the operator — not derived from the Bed Composition.
+_Avoid_: max occupancy, occupancy, capacity
+
 ## Relationships
 
 - A **Room** belongs to exactly one **Hotel** (referenced by Hotel id across context boundaries)
 - A **Room** has exactly one **Room Number** and exactly one **Room Floor**
+- A **Room** belongs to exactly one **Room Type** — mandatory at registration, reassignable after
 - A **Room Registration** produces exactly one **Room**, or raises a conflict if the **Room** number already exists in that **Hotel**
 - A **Room Catalogue** always belongs to exactly one **Hotel**
+- A **Room Type** belongs to exactly one **Hotel**
+- A **Room Type** name is unique within a **Hotel**
+- A **Room Type** has exactly one **Living Space Count**, one **Guest Capacity**, one **Bed Composition**, and one **Accessibility** flag; surface area is optional
+- A **Room Type** may be deleted only if no **Room** is currently assigned to it
+- A **Room Type** attributes are mutable after creation
+- A **Room Type Registration** produces exactly one **Room Type**, or raises a conflict if the name already exists in that **Hotel**
 
 ---
 

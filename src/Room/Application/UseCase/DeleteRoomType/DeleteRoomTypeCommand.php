@@ -8,5 +8,7 @@ use App\Shared\Application\Bus\SyncCommandInterface;
 
 final readonly class DeleteRoomTypeCommand implements SyncCommandInterface
 {
-    public function __construct(public string $id) {}
+    public function __construct(public string $id)
+    {
+    }
 }

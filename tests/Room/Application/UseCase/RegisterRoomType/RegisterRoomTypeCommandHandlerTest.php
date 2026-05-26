@@ -28,21 +28,6 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
         $this->handler = new RegisterRoomTypeCommandHandler($this->repository, $this->hotelChecker);
     }
 
-    private function makeCommand(string $id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', string $name = 'Suite Royale'): RegisterRoomTypeCommand
-    {
-        return new RegisterRoomTypeCommand(
-            id: $id,
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
-            name: $name,
-            livingSpaceCount: 2,
-            surfaceM2: 80,
-            guestCapacity: 2,
-            isAccessible: false,
-            bedEntries: [['type' => 'king', 'count' => 1]],
-            createdAt: new \DateTimeImmutable('2024-01-01 10:00:00'),
-        );
-    }
-
     #[Test]
     public function itPersistsTheRoomType(): void
     {
@@ -96,5 +81,20 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
         ($this->handler)($cmd2);
 
         self::assertNotNull($this->repository->get('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'));
+    }
+
+    private function makeCommand(string $id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', string $name = 'Suite Royale'): RegisterRoomTypeCommand
+    {
+        return new RegisterRoomTypeCommand(
+            id: $id,
+            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            name: $name,
+            livingSpaceCount: 2,
+            surfaceM2: 80,
+            guestCapacity: 2,
+            isAccessible: false,
+            bedEntries: [['type' => 'king', 'count' => 1]],
+            createdAt: new \DateTimeImmutable('2024-01-01 10:00:00'),
+        );
     }
 }

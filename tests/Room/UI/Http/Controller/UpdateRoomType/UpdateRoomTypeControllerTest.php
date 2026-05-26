@@ -70,6 +70,7 @@ final class UpdateRoomTypeControllerTest extends WebTestCase
         return $body['id'];
     }
 
+    /** @param array<string, mixed> $payload */
     private function registerRoomTypeAndGetId(KernelBrowser $client, string $hotelId, array $payload): string
     {
         $client->request('POST', "/api/v1/hotels/{$hotelId}/room-types", server: ['CONTENT_TYPE' => 'application/json'], content: json_encode($payload, \JSON_THROW_ON_ERROR));

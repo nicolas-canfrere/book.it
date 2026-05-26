@@ -13,7 +13,9 @@ use Symfony\Component\Routing\Requirement\Requirement;
 
 final readonly class DeleteRoomTypeController
 {
-    public function __construct(private SyncCommandBusInterface $commandBus) {}
+    public function __construct(private SyncCommandBusInterface $commandBus)
+    {
+    }
 
     #[Route('/hotels/{hotelId}/room-types/{roomTypeId}', name: 'room_delete_room_type', requirements: ['hotelId' => Requirement::UUID_V4, 'roomTypeId' => Requirement::UUID_V4], methods: ['DELETE'])]
     #[OA\Delete(

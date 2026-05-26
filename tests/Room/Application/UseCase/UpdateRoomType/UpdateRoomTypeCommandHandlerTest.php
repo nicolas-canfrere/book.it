@@ -19,11 +19,10 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class UpdateRoomTypeCommandHandlerTest extends TestCase
 {
-    private InMemoryRoomTypeRepository $repository;
-    private UpdateRoomTypeCommandHandler $handler;
-
     private const string HOTEL_ID = '550e8400-e29b-41d4-a716-446655440000';
     private const string ROOM_TYPE_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
+    private InMemoryRoomTypeRepository $repository;
+    private UpdateRoomTypeCommandHandler $handler;
 
     protected function setUp(): void
     {

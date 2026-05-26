@@ -15,11 +15,6 @@ final class ListRoomTypesControllerTest extends WebTestCase
 {
     private const array HOTEL_PAYLOAD = ['name' => 'Hotel Test', 'streetAddress' => '1 rue de la Paix', 'postalCode' => '75001', 'city' => 'Paris', 'country' => 'FR'];
 
-    private function makeRoomTypePayload(string $name): array
-    {
-        return ['name' => $name, 'livingSpaceCount' => 1, 'guestCapacity' => 1, 'isAccessible' => false, 'bedComposition' => [['type' => 'single', 'count' => 1]]];
-    }
-
     #[Test]
     public function itReturnsAPaginatedList(): void
     {
@@ -41,6 +36,12 @@ final class ListRoomTypesControllerTest extends WebTestCase
         self::assertSame('Double', $body['data'][0]['name']);
         self::assertSame('Single', $body['data'][1]['name']);
         self::assertSame('Suite', $body['data'][2]['name']);
+    }
+
+    /** @return array<string, mixed> */
+    private function makeRoomTypePayload(string $name): array
+    {
+        return ['name' => $name, 'livingSpaceCount' => 1, 'guestCapacity' => 1, 'isAccessible' => false, 'bedComposition' => [['type' => 'single', 'count' => 1]]];
     }
 
     private function registerHotelAndGetId(KernelBrowser $client): string

@@ -13,7 +13,9 @@ use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 
 final readonly class UpdateRoomTypeCommandHandler implements SyncCommandHandlerInterface
 {
-    public function __construct(private RoomTypeRepositoryInterface $roomTypeRepository) {}
+    public function __construct(private RoomTypeRepositoryInterface $roomTypeRepository)
+    {
+    }
 
     public function __invoke(UpdateRoomTypeCommand $command): void
     {

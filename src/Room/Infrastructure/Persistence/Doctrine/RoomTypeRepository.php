@@ -13,7 +13,9 @@ use Doctrine\DBAL\Types\Types;
 
 final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
 {
-    public function __construct(private Connection $bookit) {}
+    public function __construct(private Connection $bookit)
+    {
+    }
 
     public function add(RoomType $roomType): void
     {

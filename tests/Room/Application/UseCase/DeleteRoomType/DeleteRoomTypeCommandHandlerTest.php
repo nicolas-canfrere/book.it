@@ -20,11 +20,10 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class DeleteRoomTypeCommandHandlerTest extends TestCase
 {
+    private const string ROOM_TYPE_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
     private InMemoryRoomTypeRepository $repository;
     private FakeRoomTypeHasRooms $hasRooms;
     private DeleteRoomTypeCommandHandler $handler;
-
-    private const string ROOM_TYPE_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
 
     protected function setUp(): void
     {
