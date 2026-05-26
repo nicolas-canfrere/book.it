@@ -9,6 +9,7 @@ use App\Room\Application\UseCase\BatchRegisterRooms\BatchRegisterRoomsCommandHan
 use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomBatchInvalidException;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
+use App\Tests\Room\Infrastructure\FakeRoomTypeExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -22,15 +23,18 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
 
     private InMemoryRoomRepository $roomRepository;
     private FakeHotelExistenceChecker $hotelExistenceChecker;
+    private FakeRoomTypeExistenceChecker $roomTypeExistenceChecker;
     private BatchRegisterRoomsCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->roomRepository = new InMemoryRoomRepository();
         $this->hotelExistenceChecker = new FakeHotelExistenceChecker();
+        $this->roomTypeExistenceChecker = new FakeRoomTypeExistenceChecker();
         $this->handler = new BatchRegisterRoomsCommandHandler(
             $this->roomRepository,
             $this->hotelExistenceChecker,
+            $this->roomTypeExistenceChecker,
         );
     }
 
@@ -203,6 +207,28 @@ final class BatchRegisterRoomsCommandHandlerTest extends TestCase
         self::assertSame('line[2]', $exception->violations[0]['field']);
         self::assertSame('line[3]', $exception->violations[1]['field']);
         self::assertSame('line[5]', $exception->violations[2]['field']);
+    }
+
+    #[Test]
+    public function itRejectsEntryWithNonExistentRoomType(): void
+    {
+        $this->roomTypeExistenceChecker->setExists(false);
+
+        $exception = null;
+        try {
+            ($this->handler)(new BatchRegisterRoomsCommand(
+                hotelId: self::HOTEL_ID,
+                entries: [['id' => 'aaaaaaaa-0000-4000-8000-000000000001', 'number' => '101', 'floor' => 1, 'roomTypeId' => self::ROOM_TYPE_ID]],
+                createdAt: new \DateTimeImmutable(),
+            ));
+        } catch (RoomBatchInvalidException $e) {
+            $exception = $e;
+        }
+
+        self::assertNotNull($exception);
+        self::assertCount(1, $exception->violations);
+        self::assertSame('line[2]', $exception->violations[0]['field']);
+        self::assertStringContainsString('Room type not found', $exception->violations[0]['message']);
     }
 
     #[Test]

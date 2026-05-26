@@ -8,7 +8,9 @@ use App\Room\Application\UseCase\RegisterRoom\RegisterRoomCommand;
 use App\Room\Application\UseCase\RegisterRoom\RegisterRoomCommandHandler;
 use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomAlreadyExistsException;
+use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
+use App\Tests\Room\Infrastructure\FakeRoomTypeExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -21,13 +23,19 @@ final class RegisterRoomCommandHandlerTest extends TestCase
 
     private InMemoryRoomRepository $roomRepository;
     private FakeHotelExistenceChecker $hotelExistenceChecker;
+    private FakeRoomTypeExistenceChecker $roomTypeExistenceChecker;
     private RegisterRoomCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->roomRepository = new InMemoryRoomRepository();
         $this->hotelExistenceChecker = new FakeHotelExistenceChecker();
-        $this->handler = new RegisterRoomCommandHandler($this->roomRepository, $this->hotelExistenceChecker);
+        $this->roomTypeExistenceChecker = new FakeRoomTypeExistenceChecker();
+        $this->handler = new RegisterRoomCommandHandler(
+            $this->roomRepository,
+            $this->hotelExistenceChecker,
+            $this->roomTypeExistenceChecker,
+        );
     }
 
     #[Test]
@@ -90,6 +98,22 @@ final class RegisterRoomCommandHandlerTest extends TestCase
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 2,
+            roomTypeId: self::ROOM_TYPE_ID,
+            createdAt: new \DateTimeImmutable(),
+        ));
+    }
+
+    #[Test]
+    public function itThrowsWhenRoomTypeDoesNotExist(): void
+    {
+        $this->roomTypeExistenceChecker->setExists(false);
+        $this->expectException(RoomTypeNotFoundException::class);
+
+        ($this->handler)(new RegisterRoomCommand(
+            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            number: '101',
+            floor: 1,
             roomTypeId: self::ROOM_TYPE_ID,
             createdAt: new \DateTimeImmutable(),
         ));
