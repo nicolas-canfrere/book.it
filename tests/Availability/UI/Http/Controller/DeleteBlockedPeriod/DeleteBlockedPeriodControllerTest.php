@@ -71,9 +71,24 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
 
         $client->request(
             method: 'POST',
+            uri: "/api/v1/hotels/{$hotelBody['id']}/room-types",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'name' => 'Single',
+                'livingSpaceCount' => 1,
+                'guestCapacity' => 1,
+                'isAccessible' => false,
+                'bedComposition' => [['type' => 'single', 'count' => 1]],
+            ], \JSON_THROW_ON_ERROR),
+        );
+        /** @var array{id: string} $roomTypeBody */
+        $roomTypeBody = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        $client->request(
+            method: 'POST',
             uri: "/api/v1/hotels/{$hotelBody['id']}/rooms",
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['number' => '101', 'floor' => 1], \JSON_THROW_ON_ERROR),
+            content: json_encode(['number' => '101', 'floor' => 1, 'roomTypeId' => $roomTypeBody['id']], \JSON_THROW_ON_ERROR),
         );
         /** @var array{id: string} $roomBody */
         $roomBody = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
