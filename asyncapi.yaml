@@ -1,0 +1,190 @@
+asyncapi: 3.0.0
+
+info:
+  title: book.it Async API
+  version: 1.0.0
+  description: |
+    Asynchronous messaging interface for the book.it hotel reservation platform.
+
+    All async commands are transported over RabbitMQ via Symfony Messenger (AMQP transport).
+    Messages are serialized as JSON envelopes and routed through the `bookit.commands.exchange`
+    direct exchange into the `bookit.commands` queue.
+
+    **Retry policy:** up to 3 retries with exponential back-off (initial 1 s, ×2, max 10 s, ±10 % jitter).
+    Failed messages are moved to the `bookit_failed_commands` Doctrine transport table.
+  contact:
+    name: book.it
+  license:
+    name: MIT
+
+servers:
+  rabbitmq:
+    host: '{host}:{port}'
+    protocol: amqp
+    description: RabbitMQ 4 broker
+    variables:
+      host:
+        description: Broker hostname (Docker service name `rabbitmq` inside the stack)
+        default: localhost
+      port:
+        description: AMQP port
+        default: '5672'
+
+channels:
+  bookit/commands:
+    address: bookit.commands
+    description: |
+      Main command queue. The application publishes to the `bookit.commands.exchange` direct
+      exchange; RabbitMQ routes every message to this queue. The consumer worker reads from
+      here and dispatches through `messenger.bus.default`.
+    bindings:
+      amqp:
+        is: queue
+        exchange:
+          name: bookit.commands.exchange
+          type: direct
+          durable: true
+          autoDelete: false
+        queue:
+          name: bookit.commands
+          durable: true
+          autoDelete: false
+          exclusive: false
+    messages:
+      SendBookingConfirmationEmailCommand:
+        $ref: '#/components/messages/SendBookingConfirmationEmailCommand'
+      ExpireReservationCommand:
+        $ref: '#/components/messages/ExpireReservationCommand'
+
+operations:
+
+  # ── Publishers ────────────────────────────────────────────────────────────────
+
+  scheduleReservationExpiry:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands'
+    summary: Schedule automatic expiry of a pending reservation
+    description: |
+      Dispatched by `CreateReservationCommandHandler` immediately after a reservation is
+      persisted, with a **15-minute delay** (`DelayStamp: 900 000 ms`).
+
+      If the reservation has not been confirmed when the delay elapses,
+      `ExpireReservationCommandHandler` transitions it to the `expired` status and raises
+      a `ReservationExpired` domain event.
+
+      **Trigger:** `POST /api/v1/reservations`
+    messages:
+      - $ref: '#/channels/bookit~1commands/messages/ExpireReservationCommand'
+
+  dispatchBookingConfirmationEmail:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands'
+    summary: Request a booking confirmation email after reservation confirmation
+    description: |
+      Dispatched by `ReservationConfirmedListener` in response to the `ReservationConfirmed`
+      domain event, which is raised when a reservation transitions from `pending` to `confirmed`.
+
+      **Trigger:** `POST /api/v1/reservations/{id}/confirm`
+    messages:
+      - $ref: '#/channels/bookit~1commands/messages/SendBookingConfirmationEmailCommand'
+
+  # ── Consumers ─────────────────────────────────────────────────────────────────
+
+  handleReservationExpiry:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands'
+    summary: Expire a pending reservation that was not confirmed in time
+    description: |
+      Handled by `ExpireReservationCommandHandler` (Notification context).
+
+      Behaviour:
+      - If the reservation is no longer in `pending` status (e.g. it was confirmed or
+        cancelled before the delay elapsed), the command is a no-op.
+      - Otherwise the reservation is transitioned to `expired` and a `ReservationExpired`
+        domain event is dispatched (used to release the availability hold).
+    messages:
+      - $ref: '#/channels/bookit~1commands/messages/ExpireReservationCommand'
+
+  handleBookingConfirmationEmail:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands'
+    summary: Send the booking confirmation email to the booker
+    description: |
+      Handled by `SendBookingConfirmationEmailCommandHandler` (Notification context).
+
+      Steps:
+      1. Fetch the booker's contact details (`BookerContactFetcherInterface`).
+      2. Fetch the reservation details (`ReservationDetailsFetcherInterface`).
+      3. Send a transactional HTML email via Symfony Mailer
+         (`BookingConfirmationEmailSenderInterface`).
+
+      The handler is idempotent at the messaging level: if the booker or reservation
+      cannot be found, the command is silently skipped with a warning log.
+    messages:
+      - $ref: '#/channels/bookit~1commands/messages/SendBookingConfirmationEmailCommand'
+
+components:
+
+  messages:
+
+    ExpireReservationCommand:
+      name: ExpireReservationCommand
+      title: Expire Reservation
+      summary: Request to expire a pending reservation that was not confirmed in time
+      description: |
+        Published with a 15-minute `DelayStamp`. The handler is a no-op when the reservation
+        is no longer `pending`.
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/ExpireReservationPayload'
+      examples:
+        - name: typical
+          payload:
+            reservationId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    SendBookingConfirmationEmailCommand:
+      name: SendBookingConfirmationEmailCommand
+      title: Send Booking Confirmation Email
+      summary: Request to send a booking confirmation email to the booker
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/SendBookingConfirmationEmailPayload'
+      examples:
+        - name: typical
+          payload:
+            reservationId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            bookerId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+
+  schemas:
+
+    ExpireReservationPayload:
+      type: object
+      required:
+        - reservationId
+      properties:
+        reservationId:
+          type: string
+          format: uuid
+          description: UUID v4 of the pending reservation to expire
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    SendBookingConfirmationEmailPayload:
+      type: object
+      required:
+        - reservationId
+        - bookerId
+      properties:
+        reservationId:
+          type: string
+          format: uuid
+          description: UUID v4 of the confirmed reservation
+          example: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+        bookerId:
+          type: string
+          format: uuid
+          description: UUID v4 of the booker to notify
+          example: b2c3d4e5-f6a7-8901-bcde-f12345678901
