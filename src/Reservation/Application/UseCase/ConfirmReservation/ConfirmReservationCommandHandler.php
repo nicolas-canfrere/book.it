@@ -32,6 +32,7 @@ final readonly class ConfirmReservationCommandHandler implements SyncCommandHand
         $this->eventDispatcher->dispatch(new ReservationConfirmed(
             reservationId: $reservation->id,
             roomId: $reservation->roomId,
+            bookerId: $reservation->bookerId,
             checkIn: $reservation->period->checkIn,
             checkOut: $reservation->period->checkOut,
         ));

@@ -1,6 +1,7 @@
 include:
   - .docker/compose/database.yaml
   - .docker/compose/rabbitmq.yaml
+  - .docker/compose/mailer.yaml
   - .docker/compose/php.yaml
   - .docker/compose/php.override.yaml
   - .docker/compose/consumer.commands.yaml
