@@ -11,6 +11,9 @@ services:
         App\Shared\Application\Bus\SyncQueryHandlerInterface:
             tags:
                 - {name: messenger.message_handler, bus: sync.query.bus}
+        App\Shared\Application\Bus\AsyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: messenger.bus.default}
 
     App\Notification\Application\:
         resource: '../../src/Notification/Application/'
@@ -33,6 +36,3 @@ services:
         arguments:
             $mailerFrom: '%env(MAILER_FROM)%'
 
-    App\Notification\Application\UseCase\SendBookingConfirmationEmail\SendBookingConfirmationEmailCommandHandler:
-        tags:
-            - {name: messenger.message_handler, bus: messenger.bus.default}
