@@ -32,6 +32,7 @@ final class BookerContactFetcherTest extends TestCase
 
             public function ask(object $query): mixed
             {
+                /** @phpstan-ignore-next-line return.type */
                 return $this->booker;
             }
         };
@@ -50,6 +51,7 @@ final class BookerContactFetcherTest extends TestCase
         $queryBus = new class implements SyncQueryBusInterface {
             public function ask(object $query): mixed
             {
+                /** @phpstan-ignore-next-line return.type */
                 return null;
             }
         };

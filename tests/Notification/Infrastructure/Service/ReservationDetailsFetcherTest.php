@@ -39,6 +39,7 @@ final class ReservationDetailsFetcherTest extends TestCase
 
             public function ask(object $query): mixed
             {
+                /** @phpstan-ignore-next-line return.type */
                 return $this->reservation;
             }
         };
@@ -57,6 +58,7 @@ final class ReservationDetailsFetcherTest extends TestCase
         $queryBus = new class implements SyncQueryBusInterface {
             public function ask(object $query): mixed
             {
+                /** @phpstan-ignore-next-line return.type */
                 return null;
             }
         };

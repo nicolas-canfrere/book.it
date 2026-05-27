@@ -26,8 +26,13 @@ services:
     App\Notification\Domain\Port\ReservationDetailsFetcherInterface:
         alias: App\Notification\Infrastructure\Service\ReservationDetailsFetcher
 
+    App\Notification\Domain\Port\BookingConfirmationEmailSenderInterface:
+        alias: App\Notification\Infrastructure\Service\SymfonyMailerBookingConfirmationEmailSender
+
+    App\Notification\Infrastructure\Service\SymfonyMailerBookingConfirmationEmailSender:
+        arguments:
+            $mailerFrom: '%env(MAILER_FROM)%'
+
     App\Notification\Application\UseCase\SendBookingConfirmationEmail\SendBookingConfirmationEmailCommandHandler:
         tags:
             - {name: messenger.message_handler, bus: messenger.bus.default}
-        arguments:
-            $mailerFrom: '%env(MAILER_FROM)%'
