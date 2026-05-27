@@ -7,9 +7,9 @@ namespace App\Notification\Infrastructure\Service;
 use App\Notification\Domain\Port\BookingConfirmationEmailSenderInterface;
 use App\Notification\Domain\ReadModel\BookerContact;
 use App\Notification\Domain\ReadModel\ReservationDetails;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use Symfony\Component\Mime\Email;
 
 final readonly class SymfonyMailerBookingConfirmationEmailSender implements BookingConfirmationEmailSenderInterface
 {
@@ -21,17 +21,18 @@ final readonly class SymfonyMailerBookingConfirmationEmailSender implements Book
 
     public function send(BookerContact $bookerContact, ReservationDetails $reservationDetails): void
     {
-        $email = (new Email())
+        $email = (new TemplatedEmail())
             ->from(new Address($this->mailerFrom, 'book.it'))
             ->to(new Address($bookerContact->email, $bookerContact->firstName . ' ' . $bookerContact->lastName))
             ->subject('Votre réservation est confirmée')
-            ->text(sprintf(
-                "Bonjour %s,\n\nVotre séjour du %s au %s est bien enregistré.\nMontant total : %.2f €\n\nÀ bientôt,\nL'équipe book.it",
-                $bookerContact->firstName,
-                $reservationDetails->checkIn->format('d/m/Y'),
-                $reservationDetails->checkOut->format('d/m/Y'),
-                $reservationDetails->totalPriceCents / 100,
-            ));
+            ->textTemplate('emails/booking_confirmation.txt.twig')
+            ->htmlTemplate('emails/booking_confirmation.html.twig')
+            ->context([
+                'firstName' => $bookerContact->firstName,
+                'checkIn' => $reservationDetails->checkIn,
+                'checkOut' => $reservationDetails->checkOut,
+                'totalPriceCents' => $reservationDetails->totalPriceCents,
+            ]);
 
         $this->mailer->send($email);
     }

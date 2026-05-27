@@ -1,0 +1,7 @@
+Bonjour {{ firstName }},
+
+Votre séjour du {{ checkIn|date('d/m/Y') }} au {{ checkOut|date('d/m/Y') }} est bien enregistré.
+Montant total : {{ (totalPriceCents / 100)|number_format(2, '.', '') }} €
+
+À bientôt,
+L'équipe book.it

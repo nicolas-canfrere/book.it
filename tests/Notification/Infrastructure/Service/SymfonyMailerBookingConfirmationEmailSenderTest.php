@@ -10,8 +10,8 @@ use App\Notification\Infrastructure\Service\SymfonyMailerBookingConfirmationEmai
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\RawMessage;
 
 #[Group('unit')]
@@ -25,18 +25,16 @@ final class SymfonyMailerBookingConfirmationEmailSenderTest extends TestCase
         $this->mailer = $this->createMock(MailerInterface::class);
     }
 
-    public function test_sends_email_with_expected_content(): void
+    public function test_sends_templated_email_with_correct_templates_and_context(): void
     {
         $sender = new SymfonyMailerBookingConfirmationEmailSender($this->mailer, 'noreply@book.it');
 
+        $checkIn = new \DateTimeImmutable('2026-07-01');
+        $checkOut = new \DateTimeImmutable('2026-07-05');
         $bookerContact = new BookerContact('Jean', 'Dupont', 'jean.dupont@example.com');
-        $reservationDetails = new ReservationDetails(
-            new \DateTimeImmutable('2026-07-01'),
-            new \DateTimeImmutable('2026-07-05'),
-            40000,
-        );
+        $reservationDetails = new ReservationDetails($checkIn, $checkOut, 40000);
 
-        /** @var Email|null $sentEmail */
+        /** @var TemplatedEmail|null $sentEmail */
         $sentEmail = null;
         $this->mailer
             ->expects($this->once())
@@ -48,13 +46,16 @@ final class SymfonyMailerBookingConfirmationEmailSenderTest extends TestCase
         $sender->send($bookerContact, $reservationDetails);
 
         self::assertNotNull($sentEmail);
-        self::assertInstanceOf(Email::class, $sentEmail);
+        self::assertInstanceOf(TemplatedEmail::class, $sentEmail);
         self::assertSame('Votre réservation est confirmée', $sentEmail->getSubject());
         self::assertStringContainsString('jean.dupont@example.com', $sentEmail->getTo()[0]->getAddress());
         self::assertStringContainsString('noreply@book.it', $sentEmail->getFrom()[0]->getAddress());
-        self::assertStringContainsString('Jean', (string) $sentEmail->getTextBody());
-        self::assertStringContainsString('01/07/2026', (string) $sentEmail->getTextBody());
-        self::assertStringContainsString('05/07/2026', (string) $sentEmail->getTextBody());
-        self::assertStringContainsString('400.00', (string) $sentEmail->getTextBody());
+        self::assertSame('emails/booking_confirmation.html.twig', $sentEmail->getHtmlTemplate());
+        self::assertSame('emails/booking_confirmation.txt.twig', $sentEmail->getTextTemplate());
+        $context = $sentEmail->getContext();
+        self::assertSame('Jean', $context['firstName']);
+        self::assertSame($checkIn, $context['checkIn']);
+        self::assertSame($checkOut, $context['checkOut']);
+        self::assertSame(40000, $context['totalPriceCents']);
     }
 }
