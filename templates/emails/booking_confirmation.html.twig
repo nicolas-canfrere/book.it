@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Votre réservation est confirmée</title>
+</head>
+<body>
+    <p>Bonjour {{ firstName }},</p>
+    <p>
+        Votre séjour du <strong>{{ checkIn|date('d/m/Y') }}</strong>
+        au <strong>{{ checkOut|date('d/m/Y') }}</strong> est bien enregistré.
+    </p>
+    <p>Montant total : <strong>{{ (totalPriceCents / 100)|number_format(2, '.', '') }} €</strong></p>
+    <p>
+        À bientôt,<br>
+        L'équipe book.it
+    </p>
+</body>
+</html>
