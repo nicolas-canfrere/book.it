@@ -7,9 +7,10 @@ namespace App\Reservation\Application\UseCase\ExpireReservation;
 use App\Reservation\Domain\Event\ReservationExpired;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
+use App\Shared\Application\Bus\AsyncCommandHandlerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
-final readonly class ExpireReservationCommandHandler
+final readonly class ExpireReservationCommandHandler implements AsyncCommandHandlerInterface
 {
     public function __construct(
         private ReservationRepositoryInterface $repository,

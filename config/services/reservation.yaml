@@ -12,6 +12,9 @@ services:
         App\Shared\Application\Bus\SyncQueryHandlerInterface:
             tags:
                 - {name: messenger.message_handler, bus: sync.query.bus}
+        App\Shared\Application\Bus\AsyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: messenger.bus.default}
 
     App\Reservation\Domain\:
         resource: '../../src/Reservation/Domain/'
@@ -24,10 +27,6 @@ services:
         exclude:
             - '../../src/Reservation/Application/**/*Command.php'
             - '../../src/Reservation/Application/**/*Query.php'
-
-    App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommandHandler:
-        tags:
-            - {name: messenger.message_handler, bus: messenger.bus.default}
 
     App\Reservation\Infrastructure\:
         resource: '../../src/Reservation/Infrastructure/'

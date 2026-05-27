@@ -119,9 +119,10 @@ See skill `symfony-service-config` for details. Key rules:
 - **`_instanceof` required in every context YAML** — without it, handlers silently fail at runtime (`NoHandlerForMessageException`)
 - **Never add `resource:` for directories that don't exist** — Symfony throws `FileLocatorFileNotFoundException` at container build time
 - **Exception mappings → `config/services/exceptions.yaml` only** — context YAMLs silently overwrite each other
-- **`#[AsMessageHandler]` is forbidden in the Application layer** — deptrac rejects Symfony vendor dependencies there. Wire async handlers explicitly in the context YAML instead:
+- **`#[AsMessageHandler]` is forbidden in the Application layer** — deptrac rejects Symfony vendor dependencies there. Implement `AsyncCommandHandlerInterface` on the handler — the `_instanceof` block in every context YAML maps it to `messenger.bus.default`. Do NOT use per-service `tags:` at the bottom of YAML: they are silently ignored with `APP_DEBUG=0` (the consumer's mode).
   ```yaml
-  App\Some\Application\UseCase\Foo\FooCommandHandler:
+  # In _instanceof of the context YAML:
+  App\Shared\Application\Bus\AsyncCommandHandlerInterface:
       tags:
           - {name: messenger.message_handler, bus: messenger.bus.default}
   ```
