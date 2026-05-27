@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Tests\Notification\Infrastructure\Service;
 
-use App\Booker\Application\UseCase\GetBooker\GetBookerQuery;
 use App\Booker\Domain\Model\Booker;
 use App\Notification\Infrastructure\Service\BookerContactFetcher;
 use App\Shared\Application\Bus\SyncQueryBusInterface;

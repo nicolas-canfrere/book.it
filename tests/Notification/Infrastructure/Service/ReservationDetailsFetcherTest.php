@@ -5,9 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Notification\Infrastructure\Service;
 
 use App\Notification\Infrastructure\Service\ReservationDetailsFetcher;
-use App\Reservation\Application\UseCase\GetReservation\GetReservationQuery;
 use App\Reservation\Domain\Model\Reservation;
-use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
