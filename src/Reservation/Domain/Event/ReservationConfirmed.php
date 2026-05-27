@@ -9,6 +9,7 @@ final readonly class ReservationConfirmed
     public function __construct(
         public string $reservationId,
         public string $roomId,
+        public string $bookerId,
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
     ) {

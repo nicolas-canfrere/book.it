@@ -50,6 +50,7 @@ final class ConfirmReservationCommandHandlerTest extends KernelTestCase
         self::assertCount(1, $dispatchedEvents);
         self::assertSame('res-001', $dispatchedEvents[0]->reservationId);
         self::assertSame('room-001', $dispatchedEvents[0]->roomId);
+        self::assertSame('booker-001', $dispatchedEvents[0]->bookerId);
     }
 
     public function test_is_idempotent_if_reservation_not_pending(): void

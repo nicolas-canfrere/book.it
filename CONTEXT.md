@@ -272,3 +272,19 @@ _Avoid_: reservation period, booking dates, stay dates
 - `ReservationPaymentCancelled` causes Availability to delete the **Availability Hold** (Payment Abandonment path — symmetric to Expiration)
 - `ReservationCancelled` and `ReservationRevoked` cause Availability to remove the **Blocked Period** (only applicable to confirmed Reservations)
 - An **Expiration** only applies to a `pending` Reservation — if the Reservation was already confirmed when the delayed message arrives, it is a no-op
+
+---
+
+**Booking Confirmation Notification**:
+The communication sent to a Booker when their Reservation transitions to `confirmed`. Informs the Booker that their stay is registered. Delivered asynchronously — the Booker may receive it with a short delay after payment confirmation.
+_Avoid_: confirmation email, booking email, notification mail
+
+**Notification**:
+A communication dispatched to a Booker in response to a Reservation lifecycle event. A Notification is fire-and-forget — no delivery record is persisted; failures are logged and retried by the messaging infrastructure. Currently limited to the **Booking Confirmation Notification** channel (email).
+_Avoid_: message, alert, communication
+
+## Relationships (Notification)
+
+- A **Booking Confirmation Notification** is triggered by exactly one `ReservationConfirmed` event
+- A **Booking Confirmation Notification** is addressed to the **Booker** referenced by the confirmed **Reservation**
+- A **Notification** carries no persistent state — delivery outcome is observable only via logs

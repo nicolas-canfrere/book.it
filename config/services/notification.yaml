@@ -1,0 +1,38 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+
+    App\Notification\Application\:
+        resource: '../../src/Notification/Application/'
+        exclude:
+            - '../../src/Notification/Application/**/*Command.php'
+
+    App\Notification\Infrastructure\:
+        resource: '../../src/Notification/Infrastructure/'
+
+    App\Notification\Domain\Port\BookerContactFetcherInterface:
+        alias: App\Notification\Infrastructure\Service\BookerContactFetcher
+
+    App\Notification\Domain\Port\ReservationDetailsFetcherInterface:
+        alias: App\Notification\Infrastructure\Service\ReservationDetailsFetcher
+
+    App\Notification\Domain\Port\BookingConfirmationEmailSenderInterface:
+        alias: App\Notification\Infrastructure\Service\SymfonyMailerBookingConfirmationEmailSender
+
+    App\Notification\Infrastructure\Service\SymfonyMailerBookingConfirmationEmailSender:
+        arguments:
+            $mailerFrom: '%env(MAILER_FROM)%'
+
+    App\Notification\Application\UseCase\SendBookingConfirmationEmail\SendBookingConfirmationEmailCommandHandler:
+        tags:
+            - {name: messenger.message_handler, bus: messenger.bus.default}
