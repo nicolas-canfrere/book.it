@@ -111,7 +111,8 @@ operations:
       Dispatched by `ReservationConfirmedListener` in response to the `ReservationConfirmed`
       domain event, raised when a reservation transitions from `pending` to `confirmed`.
 
-      **Trigger:** `POST /api/v1/reservations/{id}/confirm`
+      **Trigger:** `POST /payment/webhooks/success` → `ReservationPaymentConfirmer` →
+      `ConfirmReservationCommand` → `ReservationConfirmed` event
     bindings:
       amqp:
         deliveryMode: 2
