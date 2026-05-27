@@ -13,6 +13,7 @@ The platform is organized around the following bounded contexts:
 - **Booker** — Booker self-registration (natural persons, 18+)
 - **Reservation** — Reservation lifecycle (pending → confirmed / cancelled / expired), price snapshot, cancellation terms, expiration and revocation
 - **Payment** — Payment processing webhooks, confirmation and cancellation handling
+- **Notification** — Transactional emails (booking confirmation) dispatched asynchronously via Messenger
 
 See [CONTEXT.md](CONTEXT.md) for the full ubiquitous language and domain model.
 
@@ -22,6 +23,7 @@ See [CONTEXT.md](CONTEXT.md) for the full ubiquitous language and domain model.
 - **PostgreSQL 16**
 - **RabbitMQ 4** via Symfony Messenger + AMQP transport
 - **Doctrine ORM** with migrations
+- **Mailpit** — local mail catcher for development (SMTP on port 1025, web UI on port 8025)
 - **Docker** — all tooling runs inside containers; no local PHP runtime required
 
 ## Getting Started
@@ -35,6 +37,8 @@ make up
 ```
 
 The API is then available at `http://localhost` and the OpenAPI documentation at `http://localhost/api/doc`.
+
+The mail catcher (Mailpit) is available at `http://localhost:8025`.
 
 ## Commands
 
@@ -89,3 +93,16 @@ make test
 ```
 
 Coding standards enforce `@Symfony` + `@PSR2` rules via PHP CS Fixer. `declare(strict_types=1)` is required on all files.
+
+## Contributing
+
+**Direct commits to `main` are forbidden.** All changes go through a branch and a Pull Request.
+
+```bash
+git checkout -b feat/<short-description>   # new feature
+git checkout -b fix/<short-description>    # bug fix
+git checkout -b docs/<short-description>   # documentation only
+git checkout -b refactor/<short-description>
+```
+
+Before opening a PR, ensure `make lint` and `make test` pass.

@@ -50,11 +50,18 @@ See skill `writing-plans` for the context-gathering protocol. It defines a minim
 
 ## Branching Policy
 
-**Never implement directly on `main`.** Before any planning or implementation work (including when using superpowers skills such as `writing-plans`, `executing-plans`, or `subagent-driven-development`), check the current branch with `git branch --show-current`. If on `main`, create a feature branch first:
+**Committing directly to `main` is forbidden.** Every change — feature, fix, refactor, or documentation — must go through a branch and a Pull Request.
+
+Before any planning or implementation work (including when using superpowers skills such as `writing-plans`, `executing-plans`, or `subagent-driven-development`), check the current branch with `git branch --show-current`. If on `main`, create a branch first:
 
 ```bash
-git checkout -b feat/<short-description>
+git checkout -b feat/<short-description>   # new feature
+git checkout -b fix/<short-description>    # bug fix
+git checkout -b docs/<short-description>   # documentation only
+git checkout -b refactor/<short-description>
 ```
+
+Once work is complete: push the branch and open a PR — never push to `main` directly. Use the `superpowers:finishing-a-development-branch` skill to guide this step.
 
 ## Tech Stack
 
