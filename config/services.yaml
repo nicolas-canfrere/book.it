@@ -8,4 +8,5 @@ imports:
     - { resource: './services/reservation.yaml' }
     - { resource: './services/exceptions.yaml' }
     - { resource: './services/payment.yaml' }
+    - { resource: './services/notification.yaml' }
 
