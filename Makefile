@@ -49,6 +49,9 @@ generate-migration: ## Generate a new migration.
 migrate: ## Run migrations. OPTIONS="-q --allow-no-migrations"
 	$(DOCKER_COMPOSE_RUN) php bin/console doctrine:migrations:migrate -n $(OPTIONS)
 
+fixtures: ## Load fixtures (truncates all tables first)
+	$(DOCKER_COMPOSE_RUN) php bin/console app:fixtures:load
+
 ##@ Code analysis
 static-code-analysis: ## Code analysis
 	$(DOCKER_COMPOSE_RUN) --no-deps php sh -c "php bin/console cache:clear --env=test \
