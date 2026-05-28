@@ -42,3 +42,6 @@ services:
 
     App\Room\Domain\Port\RoomTypeExistsInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\RoomTypeExistenceChecker
+
+    App\Room\Domain\Port\RoomCapacityFinderInterface:
+        class: App\Room\Infrastructure\Persistence\Doctrine\RoomCapacityFinder
