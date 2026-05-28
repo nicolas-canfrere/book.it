@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Infrastructure\Persistence\Doctrine;
 
+use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
@@ -39,6 +40,18 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     public function save(Reservation $reservation): void
     {
         $this->bookit->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
+
+        $this->bookit->delete('reservation_guest', ['reservation_id' => $reservation->id]);
+
+        foreach ($reservation->guests as $guest) {
+            $this->bookit->insert('reservation_guest', [
+                'id' => $guest->id,
+                'reservation_id' => $reservation->id,
+                'first_name' => $guest->firstName,
+                'last_name' => $guest->lastName,
+                'date_of_birth' => $guest->dateOfBirth->format('Y-m-d'),
+            ]);
+        }
     }
 
     public function get(string $id): ?Reservation
@@ -56,7 +69,28 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             return null;
         }
 
-        return $this->hydrate($row);
+        $reservation = $this->hydrate($row);
+
+        /** @var list<array{id: string, first_name: string, last_name: string, date_of_birth: string}> $guestRows */
+        $guestRows = $this->bookit->fetchAllAssociative(
+            'SELECT id, first_name, last_name, date_of_birth
+               FROM reservation_guest
+              WHERE reservation_id = :id
+              ORDER BY id',
+            ['id' => $id],
+        );
+
+        $reservation->guests = array_map(
+            fn(array $g) => new Guest(
+                id: $g['id'],
+                firstName: $g['first_name'],
+                lastName: $g['last_name'],
+                dateOfBirth: new \DateTimeImmutable($g['date_of_birth']),
+            ),
+            $guestRows,
+        );
+
+        return $reservation;
     }
 
     /**
