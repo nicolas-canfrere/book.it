@@ -17,7 +17,7 @@ final class CreateReservationControllerTest extends WebTestCase
     public function itCreatesAReservationAndReturns201(): void
     {
         $client = static::createClient();
-        [$roomId, $bookerId] = $this->setupRoomAndBooker($client);
+        [$roomId, $bookerId] = $this->setupRoomAndBooker($client, guestCapacity: 3);
         $this->setBaseRate($client, $roomId, 10000);
 
         $client->request(
@@ -29,13 +29,14 @@ final class CreateReservationControllerTest extends WebTestCase
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
+                'guestCount' => 2,
             ], \JSON_THROW_ON_ERROR),
         );
 
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, status: string, createdAt: string, cancellationTerms: array{daysThreshold: int|null}, priceBreakdown: list<mixed>} $body */
+        /** @var array{id: string, roomId: string, bookerId: string, checkIn: string, checkOut: string, totalPrice: int, guestCount: int, status: string, createdAt: string, cancellationTerms: array{daysThreshold: int|null}, priceBreakdown: list<mixed>} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertNotEmpty($body['id']);
         self::assertSame($roomId, $body['roomId']);
@@ -43,6 +44,7 @@ final class CreateReservationControllerTest extends WebTestCase
         self::assertSame('2030-06-01', $body['checkIn']);
         self::assertSame('2030-06-05', $body['checkOut']);
         self::assertSame(40000, $body['totalPrice']); // 4 nights × 10000
+        self::assertSame(2, $body['guestCount']);
         self::assertSame('pending', $body['status']);
         self::assertNotEmpty($body['createdAt']);
         self::assertNull($body['cancellationTerms']['daysThreshold']);
@@ -53,6 +55,35 @@ final class CreateReservationControllerTest extends WebTestCase
         self::assertArrayHasKey('rateAmountCents', $firstNight);
         self::assertArrayHasKey('discountPercent', $firstNight);
         self::assertArrayHasKey('effectiveAmountCents', $firstNight);
+    }
+
+    #[Test]
+    public function itReturns422WhenGuestCountExceedsRoomCapacity(): void
+    {
+        $client = static::createClient();
+        [$roomId, $bookerId] = $this->setupRoomAndBooker($client, guestCapacity: 1);
+        $this->setBaseRate($client, $roomId, 10000);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/reservations',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'roomId' => $roomId,
+                'bookerId' => $bookerId,
+                'checkIn' => '2030-06-01',
+                'checkOut' => '2030-06-05',
+                'guestCount' => 2,
+            ], \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+
+        /** @var array{type: string} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('https://book.it/problems/guest-capacity-exceeded', $body['type']);
     }
 
     #[Test]
@@ -70,6 +101,7 @@ final class CreateReservationControllerTest extends WebTestCase
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
+                'guestCount' => 1,
             ], \JSON_THROW_ON_ERROR),
         );
 
@@ -98,6 +130,7 @@ final class CreateReservationControllerTest extends WebTestCase
                 'bookerId' => '00000000-0000-4000-8000-000000000002',
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
+                'guestCount' => 1,
             ], \JSON_THROW_ON_ERROR),
         );
 
@@ -126,6 +159,7 @@ final class CreateReservationControllerTest extends WebTestCase
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-03',
                 'checkOut' => '2030-06-07',
+                'guestCount' => 1,
             ], \JSON_THROW_ON_ERROR),
         );
 
@@ -153,6 +187,7 @@ final class CreateReservationControllerTest extends WebTestCase
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
+                'guestCount' => 1,
             ], \JSON_THROW_ON_ERROR),
         );
 
@@ -180,7 +215,7 @@ final class CreateReservationControllerTest extends WebTestCase
     }
 
     /** @return array{string, string} [roomId, bookerId] */
-    private function setupRoomAndBooker(KernelBrowser $client): array
+    private function setupRoomAndBooker(KernelBrowser $client, int $guestCapacity = 2): array
     {
         $client->request(
             method: 'POST',
@@ -202,11 +237,11 @@ final class CreateReservationControllerTest extends WebTestCase
             uri: "/api/v1/hotels/{$hotelBody['id']}/room-types",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'name' => 'Single',
+                'name' => 'Standard',
                 'livingSpaceCount' => 1,
-                'guestCapacity' => 1,
+                'guestCapacity' => $guestCapacity,
                 'isAccessible' => false,
-                'bedComposition' => [['type' => 'single', 'count' => 1]],
+                'bedComposition' => [['type' => 'double', 'count' => 1]],
             ], \JSON_THROW_ON_ERROR),
         );
         /** @var array{id: string} $roomTypeBody */

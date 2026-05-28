@@ -224,7 +224,7 @@ A confirmed or pending booking of a Room by a Booker for a specific stay period.
 _Avoid_: booking, order, stay
 
 **Reservation Status**:
-The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` (Payment Confirmation), `pending` → `cancelled` (Payment Abandonment or Expiration), `confirmed` → `cancelled` (Cancellation or Revocation). No other transitions are allowed.
+The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` (Payment Confirmation), `pending` → `cancelled` (Payment Abandonment or Expiration), `confirmed` → `cancelled` (Cancellation or Revocation), `confirmed` → `checked_in` (Check-in). No other transitions are allowed.
 _Avoid_: reservation state, booking status
 
 **Cancellation** *(by Booker)*:
@@ -255,10 +255,27 @@ _Avoid_: payment cancel, payment cancellation, booking abandonment
 The date range of a Reservation, defined by a check-in date (inclusive) and a check-out date (exclusive). The check-out date must be strictly after the check-in date.
 _Avoid_: reservation period, booking dates, stay dates
 
+**Guest**:
+A person occupying the Room during the Stay Period. Distinct from the Booker — the Booker may or may not be a Guest. A Guest is identified by first name, last name, and date of birth. A Guest is not a persistent account; they exist only in the context of a Reservation. The Booker may pre-register Guests after Reservation creation and before the check-in date (optional). The operator registers Guests on-site at Check-in time.
+_Avoid_: companion, occupant, traveller, passenger
+
+**Guest Count**:
+The declared number of persons who will occupy the Room, provided by the Booker at Reservation creation time. Must not exceed the Guest Capacity of the Room Type.
+_Avoid_: number of guests, occupancy count, pax
+
+**Check-in** *(by Operator)*:
+The act of the operator registering the Guests physically present on arrival, transitioning the Reservation from `confirmed` to `checked_in`. The operator records the actual Guests at this point. Check-out is implicit — the stay ends on the check-out date with no system action required.
+_Avoid_: arrival, guest registration, check in
+
 ## Relationships (Reservation)
 
 - A **Reservation** references exactly one **Room** and exactly one **Booker**
 - A **Reservation** covers exactly one **Stay Period**
+- A **Reservation** carries exactly one **Guest Count**, declared at creation time and validated against the **Guest Capacity** of the Room Type
+- A **Reservation** has zero or more **Guests**, pre-registered by the Booker (optional) or registered by the operator at **Check-in**
+- A **Check-in** transitions a `confirmed` Reservation to `checked_in`; only permitted on or after the check-in date
+- A **Cancellation** (by Booker) is forbidden once the Reservation is `checked_in`
+- Check-out is implicit — no system action or status transition occurs at the check-out date
 - A **Reservation** captures a **Total Price** snapshot at creation time (in EUR cents) — immutable after creation
 - A **Reservation** captures a **Price Breakdown** snapshot at creation time — immutable for the lifetime of the Reservation
 - A **Reservation** captures a snapshot of the **Cancellation Policy** as **Cancellation Terms** at creation time — immutable for the lifetime of the Reservation

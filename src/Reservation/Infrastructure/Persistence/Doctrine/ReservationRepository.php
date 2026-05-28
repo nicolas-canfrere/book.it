@@ -9,6 +9,7 @@ use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use Doctrine\DBAL\Connection;
 
@@ -27,6 +28,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             'check_in' => $reservation->period->checkIn->format('Y-m-d'),
             'check_out' => $reservation->period->checkOut->format('Y-m-d'),
             'total_price' => $reservation->totalPrice,
+            'guest_count' => $reservation->guestCount->value,
             'cancellation_terms_days_threshold' => $reservation->cancellationTerms->daysThreshold,
             'price_breakdown' => json_encode($reservation->priceBreakdown->toArray()) ?: '[]',
             'status' => $reservation->status->value,
@@ -41,9 +43,9 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
     public function get(string $id): ?Reservation
     {
-        /** @var array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string}|false $row */
+        /** @var array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string}|false $row */
         $row = $this->bookit->fetchAssociative(
-            'SELECT id, room_id, booker_id, check_in, check_out, total_price,
+            'SELECT id, room_id, booker_id, check_in, check_out, total_price, guest_count,
                     cancellation_terms_days_threshold, price_breakdown, status, created_at
                FROM reservation
               WHERE id = :id',
@@ -58,7 +60,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     }
 
     /**
-     * @param array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string} $row
+     * @param array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string} $row
      */
     private function hydrate(array $row): Reservation
     {
@@ -82,6 +84,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             totalPrice: (int) $row['total_price'],
             cancellationTerms: $cancellationTerms,
             priceBreakdown: $priceBreakdown,
+            guestCount: new GuestCount((int) $row['guest_count']),
             createdAt: new \DateTimeImmutable($row['created_at']),
         );
         $reservation->status = ReservationStatus::from($row['status']);

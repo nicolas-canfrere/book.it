@@ -8,6 +8,7 @@ use App\Notification\Infrastructure\Service\ReservationDetailsFetcher;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use PHPUnit\Framework\Attributes\Group;
@@ -29,6 +30,7 @@ final class ReservationDetailsFetcherTest extends TestCase
             totalPrice: 40000,
             cancellationTerms: CancellationTerms::alwaysRefundable(),
             priceBreakdown: new PriceBreakdown([]),
+            guestCount: new GuestCount(1),
             createdAt: new \DateTimeImmutable(),
         );
 

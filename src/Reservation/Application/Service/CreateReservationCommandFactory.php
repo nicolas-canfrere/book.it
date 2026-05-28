@@ -18,6 +18,7 @@ final readonly class CreateReservationCommandFactory
         string $bookerId,
         string $checkIn,
         string $checkOut,
+        int $guestCount,
     ): CreateReservationCommand {
         return new CreateReservationCommand(
             id: $this->idGenerator->generate(),
@@ -25,6 +26,7 @@ final readonly class CreateReservationCommandFactory
             bookerId: $bookerId,
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
+            guestCount: $guestCount,
             createdAt: new \DateTimeImmutable(),
         );
     }

@@ -16,6 +16,7 @@ final readonly class ReservationSerializer
      *     checkIn: string,
      *     checkOut: string,
      *     totalPrice: int,
+     *     guestCount: int,
      *     status: string,
      *     cancellationTerms: array{daysThreshold: int|null},
      *     priceBreakdown: list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}>,
@@ -31,6 +32,7 @@ final readonly class ReservationSerializer
             'checkIn' => $reservation->period->checkIn->format('Y-m-d'),
             'checkOut' => $reservation->period->checkOut->format('Y-m-d'),
             'totalPrice' => $reservation->totalPrice,
+            'guestCount' => $reservation->guestCount->value,
             'status' => $reservation->status->value,
             'cancellationTerms' => [
                 'daysThreshold' => $reservation->cancellationTerms->daysThreshold,

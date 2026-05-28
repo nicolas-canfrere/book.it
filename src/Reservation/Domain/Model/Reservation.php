@@ -7,6 +7,7 @@ namespace App\Reservation\Domain\Model;
 use App\Reservation\Domain\Exception\InvalidReservationTransitionException;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 
 final class Reservation
@@ -21,6 +22,7 @@ final class Reservation
         public readonly int $totalPrice,
         public readonly CancellationTerms $cancellationTerms,
         public readonly PriceBreakdown $priceBreakdown,
+        public readonly GuestCount $guestCount,
         public readonly \DateTimeImmutable $createdAt,
     ) {
         $this->status = ReservationStatus::Pending;

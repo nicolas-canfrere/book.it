@@ -120,3 +120,7 @@ services:
                     type: 'https://book.it/problems/room-type-has-rooms'
                     title: 'Room Type Has Rooms'
                     status: 409
+                App\Reservation\Domain\Exception\GuestCapacityExceededException:
+                    type: 'https://book.it/problems/guest-capacity-exceeded'
+                    title: 'Guest Capacity Exceeded'
+                    status: 422
