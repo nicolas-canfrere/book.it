@@ -65,6 +65,25 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
+    public function test_pre_registers_guests_on_pending_reservation(): void
+    {
+        $client = static::createClient();
+        $reservationId = $this->createPendingReservation($client);
+
+        $client->request(
+            method: 'PUT',
+            uri: "/api/v1/reservations/{$reservationId}/guests",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'guests' => [
+                    ['firstName' => 'Alice', 'lastName' => 'Smith', 'dateOfBirth' => '1990-01-15'],
+                ],
+            ], \JSON_THROW_ON_ERROR),
+        );
+
+        self::assertResponseStatusCodeSame(204);
+    }
+
     public function test_returns_409_when_check_in_date_is_today_or_passed(): void
     {
         $client = static::createClient();

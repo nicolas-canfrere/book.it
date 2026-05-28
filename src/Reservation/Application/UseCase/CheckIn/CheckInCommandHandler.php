@@ -31,7 +31,7 @@ final class CheckInCommandHandler implements SyncCommandHandlerInterface
                 id: $this->guestIdGenerator->generate(),
                 firstName: $data['firstName'],
                 lastName: $data['lastName'],
-                dateOfBirth: new \DateTimeImmutable($data['dateOfBirth']),
+                dateOfBirth: \DateTimeImmutable::createFromFormat('Y-m-d', $data['dateOfBirth']) ?: throw new \InvalidArgumentException(sprintf('Invalid date of birth format: "%s". Expected Y-m-d.', $data['dateOfBirth'])),
             ),
             $command->guests,
         );

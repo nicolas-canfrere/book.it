@@ -10,12 +10,12 @@ use App\Reservation\Domain\Exception\CheckInNotAllowedException;
 use App\Reservation\Domain\Exception\ReservationNotFoundException;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
-use App\Reservation\Domain\Port\GuestIdGeneratorInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
+use App\Tests\Reservation\Infrastructure\Service\SequentialGuestIdGenerator;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -100,15 +100,5 @@ final class CheckInCommandHandlerTest extends KernelTestCase
         $reservation->status = ReservationStatus::Confirmed;
 
         return $reservation;
-    }
-}
-
-final class SequentialGuestIdGenerator implements GuestIdGeneratorInterface
-{
-    private int $counter = 0;
-
-    public function generate(): string
-    {
-        return sprintf('guest-%d', ++$this->counter);
     }
 }
