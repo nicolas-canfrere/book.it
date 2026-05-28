@@ -1383,6 +1383,7 @@ paths:
                   checkIn: { type: string, format: date, example: '2026-06-01' }
                   checkOut: { type: string, format: date, example: '2026-06-05' }
                   totalPrice: { type: integer, example: 42000 }
+                  guestCount: { type: integer, example: 2 }
                   status: { type: string, example: pending }
                   cancellationTerms: { properties: { daysThreshold: { type: integer, example: 7, nullable: true } }, type: object }
                   priceBreakdown: { type: array, items: { properties: { date: { type: string, format: date, example: '2026-06-01' }, rateAmountCents: { type: integer, example: 10000 }, discountPercent: { type: integer, example: 10, nullable: true }, effectiveAmountCents: { type: integer, example: 9000 } }, type: object } }
@@ -1974,6 +1975,13 @@ components:
           example: '2026-06-05'
           nullable: true
           default: null
+        guestCount:
+          type: integer
+          example: 2
+          nullable: true
+          default: null
+          maximum: 20
+          minimum: 1
       type: object
     HandlePaymentCancellationRequest:
       properties:
