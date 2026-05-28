@@ -23,10 +23,11 @@ final readonly class RoomCapacityFetcher implements RoomCapacityFetcherInterface
             ['roomId' => $roomId],
         );
 
-        if (!is_string($capacity)) {
+        if (false === $capacity) {
             return 0;
         }
 
+        /** @var int|string $capacity */
         return (int) $capacity;
     }
 }
