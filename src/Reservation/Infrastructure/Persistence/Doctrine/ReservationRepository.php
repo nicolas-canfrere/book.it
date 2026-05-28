@@ -39,19 +39,22 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
     public function save(Reservation $reservation): void
     {
-        $this->bookit->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
+        $connection = $this->bookit;
+        $connection->transactional(static function () use ($connection, $reservation): void {
+            $connection->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
 
-        $this->bookit->delete('reservation_guest', ['reservation_id' => $reservation->id]);
+            $connection->delete('reservation_guest', ['reservation_id' => $reservation->id]);
 
-        foreach ($reservation->guests as $guest) {
-            $this->bookit->insert('reservation_guest', [
-                'id' => $guest->id,
-                'reservation_id' => $reservation->id,
-                'first_name' => $guest->firstName,
-                'last_name' => $guest->lastName,
-                'date_of_birth' => $guest->dateOfBirth->format('Y-m-d'),
-            ]);
-        }
+            foreach ($reservation->guests as $guest) {
+                $connection->insert('reservation_guest', [
+                    'id' => $guest->id,
+                    'reservation_id' => $reservation->id,
+                    'first_name' => $guest->firstName,
+                    'last_name' => $guest->lastName,
+                    'date_of_birth' => $guest->dateOfBirth->format('Y-m-d'),
+                ]);
+            }
+        });
     }
 
     public function get(string $id): ?Reservation
