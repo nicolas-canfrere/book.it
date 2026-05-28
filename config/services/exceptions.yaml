@@ -124,3 +124,11 @@ services:
                     type: 'https://book.it/problems/guest-capacity-exceeded'
                     title: 'Guest Capacity Exceeded'
                     status: 422
+                App\Reservation\Domain\Exception\GuestPreRegistrationNotAllowedException:
+                    type: 'https://book.it/problems/guest-pre-registration-not-allowed'
+                    title: 'Guest Pre-Registration Not Allowed'
+                    status: 409
+                App\Reservation\Domain\Exception\CheckInNotAllowedException:
+                    type: 'https://book.it/problems/check-in-not-allowed'
+                    title: 'Check-In Not Allowed'
+                    status: 409

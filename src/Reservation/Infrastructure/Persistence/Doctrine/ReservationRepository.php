@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Infrastructure\Persistence\Doctrine;
 
+use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
@@ -38,25 +39,61 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
     public function save(Reservation $reservation): void
     {
-        $this->bookit->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
+        $connection = $this->bookit;
+        $connection->transactional(static function () use ($connection, $reservation): void {
+            $connection->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
+
+            $connection->delete('reservation_guest', ['reservation_id' => $reservation->id]);
+
+            foreach ($reservation->guests as $guest) {
+                $connection->insert('reservation_guest', [
+                    'id' => $guest->id,
+                    'reservation_id' => $reservation->id,
+                    'first_name' => $guest->firstName,
+                    'last_name' => $guest->lastName,
+                    'date_of_birth' => $guest->dateOfBirth->format('Y-m-d'),
+                ]);
+            }
+        });
     }
 
     public function get(string $id): ?Reservation
     {
-        /** @var array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
-            'SELECT id, room_id, booker_id, check_in, check_out, total_price, guest_count,
-                    cancellation_terms_days_threshold, price_breakdown, status, created_at
-               FROM reservation
-              WHERE id = :id',
+        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            'SELECT r.id, r.room_id, r.booker_id, r.check_in, r.check_out, r.total_price, r.guest_count,
+                    r.cancellation_terms_days_threshold, r.price_breakdown, r.status, r.created_at,
+                    rg.id AS g_id, rg.first_name, rg.last_name, rg.date_of_birth
+               FROM reservation r
+               LEFT JOIN reservation_guest rg ON rg.reservation_id = r.id
+              WHERE r.id = :id
+              ORDER BY rg.id',
             ['id' => $id],
         );
 
-        if (false === $row) {
+        if ([] === $rows) {
             return null;
         }
 
-        return $this->hydrate($row);
+        $reservation = $this->hydrate($rows[0]);
+
+        $reservation->guests = array_values(array_filter(array_map(
+            function (array $row): ?Guest {
+                if (null === $row['g_id']) {
+                    return null;
+                }
+
+                return new Guest(
+                    id: $row['g_id'],
+                    firstName: (string) $row['first_name'],
+                    lastName: (string) $row['last_name'],
+                    dateOfBirth: new \DateTimeImmutable((string) $row['date_of_birth']),
+                );
+            },
+            $rows,
+        )));
+
+        return $reservation;
     }
 
     /**
