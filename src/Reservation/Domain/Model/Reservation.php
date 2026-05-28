@@ -66,11 +66,11 @@ final class Reservation
     public function preRegisterGuests(array $guests, \DateTimeImmutable $today): void
     {
         if (!in_array($this->status, [ReservationStatus::Pending, ReservationStatus::Confirmed], true)) {
-            throw new GuestPreRegistrationNotAllowedException($this->status);
+            throw GuestPreRegistrationNotAllowedException::dueToStatus($this->status);
         }
 
         if ($today >= $this->period->checkIn) {
-            throw new GuestPreRegistrationNotAllowedException($this->status);
+            throw GuestPreRegistrationNotAllowedException::dueToDate($today, $this->period->checkIn);
         }
 
         $this->guests = $guests;

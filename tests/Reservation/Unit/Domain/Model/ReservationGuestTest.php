@@ -161,6 +161,14 @@ final class ReservationGuestTest extends TestCase
         $reservation->checkIn([], new \DateTimeImmutable('2026-07-01'));
     }
 
+    public function test_check_in_throws_when_expired(): void
+    {
+        $reservation = $this->makeReservation(ReservationStatus::Expired);
+
+        $this->expectException(CheckInNotAllowedException::class);
+        $reservation->checkIn([], new \DateTimeImmutable('2026-07-01'));
+    }
+
     public function test_check_in_throws_before_check_in_date(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
