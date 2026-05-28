@@ -28,6 +28,10 @@ final readonly class CreateReservationRequest
         #[Assert\GreaterThan(propertyPath: 'checkIn')]
         #[OA\Property(type: 'string', format: 'date', example: '2026-06-05')]
         public ?string $checkOut = null,
+        #[Assert\NotBlank]
+        #[Assert\Range(min: 1, max: 20)]
+        #[OA\Property(type: 'integer', example: 2)]
+        public ?int $guestCount = null,
     ) {
     }
 

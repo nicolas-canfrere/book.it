@@ -85,6 +85,7 @@ final readonly class CreateReservationController
             (string) $request->bookerId,
             (string) $request->checkIn,
             (string) $request->checkOut,
+            (int) $request->guestCount,
         );
         $this->commandBus->execute($command);
 
