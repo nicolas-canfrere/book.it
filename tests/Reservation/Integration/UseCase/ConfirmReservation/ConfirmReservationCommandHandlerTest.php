@@ -12,6 +12,7 @@ use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
+use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -33,6 +34,7 @@ final class ConfirmReservationCommandHandlerTest extends KernelTestCase
             totalPrice: 40000,
             cancellationTerms: CancellationTerms::alwaysRefundable(),
             priceBreakdown: new PriceBreakdown([]),
+            guestCount: new GuestCount(1),
             createdAt: new \DateTimeImmutable(),
         );
 

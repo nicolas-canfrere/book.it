@@ -9,6 +9,7 @@ use App\Reservation\Application\UseCase\CreateReservation\CreateReservationComma
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
 use App\Reservation\Domain\Event\ReservationCreated;
 use App\Reservation\Domain\Exception\BookerNotFoundException;
+use App\Reservation\Domain\Exception\GuestCapacityExceededException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Exception\RoomNotFoundException;
@@ -24,6 +25,7 @@ use App\Tests\Reservation\Infrastructure\FakeBookerExistenceChecker;
 use App\Tests\Reservation\Infrastructure\FakeCancellationPolicyFetcher;
 use App\Tests\Reservation\Infrastructure\FakePricingQuoteFetcher;
 use App\Tests\Reservation\Infrastructure\FakeRoomAvailabilityChecker;
+use App\Tests\Reservation\Infrastructure\FakeRoomCapacityFetcher;
 use App\Tests\Reservation\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -41,6 +43,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     private FakeRoomExistenceChecker $roomExists;
     private FakeBookerExistenceChecker $bookerExists;
     private FakeRoomAvailabilityChecker $availabilityChecker;
+    private FakeRoomCapacityFetcher $roomCapacityFetcher;
     private FakePricingQuoteFetcher $pricingQuoteFetcher;
     private FakeCancellationPolicyFetcher $cancellationPolicyFetcher;
     private FakeEventDispatcher $eventDispatcher;
@@ -54,6 +57,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $this->roomExists = new FakeRoomExistenceChecker();
         $this->bookerExists = new FakeBookerExistenceChecker();
         $this->availabilityChecker = new FakeRoomAvailabilityChecker();
+        $this->roomCapacityFetcher = new FakeRoomCapacityFetcher();
         $this->pricingQuoteFetcher = new FakePricingQuoteFetcher();
         $this->cancellationPolicyFetcher = new FakeCancellationPolicyFetcher();
         $this->eventDispatcher = new FakeEventDispatcher();
@@ -65,6 +69,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
             $this->roomExists,
             $this->bookerExists,
             $this->availabilityChecker,
+            $this->roomCapacityFetcher,
             $this->pricingQuoteFetcher,
             $this->cancellationPolicyFetcher,
             $this->eventDispatcher,
@@ -86,6 +91,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame('2026-06-01', $reservation->period->checkIn->format('Y-m-d'));
         self::assertSame('2026-06-05', $reservation->period->checkOut->format('Y-m-d'));
         self::assertSame(42000, $reservation->totalPrice);
+        self::assertSame(2, $reservation->guestCount->value);
         self::assertSame(ReservationStatus::Pending, $reservation->status);
         self::assertNull($reservation->cancellationTerms->daysThreshold);
         self::assertCount(4, $reservation->priceBreakdown->nights);
@@ -186,6 +192,15 @@ final class CreateReservationCommandHandlerTest extends TestCase
     }
 
     #[Test]
+    public function itThrowsWhenGuestCountExceedsRoomCapacity(): void
+    {
+        $this->roomCapacityFetcher->setCapacity(1);
+        $this->expectException(GuestCapacityExceededException::class);
+
+        ($this->handler)($this->makeCommand(guestCount: 2));
+    }
+
+    #[Test]
     public function itThrowsWhenRoomHasNoPricing(): void
     {
         $this->pricingQuoteFetcher->setSnapshot(null);
@@ -204,7 +219,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame(self::RESERVATION_ID, $dispatched->reservationId);
     }
 
-    private function makeCommand(string $id = self::RESERVATION_ID): CreateReservationCommand
+    private function makeCommand(string $id = self::RESERVATION_ID, int $guestCount = 2): CreateReservationCommand
     {
         return new CreateReservationCommand(
             id: $id,
@@ -212,6 +227,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
             bookerId: self::BOOKER_ID,
             checkIn: new \DateTimeImmutable('2026-06-01'),
             checkOut: new \DateTimeImmutable('2026-06-05'),
+            guestCount: $guestCount,
             createdAt: new \DateTimeImmutable('2026-05-18T10:00:00Z'),
         );
     }

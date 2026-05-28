@@ -14,6 +14,7 @@ final readonly class CreateReservationCommand implements SyncCommandInterface
         public string $bookerId,
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
+        public int $guestCount,
         public \DateTimeImmutable $createdAt,
     ) {
     }
