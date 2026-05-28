@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\UseCase\CheckIn;
 
-final readonly class CheckInCommand
+use App\Shared\Application\Bus\SyncCommandInterface;
+
+final readonly class CheckInCommand implements SyncCommandInterface
 {
     /**
      * @param list<array{firstName: string, lastName: string, dateOfBirth: string}> $guests

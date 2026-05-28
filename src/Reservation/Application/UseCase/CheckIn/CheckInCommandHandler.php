@@ -8,9 +8,9 @@ use App\Reservation\Domain\Exception\ReservationNotFoundException;
 use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Port\GuestIdGeneratorInterface;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
-use App\Shared\Application\Bus\AsyncCommandHandlerInterface;
+use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 
-final class CheckInCommandHandler implements AsyncCommandHandlerInterface
+final class CheckInCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private readonly ReservationRepositoryInterface $reservations,
