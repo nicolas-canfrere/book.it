@@ -62,7 +62,7 @@ final class CheckInControllerTest extends WebTestCase
             method: 'POST',
             uri: '/api/v1/reservations/550e8400-e29b-41d4-a716-446655440099/check-in',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['guests' => []], \JSON_THROW_ON_ERROR),
+            content: json_encode(['guests' => [['firstName' => 'Alice', 'lastName' => 'Smith', 'dateOfBirth' => '1990-01-15']]], \JSON_THROW_ON_ERROR),
         );
 
         self::assertResponseStatusCodeSame(404);
