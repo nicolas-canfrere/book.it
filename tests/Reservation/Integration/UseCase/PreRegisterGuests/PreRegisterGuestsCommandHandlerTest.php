@@ -11,11 +11,11 @@ use App\Reservation\Domain\Exception\ReservationNotFoundException;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\GuestIdGeneratorInterface;
-use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
@@ -113,26 +113,5 @@ final class SequentialGuestIdGenerator implements GuestIdGeneratorInterface
     public function generate(): string
     {
         return sprintf('guest-%d', ++$this->counter);
-    }
-}
-
-final class InMemoryReservationRepository implements ReservationRepositoryInterface
-{
-    /** @var Reservation[] */
-    private array $reservations = [];
-
-    public function add(Reservation $reservation): void
-    {
-        $this->reservations[$reservation->id] = $reservation;
-    }
-
-    public function save(Reservation $reservation): void
-    {
-        $this->reservations[$reservation->id] = $reservation;
-    }
-
-    public function get(string $id): ?Reservation
-    {
-        return $this->reservations[$id] ?? null;
     }
 }
