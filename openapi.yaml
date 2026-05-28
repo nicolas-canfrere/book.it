@@ -1360,6 +1360,9 @@ paths:
                 $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/v1/reservations/{id}/check-in':
     post:
+      tags:
+        - Reservation
+      summary: 'Check in a reservation'
       operationId: post_reservation_check_in
       parameters:
         -
@@ -1368,6 +1371,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
             pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
       requestBody:
         required: true
@@ -1376,8 +1380,14 @@ paths:
             schema:
               $ref: '#/components/schemas/CheckInRequest'
       responses:
-        default:
-          description: ''
+        '204':
+          description: 'Checked in'
+        '404':
+          description: 'Reservation not found'
+        '409':
+          description: 'Check-in not allowed'
+        '422':
+          description: 'Validation error'
   /api/v1/reservations:
     post:
       tags:
@@ -1429,6 +1439,9 @@ paths:
                 $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/v1/reservations/{id}/guests':
     put:
+      tags:
+        - Reservation
+      summary: 'Pre-register guests on a reservation'
       operationId: put_reservation_pre_register_guests
       parameters:
         -
@@ -1437,6 +1450,7 @@ paths:
           required: true
           schema:
             type: string
+            format: uuid
             pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
       requestBody:
         required: true
@@ -1445,8 +1459,14 @@ paths:
             schema:
               $ref: '#/components/schemas/PreRegisterGuestsRequest'
       responses:
-        default:
-          description: ''
+        '204':
+          description: 'Guests pre-registered'
+        '404':
+          description: 'Reservation not found'
+        '409':
+          description: 'Pre-registration not allowed for current reservation status or date'
+        '422':
+          description: 'Validation error'
   /api/v1/payment/webhooks/cancel:
     post:
       tags:

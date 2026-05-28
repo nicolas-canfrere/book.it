@@ -26,7 +26,6 @@ final readonly class PreRegisterGuestsController
         methods: ['PUT'],
     )]
     #[OA\Put(
-        path: '/reservations/{id}/guests',
         summary: 'Pre-register guests on a reservation',
         tags: ['Reservation'],
     )]

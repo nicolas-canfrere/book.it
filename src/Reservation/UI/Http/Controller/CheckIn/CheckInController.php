@@ -26,7 +26,6 @@ final readonly class CheckInController
         methods: ['POST'],
     )]
     #[OA\Post(
-        path: '/reservations/{id}/check-in',
         summary: 'Check in a reservation',
         tags: ['Reservation'],
     )]
