@@ -1358,6 +1358,26 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/v1/reservations/{id}/check-in':
+    post:
+      operationId: post_reservation_check_in
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckInRequest'
+      responses:
+        default:
+          description: ''
   /api/v1/reservations:
     post:
       tags:
@@ -1407,6 +1427,26 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/v1/reservations/{id}/guests':
+    put:
+      operationId: put_reservation_pre_register_guests
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/PreRegisterGuestsRequest'
+      responses:
+        default:
+          description: ''
   /api/v1/payment/webhooks/cancel:
     post:
       tags:
@@ -1951,6 +1991,16 @@ components:
           minimum: 0
           exclusiveMinimum: true
       type: object
+    CheckInRequest:
+      properties:
+        guests:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          default: []
+      type: object
     CreateReservationRequest:
       properties:
         roomId:
@@ -1982,6 +2032,16 @@ components:
           default: null
           maximum: 20
           minimum: 1
+      type: object
+    PreRegisterGuestsRequest:
+      properties:
+        guests:
+          type: array
+          items:
+            type: object
+            additionalProperties:
+              type: string
+          default: []
       type: object
     HandlePaymentCancellationRequest:
       properties:
