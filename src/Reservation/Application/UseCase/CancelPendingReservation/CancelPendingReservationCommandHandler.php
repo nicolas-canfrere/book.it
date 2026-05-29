@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\UseCase\CancelPendingReservation;
 
-use App\Reservation\Domain\Event\ReservationPaymentCancelled;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\ReservationPaymentCancelled;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class CancelPendingReservationCommandHandler implements SyncCommandHandlerInterface

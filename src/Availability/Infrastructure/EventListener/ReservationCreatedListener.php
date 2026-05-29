@@ -6,8 +6,8 @@ namespace App\Availability\Infrastructure\EventListener;
 
 use App\Availability\Application\UseCase\CreateAvailabilityHold\CreateAvailabilityHoldCommand;
 use App\Availability\Domain\Port\AvailabilityHoldIdGeneratorInterface;
-use App\Reservation\Domain\Event\ReservationCreated;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\Event\ReservationCreated;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: ReservationCreated::class)]

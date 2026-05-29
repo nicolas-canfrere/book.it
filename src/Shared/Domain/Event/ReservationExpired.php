@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace App\Reservation\Domain\Event;
+namespace App\Shared\Domain\Event;
 
 final readonly class ReservationExpired
 {

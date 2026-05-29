@@ -20,7 +20,6 @@ services:
         resource: '../../src/Reservation/Domain/'
         exclude:
             - '../../src/Reservation/Domain/Model/'
-            - '../../src/Reservation/Domain/Event/'
 
     App\Reservation\Application\:
         resource: '../../src/Reservation/Application/'

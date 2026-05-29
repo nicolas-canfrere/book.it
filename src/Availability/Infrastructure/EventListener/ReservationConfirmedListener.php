@@ -7,8 +7,8 @@ namespace App\Availability\Infrastructure\EventListener;
 use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommand;
 use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabilityHoldCommand;
 use App\Availability\Domain\Port\BlockedPeriodIdGeneratorInterface;
-use App\Reservation\Domain\Event\ReservationConfirmed;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\Event\ReservationConfirmed;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: ReservationConfirmed::class)]

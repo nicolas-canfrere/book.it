@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace App\Reservation\Domain\Event;
-
-use App\Reservation\Domain\ValueObject\CancellationTerms;
-use App\Reservation\Domain\ValueObject\PriceBreakdown;
+namespace App\Shared\Domain\Event;
 
 final readonly class ReservationCreated
 {
+    /**
+     * @param list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}> $priceBreakdown
+     */
     public function __construct(
         public string $reservationId,
         public string $roomId,
@@ -16,8 +16,8 @@ final readonly class ReservationCreated
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
         public int $totalPrice,
-        public CancellationTerms $cancellationTerms,
-        public PriceBreakdown $priceBreakdown,
+        public ?int $cancellationTermsDaysThreshold,
+        public array $priceBreakdown,
     ) {
     }
 }

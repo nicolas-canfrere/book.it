@@ -6,7 +6,7 @@ namespace App\Tests\Notification\Infrastructure\EventListener;
 
 use App\Notification\Application\UseCase\SendBookingConfirmationEmail\SendBookingConfirmationEmailCommand;
 use App\Notification\Infrastructure\EventListener\ReservationConfirmedListener;
-use App\Reservation\Domain\Event\ReservationConfirmed;
+use App\Shared\Domain\Event\ReservationConfirmed;
 use App\Tests\Fake\FakeAsyncCommandDispatcher;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
