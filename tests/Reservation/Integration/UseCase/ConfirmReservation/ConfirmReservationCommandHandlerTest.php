@@ -6,7 +6,7 @@ namespace App\Tests\Reservation\Integration\UseCase\ConfirmReservation;
 
 use App\Reservation\Application\UseCase\ConfirmReservation\ConfirmReservationCommand;
 use App\Reservation\Application\UseCase\ConfirmReservation\ConfirmReservationCommandHandler;
-use App\Reservation\Domain\Event\ReservationConfirmed;
+use App\Shared\Domain\Event\ReservationConfirmed;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;

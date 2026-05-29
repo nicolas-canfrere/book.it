@@ -6,7 +6,7 @@ namespace App\Tests\Reservation\Application\UseCase\ExpireReservation;
 
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommandHandler;
-use App\Reservation\Domain\Event\ReservationExpired;
+use App\Shared\Domain\Event\ReservationExpired;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;

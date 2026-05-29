@@ -6,7 +6,7 @@ namespace App\Tests\Reservation\Integration\UseCase\CancelPendingReservation;
 
 use App\Reservation\Application\UseCase\CancelPendingReservation\CancelPendingReservationCommand;
 use App\Reservation\Application\UseCase\CancelPendingReservation\CancelPendingReservationCommandHandler;
-use App\Reservation\Domain\Event\ReservationPaymentCancelled;
+use App\Shared\Domain\Event\ReservationPaymentCancelled;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;

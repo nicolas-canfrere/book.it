@@ -7,7 +7,7 @@ namespace App\Tests\Reservation\Application\UseCase\CreateReservation;
 use App\Reservation\Application\UseCase\CreateReservation\CreateReservationCommand;
 use App\Reservation\Application\UseCase\CreateReservation\CreateReservationCommandHandler;
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
-use App\Reservation\Domain\Event\ReservationCreated;
+use App\Shared\Domain\Event\ReservationCreated;
 use App\Reservation\Domain\Exception\BookerNotFoundException;
 use App\Reservation\Domain\Exception\GuestCapacityExceededException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
@@ -103,8 +103,8 @@ final class CreateReservationCommandHandlerTest extends TestCase
         self::assertSame(self::ROOM_ID, $event->roomId);
         self::assertSame(self::BOOKER_ID, $event->bookerId);
         self::assertSame(42000, $event->totalPrice);
-        self::assertNull($event->cancellationTerms->daysThreshold);
-        self::assertCount(4, $event->priceBreakdown->nights);
+        self::assertNull($event->cancellationTermsDaysThreshold);
+        self::assertCount(4, $event->priceBreakdown);
     }
 
     #[Test]
@@ -120,7 +120,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
 
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(ReservationCreated::class, $event);
-        self::assertSame(7, $event->cancellationTerms->daysThreshold);
+        self::assertSame(7, $event->cancellationTermsDaysThreshold);
     }
 
     #[Test]
@@ -147,7 +147,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(ReservationCreated::class, $event);
         self::assertSame(19000, $event->totalPrice);
-        self::assertCount(2, $event->priceBreakdown->nights);
+        self::assertCount(2, $event->priceBreakdown);
     }
 
     #[Test]
