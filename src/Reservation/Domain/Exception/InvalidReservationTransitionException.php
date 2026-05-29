@@ -6,7 +6,7 @@ namespace App\Reservation\Domain\Exception;
 
 use App\Reservation\Domain\Model\ReservationStatus;
 
-final class InvalidReservationTransitionException extends \RuntimeException
+final class InvalidReservationTransitionException extends \DomainException
 {
     public function __construct(ReservationStatus $from, ReservationStatus $to)
     {

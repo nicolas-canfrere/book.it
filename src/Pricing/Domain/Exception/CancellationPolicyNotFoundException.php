@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Exception;
 
-final class CancellationPolicyNotFoundException extends \RuntimeException
+final class CancellationPolicyNotFoundException extends \DomainException
 {
     public function __construct(string $roomId)
     {

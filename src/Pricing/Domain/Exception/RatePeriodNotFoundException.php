@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Exception;
 
-final class RatePeriodNotFoundException extends \RuntimeException
+final class RatePeriodNotFoundException extends \DomainException
 {
     public function __construct(string $id)
     {

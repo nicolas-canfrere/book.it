@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Availability\Domain\Exception;
 
-final class BlockedPeriodOverlapException extends \RuntimeException
+final class BlockedPeriodOverlapException extends \DomainException
 {
     public function __construct()
     {

@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Availability\Domain\Exception;
 
-final class AvailabilityHoldOverlapException extends \RuntimeException
+final class AvailabilityHoldOverlapException extends \DomainException
 {
     public function __construct()
     {

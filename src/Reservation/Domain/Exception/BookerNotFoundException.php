@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Domain\Exception;
 
-final class BookerNotFoundException extends \RuntimeException
+final class BookerNotFoundException extends \DomainException
 {
     public function __construct(string $bookerId)
     {

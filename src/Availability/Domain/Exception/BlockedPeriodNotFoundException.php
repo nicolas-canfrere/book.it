@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Availability\Domain\Exception;
 
-final class BlockedPeriodNotFoundException extends \RuntimeException
+final class BlockedPeriodNotFoundException extends \DomainException
 {
     public function __construct(string $id)
     {
