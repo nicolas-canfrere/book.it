@@ -4,107 +4,338 @@ deptrac:
     exclude_files:
         - '#.*[Tt]est.*#'
     layers:
-        -
-            name: UI
-            collectors:
-                -
-                    type: bool
-                    must:
-                        -
-                            type: classLike
-                            value: 'App\\.*\\UI\\.*'
-                    must_not:
-                        -
-                            type: classLike
-                            value: 'App\\Shared\\.*'
-        -
-            name: Application
-            collectors:
-                -
-                    type: bool
-                    must:
-                        -
-                            type: classLike
-                            value: 'App\\.*\\Application\\.*'
-                    must_not:
-                        -
-                            type: classLike
-                            value: 'App\\Shared\\.*'
-        -
-            name: Domain
-            collectors:
-                -
-                    type: bool
-                    must:
-                        -
-                            type: classLike
-                            value: 'App\\.*\\Domain\\.*'
-                    must_not:
-                        -
-                            type: classLike
-                            value: 'App\\Shared\\.*'
-        -
-            name: Infrastructure
-            collectors:
-                -
-                    type: bool
-                    must:
-                        -
-                            type: classLike
-                            value: 'App\\.*\\Infrastructure\\.*'
-                    must_not:
-                        -
-                            type: classLike
-                            value: 'App\\Shared\\.*'
-        -
-            name: Shared
-            collectors:
-                -
-                    type: classLike
-                    value: 'App\\Shared\\.*'
-        -
-            name: ExternalPsr
-            collectors:
-                -
-                    type: classLike
-                    value: 'Psr\\.*'
-        -
-            name: External
-            collectors:
-                -
-                    type: bool
-                    must:
-                        -
-                            type: classLike
-                            value: '.*\\.*'
-                    must_not:
-                        -
-                            type: classLike
-                            value: 'App\\.*'
-                        -
-                            type: classLike
-                            value: 'Psr\\.*'
+        # --- Availability ---
+        - name: AvailabilityDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Availability\\Domain\\.*'
+        - name: AvailabilityApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Availability\\Application\\.*'
+        - name: AvailabilityInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Availability\\Infrastructure\\.*'
+        - name: AvailabilityUI
+          collectors:
+              - type: classLike
+                value: 'App\\Availability\\UI\\.*'
+
+        # --- Booker ---
+        - name: BookerDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Booker\\Domain\\.*'
+        - name: BookerApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Booker\\Application\\.*'
+        - name: BookerInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Booker\\Infrastructure\\.*'
+        - name: BookerUI
+          collectors:
+              - type: classLike
+                value: 'App\\Booker\\UI\\.*'
+
+        # --- Hotel ---
+        - name: HotelDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Hotel\\Domain\\.*'
+        - name: HotelApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Hotel\\Application\\.*'
+        - name: HotelInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Hotel\\Infrastructure\\.*'
+        - name: HotelUI
+          collectors:
+              - type: classLike
+                value: 'App\\Hotel\\UI\\.*'
+
+        # --- Notification ---
+        - name: NotificationDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Notification\\Domain\\.*'
+        - name: NotificationApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Notification\\Application\\.*'
+        - name: NotificationInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Notification\\Infrastructure\\.*'
+        - name: NotificationUI
+          collectors:
+              - type: classLike
+                value: 'App\\Notification\\UI\\.*'
+
+        # --- Payment ---
+        - name: PaymentDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Payment\\Domain\\.*'
+        - name: PaymentApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Payment\\Application\\.*'
+        - name: PaymentInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Payment\\Infrastructure\\.*'
+        - name: PaymentUI
+          collectors:
+              - type: classLike
+                value: 'App\\Payment\\UI\\.*'
+
+        # --- Pricing ---
+        - name: PricingDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Pricing\\Domain\\.*'
+        - name: PricingApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Pricing\\Application\\.*'
+        - name: PricingInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Pricing\\Infrastructure\\.*'
+        - name: PricingUI
+          collectors:
+              - type: classLike
+                value: 'App\\Pricing\\UI\\.*'
+
+        # --- Reservation ---
+        - name: ReservationDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Reservation\\Domain\\.*'
+        - name: ReservationApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Reservation\\Application\\.*'
+        - name: ReservationInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Reservation\\Infrastructure\\.*'
+        - name: ReservationUI
+          collectors:
+              - type: classLike
+                value: 'App\\Reservation\\UI\\.*'
+
+        # --- Room ---
+        - name: RoomDomain
+          collectors:
+              - type: classLike
+                value: 'App\\Room\\Domain\\.*'
+        - name: RoomApplication
+          collectors:
+              - type: classLike
+                value: 'App\\Room\\Application\\.*'
+        - name: RoomInfrastructure
+          collectors:
+              - type: classLike
+                value: 'App\\Room\\Infrastructure\\.*'
+        - name: RoomUI
+          collectors:
+              - type: classLike
+                value: 'App\\Room\\UI\\.*'
+
+        # --- Shared ---
+        - name: Shared
+          collectors:
+              - type: classLike
+                value: 'App\\Shared\\.*'
+
+        # --- External ---
+        - name: ExternalPsr
+          collectors:
+              - type: classLike
+                value: 'Psr\\.*'
+        - name: External
+          collectors:
+              - type: bool
+                must:
+                    - type: classLike
+                      value: '.*\\.*'
+                must_not:
+                    - type: classLike
+                      value: 'App\\.*'
+                    - type: classLike
+                      value: 'Psr\\.*'
+
     ruleset:
-        UI:
-            - Application
-            - Domain
+        # Availability
+        AvailabilityUI:
+            - AvailabilityApplication
+            - AvailabilityDomain
             - Shared
             - ExternalPsr
             - External
-        Application:
-            - Domain
+        AvailabilityApplication:
+            - AvailabilityDomain
             - Shared
             - ExternalPsr
-        Domain:
-            - Shared
-        Infrastructure:
-            - Application
-            - Domain
+        AvailabilityInfrastructure:
+            - AvailabilityApplication
+            - AvailabilityDomain
             - Shared
             - ExternalPsr
             - External
+        AvailabilityDomain:
+            - Shared
+
+        # Booker
+        BookerUI:
+            - BookerApplication
+            - BookerDomain
+            - Shared
+            - ExternalPsr
+            - External
+        BookerApplication:
+            - BookerDomain
+            - Shared
+            - ExternalPsr
+        BookerInfrastructure:
+            - BookerApplication
+            - BookerDomain
+            - Shared
+            - ExternalPsr
+            - External
+        BookerDomain:
+            - Shared
+
+        # Hotel
+        HotelUI:
+            - HotelApplication
+            - HotelDomain
+            - Shared
+            - ExternalPsr
+            - External
+        HotelApplication:
+            - HotelDomain
+            - Shared
+            - ExternalPsr
+        HotelInfrastructure:
+            - HotelApplication
+            - HotelDomain
+            - Shared
+            - ExternalPsr
+            - External
+        HotelDomain:
+            - Shared
+
+        # Notification
+        NotificationUI:
+            - NotificationApplication
+            - NotificationDomain
+            - Shared
+            - ExternalPsr
+            - External
+        NotificationApplication:
+            - NotificationDomain
+            - Shared
+            - ExternalPsr
+        NotificationInfrastructure:
+            - NotificationApplication
+            - NotificationDomain
+            - Shared
+            - ExternalPsr
+            - External
+        NotificationDomain:
+            - Shared
+
+        # Payment
+        PaymentUI:
+            - PaymentApplication
+            - PaymentDomain
+            - Shared
+            - ExternalPsr
+            - External
+        PaymentApplication:
+            - PaymentDomain
+            - Shared
+            - ExternalPsr
+        PaymentInfrastructure:
+            - PaymentApplication
+            - PaymentDomain
+            - Shared
+            - ExternalPsr
+            - External
+        PaymentDomain:
+            - Shared
+
+        # Pricing
+        PricingUI:
+            - PricingApplication
+            - PricingDomain
+            - Shared
+            - ExternalPsr
+            - External
+        PricingApplication:
+            - PricingDomain
+            - Shared
+            - ExternalPsr
+        PricingInfrastructure:
+            - PricingApplication
+            - PricingDomain
+            - Shared
+            - ExternalPsr
+            - External
+        PricingDomain:
+            - Shared
+
+        # Reservation
+        ReservationUI:
+            - ReservationApplication
+            - ReservationDomain
+            - Shared
+            - ExternalPsr
+            - External
+        ReservationApplication:
+            - ReservationDomain
+            - Shared
+            - ExternalPsr
+        ReservationInfrastructure:
+            - ReservationApplication
+            - ReservationDomain
+            - Shared
+            - ExternalPsr
+            - External
+        ReservationDomain:
+            - Shared
+
+        # Room
+        RoomUI:
+            - RoomApplication
+            - RoomDomain
+            - Shared
+            - ExternalPsr
+            - External
+        RoomApplication:
+            - RoomDomain
+            - Shared
+            - ExternalPsr
+        RoomInfrastructure:
+            - RoomApplication
+            - RoomDomain
+            - Shared
+            - ExternalPsr
+            - External
+        RoomDomain:
+            - Shared
+
+        # Shared
         Shared:
             - ExternalPsr
             - External
+
         ExternalPsr: ~
         External: ~
