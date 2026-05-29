@@ -10,6 +10,7 @@ services:
         resource: '../../src/Shared/'
         exclude:
             - '../../src/Shared/**/*Exception.php'
+            - '../../src/Shared/Infrastructure/Doctrine/SearchPathMiddleware.php'
 
     App\Shared\Infrastructure\Transaction\DoctrineTransactionManager:
         arguments:

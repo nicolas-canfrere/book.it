@@ -9,6 +9,10 @@ doctrine:
                 server_version: '16'
                 url: '%env(resolve:BOOKIT_DATABASE_URL)%'
                 profiling_collect_backtrace: '%kernel.debug%'
+            hotel:
+                server_version: '16'
+                url: '%env(resolve:BOOKIT_DATABASE_URL)%' # same DB, isolated via search_path=hotel (set by SearchPathMiddleware)
+                profiling_collect_backtrace: '%kernel.debug%'
 
 #    orm:
 #        validate_xml_mapping: true
