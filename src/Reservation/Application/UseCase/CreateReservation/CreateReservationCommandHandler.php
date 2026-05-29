@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\Reservation\Application\UseCase\CreateReservation;
 
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
-use App\Reservation\Domain\Event\ReservationCreated;
+use App\Shared\Domain\Event\ReservationCreated;
 use App\Reservation\Domain\Exception\BookerNotFoundException;
 use App\Reservation\Domain\Exception\GuestCapacityExceededException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
@@ -85,8 +85,8 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
                 checkIn: $reservation->period->checkIn,
                 checkOut: $reservation->period->checkOut,
                 totalPrice: $reservation->totalPrice,
-                cancellationTerms: $reservation->cancellationTerms,
-                priceBreakdown: $reservation->priceBreakdown,
+                cancellationTermsDaysThreshold: $reservation->cancellationTerms->daysThreshold,
+                priceBreakdown: $reservation->priceBreakdown->toArray(),
             ));
         });
 

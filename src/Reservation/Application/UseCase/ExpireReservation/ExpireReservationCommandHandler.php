@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\UseCase\ExpireReservation;
 
-use App\Reservation\Domain\Event\ReservationExpired;
+use App\Shared\Domain\Event\ReservationExpired;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Application\Bus\AsyncCommandHandlerInterface;
