@@ -12,6 +12,8 @@ services:
             tags:
                 - {name: messenger.message_handler, bus: sync.query.bus}
 
+    App\Shared\Domain\Port\BookerProviderInterface: '@App\Booker\Infrastructure\Service\BookerProvider'
+
     App\Booker\Domain\:
         resource: '../../src/Booker/Domain/'
         exclude:
