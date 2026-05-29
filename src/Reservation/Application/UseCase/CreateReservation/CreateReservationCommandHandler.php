@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Reservation\Application\UseCase\CreateReservation;
 
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
-use App\Shared\Domain\Event\ReservationCreated;
 use App\Reservation\Domain\Exception\BookerNotFoundException;
 use App\Reservation\Domain\Exception\GuestCapacityExceededException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
@@ -23,6 +22,7 @@ use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 use App\Shared\Application\Transaction\TransactionManagerInterface;
+use App\Shared\Domain\Event\ReservationCreated;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class CreateReservationCommandHandler implements SyncCommandHandlerInterface

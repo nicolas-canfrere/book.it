@@ -6,7 +6,6 @@ namespace App\Tests\Reservation\Application\UseCase\ExpireReservation;
 
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommand;
 use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationCommandHandler;
-use App\Shared\Domain\Event\ReservationExpired;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
@@ -14,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\Event\ReservationExpired;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;

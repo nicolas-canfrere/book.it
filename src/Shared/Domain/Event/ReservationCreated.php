@@ -6,6 +6,9 @@ namespace App\Shared\Domain\Event;
 
 final readonly class ReservationCreated
 {
+    /**
+     * @param list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}> $priceBreakdown
+     */
     public function __construct(
         public string $reservationId,
         public string $roomId,

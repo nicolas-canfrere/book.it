@@ -6,7 +6,6 @@ namespace App\Tests\Reservation\Integration\UseCase\CancelPendingReservation;
 
 use App\Reservation\Application\UseCase\CancelPendingReservation\CancelPendingReservationCommand;
 use App\Reservation\Application\UseCase\CancelPendingReservation\CancelPendingReservationCommandHandler;
-use App\Shared\Domain\Event\ReservationPaymentCancelled;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
@@ -14,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\Event\ReservationPaymentCancelled;
 use PHPUnit\Framework\Attributes\Group;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;

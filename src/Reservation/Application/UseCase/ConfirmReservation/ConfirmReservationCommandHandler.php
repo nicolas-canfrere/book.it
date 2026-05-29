@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\UseCase\ConfirmReservation;
 
-use App\Shared\Domain\Event\ReservationConfirmed;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\ReservationConfirmed;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class ConfirmReservationCommandHandler implements SyncCommandHandlerInterface

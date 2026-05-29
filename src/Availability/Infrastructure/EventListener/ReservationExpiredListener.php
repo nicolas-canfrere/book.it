@@ -5,8 +5,8 @@ declare(strict_types=1);
 namespace App\Availability\Infrastructure\EventListener;
 
 use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabilityHoldCommand;
-use App\Shared\Domain\Event\ReservationExpired;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\Event\ReservationExpired;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: ReservationExpired::class)]
