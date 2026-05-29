@@ -16,14 +16,14 @@ use Symfony\Component\String\Slugger\SluggerInterface;
 final readonly class HotelRepository implements HotelRepositoryInterface
 {
     public function __construct(
-        private Connection $bookit,
+        private Connection $hotelConnection,
         private SluggerInterface $slugger,
     ) {
     }
 
     public function add(Hotel $hotel): void
     {
-        $this->bookit->insert('hotel', [
+        $this->hotelConnection->insert('hotel', [
             'id' => $hotel->id,
             'name' => $hotel->name,
             'street_address' => $hotel->address->streetAddress,
@@ -41,7 +41,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
 
     public function save(Hotel $hotel): void
     {
-        $this->bookit->update('hotel', [
+        $this->hotelConnection->update('hotel', [
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
         ], ['id' => $hotel->id], [
@@ -52,7 +52,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
     public function get(string $id): ?Hotel
     {
         /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool}|false $row */
-        $row = $this->bookit->fetchAssociative(
+        $row = $this->hotelConnection->fetchAssociative(
             'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel WHERE id = :id',
             ['id' => $id],
         );
@@ -66,7 +66,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
 
     public function existsByNameAndAddress(string $name, Address $address): bool
     {
-        $count = $this->bookit->fetchOne(
+        $count = $this->hotelConnection->fetchOne(
             'SELECT COUNT(*) FROM hotel WHERE search_key = :key',
             ['key' => $this->buildSearchKey($name, $address)],
         );
@@ -97,7 +97,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
         /** @var int|string $count */
-        $count = $this->bookit->fetchOne(
+        $count = $this->hotelConnection->fetchOne(
             "SELECT COUNT(*) FROM hotel {$where}",
             $params,
         );
@@ -107,7 +107,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $params['offset'] = ($page - 1) * $limit;
 
         /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
+        $rows = $this->hotelConnection->fetchAllAssociative(
             "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
             $params,
         );

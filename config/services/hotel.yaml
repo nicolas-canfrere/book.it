@@ -34,3 +34,8 @@ services:
         exclude:
             - '../../src/Hotel/UI/**/*Request.php'
 
+    App\Shared\Infrastructure\Doctrine\SearchPathMiddleware:
+        arguments:
+            $schema: 'hotel'
+        tags:
+            - {name: doctrine.middleware, connection: hotel}
