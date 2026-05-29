@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Domain\Exception;
 
-final class RoomNotAvailableException extends \RuntimeException
+final class RoomNotAvailableException extends \DomainException
 {
     public function __construct(string $roomId)
     {

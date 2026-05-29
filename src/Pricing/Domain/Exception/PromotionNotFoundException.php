@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Exception;
 
-final class PromotionNotFoundException extends \RuntimeException
+final class PromotionNotFoundException extends \DomainException
 {
     public function __construct(string $promotionId)
     {

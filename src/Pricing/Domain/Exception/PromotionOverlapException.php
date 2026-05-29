@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Exception;
 
-final class PromotionOverlapException extends \RuntimeException
+final class PromotionOverlapException extends \DomainException
 {
     public function __construct()
     {

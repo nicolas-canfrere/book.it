@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Exception;
 
-final class RatePeriodOverlapException extends \RuntimeException
+final class RatePeriodOverlapException extends \DomainException
 {
     public function __construct()
     {

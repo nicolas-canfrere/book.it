@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Exception;
 
-final class RoomHasNoBaseRateException extends \RuntimeException
+final class RoomHasNoBaseRateException extends \DomainException
 {
     public function __construct(string $roomId)
     {
