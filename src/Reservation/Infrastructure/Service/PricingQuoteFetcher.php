@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Reservation\Infrastructure\Service;
 
 use App\Pricing\Application\UseCase\GetPricingQuote\GetPricingQuoteQuery;
-use App\Pricing\Domain\Exception\RoomHasNoBaseRateException;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
@@ -28,7 +27,7 @@ final readonly class PricingQuoteFetcher implements PricingQuoteFetcherInterface
                 $result['totalAmountCents'],
                 PriceBreakdown::fromArray($result['nights']),
             );
-        } catch (RoomHasNoBaseRateException) {
+        } catch (\DomainException) {
             throw new RoomNotBookableException($roomId);
         }
     }
