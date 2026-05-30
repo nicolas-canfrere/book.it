@@ -18,33 +18,6 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class ReservationCheckOutTest extends TestCase
 {
-    private function makeCheckedInReservation(
-        string $id,
-        string $roomId,
-        string $bookerId,
-        \DateTimeImmutable $checkIn,
-        \DateTimeImmutable $checkOut,
-    ): Reservation {
-        $reservation = new Reservation(
-            id: $id,
-            roomId: $roomId,
-            bookerId: $bookerId,
-            period: new DatePeriod($checkIn, $checkOut),
-            totalPrice: 10000,
-            cancellationTerms: CancellationTerms::alwaysRefundable(),
-            priceBreakdown: PriceBreakdown::fromArray([
-                ['date' => $checkIn->format('Y-m-d'), 'rateAmountCents' => 5000, 'discountPercent' => null, 'effectiveAmountCents' => 5000],
-                ['date' => $checkIn->modify('+1 day')->format('Y-m-d'), 'rateAmountCents' => 5000, 'discountPercent' => null, 'effectiveAmountCents' => 5000],
-            ]),
-            guestCount: new GuestCount(2),
-            createdAt: new \DateTimeImmutable('2025-01-01'),
-        );
-        $reservation->confirm();
-        $reservation->checkIn([], $checkIn);
-
-        return $reservation;
-    }
-
     #[Test]
     public function it_transitions_to_checked_out_on_valid_departure(): void
     {
@@ -105,5 +78,32 @@ final class ReservationCheckOutTest extends TestCase
         $reservation = $this->makeCheckedInReservation('r1', 'room-1', 'booker-1', $checkIn, $checkOut);
         $this->expectException(CheckOutNotAllowedException::class);
         $reservation->checkOut(new \DateTimeImmutable('2025-06-09'));
+    }
+
+    private function makeCheckedInReservation(
+        string $id,
+        string $roomId,
+        string $bookerId,
+        \DateTimeImmutable $checkIn,
+        \DateTimeImmutable $checkOut,
+    ): Reservation {
+        $reservation = new Reservation(
+            id: $id,
+            roomId: $roomId,
+            bookerId: $bookerId,
+            period: new DatePeriod($checkIn, $checkOut),
+            totalPrice: 10000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: PriceBreakdown::fromArray([
+                ['date' => $checkIn->format('Y-m-d'), 'rateAmountCents' => 5000, 'discountPercent' => null, 'effectiveAmountCents' => 5000],
+                ['date' => $checkIn->modify('+1 day')->format('Y-m-d'), 'rateAmountCents' => 5000, 'discountPercent' => null, 'effectiveAmountCents' => 5000],
+            ]),
+            guestCount: new GuestCount(2),
+            createdAt: new \DateTimeImmutable('2025-01-01'),
+        );
+        $reservation->confirm();
+        $reservation->checkIn([], $checkIn);
+
+        return $reservation;
     }
 }

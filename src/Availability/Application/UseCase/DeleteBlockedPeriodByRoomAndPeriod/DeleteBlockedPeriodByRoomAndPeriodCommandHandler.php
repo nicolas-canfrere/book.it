@@ -7,7 +7,7 @@ namespace App\Availability\Application\UseCase\DeleteBlockedPeriodByRoomAndPerio
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 
-final class DeleteBlockedPeriodByRoomAndPeriodCommandHandler implements SyncCommandHandlerInterface
+final readonly class DeleteBlockedPeriodByRoomAndPeriodCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private readonly BlockedPeriodRepositoryInterface $blockedPeriods,
