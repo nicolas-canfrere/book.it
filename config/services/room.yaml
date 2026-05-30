@@ -45,3 +45,9 @@ services:
 
     App\Room\Domain\Port\RoomCapacityFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\RoomCapacityFinder
+
+    App\Shared\Infrastructure\Doctrine\SearchPathMiddleware:
+        arguments:
+            $schema: 'room'
+        tags:
+            - {name: doctrine.middleware, connection: room}
