@@ -17,11 +17,10 @@ use App\Shared\Domain\Event\ReservationCheckedOut;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use PHPUnit\Framework\Attributes\Group;
-use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\TestCase;
+use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
-#[Group('unit')]
-final class CheckOutCommandHandlerTest extends TestCase
+#[Group('integration')]
+final class CheckOutCommandHandlerTest extends KernelTestCase
 {
     private FakeEventDispatcher $eventDispatcher;
     private InMemoryReservationRepository $repository;
@@ -34,8 +33,7 @@ final class CheckOutCommandHandlerTest extends TestCase
         $this->handler = new CheckOutCommandHandler($this->repository, $this->eventDispatcher);
     }
 
-    #[Test]
-    public function it_transitions_reservation_to_checked_out_and_dispatches_event(): void
+    public function test_transitions_reservation_to_checked_out_and_dispatches_event(): void
     {
         $checkIn = new \DateTimeImmutable('2025-06-10');
         $checkOut = new \DateTimeImmutable('2025-06-15');
@@ -64,8 +62,7 @@ final class CheckOutCommandHandlerTest extends TestCase
         self::assertEquals(new \DateTimeImmutable('2025-06-13'), $event->actualDepartureDate);
     }
 
-    #[Test]
-    public function it_throws_when_reservation_not_found(): void
+    public function test_throws_when_reservation_not_found(): void
     {
         $this->expectException(ReservationNotFoundException::class);
         ($this->handler)(new CheckOutCommand(
