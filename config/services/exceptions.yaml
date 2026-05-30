@@ -132,3 +132,7 @@ services:
                     type: 'https://book.it/problems/check-in-not-allowed'
                     title: 'Check-In Not Allowed'
                     status: 409
+                App\Reservation\Domain\Exception\CheckOutNotAllowedException:
+                    type: 'https://book.it/problems/check-out-not-allowed'
+                    title: 'Check-Out Not Allowed'
+                    status: 422
