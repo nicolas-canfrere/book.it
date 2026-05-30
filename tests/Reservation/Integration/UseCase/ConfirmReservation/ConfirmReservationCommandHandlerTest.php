@@ -7,6 +7,7 @@ namespace App\Tests\Reservation\Integration\UseCase\ConfirmReservation;
 use App\Reservation\Application\UseCase\ConfirmReservation\ConfirmReservationCommand;
 use App\Reservation\Application\UseCase\ConfirmReservation\ConfirmReservationCommandHandler;
 use App\Reservation\Domain\Model\Reservation;
+use App\Reservation\Domain\Model\ReservationPage;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
@@ -84,5 +85,10 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
 
     public function save(Reservation $reservation): void
     {
+    }
+
+    public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage
+    {
+        return new ReservationPage([], 0);
     }
 }

@@ -6,6 +6,7 @@ namespace App\Reservation\Infrastructure\Persistence\Doctrine;
 
 use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Model\Reservation;
+use App\Reservation\Domain\Model\ReservationPage;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
@@ -13,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\ParameterType;
 
 final readonly class ReservationRepository implements ReservationRepositoryInterface
 {
@@ -94,6 +96,69 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         )));
 
         return $reservation;
+    }
+
+    public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage
+    {
+        $count = $this->bookit->fetchOne(
+            'SELECT COUNT(*) FROM reservation WHERE booker_id = :bookerId',
+            ['bookerId' => $bookerId],
+        );
+        $total = is_numeric($count) ? (int) $count : 0;
+
+        if (0 === $total) {
+            return new ReservationPage([], 0);
+        }
+
+        $offset = ($page - 1) * $limit;
+
+        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            'SELECT r.id, r.room_id, r.booker_id, r.check_in, r.check_out, r.total_price, r.guest_count,
+                    r.cancellation_terms_days_threshold, r.price_breakdown, r.status, r.created_at,
+                    rg.id AS g_id, rg.first_name, rg.last_name, rg.date_of_birth
+               FROM reservation r
+               LEFT JOIN reservation_guest rg ON rg.reservation_id = r.id
+              WHERE r.id IN (
+                  SELECT id FROM reservation
+                   WHERE booker_id = :bookerId
+                   ORDER BY created_at DESC
+                   LIMIT :limit OFFSET :offset
+              )
+              ORDER BY r.created_at DESC, r.id, rg.id',
+            ['bookerId' => $bookerId, 'limit' => $limit, 'offset' => $offset],
+            ['limit' => ParameterType::INTEGER, 'offset' => ParameterType::INTEGER],
+        );
+
+        $byId = [];
+        $guestsByReservationId = [];
+        foreach ($rows as $row) {
+            $rid = $row['id'];
+            if (!isset($byId[$rid])) {
+                $byId[$rid] = $row;
+                $guestsByReservationId[$rid] = [];
+            }
+            if (null !== $row['g_id']) {
+                $guestsByReservationId[$rid][] = $row;
+            }
+        }
+
+        $reservations = [];
+        foreach ($byId as $rid => $row) {
+            $reservation = $this->hydrate($row);
+            $reservation->guests = array_map(
+                fn(array $g) => new Guest(
+                    id: $g['g_id'],
+                    firstName: (string) $g['first_name'],
+                    lastName: (string) $g['last_name'],
+                    dateOfBirth: new \DateTimeImmutable((string) $g['date_of_birth']),
+                ),
+                $guestsByReservationId[$rid],
+            );
+            $reservations[] = $reservation;
+        }
+
+        return new ReservationPage($reservations, $total);
     }
 
     /**
