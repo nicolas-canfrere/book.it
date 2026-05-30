@@ -41,6 +41,23 @@ final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryIn
         return false;
     }
 
+    public function removeByRoomAndPeriod(
+        string $roomId,
+        \DateTimeImmutable $checkIn,
+        \DateTimeImmutable $checkOut,
+    ): void {
+        foreach ($this->periods as $key => $period) {
+            if ($period->roomId === $roomId
+                && $period->period->checkIn == $checkIn
+                && $period->period->checkOut == $checkOut
+            ) {
+                unset($this->periods[$key]);
+
+                return;
+            }
+        }
+    }
+
     /** @return list<BlockedPeriod> */
     public function listByRoomId(string $roomId): array
     {
