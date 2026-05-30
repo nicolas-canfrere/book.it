@@ -18,4 +18,10 @@ interface BlockedPeriodRepositoryInterface
 
     /** @return list<BlockedPeriod> */
     public function listByRoomId(string $roomId): array;
+
+    public function removeByRoomAndPeriod(
+        string $roomId,
+        \DateTimeImmutable $checkIn,
+        \DateTimeImmutable $checkOut,
+    ): void;
 }

@@ -6,6 +6,7 @@ namespace App\Reservation\UI\Http\Controller\CheckIn;
 
 use App\Reservation\Application\UseCase\CheckIn\CheckInCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -27,14 +28,19 @@ final readonly class CheckInController
     )]
     #[OA\Post(
         summary: 'Check in a reservation',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: new Model(type: CheckInRequest::class)),
+        ),
         tags: ['Reservation'],
+        responses: [
+            new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Checked in'),
+            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Reservation not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
+            new OA\Response(response: Response::HTTP_CONFLICT, description: 'Check-in not allowed', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
+            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'))),
+        ],
     )]
     #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
-    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/CheckInRequest'))]
-    #[OA\Response(response: 204, description: 'Checked in')]
-    #[OA\Response(response: 404, description: 'Reservation not found')]
-    #[OA\Response(response: 409, description: 'Check-in not allowed')]
-    #[OA\Response(response: 422, description: 'Validation error')]
     public function __invoke(
         string $id,
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]

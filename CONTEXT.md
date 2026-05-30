@@ -224,7 +224,7 @@ A confirmed or pending booking of a Room by a Booker for a specific stay period.
 _Avoid_: booking, order, stay
 
 **Reservation Status**:
-The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` (Payment Confirmation), `pending` → `cancelled` (Payment Abandonment or Expiration), `confirmed` → `cancelled` (Cancellation or Revocation), `confirmed` → `checked_in` (Check-in). No other transitions are allowed.
+The current lifecycle state of a Reservation. Transitions: `pending` → `confirmed` (Payment Confirmation), `pending` → `cancelled` (Payment Abandonment or Expiration), `confirmed` → `cancelled` (Cancellation or Revocation), `confirmed` → `checked_in` (Check-in), `checked_in` → `checked_out` (Check-out). No other transitions are allowed.
 _Avoid_: reservation state, booking status
 
 **Cancellation** *(by Booker)*:
@@ -264,8 +264,12 @@ The declared number of persons who will occupy the Room, provided by the Booker 
 _Avoid_: number of guests, occupancy count, pax
 
 **Check-in** *(by Operator)*:
-The act of the operator registering the Guests physically present on arrival, transitioning the Reservation from `confirmed` to `checked_in`. The operator records the actual Guests at this point. Check-out is implicit — the stay ends on the check-out date with no system action required.
+The act of the operator registering the Guests physically present on arrival, transitioning the Reservation from `confirmed` to `checked_in`. The operator records the actual Guests at this point.
 _Avoid_: arrival, guest registration, check in
+
+**Check-out** *(by Operator)*:
+The act of the operator recording the physical departure of Guests, transitioning the Reservation from `checked_in` to `checked_out`. The operator provides an explicit `actualDepartureDate`, which may be before the planned Check-out Date (early departure) but not after. Permitted from the Check-in Date (inclusive) to the Check-out Date (inclusive). Produces a `ReservationCheckedOut` event carrying `reservationId`, `roomId`, `bookerId`, `checkIn`, `checkOut`, and `actualDepartureDate`, which causes Availability to delete the Blocked Period.
+_Avoid_: departure, guest departure, check out
 
 ## Relationships (Reservation)
 
@@ -274,8 +278,8 @@ _Avoid_: arrival, guest registration, check in
 - A **Reservation** carries exactly one **Guest Count**, declared at creation time and validated against the **Guest Capacity** of the Room Type
 - A **Reservation** has zero or more **Guests**, pre-registered by the Booker (optional) or registered by the operator at **Check-in**
 - A **Check-in** transitions a `confirmed` Reservation to `checked_in`; only permitted on or after the check-in date
+- A **Check-out** transitions a `checked_in` Reservation to `checked_out`; permitted between the Check-in Date (inclusive) and the Check-out Date (inclusive); forbidden after the Check-out Date
 - A **Cancellation** (by Booker) is forbidden once the Reservation is `checked_in`
-- Check-out is implicit — no system action or status transition occurs at the check-out date
 - A **Reservation** captures a **Total Price** snapshot at creation time (in EUR cents) — immutable after creation
 - A **Reservation** captures a **Price Breakdown** snapshot at creation time — immutable for the lifetime of the Reservation
 - A **Reservation** captures a snapshot of the **Cancellation Policy** as **Cancellation Terms** at creation time — immutable for the lifetime of the Reservation
@@ -288,6 +292,7 @@ _Avoid_: arrival, guest registration, check in
 - `ReservationExpired` causes Availability to delete the **Availability Hold**
 - `ReservationPaymentCancelled` causes Availability to delete the **Availability Hold** (Payment Abandonment path — symmetric to Expiration)
 - `ReservationCancelled` and `ReservationRevoked` cause Availability to remove the **Blocked Period** (only applicable to confirmed Reservations)
+- `ReservationCheckedOut` causes Availability to delete the **Blocked Period**; carries `reservationId`, `roomId`, `bookerId`, `checkIn`, `checkOut`, and `actualDepartureDate`
 - An **Expiration** only applies to a `pending` Reservation — if the Reservation was already confirmed when the delayed message arrives, it is a no-op
 
 ---

@@ -1384,10 +1384,58 @@ paths:
           description: 'Checked in'
         '404':
           description: 'Reservation not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '409':
           description: 'Check-in not allowed'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '422':
           description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/v1/reservations/{reservationId}/check-out':
+    post:
+      tags:
+        - Reservation
+      summary: 'Check out a reservation'
+      operationId: post_reservation_check_out
+      parameters:
+        -
+          name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckOutRequest'
+      responses:
+        '204':
+          description: 'Checked out'
+        '404':
+          description: 'Reservation not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Check-out not allowed or validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   /api/v1/reservations:
     get:
       tags:
@@ -1550,10 +1598,22 @@ paths:
           description: 'Guests pre-registered'
         '404':
           description: 'Reservation not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '409':
           description: 'Pre-registration not allowed for current reservation status or date'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
         '422':
           description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   /api/v1/payment/webhooks/cancel:
     post:
       tags:
@@ -2103,10 +2163,28 @@ components:
         guests:
           type: array
           items:
+            properties:
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doe
+              dateOfBirth:
+                type: string
+                format: date
+                example: '1990-01-15'
             type: object
-            additionalProperties:
-              type: string
           default: []
+      type: object
+    CheckOutRequest:
+      required:
+        - actualDepartureDate
+      properties:
+        actualDepartureDate:
+          type: string
+          format: date
+          example: '2026-06-13'
       type: object
     CreateReservationRequest:
       properties:
@@ -2161,9 +2239,18 @@ components:
         guests:
           type: array
           items:
+            properties:
+              firstName:
+                type: string
+                example: John
+              lastName:
+                type: string
+                example: Doe
+              dateOfBirth:
+                type: string
+                format: date
+                example: '1990-01-15'
             type: object
-            additionalProperties:
-              type: string
           default: []
       type: object
     HandlePaymentCancellationRequest:

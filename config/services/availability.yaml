@@ -30,4 +30,3 @@ services:
         resource: '../../src/Availability/UI/'
         exclude:
             - '../../src/Availability/UI/**/*Request.php'
-

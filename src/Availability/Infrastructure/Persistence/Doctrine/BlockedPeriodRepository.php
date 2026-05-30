@@ -77,6 +77,21 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
         return array_map($this->hydrate(...), $rows);
     }
 
+    public function removeByRoomAndPeriod(
+        string $roomId,
+        \DateTimeImmutable $checkIn,
+        \DateTimeImmutable $checkOut,
+    ): void {
+        $this->bookit->executeStatement(
+            'DELETE FROM blocked_period WHERE room_id = :roomId AND check_in = :checkIn AND check_out = :checkOut',
+            [
+                'roomId' => $roomId,
+                'checkIn' => $checkIn->format('Y-m-d'),
+                'checkOut' => $checkOut->format('Y-m-d'),
+            ],
+        );
+    }
+
     /**
      * @param array{id: string, room_id: string, check_in: string, check_out: string, created_at: string} $row
      */
