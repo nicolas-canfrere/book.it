@@ -13,13 +13,13 @@ use Doctrine\DBAL\Types\Types;
 
 final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $roomConnection)
     {
     }
 
     public function add(RoomType $roomType): void
     {
-        $this->bookit->insert('room_type', [
+        $this->roomConnection->insert('room_type', [
             'id' => $roomType->id,
             'hotel_id' => $roomType->hotelId,
             'name' => $roomType->name,
@@ -37,7 +37,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
     public function get(string $id): ?RoomType
     {
         /** @var array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, created_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
+        $row = $this->roomConnection->fetchAssociative(
             'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, created_at FROM room_type WHERE id = :id',
             ['id' => $id],
         );
@@ -51,7 +51,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
 
     public function existsByHotelIdAndName(string $hotelId, string $name): bool
     {
-        $count = $this->bookit->fetchOne(
+        $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room_type WHERE hotel_id = :hotelId AND name = :name',
             ['hotelId' => $hotelId, 'name' => $name],
         );
@@ -61,7 +61,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
 
     public function update(RoomType $roomType): void
     {
-        $this->bookit->update('room_type', [
+        $this->roomConnection->update('room_type', [
             'name' => $roomType->name,
             'living_space_count' => $roomType->livingSpaceCount,
             'surface_m2' => $roomType->surfaceM2,
@@ -75,20 +75,20 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
 
     public function delete(string $id): void
     {
-        $this->bookit->delete('room_type', ['id' => $id]);
+        $this->roomConnection->delete('room_type', ['id' => $id]);
     }
 
     public function list(string $hotelId, int $page, int $limit): RoomTypePage
     {
         /** @var int|string $count */
-        $count = $this->bookit->fetchOne(
+        $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room_type WHERE hotel_id = :hotelId',
             ['hotelId' => $hotelId],
         );
         $total = (int) $count;
 
         /** @var list<array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, created_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
+        $rows = $this->roomConnection->fetchAllAssociative(
             'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, created_at FROM room_type WHERE hotel_id = :hotelId ORDER BY name ASC LIMIT :limit OFFSET :offset',
             ['hotelId' => $hotelId, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
         );

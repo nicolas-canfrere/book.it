@@ -13,13 +13,13 @@ use Doctrine\DBAL\Connection;
 
 final readonly class RoomRepository implements RoomRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $roomConnection)
     {
     }
 
     public function add(Room $room): void
     {
-        $this->bookit->insert('room', [
+        $this->roomConnection->insert('room', [
             'id' => $room->id,
             'hotel_id' => $room->hotelId,
             'room_number' => $room->number->value,
@@ -31,9 +31,10 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 
     public function addAll(array $rooms): void
     {
-        $this->bookit->transactional(function () use ($rooms): void {
+        $connection = $this->roomConnection;
+        $this->roomConnection->transactional(static function () use ($rooms, $connection): void {
             foreach ($rooms as $room) {
-                $this->bookit->insert('room', [
+                $connection->insert('room', [
                     'id' => $room->id,
                     'hotel_id' => $room->hotelId,
                     'room_number' => $room->number->value,
@@ -48,7 +49,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
     public function get(string $id): ?Room
     {
         /** @var array{id: string, hotel_id: string, room_number: string, room_floor: int|string, room_type_id: string, created_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
+        $row = $this->roomConnection->fetchAssociative(
             'SELECT id, hotel_id, room_number, room_floor, room_type_id, created_at FROM room WHERE id = :id',
             ['id' => $id],
         );
@@ -69,7 +70,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 
     public function existsByHotelIdAndNumber(string $hotelId, string $number): bool
     {
-        $count = $this->bookit->fetchOne(
+        $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room WHERE hotel_id = :hotelId AND room_number = :number',
             ['hotelId' => $hotelId, 'number' => $number],
         );
@@ -80,14 +81,14 @@ final readonly class RoomRepository implements RoomRepositoryInterface
     public function list(string $hotelId, int $page, int $limit): RoomPage
     {
         /** @var int|string $count */
-        $count = $this->bookit->fetchOne(
+        $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room WHERE hotel_id = :hotelId',
             ['hotelId' => $hotelId],
         );
         $total = (int) $count;
 
         /** @var list<array{id: string, hotel_id: string, room_number: string, room_floor: int|string, room_type_id: string, created_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
+        $rows = $this->roomConnection->fetchAllAssociative(
             'SELECT id, hotel_id, room_number, room_floor, room_type_id, created_at FROM room WHERE hotel_id = :hotelId ORDER BY room_number ASC LIMIT :limit OFFSET :offset',
             ['hotelId' => $hotelId, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
         );

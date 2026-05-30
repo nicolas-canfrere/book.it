@@ -9,13 +9,13 @@ use Doctrine\DBAL\Connection;
 
 final readonly class RoomTypeHasRoomsChecker implements RoomTypeHasRoomsInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $roomConnection)
     {
     }
 
     public function hasRooms(string $roomTypeId): bool
     {
-        $count = $this->bookit->fetchOne(
+        $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room WHERE room_type_id = :id',
             ['id' => $roomTypeId],
         );

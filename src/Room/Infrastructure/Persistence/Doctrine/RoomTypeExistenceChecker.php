@@ -12,14 +12,14 @@ final class RoomTypeExistenceChecker implements RoomTypeExistsInterface
     /** @var array<string, bool> */
     private array $cache = [];
 
-    public function __construct(private readonly Connection $bookit)
+    public function __construct(private readonly Connection $roomConnection)
     {
     }
 
     public function exists(string $roomTypeId): bool
     {
         if (!array_key_exists($roomTypeId, $this->cache)) {
-            $count = $this->bookit->fetchOne(
+            $count = $this->roomConnection->fetchOne(
                 'SELECT COUNT(*) FROM room_type WHERE id = :id',
                 ['id' => $roomTypeId],
             );

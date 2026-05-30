@@ -45,3 +45,10 @@ services:
 
     App\Room\Domain\Port\RoomCapacityFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\RoomCapacityFinder
+
+    bookit.doctrine.middleware.search_path.room:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'room'
+        tags:
+            - {name: doctrine.middleware, connection: room}
