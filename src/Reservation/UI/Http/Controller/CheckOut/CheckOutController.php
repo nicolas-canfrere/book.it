@@ -6,6 +6,7 @@ namespace App\Reservation\UI\Http\Controller\CheckOut;
 
 use App\Reservation\Application\UseCase\CheckOut\CheckOutCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -27,13 +28,18 @@ final readonly class CheckOutController
     )]
     #[OA\Post(
         summary: 'Check out a reservation',
+        requestBody: new OA\RequestBody(
+            required: true,
+            content: new OA\JsonContent(ref: new Model(type: CheckOutRequest::class)),
+        ),
         tags: ['Reservation'],
+        responses: [
+            new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Checked out'),
+            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Reservation not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
+            new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Check-out not allowed or validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'))),
+        ],
     )]
     #[OA\Parameter(name: 'reservationId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
-    #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/CheckOutRequest'))]
-    #[OA\Response(response: 204, description: 'Checked out')]
-    #[OA\Response(response: 404, description: 'Reservation not found')]
-    #[OA\Response(response: 422, description: 'Unprocessable Entity (check-out not allowed or validation error)')]
     public function __invoke(
         string $reservationId,
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
