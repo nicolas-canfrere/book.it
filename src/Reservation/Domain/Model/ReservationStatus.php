@@ -11,4 +11,5 @@ enum ReservationStatus: string
     case Cancelled = 'cancelled';
     case Expired = 'expired';
     case CheckedIn = 'checked_in';
+    case CheckedOut = 'checked_out';
 }
