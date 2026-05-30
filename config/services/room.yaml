@@ -46,7 +46,8 @@ services:
     App\Room\Domain\Port\RoomCapacityFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\RoomCapacityFinder
 
-    App\Shared\Infrastructure\Doctrine\SearchPathMiddleware:
+    bookit.doctrine.middleware.search_path.room:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
             $schema: 'room'
         tags:

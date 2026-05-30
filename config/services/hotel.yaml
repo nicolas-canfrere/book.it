@@ -34,7 +34,8 @@ services:
         exclude:
             - '../../src/Hotel/UI/**/*Request.php'
 
-    App\Shared\Infrastructure\Doctrine\SearchPathMiddleware:
+    bookit.doctrine.middleware.search_path.hotel:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
             $schema: 'hotel'
         tags:
