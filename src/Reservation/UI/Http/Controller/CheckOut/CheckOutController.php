@@ -33,8 +33,7 @@ final readonly class CheckOutController
     #[OA\RequestBody(required: true, content: new OA\JsonContent(ref: '#/components/schemas/CheckOutRequest'))]
     #[OA\Response(response: 204, description: 'Checked out')]
     #[OA\Response(response: 404, description: 'Reservation not found')]
-    #[OA\Response(response: 409, description: 'Check-out not allowed')]
-    #[OA\Response(response: 422, description: 'Validation error')]
+    #[OA\Response(response: 422, description: 'Unprocessable Entity (check-out not allowed or validation error)')]
     public function __invoke(
         string $reservationId,
         #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
