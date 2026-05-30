@@ -3,7 +3,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **book.it** (4805 symbols, 10618 relationships, 39 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **book.it** (4938 symbols, 10839 relationships, 43 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -91,6 +91,20 @@ Each bounded context (examples: `Hotel`, `Room`, `Availability`, `Pricing`, `Boo
 All commands run via `make`. Run `make help` for the full list.
 
 Important for test and code analysis use make commands !
+
+| Target                      | Purpose                                            |
+|-----------------------------|----------------------------------------------------|
+| `make test`                 | Run all tests (unit + functional)                  |
+| `make unit-test`            | Unit tests only (no DB)                            |
+| `make functional-test`      | Functional/integration tests (needs DB)            |
+| `make lint`                 | Full analysis: CS Fixer + PHPStan + Deptrac        |
+| `make static-code-analysis` | PHPStan only                                       |
+| `make deptrac`              | Architecture layer check only                      |
+| `make apply-cs`             | Auto-fix coding standards                          |
+| `make openapi`              | Regenerate `openapi.yaml` from route/OA attributes |
+| `make generate-migration`   | Generate a new Doctrine migration                  |
+| `make migrate`              | Run pending migrations                             |
+| `make up` / `make down`     | Start / stop Docker services                       |
 
 ## Error Handling
 
