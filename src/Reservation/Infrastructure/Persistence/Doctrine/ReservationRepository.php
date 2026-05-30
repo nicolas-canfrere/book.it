@@ -194,7 +194,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             createdAt: new \DateTimeImmutable($row['created_at']),
         );
         $reservation->status = ReservationStatus::from($row['status']);
-        $reservation->actualDepartureDate = isset($row['actual_departure_date']) && null !== $row['actual_departure_date']
+        $reservation->actualDepartureDate = null !== $row['actual_departure_date']
             ? new \DateTimeImmutable($row['actual_departure_date'])
             : null;
 
