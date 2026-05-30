@@ -1388,6 +1388,36 @@ paths:
           description: 'Check-in not allowed'
         '422':
           description: 'Validation error'
+  '/api/v1/reservations/{reservationId}/check-out':
+    post:
+      tags:
+        - Reservation
+      summary: 'Check out a reservation'
+      operationId: post_reservation_check_out
+      parameters:
+        -
+          name: reservationId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CheckOutRequest'
+      responses:
+        '204':
+          description: 'Checked out'
+        '404':
+          description: 'Reservation not found'
+        '409':
+          description: 'Check-out not allowed'
+        '422':
+          description: 'Validation error'
   /api/v1/reservations:
     get:
       tags:
@@ -2107,6 +2137,13 @@ components:
             additionalProperties:
               type: string
           default: []
+      type: object
+    CheckOutRequest:
+      required:
+        - actualDepartureDate
+      properties:
+        actualDepartureDate:
+          type: string
       type: object
     CreateReservationRequest:
       properties:
