@@ -31,9 +31,10 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 
     public function addAll(array $rooms): void
     {
-        $this->roomConnection->transactional(function () use ($rooms): void {
+        $connection = $this->roomConnection;
+        $this->roomConnection->transactional(static function () use ($rooms, $connection): void {
             foreach ($rooms as $room) {
-                $this->roomConnection->insert('room', [
+                $connection->insert('room', [
                     'id' => $room->id,
                     'hotel_id' => $room->hotelId,
                     'room_number' => $room->number->value,
