@@ -6,6 +6,7 @@ namespace App\Reservation\Infrastructure\Persistence\Doctrine;
 
 use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Model\Reservation;
+use App\Reservation\Domain\Model\ReservationPage;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
@@ -94,6 +95,33 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         )));
 
         return $reservation;
+    }
+
+    public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage
+    {
+        $total = (int) $this->bookit->fetchOne(
+            'SELECT COUNT(*) FROM reservation WHERE booker_id = :bookerId',
+            ['bookerId' => $bookerId],
+        );
+
+        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string}> $rows */
+        $rows = $this->bookit->fetchAllAssociative(
+            'SELECT id, room_id, booker_id, check_in, check_out, total_price, guest_count,
+                    cancellation_terms_days_threshold, price_breakdown, status, created_at
+               FROM reservation
+              WHERE booker_id = :bookerId
+              ORDER BY created_at DESC
+              LIMIT :limit OFFSET :offset',
+            [
+                'bookerId' => $bookerId,
+                'limit' => $limit,
+                'offset' => ($page - 1) * $limit,
+            ],
+        );
+
+        $items = array_map(fn(array $row): Reservation => $this->hydrate($row), $rows);
+
+        return new ReservationPage($items, $total);
     }
 
     /**
