@@ -31,3 +31,7 @@ services:
         exclude:
             - '../../src/Availability/UI/**/*Request.php'
 
+    App\Availability\Infrastructure\EventListener\ReservationCheckedOutListener:
+        tags:
+            - { name: kernel.event_listener, event: App\Shared\Domain\Event\ReservationCheckedOut }
+
