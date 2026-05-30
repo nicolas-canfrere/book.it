@@ -9,13 +9,13 @@ use Doctrine\DBAL\Connection;
 
 final readonly class RoomCapacityFinder implements RoomCapacityFinderInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $roomConnection)
     {
     }
 
     public function findCapacity(string $roomId): int
     {
-        $capacity = $this->bookit->fetchOne(
+        $capacity = $this->roomConnection->fetchOne(
             'SELECT rt.guest_capacity
                FROM room r
                JOIN room_type rt ON rt.id = r.room_type_id
