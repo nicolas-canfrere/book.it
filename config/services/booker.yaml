@@ -33,3 +33,14 @@ services:
         resource: '../../src/Booker/UI/'
         exclude:
             - '../../src/Booker/UI/**/*Request.php'
+
+    App\Booker\Infrastructure\Persistence\Doctrine\BookerRepository:
+        arguments:
+            $booker: '@doctrine.dbal.booker_connection'
+
+    bookit.doctrine.middleware.search_path.booker:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'booker'
+        tags:
+            - {name: doctrine.middleware, connection: booker}
