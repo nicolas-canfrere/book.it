@@ -43,7 +43,10 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     {
         $connection = $this->bookit;
         $connection->transactional(static function () use ($connection, $reservation): void {
-            $connection->update('reservation', ['status' => $reservation->status->value], ['id' => $reservation->id]);
+            $connection->update('reservation', [
+                'status' => $reservation->status->value,
+                'actual_departure_date' => $reservation->actualDepartureDate?->format('Y-m-d'),
+            ], ['id' => $reservation->id]);
 
             $connection->delete('reservation_guest', ['reservation_id' => $reservation->id]);
 
@@ -61,10 +64,11 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
     public function get(string $id): ?Reservation
     {
-        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
+        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, actual_departure_date: string|null, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
         $rows = $this->bookit->fetchAllAssociative(
             'SELECT r.id, r.room_id, r.booker_id, r.check_in, r.check_out, r.total_price, r.guest_count,
                     r.cancellation_terms_days_threshold, r.price_breakdown, r.status, r.created_at,
+                    r.actual_departure_date,
                     rg.id AS g_id, rg.first_name, rg.last_name, rg.date_of_birth
                FROM reservation r
                LEFT JOIN reservation_guest rg ON rg.reservation_id = r.id
@@ -112,11 +116,11 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
         $offset = ($page - 1) * $limit;
 
-        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
+        /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, actual_departure_date: string|null, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
         $rows = $this->bookit->fetchAllAssociative(
             'SELECT r.id, r.room_id, r.booker_id, r.check_in, r.check_out, r.total_price, r.guest_count,
                     r.cancellation_terms_days_threshold, r.price_breakdown, r.status, r.created_at,
-                    rg.id AS g_id, rg.first_name, rg.last_name, rg.date_of_birth
+                    r.actual_departure_date, rg.id AS g_id, rg.first_name, rg.last_name, rg.date_of_birth
                FROM reservation r
                LEFT JOIN reservation_guest rg ON rg.reservation_id = r.id
               WHERE r.id IN (
@@ -162,7 +166,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     }
 
     /**
-     * @param array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string} $row
+     * @param array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, actual_departure_date: string|null} $row
      */
     private function hydrate(array $row): Reservation
     {
@@ -190,6 +194,9 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             createdAt: new \DateTimeImmutable($row['created_at']),
         );
         $reservation->status = ReservationStatus::from($row['status']);
+        $reservation->actualDepartureDate = isset($row['actual_departure_date']) && null !== $row['actual_departure_date']
+            ? new \DateTimeImmutable($row['actual_departure_date'])
+            : null;
 
         return $reservation;
     }
