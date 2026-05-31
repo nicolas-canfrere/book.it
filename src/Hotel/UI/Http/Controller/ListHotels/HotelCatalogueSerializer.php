@@ -16,7 +16,7 @@ final class HotelCatalogueSerializer
 
     /**
      * @return array{
-     *     data: list<array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int, starRating: array{stars: int, superior: bool}|null}>,
+     *     data: list<array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int, starRating: array{stars: int, superior: bool}|null, amenities: string[]}>,
      *     meta: array{page: int, limit: int, total: int, totalPages: int}
      * }
      */

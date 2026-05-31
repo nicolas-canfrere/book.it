@@ -73,4 +73,35 @@ final class GetHotelControllerTest extends WebTestCase
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
     }
+
+    #[Test]
+    public function test_response_includes_amenities_field(): void
+    {
+        $client = self::createClient();
+
+        // Register hotel
+        $client->request('POST', '/api/v1/hotels', content: json_encode([
+            'name' => 'Amenities Response Hotel',
+            'streetAddress' => '5 rue Serializer',
+            'postalCode' => '75003',
+            'city' => 'Paris',
+            'country' => 'FR',
+        ], \JSON_THROW_ON_ERROR), server: ['CONTENT_TYPE' => 'application/json']);
+        /** @var array{id: string} $created */
+        $created = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $id = $created['id'];
+
+        // Declare amenities
+        $client->request('PATCH', "/api/v1/hotels/{$id}/amenities", content: json_encode([
+            'amenities' => ['pool', 'parking'],
+        ], \JSON_THROW_ON_ERROR), server: ['CONTENT_TYPE' => 'application/json']);
+
+        // Get hotel and assert amenities
+        $client->request('GET', "/api/v1/hotels/{$id}");
+        self::assertResponseIsSuccessful();
+        /** @var array<string, mixed> $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertArrayHasKey('amenities', $data);
+        self::assertEqualsCanonicalizing(['pool', 'parking'], $data['amenities']);
+    }
 }

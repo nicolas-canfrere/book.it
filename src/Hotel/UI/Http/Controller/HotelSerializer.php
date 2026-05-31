@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Hotel\UI\Http\Controller;
 
 use App\Hotel\Domain\Model\Hotel;
+use App\Hotel\Domain\ValueObject\HotelAmenity;
 
 final class HotelSerializer
 {
     /**
-     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int, starRating: array{stars: int, superior: bool}|null}
+     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: int, starRating: array{stars: int, superior: bool}|null, amenities: string[]}
      */
     public function serialize(Hotel $hotel): array
     {
@@ -24,6 +25,7 @@ final class HotelSerializer
             'starRating' => null !== $hotel->starRating
                 ? ['stars' => $hotel->starRating->stars, 'superior' => $hotel->starRating->superior]
                 : null,
+            'amenities' => array_map(static fn(HotelAmenity $a) => $a->value, $hotel->amenities),
         ];
     }
 }
