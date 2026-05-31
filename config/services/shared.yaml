@@ -26,3 +26,7 @@ services:
             $currentApiVersion: '%app.api.current_version%'
             $deprecatedVersions: '%app.api.deprecated_versions%'
 
+    App\Shared\UI\Console\GenerateEventsCatalogCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
