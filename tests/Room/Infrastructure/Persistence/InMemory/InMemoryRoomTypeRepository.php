@@ -39,6 +39,11 @@ final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
         $this->roomTypes[$roomType->id] = $roomType;
     }
 
+    public function save(RoomType $roomType): void
+    {
+        $this->roomTypes[$roomType->id] = $roomType;
+    }
+
     public function delete(string $id): void
     {
         unset($this->roomTypes[$id]);

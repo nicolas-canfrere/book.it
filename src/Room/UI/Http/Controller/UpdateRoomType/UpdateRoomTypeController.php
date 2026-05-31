@@ -40,7 +40,34 @@ final readonly class UpdateRoomTypeController
             new OA\Parameter(name: 'roomTypeId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
         ],
         responses: [
-            new OA\Response(response: Response::HTTP_OK, description: 'Room type updated'),
+            new OA\Response(
+                response: Response::HTTP_OK,
+                description: 'Room type updated',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+                        new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
+                        new OA\Property(property: 'name', type: 'string', example: 'Standard'),
+                        new OA\Property(property: 'livingSpaceCount', type: 'integer', example: 1),
+                        new OA\Property(property: 'surfaceM2', type: 'integer', nullable: true, example: 25),
+                        new OA\Property(property: 'guestCapacity', type: 'integer', example: 2),
+                        new OA\Property(property: 'isAccessible', type: 'boolean'),
+                        new OA\Property(
+                            property: 'bedComposition',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'type', type: 'string', example: 'double'),
+                                    new OA\Property(property: 'count', type: 'integer', example: 1),
+                                ],
+                                type: 'object',
+                            ),
+                        ),
+                        new OA\Property(property: 'amenities', type: 'array', items: new OA\Items(type: 'string'), example: ['wifi', 'tv']),
+                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                    ],
+                ),
+            ),
             new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Room type not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
             new OA\Response(response: Response::HTTP_CONFLICT, description: 'Room type name already exists', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
             new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'))),

@@ -29,7 +29,53 @@ final readonly class ListRoomTypesController
             new OA\Parameter(name: 'hotelId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
         ],
         responses: [
-            new OA\Response(response: Response::HTTP_OK, description: 'Paginated room type catalogue'),
+            new OA\Response(
+                response: Response::HTTP_OK,
+                description: 'Paginated room type catalogue',
+                content: new OA\JsonContent(
+                    properties: [
+                        new OA\Property(
+                            property: 'data',
+                            type: 'array',
+                            items: new OA\Items(
+                                properties: [
+                                    new OA\Property(property: 'id', type: 'string', format: 'uuid'),
+                                    new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
+                                    new OA\Property(property: 'name', type: 'string', example: 'Standard'),
+                                    new OA\Property(property: 'livingSpaceCount', type: 'integer', example: 1),
+                                    new OA\Property(property: 'surfaceM2', type: 'integer', nullable: true, example: 25),
+                                    new OA\Property(property: 'guestCapacity', type: 'integer', example: 2),
+                                    new OA\Property(property: 'isAccessible', type: 'boolean'),
+                                    new OA\Property(
+                                        property: 'bedComposition',
+                                        type: 'array',
+                                        items: new OA\Items(
+                                            properties: [
+                                                new OA\Property(property: 'type', type: 'string', example: 'double'),
+                                                new OA\Property(property: 'count', type: 'integer', example: 1),
+                                            ],
+                                            type: 'object',
+                                        ),
+                                    ),
+                                    new OA\Property(property: 'amenities', type: 'array', items: new OA\Items(type: 'string'), example: ['wifi', 'tv']),
+                                    new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                                ],
+                                type: 'object',
+                            ),
+                        ),
+                        new OA\Property(
+                            property: 'meta',
+                            properties: [
+                                new OA\Property(property: 'page', type: 'integer', example: 1),
+                                new OA\Property(property: 'limit', type: 'integer', example: 20),
+                                new OA\Property(property: 'total', type: 'integer', example: 10),
+                                new OA\Property(property: 'totalPages', type: 'integer', example: 1),
+                            ],
+                            type: 'object',
+                        ),
+                    ],
+                ),
+            ),
             new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'))),
         ],
     )]

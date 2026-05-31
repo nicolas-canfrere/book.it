@@ -17,6 +17,8 @@ interface RoomTypeRepositoryInterface
 
     public function update(RoomType $roomType): void;
 
+    public function save(RoomType $roomType): void;
+
     public function delete(string $id): void;
 
     public function list(string $hotelId, int $page, int $limit): RoomTypePage;

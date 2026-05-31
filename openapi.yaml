@@ -288,6 +288,50 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/v1/hotels/{hotelId}/room-types/{roomTypeId}/amenities':
+    patch:
+      tags:
+        - 'Room Types'
+      summary: 'Declare or replace the Room Type Amenity list'
+      operationId: patch_room_type_declare_amenities
+      parameters:
+        -
+          name: hotelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: roomTypeId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclareRoomTypeAmenitiesRequest'
+      responses:
+        '204':
+          description: 'Amenities declared'
+        '404':
+          description: 'Room type not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/v1/hotels/{hotelId}/room-types/{roomTypeId}':
     get:
       tags:
@@ -314,6 +358,21 @@ paths:
       responses:
         '200':
           description: 'Room type found'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  hotelId: { type: string, format: uuid }
+                  name: { type: string, example: Standard }
+                  livingSpaceCount: { type: integer, example: 1 }
+                  surfaceM2: { type: integer, example: 25, nullable: true }
+                  guestCapacity: { type: integer, example: 2 }
+                  isAccessible: { type: boolean }
+                  bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv] }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
         '404':
           description: 'Room type not found'
           content:
@@ -351,6 +410,21 @@ paths:
       responses:
         '200':
           description: 'Room type updated'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  hotelId: { type: string, format: uuid }
+                  name: { type: string, example: Standard }
+                  livingSpaceCount: { type: integer, example: 1 }
+                  surfaceM2: { type: integer, example: 25, nullable: true }
+                  guestCapacity: { type: integer, example: 2 }
+                  isAccessible: { type: boolean }
+                  bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv] }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
         '404':
           description: 'Room type not found'
           content:
@@ -474,6 +548,13 @@ paths:
       responses:
         '200':
           description: 'Paginated room type catalogue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, name: { type: string, example: Standard }, livingSpaceCount: { type: integer, example: 1 }, surfaceM2: { type: integer, example: 25, nullable: true }, guestCapacity: { type: integer, example: 2 }, isAccessible: { type: boolean }, bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }, amenities: { type: array, items: { type: string }, example: [wifi, tv] }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                  meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 10 }, totalPages: { type: integer, example: 1 } }, type: object }
+                type: object
         '422':
           description: 'Validation error'
           content:
@@ -503,6 +584,21 @@ paths:
       responses:
         '201':
           description: 'Room type registered'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  hotelId: { type: string, format: uuid }
+                  name: { type: string, example: Standard }
+                  livingSpaceCount: { type: integer, example: 1 }
+                  surfaceM2: { type: integer, example: 25, nullable: true }
+                  guestCapacity: { type: integer, example: 2 }
+                  isAccessible: { type: boolean }
+                  bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv] }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
         '404':
           description: 'Hotel not found'
           content:
@@ -1909,6 +2005,18 @@ components:
           type: boolean
           example: false
           default: false
+      type: object
+    DeclareRoomTypeAmenitiesRequest:
+      properties:
+        amenities:
+          type: array
+          items:
+            type: string
+          example:
+            - wifi
+            - tv
+            - minibar
+          default: []
       type: object
     ListRoomTypesRequest:
       properties:
