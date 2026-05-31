@@ -1,0 +1,52 @@
+generated_at: '2026-05-31T06:51:40+00:00'
+events:
+  ReservationCheckedOut:
+    class: App\Shared\Domain\Event\ReservationCheckedOut
+    properties:
+      reservationId: string
+      roomId: string
+      bookerId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+      actualDepartureDate: DateTimeImmutable
+    listeners:
+      - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationCheckedOutListener }
+  ReservationConfirmed:
+    class: App\Shared\Domain\Event\ReservationConfirmed
+    properties:
+      reservationId: string
+      roomId: string
+      bookerId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+    listeners:
+      - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationConfirmedListener }
+      - { context: Notification, class: App\Notification\Infrastructure\EventListener\ReservationConfirmedListener }
+  ReservationCreated:
+    class: App\Shared\Domain\Event\ReservationCreated
+    properties:
+      reservationId: string
+      roomId: string
+      bookerId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+      totalPrice: int
+      cancellationTermsDaysThreshold: '?int'
+      priceBreakdown: array
+    listeners:
+      - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationCreatedListener }
+  ReservationExpired:
+    class: App\Shared\Domain\Event\ReservationExpired
+    properties:
+      reservationId: string
+      roomId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+    listeners:
+      - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationExpiredListener }
+  ReservationPaymentCancelled:
+    class: App\Shared\Domain\Event\ReservationPaymentCancelled
+    properties:
+      reservationId: string
+    listeners:
+      - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationPaymentCancelledListener }

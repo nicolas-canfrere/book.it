@@ -99,3 +99,6 @@ down: ## Stop all services
 ##@ OpenApi doc
 openapi: ## write openapi doc in yaml file at the root directory: openapi.yaml
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
+
+events: ## Generate domainevents.yaml from registered domain event listeners
+	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console app:events:catalog
