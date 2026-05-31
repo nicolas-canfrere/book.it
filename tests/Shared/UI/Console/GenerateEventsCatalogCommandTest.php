@@ -16,7 +16,7 @@ final class GenerateEventsCatalogCommandTest extends KernelTestCase
     public function testGeneratesDomainEventsYaml(): void
     {
         $kernel = self::bootKernel();
-        $outputFile = $kernel->getProjectDir().'/domainevents.yaml';
+        $outputFile = $kernel->getProjectDir() . '/domainevents.yaml';
 
         $application = new Application($kernel);
         $command = $application->find('app:events:catalog');
@@ -29,9 +29,11 @@ final class GenerateEventsCatalogCommandTest extends KernelTestCase
             self::assertFileExists($outputFile);
 
             $catalog = Yaml::parseFile($outputFile);
+            self::assertIsArray($catalog);
             self::assertArrayHasKey('generated_at', $catalog);
 
             $events = $catalog['events'];
+            self::assertIsArray($events);
 
             foreach ([
                 'ReservationCreated',
@@ -41,8 +43,13 @@ final class GenerateEventsCatalogCommandTest extends KernelTestCase
                 'ReservationPaymentCancelled',
             ] as $eventName) {
                 self::assertArrayHasKey($eventName, $events, "Event $eventName missing from catalog");
-                self::assertNotEmpty($events[$eventName]['listeners'], "Event $eventName has no listeners");
-                foreach ($events[$eventName]['listeners'] as $listener) {
+                $eventData = $events[$eventName];
+                self::assertIsArray($eventData);
+                self::assertNotEmpty($eventData['listeners'], "Event $eventName has no listeners");
+                $listeners = $eventData['listeners'];
+                self::assertIsArray($listeners);
+                foreach ($listeners as $listener) {
+                    self::assertIsArray($listener);
                     self::assertArrayHasKey('context', $listener);
                     self::assertArrayHasKey('class', $listener);
                 }

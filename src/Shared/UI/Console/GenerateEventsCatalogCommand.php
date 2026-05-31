@@ -26,22 +26,24 @@ final class GenerateEventsCatalogCommand extends Command
         $catalog = [];
 
         foreach ($this->eventDispatcher->getListeners() as $eventClass => $listeners) {
-            if (!str_starts_with($eventClass, 'App\\Shared\\Domain\\Event\\')) {
+            if (!is_string($eventClass) || !str_starts_with($eventClass, 'App\\Shared\\Domain\\Event\\')) {
                 continue;
             }
 
+            /** @var class-string $eventClass */
             $reflection = new \ReflectionClass($eventClass);
             $properties = [];
             $constructor = $reflection->getConstructor();
 
-            if ($constructor !== null) {
+            if (null !== $constructor) {
                 foreach ($constructor->getParameters() as $param) {
                     $type = $param->getType();
-                    $properties[$param->getName()] = $type !== null ? (string) $type : 'mixed';
+                    $properties[$param->getName()] = null !== $type ? (string) $type : 'mixed';
                 }
             }
 
             $listenerEntries = [];
+            /** @var array<callable> $listeners */
             foreach ($listeners as $listener) {
                 if (!is_array($listener) || !is_object($listener[0])) {
                     continue;
@@ -69,7 +71,7 @@ final class GenerateEventsCatalogCommand extends Command
             'events' => $catalog,
         ], 4, 2);
 
-        file_put_contents($this->projectDir.'/domainevents.yaml', $yaml);
+        file_put_contents($this->projectDir . '/domainevents.yaml', $yaml);
 
         $output->writeln(sprintf('<info>Generated domainevents.yaml with %d events.</info>', count($catalog)));
 
