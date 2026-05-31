@@ -46,7 +46,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{id: string, hotelId: string, name: string, livingSpaceCount: int, surfaceM2: int|null, guestCapacity: int, isAccessible: bool, bedComposition: list<array{type: string, count: int}>, createdAt: int} $body */
+        /** @var array{id: string, hotelId: string, name: string, livingSpaceCount: int, surfaceM2: int|null, guestCapacity: int, isAccessible: bool, bedComposition: list<array{type: string, count: int}>, amenities: list<string>, createdAt: int} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertNotEmpty($body['id']);
         self::assertSame($hotelId, $body['hotelId']);

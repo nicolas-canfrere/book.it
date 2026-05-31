@@ -9,7 +9,7 @@ use App\Room\Domain\Model\RoomType;
 final class RoomTypeSerializer
 {
     /**
-     * @return array{id: string, hotelId: string, name: string, livingSpaceCount: int, surfaceM2: int|null, guestCapacity: int, isAccessible: bool, bedComposition: list<array{type: string, count: int}>, createdAt: int}
+     * @return array{id: string, hotelId: string, name: string, livingSpaceCount: int, surfaceM2: int|null, guestCapacity: int, isAccessible: bool, bedComposition: list<array{type: string, count: int}>, amenities: list<string>, createdAt: int}
      */
     public function serialize(RoomType $roomType): array
     {
@@ -22,6 +22,7 @@ final class RoomTypeSerializer
             'guestCapacity' => $roomType->guestCapacity,
             'isAccessible' => $roomType->isAccessible,
             'bedComposition' => $roomType->bedComposition->toArray(),
+            'amenities' => array_values(array_map(static fn($a) => $a->value, $roomType->amenities)),
             'createdAt' => $roomType->createdAt->getTimestamp(),
         ];
     }

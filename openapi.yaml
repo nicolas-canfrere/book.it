@@ -350,6 +350,21 @@ paths:
       responses:
         '200':
           description: 'Room type found'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  hotelId: { type: string, format: uuid }
+                  name: { type: string, example: Standard }
+                  livingSpaceCount: { type: integer, example: 1 }
+                  surfaceM2: { type: integer, example: 25, nullable: true }
+                  guestCapacity: { type: integer, example: 2 }
+                  isAccessible: { type: boolean }
+                  bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv] }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
         '404':
           description: 'Room type not found'
           content:
@@ -387,6 +402,21 @@ paths:
       responses:
         '200':
           description: 'Room type updated'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  hotelId: { type: string, format: uuid }
+                  name: { type: string, example: Standard }
+                  livingSpaceCount: { type: integer, example: 1 }
+                  surfaceM2: { type: integer, example: 25, nullable: true }
+                  guestCapacity: { type: integer, example: 2 }
+                  isAccessible: { type: boolean }
+                  bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv] }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
         '404':
           description: 'Room type not found'
           content:
@@ -510,6 +540,13 @@ paths:
       responses:
         '200':
           description: 'Paginated room type catalogue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, name: { type: string, example: Standard }, livingSpaceCount: { type: integer, example: 1 }, surfaceM2: { type: integer, example: 25, nullable: true }, guestCapacity: { type: integer, example: 2 }, isAccessible: { type: boolean }, bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }, amenities: { type: array, items: { type: string }, example: [wifi, tv] }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                  meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 10 }, totalPages: { type: integer, example: 1 } }, type: object }
+                type: object
         '422':
           description: 'Validation error'
           content:
@@ -539,6 +576,21 @@ paths:
       responses:
         '201':
           description: 'Room type registered'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  hotelId: { type: string, format: uuid }
+                  name: { type: string, example: Standard }
+                  livingSpaceCount: { type: integer, example: 1 }
+                  surfaceM2: { type: integer, example: 25, nullable: true }
+                  guestCapacity: { type: integer, example: 2 }
+                  isAccessible: { type: boolean }
+                  bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv] }
+                  createdAt: { description: 'Unix timestamp', type: integer }
+                type: object
         '404':
           description: 'Hotel not found'
           content:
