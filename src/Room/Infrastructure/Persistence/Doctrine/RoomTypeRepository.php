@@ -73,6 +73,15 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
         ]);
     }
 
+    public function save(RoomType $roomType): void
+    {
+        if (null === $this->get($roomType->id)) {
+            $this->add($roomType);
+        } else {
+            $this->update($roomType);
+        }
+    }
+
     public function delete(string $id): void
     {
         $this->roomConnection->delete('room_type', ['id' => $id]);
