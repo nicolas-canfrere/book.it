@@ -10,13 +10,13 @@ use Doctrine\DBAL\Connection;
 
 final readonly class AvailabilityHoldRepository implements AvailabilityHoldRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $availabilityConnection)
     {
     }
 
     public function add(AvailabilityHold $hold): void
     {
-        $this->bookit->insert('availability_hold', [
+        $this->availabilityConnection->insert('hold', [
             'id' => $hold->id,
             'room_id' => $hold->roomId,
             'reservation_id' => $hold->reservationId,
@@ -29,13 +29,13 @@ final readonly class AvailabilityHoldRepository implements AvailabilityHoldRepos
 
     public function deleteByReservationId(string $reservationId): void
     {
-        $this->bookit->delete('availability_hold', ['reservation_id' => $reservationId]);
+        $this->availabilityConnection->delete('hold', ['reservation_id' => $reservationId]);
     }
 
     public function hasActiveOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
     {
-        $count = $this->bookit->fetchOne(
-            'SELECT COUNT(*) FROM availability_hold
+        $count = $this->availabilityConnection->fetchOne(
+            'SELECT COUNT(*) FROM hold
              WHERE room_id = :roomId
                AND check_in < :checkOut
                AND check_out > :checkIn
