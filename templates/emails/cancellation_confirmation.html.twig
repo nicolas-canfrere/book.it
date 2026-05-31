@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Votre réservation a été annulée</title>
+</head>
+<body>
+    <p>Bonjour {{ firstName }},</p>
+    <p>
+        Votre annulation pour le séjour du <strong>{{ checkIn|date('d/m/Y') }}</strong>
+        au <strong>{{ checkOut|date('d/m/Y') }}</strong> a bien été prise en compte.
+    </p>
+    {% if refundAmountCents > 0 %}
+    <p>Montant remboursé : <strong>{{ (refundAmountCents / 100)|number_format(2, '.', '') }} €</strong></p>
+    {% else %}
+    <p>Conformément aux conditions d'annulation, aucun remboursement ne sera effectué.</p>
+    {% endif %}
+    <p>
+        À bientôt,<br>
+        L'équipe book.it
+    </p>
+</body>
+</html>

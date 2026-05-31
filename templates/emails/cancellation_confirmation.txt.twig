@@ -1,0 +1,12 @@
+Bonjour {{ firstName }},
+
+Votre annulation pour le séjour du {{ checkIn|date('d/m/Y') }} au {{ checkOut|date('d/m/Y') }} a bien été prise en compte.
+
+{% if refundAmountCents > 0 %}
+Montant remboursé : {{ (refundAmountCents / 100)|number_format(2, '.', '') }} €
+{% else %}
+Conformément aux conditions d'annulation, aucun remboursement ne sera effectué.
+{% endif %}
+
+À bientôt,
+L'équipe book.it
