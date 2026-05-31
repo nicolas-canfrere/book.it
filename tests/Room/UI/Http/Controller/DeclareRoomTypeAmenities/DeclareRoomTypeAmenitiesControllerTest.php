@@ -37,7 +37,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
 
         $client->request(
             'PATCH',
-            "/api/v1/room-types/{$roomTypeId}/amenities",
+            "/api/v1/hotels/{$hotelId}/room-types/{$roomTypeId}/amenities",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amenities' => ['wifi', 'tv', 'minibar']], \JSON_THROW_ON_ERROR),
         );
@@ -54,7 +54,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
 
         $client->request(
             'PATCH',
-            "/api/v1/room-types/{$roomTypeId}/amenities",
+            "/api/v1/hotels/{$hotelId}/room-types/{$roomTypeId}/amenities",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amenities' => []], \JSON_THROW_ON_ERROR),
         );
@@ -69,7 +69,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
 
         $client->request(
             'PATCH',
-            '/api/v1/room-types/00000000-0000-4000-8000-000000000000/amenities',
+            '/api/v1/hotels/00000000-0000-4000-8000-000000000001/room-types/00000000-0000-4000-8000-000000000000/amenities',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amenities' => ['wifi']], \JSON_THROW_ON_ERROR),
         );
@@ -86,7 +86,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
 
         $client->request(
             'PATCH',
-            "/api/v1/room-types/{$roomTypeId}/amenities",
+            "/api/v1/hotels/{$hotelId}/room-types/{$roomTypeId}/amenities",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amenities' => ['not_a_real_amenity']], \JSON_THROW_ON_ERROR),
         );
@@ -103,7 +103,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
 
         $client->request(
             'PATCH',
-            "/api/v1/room-types/{$roomTypeId}/amenities",
+            "/api/v1/hotels/{$hotelId}/room-types/{$roomTypeId}/amenities",
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['amenities' => ['wifi', 'wifi']], \JSON_THROW_ON_ERROR),
         );

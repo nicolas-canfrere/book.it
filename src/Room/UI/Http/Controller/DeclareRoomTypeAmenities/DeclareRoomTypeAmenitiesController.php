@@ -21,9 +21,9 @@ final readonly class DeclareRoomTypeAmenitiesController
     }
 
     #[Route(
-        path: '/room-types/{id}/amenities',
+        path: '/hotels/{hotelId}/room-types/{roomTypeId}/amenities',
         name: 'room_type_declare_amenities',
-        requirements: ['id' => Requirement::UUID_V4],
+        requirements: ['hotelId' => Requirement::UUID_V4, 'roomTypeId' => Requirement::UUID_V4],
         methods: ['PATCH'],
     )]
     #[OA\Patch(
@@ -34,7 +34,8 @@ final readonly class DeclareRoomTypeAmenitiesController
         ),
         tags: ['Room Types'],
         parameters: [
-            new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'hotelId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
+            new OA\Parameter(name: 'roomTypeId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),
         ],
         responses: [
             new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Amenities declared'),
@@ -57,12 +58,13 @@ final readonly class DeclareRoomTypeAmenitiesController
         ],
     )]
     public function __invoke(
-        string $id,
+        string $hotelId,
+        string $roomTypeId,
         #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         DeclareRoomTypeAmenitiesRequest $request,
     ): Response {
         $this->commandBus->execute(new DeclareRoomTypeAmenitiesCommand(
-            roomTypeId: $id,
+            roomTypeId: $roomTypeId,
             amenities: $request->amenities,
         ));
 
