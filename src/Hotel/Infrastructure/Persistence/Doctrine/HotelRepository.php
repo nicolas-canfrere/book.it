@@ -163,7 +163,14 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             return [];
         }
 
-        return array_map(HotelAmenity::from(...), explode(',', trim($raw, '{}')));
+        preg_match_all('/"([^"]+)"|([^,{}]+)/', $raw, $matches);
+        $values = array_map(
+            static fn(string $quoted, string $plain): string => '' !== $quoted ? $quoted : $plain,
+            $matches[1],
+            $matches[2],
+        );
+
+        return array_map(HotelAmenity::from(...), $values);
     }
 
     /** @param array<HotelAmenity> $amenities */
