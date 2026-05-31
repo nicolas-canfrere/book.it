@@ -136,3 +136,7 @@ services:
                     type: 'https://book.it/problems/check-out-not-allowed'
                     title: 'Check-Out Not Allowed'
                     status: 422
+                App\Reservation\Domain\Exception\CancellationNotAllowedException:
+                    type: 'https://book.it/problems/cancellation-not-allowed'
+                    title: 'Cancellation Not Allowed'
+                    status: 409
