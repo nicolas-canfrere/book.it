@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Hotel\UI\Http\Controller\ListHotels;
 
 use App\Hotel\Application\UseCase\ListHotels\ListHotelsQuery;
+use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -82,11 +83,14 @@ final readonly class ListHotelsController
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] ListHotelsRequest $request = new ListHotelsRequest(),
     ): Response {
         $hotelPage = $this->queryBus->ask(new ListHotelsQuery(
-            $request->page,
-            $request->limit,
-            $request->city,
-            $request->country,
-            $request->minStars,
+            page: $request->page,
+            limit: $request->limit,
+            city: $request->city,
+            country: $request->country,
+            minStars: $request->minStars,
+            amenities: null !== $request->amenities
+                ? array_map(static fn (string $a): HotelAmenity => HotelAmenity::from($a), $request->amenities)
+                : null,
         ));
 
         return new JsonResponse(

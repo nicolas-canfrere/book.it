@@ -221,6 +221,61 @@ final class ListHotelsControllerTest extends WebTestCase
         self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
     }
 
+    #[Test]
+    public function test_filters_by_amenities(): void
+    {
+        $client = self::createClient();
+
+        // Register two hotels
+        $client->request('POST', '/api/v1/hotels', content: json_encode([
+            'name' => 'Pool Gym Hotel',
+            'streetAddress' => '10 rue Filter',
+            'postalCode' => '75002',
+            'city' => 'Lyon',
+            'country' => 'FR',
+        ], \JSON_THROW_ON_ERROR), server: ['CONTENT_TYPE' => 'application/json']);
+        /** @var array{id: string} $dataA */
+        $dataA = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $idA = $dataA['id'];
+
+        $client->request('POST', '/api/v1/hotels', content: json_encode([
+            'name' => 'Pool Only Hotel',
+            'streetAddress' => '11 rue Filter',
+            'postalCode' => '75002',
+            'city' => 'Lyon',
+            'country' => 'FR',
+        ], \JSON_THROW_ON_ERROR), server: ['CONTENT_TYPE' => 'application/json']);
+        /** @var array{id: string} $dataB */
+        $dataB = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $idB = $dataB['id'];
+
+        // Declare amenities
+        $client->request('PATCH', "/api/v1/hotels/{$idA}/amenities", content: json_encode(['amenities' => ['pool', 'gym']], \JSON_THROW_ON_ERROR), server: ['CONTENT_TYPE' => 'application/json']);
+        $client->request('PATCH', "/api/v1/hotels/{$idB}/amenities", content: json_encode(['amenities' => ['pool']], \JSON_THROW_ON_ERROR), server: ['CONTENT_TYPE' => 'application/json']);
+
+        // Filter pool only — both match
+        $client->request('GET', '/api/v1/hotels?amenities[]=pool&city=Lyon');
+        self::assertResponseIsSuccessful();
+        /** @var array{data: list<array{id: string}>} $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $ids = array_column($data['data'], 'id');
+        self::assertContains($idA, $ids);
+        self::assertContains($idB, $ids);
+
+        // Filter pool+gym — only idA
+        $client->request('GET', '/api/v1/hotels?amenities[]=pool&amenities[]=gym&city=Lyon');
+        self::assertResponseIsSuccessful();
+        /** @var array{data: list<array{id: string}>} $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $ids = array_column($data['data'], 'id');
+        self::assertContains($idA, $ids);
+        self::assertNotContains($idB, $ids);
+
+        // Unknown amenity — 422
+        $client->request('GET', '/api/v1/hotels?amenities[]=not_an_amenity');
+        self::assertResponseStatusCodeSame(422);
+    }
+
     /**
      * @param array<string, string> $payload
      */
