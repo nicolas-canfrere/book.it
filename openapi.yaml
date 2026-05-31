@@ -44,6 +44,42 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/v1/hotels/{id}/amenities':
+    patch:
+      tags:
+        - Hotels
+      summary: 'Declare or replace the Hotel Amenity list'
+      operationId: patch_hotel_declare_amenities
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/DeclareHotelAmenitiesRequest'
+      responses:
+        '204':
+          description: 'Amenities declared'
+        '404':
+          description: 'Hotel not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/v1/hotels/{id}':
     get:
       tags:
@@ -132,6 +168,16 @@ paths:
             default: null
             maximum: 5
             minimum: 1
+        -
+          name: 'amenities[]'
+          in: query
+          required: false
+          schema:
+            type: array
+            items:
+              type: string
+            nullable: true
+            default: null
       responses:
         '200':
           description: 'Paginated hotel catalogue'
@@ -1769,6 +1815,18 @@ components:
           example: false
           default: false
       type: object
+    DeclareHotelAmenitiesRequest:
+      properties:
+        amenities:
+          type: array
+          items:
+            type: string
+          example:
+            - pool
+            - gym
+            - parking
+          default: []
+      type: object
     ListHotelsRequest:
       properties:
         page:
@@ -1796,6 +1854,12 @@ components:
           default: null
           maximum: 5
           minimum: 1
+        amenities:
+          type: array
+          items:
+            type: string
+          nullable: true
+          default: null
       type: object
     RegisterHotelRequest:
       properties:

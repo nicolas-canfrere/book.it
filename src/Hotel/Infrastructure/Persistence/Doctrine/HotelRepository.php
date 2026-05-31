@@ -105,7 +105,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             $params['amenities'] = $this->serializeAmenities($amenities);
         }
 
-        $where = $conditions ? 'WHERE '.implode(' AND ', $conditions) : '';
+        $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
 
         /** @var int|string $count */
         $count = $this->hotelConnection->fetchOne(
@@ -173,6 +173,6 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             return '{}';
         }
 
-        return '{'.implode(',', array_map(static fn(HotelAmenity $a) => $a->value, $amenities)).'}';
+        return '{' . implode(',', array_map(static fn(HotelAmenity $a) => $a->value, $amenities)) . '}';
     }
 }

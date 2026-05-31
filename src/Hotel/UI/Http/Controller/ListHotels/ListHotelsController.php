@@ -89,7 +89,7 @@ final readonly class ListHotelsController
             country: $request->country,
             minStars: $request->minStars,
             amenities: null !== $request->amenities
-                ? array_map(static fn (string $a): HotelAmenity => HotelAmenity::from($a), $request->amenities)
+                ? array_map(static fn(string $a): HotelAmenity => HotelAmenity::from($a), $request->amenities)
                 : null,
         ));
 

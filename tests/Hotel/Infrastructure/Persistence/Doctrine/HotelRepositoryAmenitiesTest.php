@@ -14,6 +14,11 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 #[Group('functional')]
 final class HotelRepositoryAmenitiesTest extends KernelTestCase
 {
+    // Fixed UUIDs for deterministic, isolated test rows
+    private const ID_1 = 'a1000000-0000-4000-8000-000000000001';
+    private const ID_2 = 'a1000000-0000-4000-8000-000000000002';
+    private const ID_3 = 'a1000000-0000-4000-8000-000000000003';
+    private const ID_4 = 'a1000000-0000-4000-8000-000000000004';
     private HotelRepository $repository;
 
     protected function setUp(): void
@@ -21,12 +26,6 @@ final class HotelRepositoryAmenitiesTest extends KernelTestCase
         self::bootKernel();
         $this->repository = self::getContainer()->get(HotelRepository::class);
     }
-
-    // Fixed UUIDs for deterministic, isolated test rows
-    private const ID_1 = 'a1000000-0000-4000-8000-000000000001';
-    private const ID_2 = 'a1000000-0000-4000-8000-000000000002';
-    private const ID_3 = 'a1000000-0000-4000-8000-000000000003';
-    private const ID_4 = 'a1000000-0000-4000-8000-000000000004';
 
     public function test_save_and_reload_amenities(): void
     {

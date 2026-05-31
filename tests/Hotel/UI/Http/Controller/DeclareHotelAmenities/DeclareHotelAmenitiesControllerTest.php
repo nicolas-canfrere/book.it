@@ -11,27 +11,6 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 #[Group('functional')]
 final class DeclareHotelAmenitiesControllerTest extends WebTestCase
 {
-    private function registerHotel(KernelBrowser $client, string $name = 'Test Hotel'): string
-    {
-        $client->request(
-            method: 'POST',
-            uri: '/api/v1/hotels',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode([
-                'name' => $name,
-                'streetAddress' => '1 rue Test',
-                'postalCode' => '75001',
-                'city' => 'Paris',
-                'country' => 'FR',
-            ], \JSON_THROW_ON_ERROR),
-        );
-
-        /** @var array{id: string} $data */
-        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-
-        return $data['id'];
-    }
-
     public function test_declares_amenities_on_existing_hotel(): void
     {
         $client = self::createClient();
@@ -111,5 +90,26 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
         );
 
         self::assertResponseStatusCodeSame(422);
+    }
+
+    private function registerHotel(KernelBrowser $client, string $name = 'Test Hotel'): string
+    {
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode([
+                'name' => $name,
+                'streetAddress' => '1 rue Test',
+                'postalCode' => '75001',
+                'city' => 'Paris',
+                'country' => 'FR',
+            ], \JSON_THROW_ON_ERROR),
+        );
+
+        /** @var array{id: string} $data */
+        $data = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        return $data['id'];
     }
 }
