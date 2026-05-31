@@ -28,9 +28,11 @@ _Avoid_: star update, rating update
 
 - A **Hotel** has exactly one **Address**
 - A **Hotel** has at most one **Star Rating** (optional)
+- A **Hotel** has zero or more **Hotel Amenities** (optional at registration)
 - A **Hotel Registration** produces exactly one **Hotel**, or raises a conflict if the **Hotel** already exists
 - A **Star Rating Classification** may be performed at any time after **Hotel Registration**
 - A **Star Rating** with `superior: true` requires a number of stars to be present; removing the stars implicitly sets `superior` to false
+- A **Hotel Amenity Declaration** replaces the full **Hotel Amenity** list and may be performed at any time after **Hotel Registration**
 
 ## Example dialogue
 
@@ -41,8 +43,16 @@ _Avoid_: star update, rating update
 > **Domain expert:** "Yes — it's self-declared. The operator is responsible for accuracy, like the name or address."
 
 **Hotel Catalogue**:
-A paginated, filterable list of all registered Hotels. Supports filtering by city, country, and minimum Star Rating (`minStars`). Sorted alphabetically by name. Public — no authentication required.
+A paginated, filterable list of all registered Hotels. Supports filtering by city, country, minimum Star Rating (`minStars`), and Hotel Amenities. Sorted alphabetically by name. Public — no authentication required.
 _Avoid_: hotel list, hotel search, hotel directory
+
+**Hotel Amenity**:
+A facility available to all guests of a Hotel, drawn from a fixed predefined enum (e.g. `pool`, `parking`, `playground`, `gym`). A Hotel has zero or more Hotel Amenities. Hotel Amenities are optional at Hotel Registration and replaceable at any time via a Hotel Amenity Declaration.
+_Avoid_: hotel feature, hotel service, équipement hôtel
+
+**Hotel Amenity Declaration**:
+The act of replacing the full list of Hotel Amenities on a Hotel. The operator submits the complete new list — any previously declared amenity not in the new list is removed.
+_Avoid_: amenity update, amenity addition, amenity removal
 
 ## Flagged ambiguities
 
@@ -68,8 +78,20 @@ The act of declaring a new Room in a Hotel. Rejected if a Room with the same num
 _Avoid_: room creation, room addition
 
 **Room Catalogue**:
-A paginated list of all Rooms belonging to a given Hotel, sorted alphabetically by number.
+A paginated list of all Rooms belonging to a given Hotel, sorted alphabetically by number. Operator-facing — used to manage the physical room inventory.
 _Avoid_: room list, room inventory
+
+**Room Type Catalogue**:
+A paginated, filterable list of all Room Types belonging to a given Hotel. Supports filtering by Room Amenities. Booker-facing — the primary view for discovering what types of accommodation a Hotel offers. Distinct from the Room Catalogue, which lists individual physical Rooms for operators.
+_Avoid_: room list, room type list, room search
+
+**Room Amenity**:
+A feature present in all Rooms of a given Room Type, drawn from a fixed predefined enum (e.g. `tv`, `wifi`, `air_conditioning`, `minibar`, `jacuzzi`). A Room Type has zero or more Room Amenities. A value may appear in both enums with a different meaning — `jacuzzi` at hotel level means a shared facility; at room type level it means a private in-room jacuzzi. Room Amenities are optional at Room Type Registration and replaceable at any time via a Room Type Amenity Declaration.
+_Avoid_: room feature, room equipment, équipement chambre
+
+**Room Type Amenity Declaration**:
+The act of replacing the full list of Room Amenities on a Room Type. The operator submits the complete new list — any previously declared amenity not in the new list is removed.
+_Avoid_: amenity update, amenity addition, amenity removal
 
 **Room Type**:
 A named category defined by a Hotel operator, describing the physical characteristics shared by all Rooms of that type: living space count, surface area, bed composition, guest capacity, and accessibility. A Room Type is scoped to a single Hotel — two hotels may use the same name independently. A Room Type name is unique within a Hotel.
@@ -101,13 +123,16 @@ _Avoid_: max occupancy, occupancy, capacity
 - A **Room** has exactly one **Room Number** and exactly one **Room Floor**
 - A **Room** belongs to exactly one **Room Type** — mandatory at registration, reassignable after
 - A **Room Registration** produces exactly one **Room**, or raises a conflict if the **Room** number already exists in that **Hotel**
-- A **Room Catalogue** always belongs to exactly one **Hotel**
+- A **Room Catalogue** always belongs to exactly one **Hotel** (operator view — lists individual Rooms)
+- A **Room Type Catalogue** always belongs to exactly one **Hotel** (Booker view — lists Room Types, filterable by Room Amenity)
 - A **Room Type** belongs to exactly one **Hotel**
 - A **Room Type** name is unique within a **Hotel**
 - A **Room Type** has exactly one **Living Space Count**, one **Guest Capacity**, one **Bed Composition**, and one **Accessibility** flag; surface area is optional
+- A **Room Type** has zero or more **Room Amenities** (optional at registration)
 - A **Room Type** may be deleted only if no **Room** is currently assigned to it
 - A **Room Type** attributes are mutable after creation
 - A **Room Type Registration** produces exactly one **Room Type**, or raises a conflict if the name already exists in that **Hotel**
+- A **Room Type Amenity Declaration** replaces the full **Room Amenity** list and may be performed at any time after **Room Type Registration**
 
 ---
 
