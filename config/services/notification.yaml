@@ -36,3 +36,9 @@ services:
         arguments:
             $mailerFrom: '%env(MAILER_FROM)%'
 
+    App\Notification\Domain\Port\CancellationConfirmationEmailSenderInterface:
+        alias: App\Notification\Infrastructure\Service\SymfonyMailerCancellationConfirmationEmailSender
+
+    App\Notification\Infrastructure\Service\SymfonyMailerCancellationConfirmationEmailSender:
+        arguments:
+            $mailerFrom: '%env(MAILER_FROM)%'
