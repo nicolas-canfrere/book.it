@@ -80,14 +80,15 @@ final class ReservationCancelByBookerTest extends TestCase
     }
 
     #[Test]
-    public function itThrowsCancellationNotAllowedExceptionContainingDates(): void
+    public function itIncludesCheckInDateInExceptionMessage(): void
     {
         $checkIn = new \DateTimeImmutable('2026-06-15');
         $reservation = $this->makeConfirmedReservation(checkIn: $checkIn);
 
         $this->expectException(CancellationNotAllowedException::class);
+        $this->expectExceptionMessage('2026-06-15');
 
-        throw CancellationNotAllowedException::afterCheckIn($checkIn, new \DateTimeImmutable('2026-06-15'));
+        $reservation->cancelByBooker($checkIn);
     }
 
     private function makePendingReservation(\DateTimeImmutable $checkIn): Reservation
