@@ -1358,6 +1358,36 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+  '/api/v1/reservations/{id}/cancel':
+    post:
+      tags:
+        - Reservation
+      summary: 'Cancel a reservation (by Booker)'
+      operationId: post_reservation_cancel
+      parameters:
+        -
+          name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+      responses:
+        '204':
+          description: 'Reservation cancelled'
+        '404':
+          description: 'Reservation not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '409':
+          description: 'Cancellation not allowed (wrong status or check-in date reached)'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   '/api/v1/reservations/{id}/check-in':
     post:
       tags:
