@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Reservation\Application\UseCase\CancelReservation;
 
-final readonly class CancelReservationCommand
+use App\Shared\Application\Bus\SyncCommandInterface;
+
+final readonly class CancelReservationCommand implements SyncCommandInterface
 {
     public function __construct(
         public string $reservationId,
