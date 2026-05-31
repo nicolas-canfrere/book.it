@@ -8,6 +8,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
+use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Domain\ValueObject\StarRating;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
@@ -34,6 +35,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'created_at' => $hotel->createdAt->format('Y-m-d H:i:s'),
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
+            'amenities' => $this->serializeAmenities($hotel->amenities),
         ], [
             'superior' => Types::BOOLEAN,
         ]);
@@ -44,6 +46,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $this->hotelConnection->update('hotel', [
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
+            'amenities' => $this->serializeAmenities($hotel->amenities),
         ], ['id' => $hotel->id], [
             'superior' => Types::BOOLEAN,
         ]);
@@ -51,9 +54,9 @@ final readonly class HotelRepository implements HotelRepositoryInterface
 
     public function get(string $id): ?Hotel
     {
-        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool}|false $row */
+        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
         $row = $this->hotelConnection->fetchAssociative(
-            'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel WHERE id = :id',
+            'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior, amenities FROM hotel WHERE id = :id',
             ['id' => $id],
         );
 
@@ -74,7 +77,10 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         return $count > 0;
     }
 
-    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null): HotelPage
+    /**
+     * @param array<HotelAmenity>|null $amenities
+     */
+    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null, ?array $amenities = null): HotelPage
     {
         $conditions = [];
         $params = [];
@@ -94,7 +100,12 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             $params['minStars'] = $minStars;
         }
 
-        $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
+        if (null !== $amenities && [] !== $amenities) {
+            $conditions[] = 'amenities @> :amenities::text[]';
+            $params['amenities'] = $this->serializeAmenities($amenities);
+        }
+
+        $where = $conditions ? 'WHERE '.implode(' AND ', $conditions) : '';
 
         /** @var int|string $count */
         $count = $this->hotelConnection->fetchOne(
@@ -106,9 +117,9 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $params['limit'] = $limit;
         $params['offset'] = ($page - 1) * $limit;
 
-        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool}> $rows */
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string}> $rows */
         $rows = $this->hotelConnection->fetchAllAssociative(
-            "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
+            "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior, amenities FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
             $params,
         );
 
@@ -116,7 +127,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
     }
 
     /**
-     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool} $row
+     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string} $row
      */
     private function hydrate(array $row): Hotel
     {
@@ -130,6 +141,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
             new \DateTimeImmutable($row['created_at']),
             $starRating,
+            $this->parseAmenities($row['amenities']),
         );
     }
 
@@ -142,5 +154,25 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             $this->slugger->slug($address->city)->lower()->toString(),
             strtolower($address->country),
         ]);
+    }
+
+    /** @return array<HotelAmenity> */
+    private function parseAmenities(string $raw): array
+    {
+        if ('{}' === $raw) {
+            return [];
+        }
+
+        return array_map(HotelAmenity::from(...), explode(',', trim($raw, '{}')));
+    }
+
+    /** @param array<HotelAmenity> $amenities */
+    private function serializeAmenities(array $amenities): string
+    {
+        if ([] === $amenities) {
+            return '{}';
+        }
+
+        return '{'.implode(',', array_map(static fn(HotelAmenity $a) => $a->value, $amenities)).'}';
     }
 }

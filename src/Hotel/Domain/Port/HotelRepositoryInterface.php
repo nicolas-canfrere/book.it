@@ -7,6 +7,7 @@ namespace App\Hotel\Domain\Port;
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
+use App\Hotel\Domain\ValueObject\HotelAmenity;
 
 interface HotelRepositoryInterface
 {
@@ -18,5 +19,8 @@ interface HotelRepositoryInterface
 
     public function existsByNameAndAddress(string $name, Address $address): bool;
 
-    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null): HotelPage;
+    /**
+     * @param array<HotelAmenity>|null $amenities
+     */
+    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null, ?array $amenities = null): HotelPage;
 }

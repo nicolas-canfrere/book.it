@@ -8,6 +8,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
+use App\Hotel\Domain\ValueObject\HotelAmenity;
 
 final class InMemoryHotelRepository implements HotelRepositoryInterface
 {
@@ -42,13 +43,20 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
         return false;
     }
 
-    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null): HotelPage
+    /**
+     * @param array<HotelAmenity>|null $amenities
+     */
+    public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null, ?array $amenities = null): HotelPage
     {
         $filtered = array_values(array_filter(
             $this->hotels,
             static fn(Hotel $h) => (null === $city || strtolower($h->address->city) === strtolower($city))
                 && (null === $country || strtolower($h->address->country) === strtolower($country))
-                && (null === $minStars || (null !== $h->starRating && $h->starRating->stars >= $minStars)),
+                && (null === $minStars || (null !== $h->starRating && $h->starRating->stars >= $minStars))
+                && (null === $amenities || [] === $amenities || 0 === count(array_diff(
+                    array_column($amenities, 'value'),
+                    array_column($h->amenities, 'value'),
+                ))),
         ));
 
         usort($filtered, static fn(Hotel $a, Hotel $b) => strcmp($a->name, $b->name));

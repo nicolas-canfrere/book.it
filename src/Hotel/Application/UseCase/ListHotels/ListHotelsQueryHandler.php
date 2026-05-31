@@ -23,6 +23,7 @@ final readonly class ListHotelsQueryHandler implements SyncQueryHandlerInterface
             $query->city,
             $query->country,
             $query->minStars,
+            $query->amenities,
         );
     }
 }
