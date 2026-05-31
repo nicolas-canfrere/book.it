@@ -4,7 +4,7 @@
 
 **Goal:** Complete the Search context: Availability events dispatched, `App\Search\` context skeleton, all projectors (listeners that populate the 3 tables), and the `GET /search` endpoint.
 
-**Architecture:** Projectors are `#[AsEventListener]` classes in `App\Search\Infrastructure\EventListener\` that write directly to the search tables via DBAL. The query handler executes a parameterized SQL query against the same tables. No Doctrine ORM entities for Search — all reads and writes use `doctrine.dbal.bookit_connection`.
+**Architecture:** Projectors are `#[AsEventListener]` classes in `App\Search\Infrastructure\EventListener\` that write directly to the search tables via DBAL. The query handler executes a parameterized SQL query against the same tables. No Doctrine ORM entities for Search — all reads and writes use `doctrine.dbal.search_connection` (isolated via `search_path=search` by `SearchPathMiddleware`). SQL in projectors and the query handler uses **unqualified** table names (`hotel_room_types`, `room_index`, `unavailable_periods`) — the middleware resolves them to the `search` schema. Migration SQL uses schema-qualified names (`search.hotel_room_types`, etc.) because migrations run without the middleware.
 
 **Tech Stack:** PHP 8.4, Symfony 8.0, Doctrine DBAL, PHPUnit (unit tests for Availability handler dispatch; functional tests for the search endpoint)
 
@@ -830,6 +830,10 @@ services:
     _defaults:
         autowire: true
         autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
 
     App\Search\Infrastructure\:
         resource: '../../src/Search/Infrastructure/'
@@ -843,6 +847,13 @@ services:
         resource: '../../src/Search/Application/'
         exclude:
             - '../../src/Search/Application/**/*Query.php'
+
+    bookit.doctrine.middleware.search_path.search:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'search'
+        tags:
+            - {name: doctrine.middleware, connection: search}
 ```
 
 - [ ] **Step 2: Create the directory structure**
@@ -873,9 +884,9 @@ git commit -m "feat(search): add Search context skeleton and service config"
 
 ### Task 7: Hotel projectors — HotelRegistered, StarRatingClassified, HotelAmenityDeclared
 
-These listeners write to `search_hotel_room_types`. `HotelRegistered` cannot insert a row because the table's PK is `room_type_id` — it only stores the hotel columns for future upserts when `RoomTypeRegistered` arrives. Use an `UPDATE` to patch all rows that belong to this `hotel_id`.
+These listeners write to `search.hotel_room_types`. `HotelRegistered` cannot insert a row because the table's PK is `room_type_id` — it only stores the hotel columns for future upserts when `RoomTypeRegistered` arrives. Use an `UPDATE` to patch all rows that belong to this `hotel_id`.
 
-**Design:** `HotelRegistered` has no row to insert yet (no room type). It is a no-op for the projection — the hotel data will be denormalized into `search_hotel_room_types` rows when `RoomTypeRegistered` fires. `StarRatingClassified` and `HotelAmenityDeclared` UPDATE existing rows.
+**Design:** `HotelRegistered` has no row to insert yet (no room type). It is a no-op for the projection — the hotel data will be denormalized into `search.hotel_room_types` rows when `RoomTypeRegistered` fires. `StarRatingClassified` and `HotelAmenityDeclared` UPDATE existing rows.
 
 **Files:**
 - Create: `src/Search/Infrastructure/EventListener/HotelRegisteredListener.php`
@@ -901,7 +912,7 @@ final readonly class HotelRegisteredListener
 {
     public function __invoke(HotelRegistered $event): void
     {
-        // Hotel data is denormalized into search_hotel_room_types rows
+        // Hotel data is denormalized into search.hotel_room_types rows
         // when RoomTypeRegistered fires. Nothing to do here yet.
     }
 }
@@ -930,7 +941,7 @@ final readonly class StarRatingClassifiedListener
     public function __invoke(StarRatingClassified $event): void
     {
         $this->connection->executeStatement(
-            'UPDATE search_hotel_room_types SET star_rating = :starRating WHERE hotel_id = :hotelId',
+            'UPDATE hotel_room_types SET star_rating = :starRating WHERE hotel_id = :hotelId',
             ['starRating' => $event->starRating, 'hotelId' => $event->hotelId],
         );
     }
@@ -960,7 +971,7 @@ final readonly class HotelAmenityDeclaredListener
     public function __invoke(HotelAmenityDeclared $event): void
     {
         $this->connection->executeStatement(
-            'UPDATE search_hotel_room_types SET hotel_amenities = :amenities WHERE hotel_id = :hotelId',
+            'UPDATE hotel_room_types SET hotel_amenities = :amenities WHERE hotel_id = :hotelId',
             [
                 'amenities' => json_encode($event->amenities, \JSON_THROW_ON_ERROR),
                 'hotelId'   => $event->hotelId,
@@ -977,11 +988,11 @@ Add these explicit bindings after the existing `resource:` blocks:
 ```yaml
     App\Search\Infrastructure\EventListener\StarRatingClassifiedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Infrastructure\EventListener\HotelAmenityDeclaredListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 ```
 
 - [ ] **Step 5: Run lint**
@@ -1010,7 +1021,7 @@ git commit -m "feat(search): add Hotel projectors (HotelRegistered no-op, StarRa
 
 However, since `HotelRegistered` fires before any `RoomTypeRegistered` in normal flow, we need to store hotel data somewhere for lookup. The simplest solution: add a `search_hotel_snapshot` table in a future migration, OR inject a cross-context hotel reader. For this iteration, inject the hotel data by reading from the Hotel write DB at projection time (acceptable — projectors may read from other contexts via infrastructure).
 
-**Simpler alternative used here:** inject `doctrine.dbal.bookit_connection` and read `hotel` table directly when `RoomTypeRegistered` fires.
+**Simpler alternative used here:** inject `doctrine.dbal.hotel_connection` (search_path=hotel) to read the `hotel` table directly when `RoomTypeRegistered` fires, and `doctrine.dbal.search_connection` (search_path=search) for the write. This listener is the only one needing two connections.
 
 **Files:**
 - Create: `src/Search/Infrastructure/EventListener/RoomTypeRegisteredListener.php`
@@ -1034,13 +1045,15 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: RoomTypeRegistered::class)]
 final readonly class RoomTypeRegisteredListener
 {
-    public function __construct(private Connection $connection)
-    {
+    public function __construct(
+        private Connection $connection,
+        private Connection $hotelConnection,
+    ) {
     }
 
     public function __invoke(RoomTypeRegistered $event): void
     {
-        $hotel = $this->connection->fetchAssociative(
+        $hotel = $this->hotelConnection->fetchAssociative(
             'SELECT name, street_address, postal_code, city, country, star_rating, amenities FROM hotel WHERE id = :id',
             ['id' => $event->hotelId],
         );
@@ -1051,7 +1064,7 @@ final readonly class RoomTypeRegisteredListener
 
         $this->connection->executeStatement(
             <<<'SQL'
-            INSERT INTO search_hotel_room_types
+            INSERT INTO hotel_room_types
                 (room_type_id, hotel_id, hotel_name, city, country, star_rating, hotel_amenities,
                  room_type_name, guest_capacity, bed_composition, room_amenities)
             VALUES
@@ -1110,7 +1123,7 @@ final readonly class RoomTypeUpdatedListener
     {
         $this->connection->executeStatement(
             <<<'SQL'
-            UPDATE search_hotel_room_types
+            UPDATE hotel_room_types
             SET room_type_name  = :name,
                 guest_capacity  = :guestCapacity,
                 bed_composition = :bedComposition
@@ -1150,7 +1163,7 @@ final readonly class RoomTypeAmenityDeclaredListener
     public function __invoke(RoomTypeAmenityDeclared $event): void
     {
         $this->connection->executeStatement(
-            'UPDATE search_hotel_room_types SET room_amenities = :amenities WHERE room_type_id = :roomTypeId',
+            'UPDATE hotel_room_types SET room_amenities = :amenities WHERE room_type_id = :roomTypeId',
             [
                 'amenities'  => json_encode($event->amenities, \JSON_THROW_ON_ERROR),
                 'roomTypeId' => $event->roomTypeId,
@@ -1162,7 +1175,7 @@ final readonly class RoomTypeAmenityDeclaredListener
 
 - [ ] **Step 4: Create `RoomTypeDeletedListener`**
 
-Cascade delete on `search_room_index` and `search_unavailable_periods` is handled by the FK `ON DELETE CASCADE`.
+Cascade delete on `search.room_index` and `search.unavailable_periods` is handled by the FK `ON DELETE CASCADE`.
 
 ```php
 <?php
@@ -1185,7 +1198,7 @@ final readonly class RoomTypeDeletedListener
     public function __invoke(RoomTypeDeleted $event): void
     {
         $this->connection->executeStatement(
-            'DELETE FROM search_hotel_room_types WHERE room_type_id = :roomTypeId',
+            'DELETE FROM hotel_room_types WHERE room_type_id = :roomTypeId',
             ['roomTypeId' => $event->roomTypeId],
         );
     }
@@ -1197,19 +1210,20 @@ final readonly class RoomTypeDeletedListener
 ```yaml
     App\Search\Infrastructure\EventListener\RoomTypeRegisteredListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
+            $hotelConnection: '@doctrine.dbal.hotel_connection'
 
     App\Search\Infrastructure\EventListener\RoomTypeUpdatedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Infrastructure\EventListener\RoomTypeAmenityDeclaredListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Infrastructure\EventListener\RoomTypeDeletedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 ```
 
 - [ ] **Step 6: Run lint**
@@ -1231,7 +1245,7 @@ git commit -m "feat(search): add Room Type projectors (registered, updated, amen
 
 ---
 
-### Task 9: RoomRegisteredListener — populate search_room_index
+### Task 9: RoomRegisteredListener — populate search.room_index
 
 **Files:**
 - Create: `src/Search/Infrastructure/EventListener/RoomRegisteredListener.php`
@@ -1260,7 +1274,7 @@ final readonly class RoomRegisteredListener
     {
         $this->connection->executeStatement(
             <<<'SQL'
-            INSERT INTO search_room_index (room_id, room_type_id, hotel_id)
+            INSERT INTO room_index (room_id, room_type_id, hotel_id)
             VALUES (:roomId, :roomTypeId, :hotelId)
             ON CONFLICT (room_id) DO UPDATE SET
                 room_type_id = EXCLUDED.room_type_id,
@@ -1281,7 +1295,7 @@ final readonly class RoomRegisteredListener
 ```yaml
     App\Search\Infrastructure\EventListener\RoomRegisteredListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 ```
 
 - [ ] **Step 3: Run lint**
@@ -1295,7 +1309,7 @@ make lint
 ```bash
 git add src/Search/Infrastructure/EventListener/RoomRegisteredListener.php \
         config/services/search.yaml
-git commit -m "feat(search): add RoomRegisteredListener to populate search_room_index"
+git commit -m "feat(search): add RoomRegisteredListener to populate search.room_index"
 ```
 
 ---
@@ -1330,7 +1344,7 @@ final readonly class BlockedPeriodCreatedListener
     public function __invoke(BlockedPeriodCreated $event): void
     {
         $roomRow = $this->connection->fetchAssociative(
-            'SELECT room_type_id, hotel_id FROM search_room_index WHERE room_id = :roomId',
+            'SELECT room_type_id, hotel_id FROM room_index WHERE room_id = :roomId',
             ['roomId' => $event->roomId],
         );
 
@@ -1340,7 +1354,7 @@ final readonly class BlockedPeriodCreatedListener
 
         $this->connection->executeStatement(
             <<<'SQL'
-            INSERT INTO search_unavailable_periods (id, room_id, room_type_id, hotel_id, period)
+            INSERT INTO unavailable_periods (id, room_id, room_type_id, hotel_id, period)
             VALUES (:id, :roomId, :roomTypeId, :hotelId, daterange(:checkIn, :checkOut))
             ON CONFLICT (id) DO NOTHING
             SQL,
@@ -1381,7 +1395,7 @@ final readonly class BlockedPeriodDeletedListener
     {
         $this->connection->executeStatement(
             <<<'SQL'
-            DELETE FROM search_unavailable_periods
+            DELETE FROM unavailable_periods
             WHERE room_id = :roomId
               AND period = daterange(:checkIn, :checkOut)
             SQL,
@@ -1400,11 +1414,11 @@ final readonly class BlockedPeriodDeletedListener
 ```yaml
     App\Search\Infrastructure\EventListener\BlockedPeriodCreatedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Infrastructure\EventListener\BlockedPeriodDeletedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 ```
 
 - [ ] **Step 4: Run lint**
@@ -1419,14 +1433,14 @@ make lint
 git add src/Search/Infrastructure/EventListener/BlockedPeriodCreatedListener.php \
         src/Search/Infrastructure/EventListener/BlockedPeriodDeletedListener.php \
         config/services/search.yaml
-git commit -m "feat(search): add BlockedPeriod projectors (search_unavailable_periods)"
+git commit -m "feat(search): add BlockedPeriod projectors (search.unavailable_periods)"
 ```
 
 ---
 
 ### Task 11: AvailabilityHold projectors — AvailabilityHoldCreated, AvailabilityHoldDeleted
 
-Holds are tracked in `search_unavailable_periods` alongside hard blocks, using the same table. The `id` column stores the `holdId` so deletion by `reservationId` requires a lookup via `search_room_index`. Use a dedicated `search_hold_periods` approach OR track the `reservationId` on the row.
+Holds are tracked in `search.unavailable_periods` alongside hard blocks, using the same table. The `id` column stores the `holdId` so deletion by `reservationId` requires a lookup via `search.room_index`. Use a dedicated `search_hold_periods` approach OR track the `reservationId` on the row.
 
 **Decision:** Add a `source_id` column that stores `blockedPeriodId` for hard blocks and `reservationId` for holds. Add via migration.
 
@@ -1446,18 +1460,18 @@ final class Version20260531100001 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add source_id to search_unavailable_periods to support hold deletion by reservationId';
+        return 'Add source_id to search.unavailable_periods to support hold deletion by reservationId';
     }
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE search_unavailable_periods ADD COLUMN source_id VARCHAR(36) NOT NULL DEFAULT \'\'');
-        $this->addSql('CREATE INDEX idx_search_unavailable_periods_source ON search_unavailable_periods (source_id)');
+        $this->addSql('ALTER TABLE search.unavailable_periods ADD COLUMN source_id VARCHAR(36) NOT NULL DEFAULT \'\'');
+        $this->addSql('CREATE INDEX idx_search_unavailable_periods_source ON search.unavailable_periods (source_id)');
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE search_unavailable_periods DROP COLUMN source_id');
+        $this->addSql('ALTER TABLE search.unavailable_periods DROP COLUMN source_id');
     }
 }
 ```
@@ -1473,7 +1487,7 @@ make migrate
 In `BlockedPeriodCreatedListener::__invoke()`, change:
 ```php
 // Change the INSERT to include source_id
-'INSERT INTO search_unavailable_periods (id, room_id, room_type_id, hotel_id, period, source_id)
+'INSERT INTO unavailable_periods (id, room_id, room_type_id, hotel_id, period, source_id)
  VALUES (:id, :roomId, :roomTypeId, :hotelId, daterange(:checkIn, :checkOut), :sourceId)
  ON CONFLICT (id) DO NOTHING'
 // add: 'sourceId' => $event->blockedPeriodId,
@@ -1485,7 +1499,7 @@ Full updated listener:
 public function __invoke(BlockedPeriodCreated $event): void
 {
     $roomRow = $this->connection->fetchAssociative(
-        'SELECT room_type_id, hotel_id FROM search_room_index WHERE room_id = :roomId',
+        'SELECT room_type_id, hotel_id FROM room_index WHERE room_id = :roomId',
         ['roomId' => $event->roomId],
     );
 
@@ -1495,7 +1509,7 @@ public function __invoke(BlockedPeriodCreated $event): void
 
     $this->connection->executeStatement(
         <<<'SQL'
-        INSERT INTO search_unavailable_periods (id, room_id, room_type_id, hotel_id, period, source_id)
+        INSERT INTO unavailable_periods (id, room_id, room_type_id, hotel_id, period, source_id)
         VALUES (:id, :roomId, :roomTypeId, :hotelId, daterange(:checkIn, :checkOut), :sourceId)
         ON CONFLICT (id) DO NOTHING
         SQL,
@@ -1536,7 +1550,7 @@ final readonly class AvailabilityHoldCreatedListener
     public function __invoke(AvailabilityHoldCreated $event): void
     {
         $roomRow = $this->connection->fetchAssociative(
-            'SELECT room_type_id, hotel_id FROM search_room_index WHERE room_id = :roomId',
+            'SELECT room_type_id, hotel_id FROM room_index WHERE room_id = :roomId',
             ['roomId' => $event->roomId],
         );
 
@@ -1546,7 +1560,7 @@ final readonly class AvailabilityHoldCreatedListener
 
         $this->connection->executeStatement(
             <<<'SQL'
-            INSERT INTO search_unavailable_periods (id, room_id, room_type_id, hotel_id, period, source_id)
+            INSERT INTO unavailable_periods (id, room_id, room_type_id, hotel_id, period, source_id)
             VALUES (:id, :roomId, :roomTypeId, :hotelId, daterange(:checkIn, :checkOut), :sourceId)
             ON CONFLICT (id) DO NOTHING
             SQL,
@@ -1587,7 +1601,7 @@ final readonly class AvailabilityHoldDeletedListener
     public function __invoke(AvailabilityHoldDeleted $event): void
     {
         $this->connection->executeStatement(
-            'DELETE FROM search_unavailable_periods WHERE source_id = :reservationId',
+            'DELETE FROM unavailable_periods WHERE source_id = :reservationId',
             ['reservationId' => $event->reservationId],
         );
     }
@@ -1599,11 +1613,11 @@ final readonly class AvailabilityHoldDeletedListener
 ```yaml
     App\Search\Infrastructure\EventListener\AvailabilityHoldCreatedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Infrastructure\EventListener\AvailabilityHoldDeletedListener:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 ```
 
 - [ ] **Step 7: Run lint and tests**
@@ -1690,16 +1704,16 @@ final readonly class SearchAvailableRoomTypesQueryHandler implements SyncQueryHa
                 s.bed_composition,
                 s.room_amenities,
                 s.base_price_cents
-            FROM search_hotel_room_types s
+            FROM hotel_room_types s
             WHERE s.city = :city
               AND s.guest_capacity >= :guests
               AND (
                 SELECT COUNT(*)
-                FROM search_room_index r
+                FROM room_index r
                 WHERE r.room_type_id = s.room_type_id
                   AND NOT EXISTS (
                     SELECT 1
-                    FROM search_unavailable_periods u
+                    FROM unavailable_periods u
                     WHERE u.room_id = r.room_id
                       AND u.period && daterange(:checkIn, :checkOut)
                   )
@@ -1722,7 +1736,7 @@ final readonly class SearchAvailableRoomTypesQueryHandler implements SyncQueryHa
 ```yaml
     App\Search\Application\UseCase\SearchAvailableRoomTypes\SearchAvailableRoomTypesQueryHandler:
         arguments:
-            $connection: '@doctrine.dbal.bookit_connection'
+            $connection: '@doctrine.dbal.search_connection'
 ```
 
 - [ ] **Step 4: Run lint**
