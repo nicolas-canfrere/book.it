@@ -18,7 +18,7 @@ final class PricingCancellationPolicyFetcherTest extends TestCase
     #[Test]
     public function itReturnsCancellationTermsWithThresholdWhenPolicyExists(): void
     {
-        $queryBus = $this->createMock(SyncQueryBusInterface::class);
+        $queryBus = $this->createStub(SyncQueryBusInterface::class);
         $queryBus->method('ask')->willReturn(
             new CancellationPolicy('room-id', 7, new \DateTimeImmutable()),
         );
@@ -32,7 +32,7 @@ final class PricingCancellationPolicyFetcherTest extends TestCase
     #[Test]
     public function itReturnsAlwaysRefundableWhenNoPolicyExists(): void
     {
-        $queryBus = $this->createMock(SyncQueryBusInterface::class);
+        $queryBus = $this->createStub(SyncQueryBusInterface::class);
         $queryBus->method('ask')->willThrowException(
             new CancellationPolicyNotFoundException('room-id'),
         );

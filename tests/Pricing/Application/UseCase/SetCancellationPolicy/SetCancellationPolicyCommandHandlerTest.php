@@ -62,7 +62,7 @@ final class SetCancellationPolicyCommandHandlerTest extends TestCase
 
     private function makeHandler(bool $roomExists): SetCancellationPolicyCommandHandler
     {
-        $mock = $this->createMock(RoomExistsInterface::class);
+        $mock = $this->createStub(RoomExistsInterface::class);
         $mock->method('exists')->willReturn($roomExists);
 
         return new SetCancellationPolicyCommandHandler($this->repository, $mock);

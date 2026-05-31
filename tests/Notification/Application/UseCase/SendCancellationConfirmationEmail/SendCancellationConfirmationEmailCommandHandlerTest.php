@@ -78,8 +78,8 @@ final class SendCancellationConfirmationEmailCommandHandlerTest extends TestCase
             20000,
         );
 
-        $this->bookerContactFetcher->method('fetch')->willReturn($contact);
-        $this->reservationDetailsFetcher->method('fetch')->willReturn($details);
+        $this->bookerContactFetcher->expects($this->once())->method('fetch')->willReturn($contact);
+        $this->reservationDetailsFetcher->expects($this->once())->method('fetch')->willReturn($details);
         $this->emailSender->expects($this->once())->method('send')->with($contact, $details, 0);
         $this->logger->expects($this->once())->method('info');
 
@@ -94,7 +94,7 @@ final class SendCancellationConfirmationEmailCommandHandlerTest extends TestCase
             refundAmountCents: 0,
         );
 
-        $this->bookerContactFetcher->method('fetch')->willReturn(null);
+        $this->bookerContactFetcher->expects($this->once())->method('fetch')->willReturn(null);
         $this->reservationDetailsFetcher->expects($this->never())->method('fetch');
         $this->emailSender->expects($this->never())->method('send');
         $this->logger->expects($this->once())->method('warning');
@@ -111,8 +111,8 @@ final class SendCancellationConfirmationEmailCommandHandlerTest extends TestCase
         );
 
         $contact = new BookerContact('Jean', 'Dupont', 'jean@example.com');
-        $this->bookerContactFetcher->method('fetch')->willReturn($contact);
-        $this->reservationDetailsFetcher->method('fetch')->willReturn(null);
+        $this->bookerContactFetcher->expects($this->once())->method('fetch')->willReturn($contact);
+        $this->reservationDetailsFetcher->expects($this->once())->method('fetch')->willReturn(null);
         $this->emailSender->expects($this->never())->method('send');
         $this->logger->expects($this->once())->method('warning');
 

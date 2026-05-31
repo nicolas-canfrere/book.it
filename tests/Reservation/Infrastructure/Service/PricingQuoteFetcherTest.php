@@ -20,7 +20,7 @@ final class PricingQuoteFetcherTest extends TestCase
     #[Test]
     public function itBuildsSnapshotFromPricingQuote(): void
     {
-        $queryBus = $this->createMock(SyncQueryBusInterface::class);
+        $queryBus = $this->createStub(SyncQueryBusInterface::class);
         $queryBus->method('ask')->willReturn([
             'roomId' => self::ROOM_ID,
             'checkIn' => '2026-06-01',
@@ -49,7 +49,7 @@ final class PricingQuoteFetcherTest extends TestCase
     #[Test]
     public function itThrowsRoomNotBookableWhenNoBaseRate(): void
     {
-        $queryBus = $this->createMock(SyncQueryBusInterface::class);
+        $queryBus = $this->createStub(SyncQueryBusInterface::class);
         $queryBus->method('ask')->willThrowException(
             new RoomHasNoBaseRateException(self::ROOM_ID),
         );
