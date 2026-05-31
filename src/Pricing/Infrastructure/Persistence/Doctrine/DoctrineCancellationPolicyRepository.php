@@ -10,16 +10,16 @@ use Doctrine\DBAL\Connection;
 
 final readonly class DoctrineCancellationPolicyRepository implements CancellationPolicyRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $pricingConnection)
     {
     }
 
     public function findByRoomId(string $roomId): ?CancellationPolicy
     {
         /** @var array{room_id: string, days_threshold: int, updated_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
+        $row = $this->pricingConnection->fetchAssociative(
             'SELECT room_id, days_threshold, updated_at
-               FROM pricing_cancellation_policy
+               FROM cancellation_policy
               WHERE room_id = :roomId',
             ['roomId' => $roomId],
         );
@@ -33,8 +33,8 @@ final readonly class DoctrineCancellationPolicyRepository implements Cancellatio
 
     public function save(CancellationPolicy $policy): void
     {
-        $this->bookit->executeStatement(
-            'INSERT INTO pricing_cancellation_policy (room_id, days_threshold, updated_at)
+        $this->pricingConnection->executeStatement(
+            'INSERT INTO cancellation_policy (room_id, days_threshold, updated_at)
              VALUES (:roomId, :daysThreshold, :updatedAt)
              ON CONFLICT (room_id) DO UPDATE
                SET days_threshold = :daysThreshold,
@@ -49,7 +49,7 @@ final readonly class DoctrineCancellationPolicyRepository implements Cancellatio
 
     public function deleteByRoomId(string $roomId): void
     {
-        $this->bookit->delete('pricing_cancellation_policy', ['room_id' => $roomId]);
+        $this->pricingConnection->delete('cancellation_policy', ['room_id' => $roomId]);
     }
 
     /**

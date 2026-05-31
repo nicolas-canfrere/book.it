@@ -11,14 +11,14 @@ use Doctrine\DBAL\Connection;
 
 final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $pricingConnection)
     {
     }
 
     public function save(RatePeriod $ratePeriod): void
     {
-        $this->bookit->executeStatement(
-            'INSERT INTO pricing_rate_period (id, room_id, check_in, check_out, amount_cents, created_at, updated_at)
+        $this->pricingConnection->executeStatement(
+            'INSERT INTO rate_period (id, room_id, check_in, check_out, amount_cents, created_at, updated_at)
              VALUES (:id, :roomId, :checkIn, :checkOut, :amountCents, :createdAt, :updatedAt)
              ON CONFLICT (id) DO UPDATE SET check_in = :checkIn, check_out = :checkOut, amount_cents = :amountCents, updated_at = :updatedAt',
             [
@@ -36,8 +36,8 @@ final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositor
     public function findById(string $id): ?RatePeriod
     {
         /** @var array{id: string, room_id: string, check_in: string, check_out: string, amount_cents: int, created_at: string, updated_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
-            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM pricing_rate_period WHERE id = :id',
+        $row = $this->pricingConnection->fetchAssociative(
+            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM rate_period WHERE id = :id',
             ['id' => $id],
         );
 
@@ -52,8 +52,8 @@ final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositor
     public function findByRoomId(string $roomId): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, amount_cents: int, created_at: string, updated_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
-            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM pricing_rate_period
+        $rows = $this->pricingConnection->fetchAllAssociative(
+            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM rate_period
              WHERE room_id = :roomId
              ORDER BY check_in ASC',
             ['roomId' => $roomId],
@@ -66,8 +66,8 @@ final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositor
     public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, amount_cents: int, created_at: string, updated_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
-            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM pricing_rate_period
+        $rows = $this->pricingConnection->fetchAllAssociative(
+            'SELECT id, room_id, check_in, check_out, amount_cents, created_at, updated_at FROM rate_period
              WHERE room_id = :roomId
                AND check_in < :checkOut
                AND check_out > :checkIn
@@ -84,7 +84,7 @@ final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositor
 
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
-        $sql = 'SELECT COUNT(*) FROM pricing_rate_period
+        $sql = 'SELECT COUNT(*) FROM rate_period
                 WHERE room_id = :roomId
                   AND check_in < :checkOut
                   AND check_out > :checkIn';
@@ -100,14 +100,14 @@ final readonly class DoctrineRatePeriodRepository implements RatePeriodRepositor
             $params['excludeId'] = $excludeId;
         }
 
-        $count = $this->bookit->fetchOne($sql, $params);
+        $count = $this->pricingConnection->fetchOne($sql, $params);
 
         return $count > 0;
     }
 
     public function delete(RatePeriod $ratePeriod): void
     {
-        $this->bookit->delete('pricing_rate_period', ['id' => $ratePeriod->id]);
+        $this->pricingConnection->delete('rate_period', ['id' => $ratePeriod->id]);
     }
 
     /**
