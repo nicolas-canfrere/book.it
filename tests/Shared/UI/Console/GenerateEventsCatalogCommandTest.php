@@ -16,13 +16,13 @@ final class GenerateEventsCatalogCommandTest extends KernelTestCase
     public function testGeneratesDomainEventsYaml(): void
     {
         $kernel = self::bootKernel();
-        $outputFile = $kernel->getProjectDir() . '/domainevents.yaml';
+        $outputFile = $kernel->getProjectDir() . '/domainevents-test.yaml';
 
         $application = new Application($kernel);
         $command = $application->find('app:events:catalog');
         $tester = new CommandTester($command);
 
-        $tester->execute([]);
+        $tester->execute(['--output' => 'domainevents-test.yaml']);
 
         try {
             self::assertSame(0, $tester->getStatusCode());

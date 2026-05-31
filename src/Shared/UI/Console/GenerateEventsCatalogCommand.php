@@ -7,6 +7,7 @@ namespace App\Shared\UI\Console;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\Yaml\Yaml;
@@ -17,8 +18,14 @@ final class GenerateEventsCatalogCommand extends Command
     public function __construct(
         private readonly EventDispatcherInterface $eventDispatcher,
         private readonly string $projectDir,
+        private readonly string $outputFilename = 'domainevents.yaml',
     ) {
         parent::__construct();
+    }
+
+    protected function configure(): void
+    {
+        $this->addOption('output', null, InputOption::VALUE_OPTIONAL, 'Output filename (relative to project dir)', $this->outputFilename);
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int
@@ -71,7 +78,9 @@ final class GenerateEventsCatalogCommand extends Command
             'events' => $catalog,
         ], 4, 2);
 
-        file_put_contents($this->projectDir . '/domainevents.yaml', $yaml);
+        /** @var string $filename */
+        $filename = $input->getOption('output') ?? $this->outputFilename;
+        file_put_contents($this->projectDir . '/' . $filename, $yaml);
 
         $output->writeln(sprintf('<info>Generated domainevents.yaml with %d events.</info>', count($catalog)));
 
