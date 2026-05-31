@@ -1,4 +1,4 @@
-generated_at: '2026-05-31T08:25:06+00:00'
+generated_at: '2026-05-31T09:51:36+00:00'
 events:
   ReservationCancelled:
     class: App\Shared\Domain\Event\ReservationCancelled
@@ -12,6 +12,7 @@ events:
     listeners:
       - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationCancelledListener }
       - { context: Payment, class: App\Payment\Infrastructure\EventListener\ReservationCancelledListener }
+      - { context: Notification, class: App\Notification\Infrastructure\EventListener\ReservationCancelledListener }
   ReservationCheckedOut:
     class: App\Shared\Domain\Event\ReservationCheckedOut
     properties:
