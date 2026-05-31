@@ -10,14 +10,14 @@ use Doctrine\DBAL\Connection;
 
 final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $pricingConnection)
     {
     }
 
     public function save(BaseRate $baseRate): void
     {
-        $this->bookit->executeStatement(
-            'INSERT INTO pricing_base_rate (room_id, amount_cents, updated_at)
+        $this->pricingConnection->executeStatement(
+            'INSERT INTO base_rate (room_id, amount_cents, updated_at)
              VALUES (:roomId, :amountCents, :updatedAt)
              ON CONFLICT (room_id) DO UPDATE SET amount_cents = :amountCents, updated_at = :updatedAt',
             [
@@ -31,8 +31,8 @@ final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInt
     public function findByRoomId(string $roomId): ?BaseRate
     {
         /** @var array{room_id: string, amount_cents: int, updated_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
-            'SELECT room_id, amount_cents, updated_at FROM pricing_base_rate WHERE room_id = :roomId',
+        $row = $this->pricingConnection->fetchAssociative(
+            'SELECT room_id, amount_cents, updated_at FROM base_rate WHERE room_id = :roomId',
             ['roomId' => $roomId],
         );
 

@@ -1,4 +1,4 @@
-generated_at: '2026-05-31T08:08:38+00:00'
+generated_at: '2026-05-31T08:25:06+00:00'
 events:
   ReservationCancelled:
     class: App\Shared\Domain\Event\ReservationCancelled

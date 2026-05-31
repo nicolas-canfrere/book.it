@@ -11,14 +11,14 @@ use Doctrine\DBAL\Connection;
 
 final readonly class DoctrinePromotionRepository implements PromotionRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $pricingConnection)
     {
     }
 
     public function save(Promotion $promotion): void
     {
-        $this->bookit->executeStatement(
-            'INSERT INTO pricing_promotion (id, room_id, check_in, check_out, discount_percent, created_at, updated_at)
+        $this->pricingConnection->executeStatement(
+            'INSERT INTO promotion (id, room_id, check_in, check_out, discount_percent, created_at, updated_at)
              VALUES (:id, :roomId, :checkIn, :checkOut, :discountPercent, :createdAt, :updatedAt)
              ON CONFLICT (id) DO UPDATE SET check_in = :checkIn, check_out = :checkOut, discount_percent = :discountPercent, updated_at = :updatedAt',
             [
@@ -36,8 +36,8 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
     public function findById(string $id): ?Promotion
     {
         /** @var array{id: string, room_id: string, check_in: string, check_out: string, discount_percent: int, created_at: string, updated_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
-            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM pricing_promotion WHERE id = :id',
+        $row = $this->pricingConnection->fetchAssociative(
+            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM promotion WHERE id = :id',
             ['id' => $id],
         );
 
@@ -52,8 +52,8 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
     public function findByRoomId(string $roomId): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, discount_percent: int, created_at: string, updated_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
-            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM pricing_promotion
+        $rows = $this->pricingConnection->fetchAllAssociative(
+            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM promotion
              WHERE room_id = :roomId
              ORDER BY check_in ASC',
             ['roomId' => $roomId],
@@ -66,8 +66,8 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
     public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, discount_percent: int, created_at: string, updated_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
-            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM pricing_promotion
+        $rows = $this->pricingConnection->fetchAllAssociative(
+            'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM promotion
              WHERE room_id = :roomId
                AND check_in < :checkOut
                AND check_out > :checkIn
@@ -84,7 +84,7 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
 
     public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
-        $sql = 'SELECT COUNT(*) FROM pricing_promotion
+        $sql = 'SELECT COUNT(*) FROM promotion
                 WHERE room_id = :roomId
                   AND check_in < :checkOut
                   AND check_out > :checkIn';
@@ -100,14 +100,14 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
             $params['excludeId'] = $excludeId;
         }
 
-        $count = $this->bookit->fetchOne($sql, $params);
+        $count = $this->pricingConnection->fetchOne($sql, $params);
 
         return $count > 0;
     }
 
     public function delete(Promotion $promotion): void
     {
-        $this->bookit->delete('pricing_promotion', ['id' => $promotion->id]);
+        $this->pricingConnection->delete('promotion', ['id' => $promotion->id]);
     }
 
     /**
