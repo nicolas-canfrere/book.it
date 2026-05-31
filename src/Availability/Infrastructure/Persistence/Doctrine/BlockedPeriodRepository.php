@@ -11,13 +11,13 @@ use Doctrine\DBAL\Connection;
 
 final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryInterface
 {
-    public function __construct(private Connection $bookit)
+    public function __construct(private Connection $availabilityConnection)
     {
     }
 
     public function add(BlockedPeriod $period): void
     {
-        $this->bookit->insert('blocked_period', [
+        $this->availabilityConnection->insert('blocked_period', [
             'id' => $period->id,
             'room_id' => $period->roomId,
             'check_in' => $period->period->checkIn->format('Y-m-d'),
@@ -29,7 +29,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     public function get(string $id): ?BlockedPeriod
     {
         /** @var array{id: string, room_id: string, check_in: string, check_out: string, created_at: string}|false $row */
-        $row = $this->bookit->fetchAssociative(
+        $row = $this->availabilityConnection->fetchAssociative(
             'SELECT id, room_id, check_in, check_out, created_at FROM blocked_period WHERE id = :id',
             ['id' => $id],
         );
@@ -43,12 +43,12 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
 
     public function remove(string $id): void
     {
-        $this->bookit->delete('blocked_period', ['id' => $id]);
+        $this->availabilityConnection->delete('blocked_period', ['id' => $id]);
     }
 
     public function hasOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
     {
-        $count = $this->bookit->fetchOne(
+        $count = $this->availabilityConnection->fetchOne(
             'SELECT COUNT(*) FROM blocked_period
              WHERE room_id = :roomId
                AND check_in < :checkOut
@@ -67,7 +67,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     public function listByRoomId(string $roomId): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, created_at: string}> $rows */
-        $rows = $this->bookit->fetchAllAssociative(
+        $rows = $this->availabilityConnection->fetchAllAssociative(
             'SELECT id, room_id, check_in, check_out, created_at FROM blocked_period
              WHERE room_id = :roomId
              ORDER BY check_in ASC',
@@ -82,7 +82,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void {
-        $this->bookit->executeStatement(
+        $this->availabilityConnection->executeStatement(
             'DELETE FROM blocked_period WHERE room_id = :roomId AND check_in = :checkIn AND check_out = :checkOut',
             [
                 'roomId' => $roomId,
