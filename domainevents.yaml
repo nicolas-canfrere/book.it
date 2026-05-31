@@ -1,5 +1,17 @@
-generated_at: '2026-05-31T06:51:40+00:00'
+generated_at: '2026-05-31T08:08:38+00:00'
 events:
+  ReservationCancelled:
+    class: App\Shared\Domain\Event\ReservationCancelled
+    properties:
+      reservationId: string
+      roomId: string
+      bookerId: string
+      refundAmountCents: int
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+    listeners:
+      - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationCancelledListener }
+      - { context: Payment, class: App\Payment\Infrastructure\EventListener\ReservationCancelledListener }
   ReservationCheckedOut:
     class: App\Shared\Domain\Event\ReservationCheckedOut
     properties:

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Reservation\Domain\Model;
 
+use App\Reservation\Domain\Exception\CancellationNotAllowedException;
 use App\Reservation\Domain\Exception\CheckInNotAllowedException;
 use App\Reservation\Domain\Exception\CheckOutNotAllowedException;
 use App\Reservation\Domain\Exception\GuestPreRegistrationNotAllowedException;
@@ -21,6 +22,8 @@ final class Reservation
     public array $guests = [];
 
     public ?\DateTimeImmutable $actualDepartureDate = null;
+    public ?\DateTimeImmutable $cancelledAt = null;
+    public ?string $cancelledBy = null;
 
     public function __construct(
         public readonly string $id,
@@ -61,6 +64,21 @@ final class Reservation
         }
 
         $this->status = ReservationStatus::Cancelled;
+    }
+
+    public function cancelByBooker(\DateTimeImmutable $today): void
+    {
+        if (ReservationStatus::Confirmed !== $this->status) {
+            throw new InvalidReservationTransitionException($this->status, ReservationStatus::Cancelled);
+        }
+
+        if ($today >= $this->period->checkIn) {
+            throw CancellationNotAllowedException::afterCheckIn($this->period->checkIn, $today);
+        }
+
+        $this->status = ReservationStatus::Cancelled;
+        $this->cancelledAt = $today;
+        $this->cancelledBy = 'booker';
     }
 
     /**
