@@ -154,4 +154,39 @@ final class HotelRoomTypeWriterTest extends TestCase
         (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
             ->deleteRoomType('rt-id-1');
     }
+
+    #[Test]
+    public function itUpdatesBaseRateByRoomLookingUpRoomIndex(): void
+    {
+        $connection = $this->createMock(Connection::class);
+
+        $connection->expects($this->once())
+            ->method('fetchAssociative')
+            ->with(
+                'SELECT room_type_id FROM room_index WHERE room_id = :roomId',
+                ['roomId' => 'room-id-1'],
+            )
+            ->willReturn(['room_type_id' => 'rt-id-1']);
+
+        $connection->expects($this->once())
+            ->method('executeStatement')
+            ->with(
+                'UPDATE hotel_room_types SET base_price_cents = :amountCents WHERE room_type_id = :roomTypeId',
+                ['amountCents' => 15000, 'roomTypeId' => 'rt-id-1'],
+            );
+
+        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+            ->updateBaseRateByRoom('room-id-1', 15000);
+    }
+
+    #[Test]
+    public function itSkipsBaseRateUpdateWhenRoomNotIndexed(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->method('fetchAssociative')->willReturn(false);
+        $connection->expects($this->never())->method('executeStatement');
+
+        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+            ->updateBaseRateByRoom('unknown-room', 15000);
+    }
 }

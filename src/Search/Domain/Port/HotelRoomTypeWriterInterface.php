@@ -32,4 +32,6 @@ interface HotelRoomTypeWriterInterface
     public function updateRoomAmenities(string $roomTypeId, array $amenities): void;
 
     public function deleteRoomType(string $roomTypeId): void;
+
+    public function updateBaseRateByRoom(string $roomId, int $amountCents): void;
 }
