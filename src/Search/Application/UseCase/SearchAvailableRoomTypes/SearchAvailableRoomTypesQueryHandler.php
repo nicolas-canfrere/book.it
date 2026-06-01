@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Search\Application\UseCase\SearchAvailableRoomTypes;
 
+use App\Search\Domain\AvailableRoomType;
 use App\Search\Domain\Port\AvailableRoomTypeFinderInterface;
 use App\Shared\Application\Bus\SyncQueryHandlerInterface;
 
@@ -13,7 +14,7 @@ final readonly class SearchAvailableRoomTypesQueryHandler implements SyncQueryHa
     {
     }
 
-    /** @return list<array<string, mixed>> */
+    /** @return list<AvailableRoomType> */
     public function __invoke(SearchAvailableRoomTypesQuery $query): array
     {
         return $this->finder->find(

@@ -1905,6 +1905,7 @@ paths:
               schema:
                 type: array
                 items:
+                  properties: { hotelId: { type: string, format: uuid }, hotelName: { type: string, example: 'Grand Hôtel du Louvre' }, city: { type: string, example: Paris }, country: { type: string, example: France }, starRating: { type: integer, example: 4, nullable: true, maximum: 5, minimum: 1 }, hotelAmenities: { type: array, items: { type: string }, example: [pool, spa] }, roomTypeId: { type: string, format: uuid }, roomTypeName: { type: string, example: 'Deluxe Double' }, guestCapacity: { type: integer, example: 2, minimum: 1 }, bedComposition: { type: object, example: { double: 1 } }, roomAmenities: { type: array, items: { type: string }, example: [air_conditioning, minibar] }, basePriceCents: { description: 'Base price in euro cents', type: integer, example: 18000, nullable: true } }
                   type: object
         '422':
           description: 'Validation error'
