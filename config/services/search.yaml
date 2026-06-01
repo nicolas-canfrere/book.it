@@ -67,9 +67,11 @@ services:
         arguments:
             $connection: '@doctrine.dbal.search_connection'
 
-    App\Search\Infrastructure\UseCase\SearchAvailableRoomTypes\SearchAvailableRoomTypesQueryHandler:
+    App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder:
         arguments:
             $connection: '@doctrine.dbal.search_connection'
+
+    App\Search\Domain\Port\AvailableRoomTypeFinderInterface: '@App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder'
 
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
