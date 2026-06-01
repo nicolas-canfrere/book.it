@@ -1,4 +1,4 @@
-generated_at: '2026-05-31T09:51:36+00:00'
+generated_at: '2026-06-01T17:49:22+00:00'
 events:
   ReservationCancelled:
     class: App\Shared\Domain\Event\ReservationCancelled
@@ -63,3 +63,106 @@ events:
       reservationId: string
     listeners:
       - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationPaymentCancelledListener }
+  AvailabilityHoldCreated:
+    class: App\Shared\Domain\Event\AvailabilityHoldCreated
+    properties:
+      holdId: string
+      roomId: string
+      reservationId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+      expiresAt: DateTimeImmutable
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\AvailabilityHoldCreatedListener }
+  AvailabilityHoldDeleted:
+    class: App\Shared\Domain\Event\AvailabilityHoldDeleted
+    properties:
+      reservationId: string
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\AvailabilityHoldDeletedListener }
+  BlockedPeriodCreated:
+    class: App\Shared\Domain\Event\BlockedPeriodCreated
+    properties:
+      blockedPeriodId: string
+      roomId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\BlockedPeriodCreatedListener }
+  BlockedPeriodDeleted:
+    class: App\Shared\Domain\Event\BlockedPeriodDeleted
+    properties:
+      roomId: string
+      checkIn: DateTimeImmutable
+      checkOut: DateTimeImmutable
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\BlockedPeriodDeletedListener }
+  HotelAmenityDeclared:
+    class: App\Shared\Domain\Event\HotelAmenityDeclared
+    properties:
+      hotelId: string
+      amenities: array
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\HotelAmenityDeclaredListener }
+  HotelRegistered:
+    class: App\Shared\Domain\Event\HotelRegistered
+    properties:
+      hotelId: string
+      name: string
+      city: string
+      country: string
+      starRating: '?int'
+      createdAt: DateTimeImmutable
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\HotelRegisteredListener }
+  RoomRegistered:
+    class: App\Shared\Domain\Event\RoomRegistered
+    properties:
+      roomId: string
+      hotelId: string
+      roomTypeId: string
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\RoomRegisteredListener }
+  RoomTypeAmenityDeclared:
+    class: App\Shared\Domain\Event\RoomTypeAmenityDeclared
+    properties:
+      roomTypeId: string
+      hotelId: string
+      amenities: array
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\RoomTypeAmenityDeclaredListener }
+  RoomTypeDeleted:
+    class: App\Shared\Domain\Event\RoomTypeDeleted
+    properties:
+      roomTypeId: string
+      hotelId: string
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\RoomTypeDeletedListener }
+  RoomTypeRegistered:
+    class: App\Shared\Domain\Event\RoomTypeRegistered
+    properties:
+      roomTypeId: string
+      hotelId: string
+      name: string
+      guestCapacity: int
+      bedComposition: array
+      createdAt: DateTimeImmutable
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\RoomTypeRegisteredListener }
+  RoomTypeUpdated:
+    class: App\Shared\Domain\Event\RoomTypeUpdated
+    properties:
+      roomTypeId: string
+      hotelId: string
+      name: string
+      guestCapacity: int
+      bedComposition: array
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\RoomTypeUpdatedListener }
+  StarRatingClassified:
+    class: App\Shared\Domain\Event\StarRatingClassified
+    properties:
+      hotelId: string
+      starRating: '?int'
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\StarRatingClassifiedListener }

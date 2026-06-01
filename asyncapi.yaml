@@ -53,6 +53,26 @@ channels:
         $ref: '#/components/messages/SendBookingConfirmationEmailCommand'
       ExpireReservationCommand:
         $ref: '#/components/messages/ExpireReservationCommand'
+      RegisterSearchRoomTypeCommand:
+        $ref: '#/components/messages/RegisterSearchRoomTypeCommand'
+      UpdateSearchRoomTypeCommand:
+        $ref: '#/components/messages/UpdateSearchRoomTypeCommand'
+      UpdateSearchRoomTypeAmenitiesCommand:
+        $ref: '#/components/messages/UpdateSearchRoomTypeAmenitiesCommand'
+      DeleteSearchRoomTypeCommand:
+        $ref: '#/components/messages/DeleteSearchRoomTypeCommand'
+      UpdateSearchHotelStarRatingCommand:
+        $ref: '#/components/messages/UpdateSearchHotelStarRatingCommand'
+      UpdateSearchHotelAmenitiesCommand:
+        $ref: '#/components/messages/UpdateSearchHotelAmenitiesCommand'
+      RegisterSearchRoomCommand:
+        $ref: '#/components/messages/RegisterSearchRoomCommand'
+      AddSearchUnavailablePeriodCommand:
+        $ref: '#/components/messages/AddSearchUnavailablePeriodCommand'
+      RemoveSearchUnavailablePeriodBySourceCommand:
+        $ref: '#/components/messages/RemoveSearchUnavailablePeriodBySourceCommand'
+      RemoveSearchUnavailablePeriodByPeriodCommand:
+        $ref: '#/components/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
 
   # Consumer reads from the queue
   bookit/commands/queue:
@@ -76,6 +96,26 @@ channels:
         $ref: '#/components/messages/SendBookingConfirmationEmailCommand'
       ExpireReservationCommand:
         $ref: '#/components/messages/ExpireReservationCommand'
+      RegisterSearchRoomTypeCommand:
+        $ref: '#/components/messages/RegisterSearchRoomTypeCommand'
+      UpdateSearchRoomTypeCommand:
+        $ref: '#/components/messages/UpdateSearchRoomTypeCommand'
+      UpdateSearchRoomTypeAmenitiesCommand:
+        $ref: '#/components/messages/UpdateSearchRoomTypeAmenitiesCommand'
+      DeleteSearchRoomTypeCommand:
+        $ref: '#/components/messages/DeleteSearchRoomTypeCommand'
+      UpdateSearchHotelStarRatingCommand:
+        $ref: '#/components/messages/UpdateSearchHotelStarRatingCommand'
+      UpdateSearchHotelAmenitiesCommand:
+        $ref: '#/components/messages/UpdateSearchHotelAmenitiesCommand'
+      RegisterSearchRoomCommand:
+        $ref: '#/components/messages/RegisterSearchRoomCommand'
+      AddSearchUnavailablePeriodCommand:
+        $ref: '#/components/messages/AddSearchUnavailablePeriodCommand'
+      RemoveSearchUnavailablePeriodBySourceCommand:
+        $ref: '#/components/messages/RemoveSearchUnavailablePeriodBySourceCommand'
+      RemoveSearchUnavailablePeriodByPeriodCommand:
+        $ref: '#/components/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
 
 operations:
 
@@ -155,6 +195,314 @@ operations:
     messages:
       - $ref: '#/channels/bookit~1commands~1queue/messages/SendBookingConfirmationEmailCommand'
 
+  # ── Search projection publishers ──────────────────────────────────────────────
+
+  dispatchRegisterSearchRoomType:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate a new room type to the search projection
+    description: |
+      Dispatched by `RoomTypeRegisteredListener` (Search context) in response to the
+      `RoomTypeRegistered` domain event.
+
+      **Trigger:** any command that raises `RoomTypeRegistered` (e.g. `POST /api/v1/hotels/{hotelId}/room-types`)
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/RegisterSearchRoomTypeCommand'
+
+  dispatchUpdateSearchRoomType:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate room type updates to the search projection
+    description: |
+      Dispatched by `RoomTypeUpdatedListener` (Search context) in response to the
+      `RoomTypeUpdated` domain event.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/UpdateSearchRoomTypeCommand'
+
+  dispatchUpdateSearchRoomTypeAmenities:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate room type amenity changes to the search projection
+    description: |
+      Dispatched by `RoomTypeAmenityDeclaredListener` (Search context) in response to the
+      `RoomTypeAmenityDeclared` domain event.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/UpdateSearchRoomTypeAmenitiesCommand'
+
+  dispatchDeleteSearchRoomType:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Remove a deleted room type from the search projection
+    description: |
+      Dispatched by `RoomTypeDeletedListener` (Search context) in response to the
+      `RoomTypeDeleted` domain event.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/DeleteSearchRoomTypeCommand'
+
+  dispatchUpdateSearchHotelStarRating:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate hotel star rating changes to the search projection
+    description: |
+      Dispatched by `StarRatingClassifiedListener` (Search context) in response to the
+      `StarRatingClassified` domain event.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/UpdateSearchHotelStarRatingCommand'
+
+  dispatchUpdateSearchHotelAmenities:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate hotel amenity declarations to the search projection
+    description: |
+      Dispatched by `HotelAmenityDeclaredListener` (Search context) in response to the
+      `HotelAmenityDeclared` domain event.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/UpdateSearchHotelAmenitiesCommand'
+
+  dispatchRegisterSearchRoom:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate a newly registered room to the search projection
+    description: |
+      Dispatched by `RoomRegisteredListener` (Search context) in response to the
+      `RoomRegistered` domain event.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/RegisterSearchRoomCommand'
+
+  dispatchAddSearchUnavailablePeriodOnAvailabilityHold:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Mark a room as unavailable when an availability hold is created
+    description: |
+      Dispatched by `AvailabilityHoldCreatedListener` (Search context) in response to the
+      `AvailabilityHoldCreated` domain event.
+
+      The `sourceId` is set to the hold ID — used later by
+      `RemoveSearchUnavailablePeriodBySourceCommand` when the hold is released.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/AddSearchUnavailablePeriodCommand'
+
+  dispatchAddSearchUnavailablePeriodOnBlockedPeriod:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Mark a room as unavailable when an admin blocked period is created
+    description: |
+      Dispatched by `BlockedPeriodCreatedListener` (Search context) in response to the
+      `BlockedPeriodCreated` domain event.
+
+      The `sourceId` is set to the blocked period ID.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/AddSearchUnavailablePeriodCommand'
+
+  dispatchRemoveSearchUnavailablePeriodBySource:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Release an unavailable period by source ID when an availability hold is deleted
+    description: |
+      Dispatched by `AvailabilityHoldDeletedListener` (Search context) in response to the
+      `AvailabilityHoldDeleted` domain event.
+
+      Removes the unavailable period whose `source_id` matches the hold ID, regardless of dates.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/RemoveSearchUnavailablePeriodBySourceCommand'
+
+  dispatchRemoveSearchUnavailablePeriodByPeriod:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Release an unavailable period by room + dates when a blocked period is deleted
+    description: |
+      Dispatched by `BlockedPeriodDeletedListener` (Search context) in response to the
+      `BlockedPeriodDeleted` domain event.
+
+      Removes the unavailable period matching the exact room ID and date range.
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
+
+  # ── Search projection consumers ───────────────────────────────────────────────
+
+  handleRegisterSearchRoomType:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Upsert a room type row in the search projection
+    description: |
+      Handled by `RegisterSearchRoomTypeCommandHandler` (Search context).
+
+      Writes hotel + room-type data into `search.hotel_room_types` via `HotelRoomTypeWriterInterface`.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/RegisterSearchRoomTypeCommand'
+
+  handleUpdateSearchRoomType:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Update room type fields in the search projection
+    description: |
+      Handled by `UpdateSearchRoomTypeCommandHandler` (Search context).
+
+      Updates `name`, `guest_capacity`, and `bed_composition` columns in
+      `search.hotel_room_types` for all rows matching the room type ID.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/UpdateSearchRoomTypeCommand'
+
+  handleUpdateSearchRoomTypeAmenities:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Update room type amenities in the search projection
+    description: |
+      Handled by `UpdateSearchRoomTypeAmenitiesCommandHandler` (Search context).
+
+      Replaces the `amenities` JSON column in `search.hotel_room_types` for all rows
+      matching the room type ID.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/UpdateSearchRoomTypeAmenitiesCommand'
+
+  handleDeleteSearchRoomType:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Delete a room type from the search projection
+    description: |
+      Handled by `DeleteSearchRoomTypeCommandHandler` (Search context).
+
+      Removes all `search.hotel_room_types` rows for the given room type ID.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/DeleteSearchRoomTypeCommand'
+
+  handleUpdateSearchHotelStarRating:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Update hotel star rating in the search projection
+    description: |
+      Handled by `UpdateSearchHotelStarRatingCommandHandler` (Search context).
+
+      Updates the `star_rating` column in `search.hotel_room_types` for all rows
+      matching the hotel ID. `starRating` may be `null` if the rating was removed.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/UpdateSearchHotelStarRatingCommand'
+
+  handleUpdateSearchHotelAmenities:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Update hotel amenities in the search projection
+    description: |
+      Handled by `UpdateSearchHotelAmenitiesCommandHandler` (Search context).
+
+      Replaces the `hotel_amenities` JSON column in `search.hotel_room_types` for all rows
+      matching the hotel ID.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/UpdateSearchHotelAmenitiesCommand'
+
+  handleRegisterSearchRoom:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Insert a room entry in the search room index
+    description: |
+      Handled by `RegisterSearchRoomCommandHandler` (Search context).
+
+      Inserts a row in `search.room_index` linking the room to its hotel and room type,
+      via `RoomIndexWriterInterface`.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/RegisterSearchRoomCommand'
+
+  handleAddSearchUnavailablePeriod:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Insert an unavailable period in the search projection
+    description: |
+      Handled by `AddSearchUnavailablePeriodCommandHandler` (Search context).
+
+      Inserts a row in `search.unavailable_periods` via `UnavailablePeriodWriterInterface`.
+      The `sourceId` ties the period to its origin (hold ID or blocked period ID) so it
+      can later be removed with `RemoveSearchUnavailablePeriodBySourceCommand`.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/AddSearchUnavailablePeriodCommand'
+
+  handleRemoveSearchUnavailablePeriodBySource:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Delete an unavailable period by source ID
+    description: |
+      Handled by `RemoveSearchUnavailablePeriodBySourceCommandHandler` (Search context).
+
+      Deletes the `search.unavailable_periods` row whose `source_id` matches, regardless of dates.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/RemoveSearchUnavailablePeriodBySourceCommand'
+
+  handleRemoveSearchUnavailablePeriodByPeriod:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Delete an unavailable period by room and date range
+    description: |
+      Handled by `RemoveSearchUnavailablePeriodByPeriodCommandHandler` (Search context).
+
+      Deletes the `search.unavailable_periods` row matching the exact `roomId`, `checkIn`,
+      and `checkOut` combination.
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
+
 components:
 
   messages:
@@ -187,6 +535,159 @@ components:
             reservationId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
             bookerId: b2c3d4e5-f6a7-8901-bcde-f12345678901
 
+    RegisterSearchRoomTypeCommand:
+      name: RegisterSearchRoomTypeCommand
+      title: Register Search Room Type
+      summary: Upsert a room type in the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RegisterSearchRoomTypePayload'
+      examples:
+        - name: typical
+          payload:
+            roomTypeId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            hotelId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+            name: Deluxe Double
+            guestCapacity: 2
+            bedComposition:
+              - type: double
+                count: 1
+
+    UpdateSearchRoomTypeCommand:
+      name: UpdateSearchRoomTypeCommand
+      title: Update Search Room Type
+      summary: Update name, capacity, and bed composition in the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UpdateSearchRoomTypePayload'
+      examples:
+        - name: typical
+          payload:
+            roomTypeId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            name: Superior Double
+            guestCapacity: 2
+            bedComposition:
+              - type: double
+                count: 1
+
+    UpdateSearchRoomTypeAmenitiesCommand:
+      name: UpdateSearchRoomTypeAmenitiesCommand
+      title: Update Search Room Type Amenities
+      summary: Replace the amenities list for a room type in the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UpdateSearchRoomTypeAmenitiesPayload'
+      examples:
+        - name: typical
+          payload:
+            roomTypeId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+            amenities:
+              - wifi
+              - air_conditioning
+
+    DeleteSearchRoomTypeCommand:
+      name: DeleteSearchRoomTypeCommand
+      title: Delete Search Room Type
+      summary: Remove a room type from the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/DeleteSearchRoomTypePayload'
+      examples:
+        - name: typical
+          payload:
+            roomTypeId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    UpdateSearchHotelStarRatingCommand:
+      name: UpdateSearchHotelStarRatingCommand
+      title: Update Search Hotel Star Rating
+      summary: Propagate a hotel star rating change to the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UpdateSearchHotelStarRatingPayload'
+      examples:
+        - name: with rating
+          payload:
+            hotelId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+            starRating: 4
+        - name: rating removed
+          payload:
+            hotelId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+            starRating: null
+
+    UpdateSearchHotelAmenitiesCommand:
+      name: UpdateSearchHotelAmenitiesCommand
+      title: Update Search Hotel Amenities
+      summary: Replace the amenities list for a hotel in the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UpdateSearchHotelAmenitiesPayload'
+      examples:
+        - name: typical
+          payload:
+            hotelId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+            amenities:
+              - pool
+              - spa
+
+    RegisterSearchRoomCommand:
+      name: RegisterSearchRoomCommand
+      title: Register Search Room
+      summary: Insert a room into the search room index
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RegisterSearchRoomPayload'
+      examples:
+        - name: typical
+          payload:
+            roomId: c3d4e5f6-a7b8-9012-cdef-123456789012
+            hotelId: b2c3d4e5-f6a7-8901-bcde-f12345678901
+            roomTypeId: a1b2c3d4-e5f6-7890-abcd-ef1234567890
+
+    AddSearchUnavailablePeriodCommand:
+      name: AddSearchUnavailablePeriodCommand
+      title: Add Search Unavailable Period
+      summary: Insert an unavailable period in the search projection
+      description: |
+        Dispatched by two different listeners:
+        - `AvailabilityHoldCreatedListener` — `sourceId` = hold ID
+        - `BlockedPeriodCreatedListener` — `sourceId` = blocked period ID
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/AddSearchUnavailablePeriodPayload'
+      examples:
+        - name: typical
+          payload:
+            sourceId: d4e5f6a7-b8c9-0123-defa-234567890123
+            roomId: c3d4e5f6-a7b8-9012-cdef-123456789012
+            checkIn: '2026-07-01'
+            checkOut: '2026-07-08'
+
+    RemoveSearchUnavailablePeriodBySourceCommand:
+      name: RemoveSearchUnavailablePeriodBySourceCommand
+      title: Remove Search Unavailable Period By Source
+      summary: Delete an unavailable period by its source ID
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RemoveSearchUnavailablePeriodBySourcePayload'
+      examples:
+        - name: typical
+          payload:
+            sourceId: d4e5f6a7-b8c9-0123-defa-234567890123
+
+    RemoveSearchUnavailablePeriodByPeriodCommand:
+      name: RemoveSearchUnavailablePeriodByPeriodCommand
+      title: Remove Search Unavailable Period By Period
+      summary: Delete an unavailable period by room and date range
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/RemoveSearchUnavailablePeriodByPeriodPayload'
+      examples:
+        - name: typical
+          payload:
+            roomId: c3d4e5f6-a7b8-9012-cdef-123456789012
+            checkIn: '2026-07-01'
+            checkOut: '2026-07-08'
+
   schemas:
 
     ExpireReservationPayload:
@@ -216,3 +717,181 @@ components:
           format: uuid
           description: UUID v4 of the booker to notify
           example: b2c3d4e5-f6a7-8901-bcde-f12345678901
+
+    RegisterSearchRoomTypePayload:
+      type: object
+      required:
+        - roomTypeId
+        - hotelId
+        - name
+        - guestCapacity
+        - bedComposition
+      properties:
+        roomTypeId:
+          type: string
+          format: uuid
+        hotelId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        guestCapacity:
+          type: integer
+          minimum: 1
+        bedComposition:
+          type: array
+          items:
+            type: object
+            required: [type, count]
+            properties:
+              type:
+                type: string
+              count:
+                type: integer
+                minimum: 1
+
+    UpdateSearchRoomTypePayload:
+      type: object
+      required:
+        - roomTypeId
+        - name
+        - guestCapacity
+        - bedComposition
+      properties:
+        roomTypeId:
+          type: string
+          format: uuid
+        name:
+          type: string
+        guestCapacity:
+          type: integer
+          minimum: 1
+        bedComposition:
+          type: array
+          items:
+            type: object
+            required: [type, count]
+            properties:
+              type:
+                type: string
+              count:
+                type: integer
+                minimum: 1
+
+    UpdateSearchRoomTypeAmenitiesPayload:
+      type: object
+      required:
+        - roomTypeId
+        - amenities
+      properties:
+        roomTypeId:
+          type: string
+          format: uuid
+        amenities:
+          type: array
+          items:
+            type: string
+
+    DeleteSearchRoomTypePayload:
+      type: object
+      required:
+        - roomTypeId
+      properties:
+        roomTypeId:
+          type: string
+          format: uuid
+
+    UpdateSearchHotelStarRatingPayload:
+      type: object
+      required:
+        - hotelId
+      properties:
+        hotelId:
+          type: string
+          format: uuid
+        starRating:
+          type: integer
+          minimum: 1
+          maximum: 5
+          nullable: true
+          description: Star rating 1–5, or null if the rating was removed
+
+    UpdateSearchHotelAmenitiesPayload:
+      type: object
+      required:
+        - hotelId
+        - amenities
+      properties:
+        hotelId:
+          type: string
+          format: uuid
+        amenities:
+          type: array
+          items:
+            type: string
+
+    RegisterSearchRoomPayload:
+      type: object
+      required:
+        - roomId
+        - hotelId
+        - roomTypeId
+      properties:
+        roomId:
+          type: string
+          format: uuid
+        hotelId:
+          type: string
+          format: uuid
+        roomTypeId:
+          type: string
+          format: uuid
+
+    AddSearchUnavailablePeriodPayload:
+      type: object
+      required:
+        - sourceId
+        - roomId
+        - checkIn
+        - checkOut
+      properties:
+        sourceId:
+          type: string
+          format: uuid
+          description: ID of the originating entity (hold ID or blocked period ID)
+        roomId:
+          type: string
+          format: uuid
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date
+
+    RemoveSearchUnavailablePeriodBySourcePayload:
+      type: object
+      required:
+        - sourceId
+      properties:
+        sourceId:
+          type: string
+          format: uuid
+          description: ID of the originating entity used when the period was created
+
+    RemoveSearchUnavailablePeriodByPeriodPayload:
+      type: object
+      required:
+        - roomId
+        - checkIn
+        - checkOut
+      properties:
+        roomId:
+          type: string
+          format: uuid
+        checkIn:
+          type: string
+          format: date
+        checkOut:
+          type: string
+          format: date

@@ -44,34 +44,41 @@ The mail catcher (Mailpit) is available at `http://localhost:8025`.
 
 All development tasks run via `make`. Run `make help` for the full list.
 
-| Command                   | Description                                     |
-|---------------------------|-------------------------------------------------|
-| `make up`                 | Start all services                              |
-| `make down`               | Stop all services                               |
-| `make install`            | Install PHP dependencies                        |
-| `make migrate`            | Run database migrations                         |
-| `make generate-migration` | Generate a new migration from schema diff       |
-| `make lint`               | Run PHPStan + PHP CS Fixer + deptrac            |
-| `make apply-cs`           | Auto-fix coding style                           |
-| `make test`               | Run all tests (unit + functional)               |
-| `make unit-test`          | Run unit tests only                             |
-| `make functional-test`    | Run functional/integration tests only           |
-| `make openapi`            | Regenerate `openapi.yaml` from route attributes |
+| Command                   | Description                                              |
+|---------------------------|----------------------------------------------------------|
+| `make up`                 | Start all services                                       |
+| `make down`               | Stop all services                                        |
+| `make install`            | Install PHP dependencies                                 |
+| `make migrate`            | Run database migrations                                  |
+| `make generate-migration` | Generate a new migration from schema diff                |
+| `make lint`               | Run PHPStan + PHP CS Fixer + deptrac                     |
+| `make apply-cs`           | Auto-fix coding style                                    |
+| `make test`               | Run all tests (unit + functional)                        |
+| `make unit-test`          | Run unit tests only                                      |
+| `make functional-test`    | Run functional/integration tests only                    |
+| `make openapi`            | Regenerate `openapi.yaml` from route attributes          |
+| `make events`             | Regenerate `domainevents.yaml` from registered listeners |
 
-## API
+## Documentation
 
-The REST API follows [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) (`application/problem+json`) for all error responses. The OpenAPI specification is kept in [`openapi.yaml`](openapi.yaml).
+| File                                     | Content                                                                                                                     |
+|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| [`openapi.yaml`](openapi.yaml)           | REST API specification — routes, request/response schemas. Regenerate with `make openapi`.                                  |
+| [`asyncapi.yaml`](asyncapi.yaml)         | Async messaging specification — RabbitMQ commands, producers, consumers, and payloads. Updated manually.                    |
+| [`domainevents.yaml`](domainevents.yaml) | Domain event catalogue — all events with their properties and listeners per bounded context. Regenerate with `make events`. |
+
+The REST API follows [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) (`application/problem+json`) for all error responses. Interactive API documentation is available at `http://localhost/api/doc` when the stack is running.
 
 ## Architecture
 
 The codebase follows **Domain-Driven Design** with a hexagonal architecture per bounded context. Each context (`Hotel`, `Room`, `Availability`, `Pricing`, `Booker`) is structured into four layers:
 
-| Layer | Role |
-|---|---|
-| `UI` | HTTP controllers — entry points only |
-| `Application` | Use cases, command/query factories |
-| `Domain` | Entities, value objects, domain ports (interfaces) |
-| `Infrastructure` | Doctrine repositories, external service adapters |
+| Layer            | Role                                               |
+|------------------|----------------------------------------------------|
+| `UI`             | HTTP controllers — entry points only               |
+| `Application`    | Use cases, command/query factories                 |
+| `Domain`         | Entities, value objects, domain ports (interfaces) |
+| `Infrastructure` | Doctrine repositories, external service adapters   |
 
 A `Shared` context holds cross-cutting concerns (bus interfaces, HTTP error handling).
 
