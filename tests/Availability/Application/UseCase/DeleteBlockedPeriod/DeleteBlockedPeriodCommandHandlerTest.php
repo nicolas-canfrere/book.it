@@ -9,6 +9,10 @@ use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommandHandler;
 use App\Availability\Application\UseCase\DeleteBlockedPeriod\DeleteBlockedPeriodCommand;
 use App\Availability\Application\UseCase\DeleteBlockedPeriod\DeleteBlockedPeriodCommandHandler;
 use App\Availability\Domain\Exception\BlockedPeriodNotFoundException;
+use App\Availability\Domain\Model\BlockedPeriod;
+use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
+use App\Availability\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\Event\BlockedPeriodDeleted;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -25,7 +29,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->repository = new InMemoryBlockedPeriodRepository();
-        $this->handler = new DeleteBlockedPeriodCommandHandler($this->repository);
+        $this->handler = new DeleteBlockedPeriodCommandHandler($this->repository, $this->createMock(EventDispatcherInterface::class));
 
         $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createMock(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
@@ -51,5 +55,53 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
         $this->expectException(BlockedPeriodNotFoundException::class);
 
         ($this->handler)(new DeleteBlockedPeriodCommand('00000000-0000-4000-8000-000000000000'));
+    }
+
+    #[Test]
+    public function itDispatchesBlockedPeriodDeleted(): void
+    {
+        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $checkIn  = new \DateTimeImmutable('2026-07-01');
+        $checkOut = new \DateTimeImmutable('2026-07-05');
+
+        $blockedPeriod = new BlockedPeriod(
+            id: 'bp-id-1',
+            roomId: 'room-id-1',
+            period: new DatePeriod($checkIn, $checkOut),
+            createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),
+        );
+
+        $repository->method('get')->willReturn($blockedPeriod);
+
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static function (object $event) use ($checkIn, $checkOut): bool {
+                return $event instanceof BlockedPeriodDeleted
+                    && $event->roomId === 'room-id-1'
+                    && $event->checkIn == $checkIn
+                    && $event->checkOut == $checkOut;
+            }));
+
+        $handler = new DeleteBlockedPeriodCommandHandler($repository, $dispatcher);
+
+        ($handler)(new DeleteBlockedPeriodCommand(id: 'bp-id-1'));
+    }
+
+    #[Test]
+    public function itDoesNotDispatchWhenNotFound(): void
+    {
+        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $repository->method('get')->willReturn(null);
+        $dispatcher->expects($this->never())->method('dispatch');
+
+        $handler = new DeleteBlockedPeriodCommandHandler($repository, $dispatcher);
+
+        $this->expectException(\App\Availability\Domain\Exception\BlockedPeriodNotFoundException::class);
+
+        ($handler)(new DeleteBlockedPeriodCommand(id: 'missing-id'));
     }
 }

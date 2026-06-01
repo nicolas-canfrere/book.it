@@ -10,6 +10,7 @@ use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class DeleteBlockedPeriodByRoomAndPeriodCommandHandlerTest extends TestCase
@@ -25,7 +26,7 @@ final class DeleteBlockedPeriodByRoomAndPeriodCommandHandlerTest extends TestCas
             ->method('removeByRoomAndPeriod')
             ->with('room-1', $checkIn, $checkOut);
 
-        $handler = new DeleteBlockedPeriodByRoomAndPeriodCommandHandler($repo);
+        $handler = new DeleteBlockedPeriodByRoomAndPeriodCommandHandler($repo, $this->createMock(EventDispatcherInterface::class));
 
         ($handler)(new DeleteBlockedPeriodByRoomAndPeriodCommand('room-1', $checkIn, $checkOut));
     }
