@@ -119,6 +119,23 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
         );
     }
 
+    public function updateBaseRateByRoom(string $roomId, int $amountCents): void
+    {
+        $roomRow = $this->searchConnection->fetchAssociative(
+            'SELECT room_type_id FROM room_index WHERE room_id = :roomId',
+            ['roomId' => $roomId],
+        );
+
+        if (false === $roomRow) {
+            return;
+        }
+
+        $this->searchConnection->executeStatement(
+            'UPDATE hotel_room_types SET base_price_cents = :amountCents WHERE room_type_id = :roomTypeId',
+            ['amountCents' => $amountCents, 'roomTypeId' => $roomRow['room_type_id']],
+        );
+    }
+
     private function parsePostgresAmenities(string $raw): string
     {
         if ('{}' === $raw) {
