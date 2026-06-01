@@ -30,6 +30,23 @@ services:
         arguments:
             $connection: '@doctrine.dbal.search_connection'
 
+    App\Search\Infrastructure\EventListener\RoomTypeRegisteredListener:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+            $hotelConnection: '@doctrine.dbal.hotel_connection'
+
+    App\Search\Infrastructure\EventListener\RoomTypeUpdatedListener:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
+    App\Search\Infrastructure\EventListener\RoomTypeAmenityDeclaredListener:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
+    App\Search\Infrastructure\EventListener\RoomTypeDeletedListener:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
