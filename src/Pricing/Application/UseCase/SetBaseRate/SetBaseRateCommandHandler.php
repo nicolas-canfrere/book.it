@@ -9,12 +9,15 @@ use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
 use App\Pricing\Domain\Port\RoomExistsInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\BaseRateSet;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class SetBaseRateCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private BaseRateRepositoryInterface $repository,
         private RoomExistsInterface $roomExists,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -28,6 +31,11 @@ final readonly class SetBaseRateCommandHandler implements SyncCommandHandlerInte
             roomId: $command->roomId,
             amountCents: $command->amountCents,
             updatedAt: $command->updatedAt,
+        ));
+
+        $this->eventDispatcher->dispatch(new BaseRateSet(
+            roomId: $command->roomId,
+            amountCents: $command->amountCents,
         ));
     }
 }
