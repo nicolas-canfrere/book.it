@@ -9,13 +9,13 @@ use Doctrine\DBAL\Connection;
 
 final readonly class RoomIndexWriter implements RoomIndexWriterInterface
 {
-    public function __construct(private Connection $connection)
+    public function __construct(private Connection $searchConnection)
     {
     }
 
     public function upsert(string $roomId, string $roomTypeId, string $hotelId): void
     {
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             <<<'SQL'
             INSERT INTO room_index (room_id, room_type_id, hotel_id)
             VALUES (:roomId, :roomTypeId, :hotelId)

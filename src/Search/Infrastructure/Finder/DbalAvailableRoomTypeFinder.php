@@ -10,7 +10,7 @@ use Doctrine\DBAL\Connection;
 
 final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFinderInterface
 {
-    public function __construct(private Connection $connection)
+    public function __construct(private Connection $searchConnection)
     {
     }
 
@@ -21,7 +21,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
         \DateTimeImmutable $checkOut,
         int $guests,
     ): array {
-        $rows = $this->connection->fetchAllAssociative(
+        $rows = $this->searchConnection->fetchAllAssociative(
             <<<'SQL'
             SELECT
                 s.hotel_id,

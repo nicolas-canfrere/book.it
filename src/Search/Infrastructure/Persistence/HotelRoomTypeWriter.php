@@ -10,14 +10,14 @@ use Doctrine\DBAL\Connection;
 final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
 {
     public function __construct(
-        private Connection $connection,
+        private Connection $searchConnection,
         private Connection $hotelConnection,
     ) {
     }
 
     public function updateStarRating(string $hotelId, ?int $starRating): void
     {
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET star_rating = :starRating WHERE hotel_id = :hotelId',
             ['starRating' => $starRating, 'hotelId' => $hotelId],
         );
@@ -25,7 +25,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
 
     public function updateHotelAmenities(string $hotelId, array $amenities): void
     {
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET hotel_amenities = :amenities WHERE hotel_id = :hotelId',
             ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'hotelId' => $hotelId],
         );
@@ -47,7 +47,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
             return;
         }
 
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             <<<'SQL'
             INSERT INTO hotel_room_types
                 (room_type_id, hotel_id, hotel_name, city, country, star_rating, hotel_amenities,
@@ -86,7 +86,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
         int $guestCapacity,
         array $bedComposition,
     ): void {
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             <<<'SQL'
             UPDATE hotel_room_types
             SET room_type_name  = :name,
@@ -105,7 +105,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
 
     public function updateRoomAmenities(string $roomTypeId, array $amenities): void
     {
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET room_amenities = :amenities WHERE room_type_id = :roomTypeId',
             ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'roomTypeId' => $roomTypeId],
         );
@@ -113,7 +113,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
 
     public function deleteRoomType(string $roomTypeId): void
     {
-        $this->connection->executeStatement(
+        $this->searchConnection->executeStatement(
             'DELETE FROM hotel_room_types WHERE room_type_id = :roomTypeId',
             ['roomTypeId' => $roomTypeId],
         );

@@ -35,22 +35,3 @@ services:
             $schema: 'search'
         tags:
             - {name: doctrine.middleware, connection: search}
-
-    # Finder — reads from search schema
-    App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    # Infrastructure writers — only DBAL dependencies live here
-    App\Search\Infrastructure\Persistence\HotelRoomTypeWriter:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-            $hotelConnection: '@doctrine.dbal.hotel_connection'
-
-    App\Search\Infrastructure\Persistence\RoomIndexWriter:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\Persistence\UnavailablePeriodWriter:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
