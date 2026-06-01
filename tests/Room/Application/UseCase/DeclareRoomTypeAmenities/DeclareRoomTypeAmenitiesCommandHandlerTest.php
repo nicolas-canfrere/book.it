@@ -10,6 +10,7 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -30,7 +31,11 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
         $this->repository = new InMemoryRoomTypeRepository();
         $this->handler = new DeclareRoomTypeAmenitiesCommandHandler($this->repository);
 
-        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker());
+        $registerHandler = new RegisterRoomTypeCommandHandler(
+            $this->repository,
+            new FakeHotelExistenceChecker(),
+            new FakeEventDispatcher(),
+        );
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: self::ROOM_TYPE_ID,
             hotelId: self::HOTEL_ID,

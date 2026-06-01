@@ -11,12 +11,15 @@ use App\Room\Domain\Port\HotelExistsInterface;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\RoomTypeRegistered;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class RegisterRoomTypeCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private RoomTypeRepositoryInterface $roomTypeRepository,
         private HotelExistsInterface $hotelExists,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -30,7 +33,7 @@ final readonly class RegisterRoomTypeCommandHandler implements SyncCommandHandle
             throw new RoomTypeAlreadyExistsException($command->name, $command->hotelId);
         }
 
-        $this->roomTypeRepository->add(new RoomType(
+        $roomType = new RoomType(
             $command->id,
             $command->hotelId,
             $command->name,
@@ -40,6 +43,17 @@ final readonly class RegisterRoomTypeCommandHandler implements SyncCommandHandle
             $command->isAccessible,
             BedComposition::fromArray($command->bedEntries),
             $command->createdAt,
+        );
+
+        $this->roomTypeRepository->add($roomType);
+
+        $this->eventDispatcher->dispatch(new RoomTypeRegistered(
+            roomTypeId: $roomType->id,
+            hotelId: $roomType->hotelId,
+            name: $roomType->name,
+            guestCapacity: $roomType->guestCapacity,
+            bedComposition: $roomType->bedComposition->toArray(),
+            createdAt: $roomType->createdAt,
         ));
     }
 }

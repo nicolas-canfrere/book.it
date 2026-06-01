@@ -10,6 +10,7 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
 use App\Room\Domain\Exception\RoomTypeHasRoomsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\FakeRoomTypeHasRooms;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -31,7 +32,7 @@ final class DeleteRoomTypeCommandHandlerTest extends TestCase
         $this->hasRooms = new FakeRoomTypeHasRooms();
         $this->handler = new DeleteRoomTypeCommandHandler($this->repository, $this->hasRooms);
 
-        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker());
+        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: self::ROOM_TYPE_ID,
             hotelId: '550e8400-e29b-41d4-a716-446655440000',

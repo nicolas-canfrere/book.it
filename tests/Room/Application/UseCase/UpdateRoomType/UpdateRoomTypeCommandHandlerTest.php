@@ -10,6 +10,7 @@ use App\Room\Application\UseCase\UpdateRoomType\UpdateRoomTypeCommand;
 use App\Room\Application\UseCase\UpdateRoomType\UpdateRoomTypeCommandHandler;
 use App\Room\Domain\Exception\RoomTypeAlreadyExistsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -29,7 +30,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
         $this->repository = new InMemoryRoomTypeRepository();
         $this->handler = new UpdateRoomTypeCommandHandler($this->repository);
 
-        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker());
+        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: self::ROOM_TYPE_ID,
             hotelId: self::HOTEL_ID,
@@ -85,7 +86,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
     #[Test]
     public function itThrowsWhenNewNameAlreadyTaken(): void
     {
-        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker());
+        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
             hotelId: self::HOTEL_ID,
