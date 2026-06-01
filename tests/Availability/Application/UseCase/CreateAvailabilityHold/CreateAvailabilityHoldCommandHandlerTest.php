@@ -73,17 +73,17 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
 
         $repository->method('hasActiveOverlap')->willReturn(false);
 
-        $checkIn   = new \DateTimeImmutable('2026-07-01');
-        $checkOut  = new \DateTimeImmutable('2026-07-05');
+        $checkIn = new \DateTimeImmutable('2026-07-01');
+        $checkOut = new \DateTimeImmutable('2026-07-05');
         $expiresAt = new \DateTimeImmutable('2026-05-31T00:15:00Z');
 
         $dispatcher->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(static function (object $event) use ($checkIn, $checkOut, $expiresAt): bool {
                 return $event instanceof AvailabilityHoldCreated
-                    && $event->holdId === 'hold-id-1'
-                    && $event->roomId === 'room-id-1'
-                    && $event->reservationId === 'res-id-1'
+                    && 'hold-id-1' === $event->holdId
+                    && 'room-id-1' === $event->roomId
+                    && 'res-id-1' === $event->reservationId
                     && $event->checkIn == $checkIn
                     && $event->checkOut == $checkOut
                     && $event->expiresAt == $expiresAt;

@@ -22,14 +22,14 @@ final class DeleteBlockedPeriodByRoomAndPeriodCommandHandlerTest extends TestCas
         $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $checkIn  = new \DateTimeImmutable('2026-07-01');
+        $checkIn = new \DateTimeImmutable('2026-07-01');
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
         $dispatcher->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(static function (object $event) use ($checkIn, $checkOut): bool {
                 return $event instanceof BlockedPeriodDeleted
-                    && $event->roomId === 'room-id-1'
+                    && 'room-id-1' === $event->roomId
                     && $event->checkIn == $checkIn
                     && $event->checkOut == $checkOut;
             }));

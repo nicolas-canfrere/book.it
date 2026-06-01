@@ -63,7 +63,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
         $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        $checkIn  = new \DateTimeImmutable('2026-07-01');
+        $checkIn = new \DateTimeImmutable('2026-07-01');
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
         $blockedPeriod = new BlockedPeriod(
@@ -79,7 +79,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
             ->method('dispatch')
             ->with($this->callback(static function (object $event) use ($checkIn, $checkOut): bool {
                 return $event instanceof BlockedPeriodDeleted
-                    && $event->roomId === 'room-id-1'
+                    && 'room-id-1' === $event->roomId
                     && $event->checkIn == $checkIn
                     && $event->checkOut == $checkOut;
             }));
@@ -100,7 +100,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
 
         $handler = new DeleteBlockedPeriodCommandHandler($repository, $dispatcher);
 
-        $this->expectException(\App\Availability\Domain\Exception\BlockedPeriodNotFoundException::class);
+        $this->expectException(BlockedPeriodNotFoundException::class);
 
         ($handler)(new DeleteBlockedPeriodCommand(id: 'missing-id'));
     }

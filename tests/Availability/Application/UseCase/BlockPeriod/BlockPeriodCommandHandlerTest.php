@@ -147,15 +147,15 @@ final class BlockPeriodCommandHandlerTest extends TestCase
         $roomExists->method('exists')->willReturn(true);
         $repository->method('hasOverlap')->willReturn(false);
 
-        $checkIn  = new \DateTimeImmutable('2026-07-01');
+        $checkIn = new \DateTimeImmutable('2026-07-01');
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
         $dispatcher->expects($this->once())
             ->method('dispatch')
             ->with($this->callback(static function (object $event) use ($checkIn, $checkOut): bool {
                 return $event instanceof BlockedPeriodCreated
-                    && $event->blockedPeriodId === 'bp-id-1'
-                    && $event->roomId === 'room-id-1'
+                    && 'bp-id-1' === $event->blockedPeriodId
+                    && 'room-id-1' === $event->roomId
                     && $event->checkIn == $checkIn
                     && $event->checkOut == $checkOut;
             }));
@@ -183,7 +183,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         $handler = new BlockPeriodCommandHandler($repository, $roomExists, $dispatcher);
 
-        $this->expectException(\App\Availability\Domain\Exception\RoomNotFoundException::class);
+        $this->expectException(RoomNotFoundException::class);
 
         ($handler)(new BlockPeriodCommand(
             id: 'bp-id-2',

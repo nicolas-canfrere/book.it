@@ -47,7 +47,7 @@ final class DeleteAvailabilityHoldCommandHandlerTest extends TestCase
             ->method('dispatch')
             ->with($this->callback(static function (object $event): bool {
                 return $event instanceof AvailabilityHoldDeleted
-                    && $event->reservationId === 'res-id-1';
+                    && 'res-id-1' === $event->reservationId;
             }));
 
         $handler = new DeleteAvailabilityHoldCommandHandler($repository, $dispatcher);
