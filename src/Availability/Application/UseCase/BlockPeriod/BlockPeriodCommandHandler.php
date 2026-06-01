@@ -11,12 +11,15 @@ use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Domain\Port\RoomExistsInterface;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\BlockedPeriodCreated;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class BlockPeriodCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private BlockedPeriodRepositoryInterface $repository,
         private RoomExistsInterface $roomExists,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -35,6 +38,13 @@ final readonly class BlockPeriodCommandHandler implements SyncCommandHandlerInte
             $command->roomId,
             new DatePeriod($command->checkIn, $command->checkOut),
             $command->createdAt,
+        ));
+
+        $this->eventDispatcher->dispatch(new BlockedPeriodCreated(
+            blockedPeriodId: $command->id,
+            roomId: $command->roomId,
+            checkIn: $command->checkIn,
+            checkOut: $command->checkOut,
         ));
     }
 }

@@ -14,6 +14,7 @@ use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPe
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
@@ -26,7 +27,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
         $this->repository = new InMemoryBlockedPeriodRepository();
         $this->handler = new DeleteBlockedPeriodCommandHandler($this->repository);
 
-        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker());
+        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createMock(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             roomId: '550e8400-e29b-41d4-a716-446655440000',
