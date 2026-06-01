@@ -81,17 +81,20 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
     #[Test]
     public function itThrowsWhenRoomTypeNotFound(): void
     {
-        $this->expectException(RoomTypeNotFoundException::class);
-
-        ($this->handler)(new UpdateRoomTypeCommand(
-            id: '00000000-0000-4000-8000-000000000000',
-            name: 'X',
-            livingSpaceCount: 1,
-            surfaceM2: null,
-            guestCapacity: 1,
-            isAccessible: false,
-            bedEntries: [['type' => 'single', 'count' => 1]],
-        ));
+        try {
+            ($this->handler)(new UpdateRoomTypeCommand(
+                id: '00000000-0000-4000-8000-000000000000',
+                name: 'X',
+                livingSpaceCount: 1,
+                surfaceM2: null,
+                guestCapacity: 1,
+                isAccessible: false,
+                bedEntries: [['type' => 'single', 'count' => 1]],
+            ));
+            self::fail('Expected RoomTypeNotFoundException was not thrown');
+        } catch (RoomTypeNotFoundException $e) {
+            // expected
+        }
 
         self::assertEmpty($this->dispatcher->getDispatched());
     }
@@ -112,17 +115,20 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
             createdAt: new \DateTimeImmutable(),
         ));
 
-        $this->expectException(RoomTypeAlreadyExistsException::class);
-
-        ($this->handler)(new UpdateRoomTypeCommand(
-            id: self::ROOM_TYPE_ID,
-            name: 'Double',
-            livingSpaceCount: 1,
-            surfaceM2: null,
-            guestCapacity: 1,
-            isAccessible: false,
-            bedEntries: [['type' => 'single', 'count' => 1]],
-        ));
+        try {
+            ($this->handler)(new UpdateRoomTypeCommand(
+                id: self::ROOM_TYPE_ID,
+                name: 'Double',
+                livingSpaceCount: 1,
+                surfaceM2: null,
+                guestCapacity: 1,
+                isAccessible: false,
+                bedEntries: [['type' => 'single', 'count' => 1]],
+            ));
+            self::fail('Expected RoomTypeAlreadyExistsException was not thrown');
+        } catch (RoomTypeAlreadyExistsException $e) {
+            // expected
+        }
 
         self::assertEmpty($this->dispatcher->getDispatched());
     }

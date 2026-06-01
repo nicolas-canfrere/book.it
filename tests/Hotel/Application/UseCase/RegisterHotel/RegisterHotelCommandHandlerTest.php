@@ -74,13 +74,17 @@ final class RegisterHotelCommandHandlerTest extends TestCase
 
         $handler = new RegisterHotelCommandHandler($repository, $dispatcher);
 
-        $this->expectException(\App\Hotel\Domain\Exception\HotelAlreadyExistsException::class);
-        ($handler)(new RegisterHotelCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13',
-            name: 'Le Grand Hôtel',
-            address: new Address('1 rue de la Paix', '75001', 'Paris', 'FR'),
-            createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
-        ));
+        try {
+            ($handler)(new RegisterHotelCommand(
+                id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13',
+                name: 'Le Grand Hôtel',
+                address: new Address('1 rue de la Paix', '75001', 'Paris', 'FR'),
+                createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
+            ));
+            self::fail('Expected HotelAlreadyExistsException was not thrown');
+        } catch (\App\Hotel\Domain\Exception\HotelAlreadyExistsException $e) {
+            // expected
+        }
 
         self::assertEmpty($dispatcher->getDispatched());
     }

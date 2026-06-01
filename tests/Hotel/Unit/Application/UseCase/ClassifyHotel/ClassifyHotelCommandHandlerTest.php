@@ -90,9 +90,12 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     #[Test]
     public function test_it_throws_when_hotel_not_found(): void
     {
-        $this->expectException(HotelNotFoundException::class);
-
-        ($this->handler)(new ClassifyHotelCommand('unknown-id', 3, false));
+        try {
+            ($this->handler)(new ClassifyHotelCommand('unknown-id', 3, false));
+            self::fail('Expected HotelNotFoundException was not thrown');
+        } catch (HotelNotFoundException $e) {
+            // expected
+        }
 
         self::assertEmpty($this->dispatcher->getDispatched());
     }

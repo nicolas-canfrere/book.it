@@ -185,16 +185,19 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         );
         ($this->handler)($command);
 
-        $this->expectException(RoomAlreadyExistsException::class);
-
-        ($this->handler)(new RegisterRoomCommand(
-            id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
-            number: '101',
-            floor: 2,
-            roomTypeId: self::ROOM_TYPE_ID,
-            createdAt: new \DateTimeImmutable(),
-        ));
+        try {
+            ($this->handler)(new RegisterRoomCommand(
+                id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
+                hotelId: '550e8400-e29b-41d4-a716-446655440000',
+                number: '101',
+                floor: 2,
+                roomTypeId: self::ROOM_TYPE_ID,
+                createdAt: new \DateTimeImmutable(),
+            ));
+            self::fail('Expected RoomAlreadyExistsException was not thrown');
+        } catch (RoomAlreadyExistsException $e) {
+            // expected
+        }
 
         $dispatched = $this->eventDispatcher->getDispatched();
         self::assertCount(1, $dispatched);
