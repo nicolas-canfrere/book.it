@@ -10,25 +10,28 @@ use App\Hotel\Domain\Exception\HotelNotFoundException;
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Domain\Event\StarRatingClassified;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class ClassifyHotelCommandHandlerTest extends TestCase
 {
     private InMemoryHotelRepository $repository;
-    private EventDispatcherInterface $dispatcher;
+    private FakeEventDispatcher $dispatcher;
     private ClassifyHotelCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = new InMemoryHotelRepository();
-        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->dispatcher = new FakeEventDispatcher();
         $this->handler = new ClassifyHotelCommandHandler($this->repository, $this->dispatcher);
     }
 
+    #[Test]
     public function test_it_sets_a_star_rating(): void
     {
         $this->repository->add($this->aHotel('hotel-1'));
@@ -40,8 +43,14 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
         self::assertNotNull($saved->starRating);
         self::assertSame(4, $saved->starRating->stars);
         self::assertFalse($saved->starRating->superior);
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(StarRatingClassified::class, $event);
+        self::assertSame('hotel-1', $event->hotelId);
+        self::assertSame(4, $event->starRating);
     }
 
+    #[Test]
     public function test_it_sets_a_superior_star_rating(): void
     {
         $this->repository->add($this->aHotel('hotel-1'));
@@ -53,8 +62,14 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
         self::assertNotNull($saved->starRating);
         self::assertSame(5, $saved->starRating->stars);
         self::assertTrue($saved->starRating->superior);
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(StarRatingClassified::class, $event);
+        self::assertSame('hotel-1', $event->hotelId);
+        self::assertSame(5, $event->starRating);
     }
 
+    #[Test]
     public function test_it_removes_a_star_rating_when_stars_is_null(): void
     {
         $hotel = $this->aHotel('hotel-1')->withStarRating(new StarRating(3, false));
@@ -65,13 +80,21 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
         $saved = $this->repository->get('hotel-1');
         self::assertNotNull($saved);
         self::assertNull($saved->starRating);
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(StarRatingClassified::class, $event);
+        self::assertSame('hotel-1', $event->hotelId);
+        self::assertNull($event->starRating);
     }
 
+    #[Test]
     public function test_it_throws_when_hotel_not_found(): void
     {
         $this->expectException(HotelNotFoundException::class);
 
         ($this->handler)(new ClassifyHotelCommand('unknown-id', 3, false));
+
+        self::assertEmpty($this->dispatcher->getDispatched());
     }
 
     private function aHotel(string $id = 'e4e1c9b0-1234-4a2b-9c3f-aabbccddeeff'): Hotel

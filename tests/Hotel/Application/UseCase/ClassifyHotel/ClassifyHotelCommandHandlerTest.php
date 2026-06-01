@@ -10,10 +10,10 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Shared\Domain\Event\StarRatingClassified;
+use App\Tests\Fake\FakeEventDispatcher;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
-use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class ClassifyHotelCommandHandlerTest extends TestCase
@@ -34,57 +34,49 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     public function itDispatchesStarRatingClassifiedWithStars(): void
     {
         $repository = $this->createMock(HotelRepositoryInterface::class);
-        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher = new FakeEventDispatcher();
 
         $repository->method('get')->willReturn($this->hotel);
 
-        $dispatcher->expects($this->once())
-            ->method('dispatch')
-            ->with($this->callback(static function (object $event): bool {
-                return $event instanceof StarRatingClassified
-                    && 'hotel-id-1' === $event->hotelId
-                    && 4 === $event->starRating;
-            }));
-
         $handler = new ClassifyHotelCommandHandler($repository, $dispatcher);
-
         ($handler)(new ClassifyHotelCommand(hotelId: 'hotel-id-1', stars: 4, superior: false));
+
+        $event = $dispatcher->getLastDispatched();
+        self::assertInstanceOf(StarRatingClassified::class, $event);
+        self::assertSame('hotel-id-1', $event->hotelId);
+        self::assertSame(4, $event->starRating);
     }
 
     #[Test]
     public function itDispatchesNullStarRatingWhenRatingRemoved(): void
     {
         $repository = $this->createMock(HotelRepositoryInterface::class);
-        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher = new FakeEventDispatcher();
 
         $repository->method('get')->willReturn($this->hotel);
 
-        $dispatcher->expects($this->once())
-            ->method('dispatch')
-            ->with($this->callback(static function (object $event): bool {
-                return $event instanceof StarRatingClassified
-                    && 'hotel-id-1' === $event->hotelId
-                    && null === $event->starRating;
-            }));
-
         $handler = new ClassifyHotelCommandHandler($repository, $dispatcher);
-
         ($handler)(new ClassifyHotelCommand(hotelId: 'hotel-id-1', stars: null));
+
+        $event = $dispatcher->getLastDispatched();
+        self::assertInstanceOf(StarRatingClassified::class, $event);
+        self::assertSame('hotel-id-1', $event->hotelId);
+        self::assertNull($event->starRating);
     }
 
     #[Test]
     public function itDoesNotDispatchWhenHotelNotFound(): void
     {
         $repository = $this->createMock(HotelRepositoryInterface::class);
-        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher = new FakeEventDispatcher();
 
         $repository->method('get')->willReturn(null);
-        $dispatcher->expects($this->never())->method('dispatch');
 
         $handler = new ClassifyHotelCommandHandler($repository, $dispatcher);
 
         $this->expectException(\App\Hotel\Domain\Exception\HotelNotFoundException::class);
-
         ($handler)(new ClassifyHotelCommand(hotelId: 'missing-id', stars: 3));
+
+        self::assertEmpty($dispatcher->getDispatched());
     }
 }
