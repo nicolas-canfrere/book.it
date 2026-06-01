@@ -12,8 +12,8 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 final readonly class DeleteBlockedPeriodByRoomAndPeriodCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
-        private readonly BlockedPeriodRepositoryInterface $blockedPeriods,
-        private readonly EventDispatcherInterface $eventDispatcher,
+        private BlockedPeriodRepositoryInterface $blockedPeriods,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
