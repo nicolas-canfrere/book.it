@@ -67,6 +67,13 @@ services:
         arguments:
             $connection: '@doctrine.dbal.search_connection'
 
+    App\Search\Infrastructure\Repository\AvailableRoomTypesRepository:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
+    App\Search\Domain\Port\AvailableRoomTypesRepositoryInterface:
+        alias: App\Search\Infrastructure\Repository\AvailableRoomTypesRepository
+
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
