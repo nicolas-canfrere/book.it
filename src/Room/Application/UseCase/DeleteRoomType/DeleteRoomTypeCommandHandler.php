@@ -9,12 +9,15 @@ use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Room\Domain\Port\RoomTypeHasRoomsInterface;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\RoomTypeDeleted;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class DeleteRoomTypeCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private RoomTypeRepositoryInterface $roomTypeRepository,
         private RoomTypeHasRoomsInterface $roomTypeHasRooms,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -30,5 +33,10 @@ final readonly class DeleteRoomTypeCommandHandler implements SyncCommandHandlerI
         }
 
         $this->roomTypeRepository->delete($command->id);
+
+        $this->eventDispatcher->dispatch(new RoomTypeDeleted(
+            roomTypeId: $roomType->id,
+            hotelId: $roomType->hotelId,
+        ));
     }
 }

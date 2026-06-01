@@ -14,6 +14,8 @@ use App\Room\Domain\Port\RoomTypeExistsInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\RoomRegistered;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInterface
 {
@@ -21,6 +23,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
         private RoomRepositoryInterface $roomRepository,
         private HotelExistsInterface $hotelExists,
         private RoomTypeExistsInterface $roomTypeExists,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -45,6 +48,12 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
             new RoomFloor($command->floor),
             $command->roomTypeId,
             $command->createdAt,
+        ));
+
+        $this->eventDispatcher->dispatch(new RoomRegistered(
+            roomId: $command->id,
+            hotelId: $command->hotelId,
+            roomTypeId: $command->roomTypeId,
         ));
     }
 }

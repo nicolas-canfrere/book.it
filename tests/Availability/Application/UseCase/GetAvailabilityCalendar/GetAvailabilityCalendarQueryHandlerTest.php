@@ -13,6 +13,7 @@ use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPe
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class GetAvailabilityCalendarQueryHandlerTest extends TestCase
@@ -27,7 +28,7 @@ final class GetAvailabilityCalendarQueryHandlerTest extends TestCase
         $this->repository = new InMemoryBlockedPeriodRepository();
         $this->handler = new GetAvailabilityCalendarQueryHandler($this->repository);
 
-        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker());
+        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createMock(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             roomId: self::ROOM_ID,

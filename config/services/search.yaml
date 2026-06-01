@@ -1,0 +1,37 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+        App\Shared\Application\Bus\AsyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: messenger.bus.default}
+
+    App\Search\Domain\:
+        resource: '../../src/Search/Domain/'
+
+    App\Search\Infrastructure\:
+        resource: '../../src/Search/Infrastructure/'
+
+    App\Search\UI\:
+        resource: '../../src/Search/UI/'
+        exclude:
+            - '../../src/Search/UI/**/*Request.php'
+
+    App\Search\Application\:
+        resource: '../../src/Search/Application/'
+        exclude:
+            - '../../src/Search/Application/**/*Query.php'
+            - '../../src/Search/Application/**/*Command.php'
+
+    bookit.doctrine.middleware.search_path.search:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'search'
+        tags:
+            - {name: doctrine.middleware, connection: search}

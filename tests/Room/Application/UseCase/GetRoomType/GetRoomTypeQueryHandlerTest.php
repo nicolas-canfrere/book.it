@@ -8,6 +8,7 @@ use App\Room\Application\UseCase\GetRoomType\GetRoomTypeQuery;
 use App\Room\Application\UseCase\GetRoomType\GetRoomTypeQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -25,7 +26,7 @@ final class GetRoomTypeQueryHandlerTest extends TestCase
         $this->repository = new InMemoryRoomTypeRepository();
         $this->handler = new GetRoomTypeQueryHandler($this->repository);
 
-        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker());
+        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             hotelId: '550e8400-e29b-41d4-a716-446655440000',

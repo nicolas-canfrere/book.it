@@ -10,11 +10,15 @@ use App\Room\Domain\Model\RoomType;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\RoomTypeUpdated;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class UpdateRoomTypeCommandHandler implements SyncCommandHandlerInterface
 {
-    public function __construct(private RoomTypeRepositoryInterface $roomTypeRepository)
-    {
+    public function __construct(
+        private RoomTypeRepositoryInterface $roomTypeRepository,
+        private EventDispatcherInterface $eventDispatcher,
+    ) {
     }
 
     public function __invoke(UpdateRoomTypeCommand $command): void
@@ -40,6 +44,14 @@ final readonly class UpdateRoomTypeCommandHandler implements SyncCommandHandlerI
             $command->isAccessible,
             BedComposition::fromArray($command->bedEntries),
             $roomType->createdAt,
+        ));
+
+        $this->eventDispatcher->dispatch(new RoomTypeUpdated(
+            roomTypeId: $roomType->id,
+            hotelId: $roomType->hotelId,
+            name: $command->name,
+            guestCapacity: $command->guestCapacity,
+            bedComposition: $command->bedEntries,
         ));
     }
 }

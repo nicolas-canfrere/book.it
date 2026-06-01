@@ -9,4 +9,5 @@ imports:
     - { resource: './services/exceptions.yaml' }
     - { resource: './services/payment.yaml' }
     - { resource: './services/notification.yaml' }
+    - { resource: './services/search.yaml' }
 

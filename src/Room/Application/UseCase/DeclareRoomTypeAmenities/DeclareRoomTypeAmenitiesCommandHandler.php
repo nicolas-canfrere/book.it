@@ -8,11 +8,14 @@ use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
 use App\Room\Domain\ValueObject\RoomAmenity;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\RoomTypeAmenityDeclared;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class DeclareRoomTypeAmenitiesCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private RoomTypeRepositoryInterface $roomTypeRepository,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -27,5 +30,11 @@ final readonly class DeclareRoomTypeAmenitiesCommandHandler implements SyncComma
         $amenities = array_map(RoomAmenity::from(...), $command->amenities);
 
         $this->roomTypeRepository->save($roomType->withAmenities($amenities));
+
+        $this->eventDispatcher->dispatch(new RoomTypeAmenityDeclared(
+            roomTypeId: $command->roomTypeId,
+            hotelId: $roomType->hotelId,
+            amenities: $command->amenities,
+        ));
     }
 }

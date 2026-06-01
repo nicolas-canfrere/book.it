@@ -8,6 +8,8 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
 use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomTypeAlreadyExistsException;
+use App\Shared\Domain\Event\RoomTypeRegistered;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -19,13 +21,15 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
 {
     private InMemoryRoomTypeRepository $repository;
     private FakeHotelExistenceChecker $hotelChecker;
+    private FakeEventDispatcher $dispatcher;
     private RegisterRoomTypeCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = new InMemoryRoomTypeRepository();
         $this->hotelChecker = new FakeHotelExistenceChecker();
-        $this->handler = new RegisterRoomTypeCommandHandler($this->repository, $this->hotelChecker);
+        $this->dispatcher = new FakeEventDispatcher();
+        $this->handler = new RegisterRoomTypeCommandHandler($this->repository, $this->hotelChecker, $this->dispatcher);
     }
 
     #[Test]
@@ -44,12 +48,40 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
     }
 
     #[Test]
+    public function itDispatchesRoomTypeRegistered(): void
+    {
+        ($this->handler)($this->makeCommand());
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(RoomTypeRegistered::class, $event);
+        self::assertSame('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', $event->roomTypeId);
+        self::assertSame('550e8400-e29b-41d4-a716-446655440000', $event->hotelId);
+        self::assertSame('Suite Royale', $event->name);
+        self::assertSame(2, $event->guestCapacity);
+        self::assertSame([['type' => 'king', 'count' => 1]], $event->bedComposition);
+    }
+
+    #[Test]
     public function itThrowsWhenHotelDoesNotExist(): void
     {
         $this->hotelChecker->setExists(false);
         $this->expectException(HotelNotFoundException::class);
 
         ($this->handler)($this->makeCommand());
+    }
+
+    #[Test]
+    public function itDoesNotDispatchWhenHotelNotFound(): void
+    {
+        $this->hotelChecker->setExists(false);
+
+        try {
+            ($this->handler)($this->makeCommand());
+        } catch (HotelNotFoundException) {
+            // Expected
+        }
+
+        self::assertEmpty($this->dispatcher->getDispatched());
     }
 
     #[Test]

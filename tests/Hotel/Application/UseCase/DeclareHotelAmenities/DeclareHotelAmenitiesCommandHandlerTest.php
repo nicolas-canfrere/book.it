@@ -11,6 +11,8 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
+use App\Shared\Domain\Event\HotelAmenityDeclared;
+use App\Tests\Fake\FakeEventDispatcher;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -19,21 +21,28 @@ use PHPUnit\Framework\TestCase;
 final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
 {
     private HotelRepositoryInterface&MockObject $repository;
+    private FakeEventDispatcher $dispatcher;
     private DeclareHotelAmenitiesCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = $this->createMock(HotelRepositoryInterface::class);
-        $this->handler = new DeclareHotelAmenitiesCommandHandler($this->repository);
+        $this->dispatcher = new FakeEventDispatcher();
+        $this->handler = new DeclareHotelAmenitiesCommandHandler($this->repository, $this->dispatcher);
     }
 
     public function test_throws_when_hotel_not_found(): void
     {
         $this->repository->method('get')->willReturn(null);
 
-        $this->expectException(HotelNotFoundException::class);
+        try {
+            ($this->handler)(new DeclareHotelAmenitiesCommand('unknown-id', []));
+            self::fail('Expected HotelNotFoundException was not thrown');
+        } catch (HotelNotFoundException) {
+            // expected
+        }
 
-        ($this->handler)(new DeclareHotelAmenitiesCommand('unknown-id', []));
+        self::assertEmpty($this->dispatcher->getDispatched());
     }
 
     public function test_saves_declared_amenities(): void
@@ -53,6 +62,11 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
             ));
 
         ($this->handler)(new DeclareHotelAmenitiesCommand('hotel-id', ['pool', 'gym']));
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(HotelAmenityDeclared::class, $event);
+        self::assertSame('hotel-id', $event->hotelId);
+        self::assertSame(['pool', 'gym'], $event->amenities);
     }
 
     public function test_saves_empty_list(): void
@@ -73,5 +87,10 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
             ));
 
         ($this->handler)(new DeclareHotelAmenitiesCommand('hotel-id', []));
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(HotelAmenityDeclared::class, $event);
+        self::assertSame('hotel-id', $event->hotelId);
+        self::assertSame([], $event->amenities);
     }
 }

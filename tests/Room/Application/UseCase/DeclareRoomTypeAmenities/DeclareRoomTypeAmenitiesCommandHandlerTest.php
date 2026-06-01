@@ -10,6 +10,8 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Shared\Domain\Event\RoomTypeAmenityDeclared;
+use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -23,14 +25,20 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
     private const string ROOM_TYPE_ID = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11';
 
     private InMemoryRoomTypeRepository $repository;
+    private FakeEventDispatcher $dispatcher;
     private DeclareRoomTypeAmenitiesCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = new InMemoryRoomTypeRepository();
-        $this->handler = new DeclareRoomTypeAmenitiesCommandHandler($this->repository);
+        $this->dispatcher = new FakeEventDispatcher();
+        $this->handler = new DeclareRoomTypeAmenitiesCommandHandler($this->repository, $this->dispatcher);
 
-        $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker());
+        $registerHandler = new RegisterRoomTypeCommandHandler(
+            $this->repository,
+            new FakeHotelExistenceChecker(),
+            new FakeEventDispatcher(),
+        );
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: self::ROOM_TYPE_ID,
             hotelId: self::HOTEL_ID,
@@ -61,6 +69,21 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
     }
 
     #[Test]
+    public function itDispatchesRoomTypeAmenityDeclared(): void
+    {
+        ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
+            roomTypeId: self::ROOM_TYPE_ID,
+            amenities: ['wifi', 'tv'],
+        ));
+
+        $event = $this->dispatcher->getLastDispatched();
+        self::assertInstanceOf(RoomTypeAmenityDeclared::class, $event);
+        self::assertSame(self::ROOM_TYPE_ID, $event->roomTypeId);
+        self::assertSame(self::HOTEL_ID, $event->hotelId);
+        self::assertSame(['wifi', 'tv'], $event->amenities);
+    }
+
+    #[Test]
     public function itDeclaresEmptyList(): void
     {
         ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
@@ -82,5 +105,20 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
             roomTypeId: '00000000-0000-4000-8000-000000000000',
             amenities: ['wifi'],
         ));
+    }
+
+    #[Test]
+    public function itDoesNotDispatchWhenRoomTypeNotFound(): void
+    {
+        try {
+            ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
+                roomTypeId: '00000000-0000-4000-8000-000000000000',
+                amenities: ['wifi'],
+            ));
+        } catch (RoomTypeNotFoundException) {
+            // expected
+        }
+
+        self::assertEmpty($this->dispatcher->getDispatched());
     }
 }

@@ -8,11 +8,15 @@ use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommand;
 use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommandHandler;
 use App\Availability\Domain\Exception\BlockedPeriodOverlapException;
 use App\Availability\Domain\Exception\RoomNotFoundException;
+use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
+use App\Availability\Domain\Port\RoomExistsInterface;
+use App\Shared\Domain\Event\BlockedPeriodCreated;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class BlockPeriodCommandHandlerTest extends TestCase
@@ -25,7 +29,8 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     {
         $this->repository = new InMemoryBlockedPeriodRepository();
         $this->roomExists = new FakeRoomExistenceChecker();
-        $this->handler = new BlockPeriodCommandHandler($this->repository, $this->roomExists);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->handler = new BlockPeriodCommandHandler($this->repository, $this->roomExists, $dispatcher);
     }
 
     #[Test]
@@ -130,5 +135,62 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         self::assertNotNull($this->repository->get('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
         self::assertNotNull($this->repository->get('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'));
+    }
+
+    #[Test]
+    public function itDispatchesBlockedPeriodCreated(): void
+    {
+        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $roomExists = $this->createMock(RoomExistsInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $roomExists->method('exists')->willReturn(true);
+        $repository->method('hasOverlap')->willReturn(false);
+
+        $checkIn = new \DateTimeImmutable('2026-07-01');
+        $checkOut = new \DateTimeImmutable('2026-07-05');
+
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static function (object $event) use ($checkIn, $checkOut): bool {
+                return $event instanceof BlockedPeriodCreated
+                    && 'bp-id-1' === $event->blockedPeriodId
+                    && 'room-id-1' === $event->roomId
+                    && $event->checkIn == $checkIn
+                    && $event->checkOut == $checkOut;
+            }));
+
+        $handler = new BlockPeriodCommandHandler($repository, $roomExists, $dispatcher);
+
+        ($handler)(new BlockPeriodCommand(
+            id: 'bp-id-1',
+            roomId: 'room-id-1',
+            checkIn: $checkIn,
+            checkOut: $checkOut,
+            createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),
+        ));
+    }
+
+    #[Test]
+    public function itDoesNotDispatchWhenRoomDoesNotExist(): void
+    {
+        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $roomExists = $this->createMock(RoomExistsInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $roomExists->method('exists')->willReturn(false);
+        $dispatcher->expects($this->never())->method('dispatch');
+
+        $handler = new BlockPeriodCommandHandler($repository, $roomExists, $dispatcher);
+
+        $this->expectException(RoomNotFoundException::class);
+
+        ($handler)(new BlockPeriodCommand(
+            id: 'bp-id-2',
+            roomId: 'missing-room',
+            checkIn: new \DateTimeImmutable('2026-07-01'),
+            checkOut: new \DateTimeImmutable('2026-07-05'),
+            createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),
+        ));
     }
 }
