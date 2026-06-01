@@ -83,6 +83,8 @@ services:
 
     App\Search\Domain\Port\HotelRoomTypeWriterInterface: '@App\Search\Infrastructure\Persistence\HotelRoomTypeWriter'
 
+    App\Search\Domain\Port\RoomIndexWriterInterface: '@App\Search\Infrastructure\Persistence\RoomIndexWriter'
+
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
