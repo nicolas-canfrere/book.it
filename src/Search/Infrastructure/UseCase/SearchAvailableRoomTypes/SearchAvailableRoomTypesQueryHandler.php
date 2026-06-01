@@ -2,18 +2,20 @@
 
 declare(strict_types=1);
 
-namespace App\Search\Infrastructure\Repository;
+namespace App\Search\Infrastructure\UseCase\SearchAvailableRoomTypes;
 
-use App\Search\Domain\Port\AvailableRoomTypesRepositoryInterface;
+use App\Search\Application\UseCase\SearchAvailableRoomTypes\SearchAvailableRoomTypesQuery;
+use App\Shared\Application\Bus\SyncQueryHandlerInterface;
 use Doctrine\DBAL\Connection;
 
-final readonly class AvailableRoomTypesRepository implements AvailableRoomTypesRepositoryInterface
+final readonly class SearchAvailableRoomTypesQueryHandler implements SyncQueryHandlerInterface
 {
     public function __construct(private Connection $connection)
     {
     }
 
-    public function findAvailable(string $city, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut, int $guests): array
+    /** @return list<array<string, mixed>> */
+    public function __invoke(SearchAvailableRoomTypesQuery $query): array
     {
         return $this->connection->fetchAllAssociative(
             <<<'SQL'
@@ -47,10 +49,10 @@ final readonly class AvailableRoomTypesRepository implements AvailableRoomTypesR
             ORDER BY s.hotel_name, s.room_type_name
             SQL,
             [
-                'city' => $city,
-                'guests' => $guests,
-                'checkIn' => $checkIn->format('Y-m-d'),
-                'checkOut' => $checkOut->format('Y-m-d'),
+                'city' => $query->city,
+                'guests' => $query->guests,
+                'checkIn' => $query->checkIn->format('Y-m-d'),
+                'checkOut' => $query->checkOut->format('Y-m-d'),
             ],
         );
     }
