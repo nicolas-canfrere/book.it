@@ -8,6 +8,9 @@ services:
         App\Shared\Application\Bus\SyncQueryHandlerInterface:
             tags:
                 - {name: messenger.message_handler, bus: sync.query.bus}
+        App\Shared\Application\Bus\AsyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: messenger.bus.default}
 
     App\Search\Infrastructure\:
         resource: '../../src/Search/Infrastructure/'
@@ -72,6 +75,13 @@ services:
             $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Domain\Port\AvailableRoomTypeFinderInterface: '@App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder'
+
+    App\Search\Infrastructure\Persistence\HotelRoomTypeWriter:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+            $hotelConnection: '@doctrine.dbal.hotel_connection'
+
+    App\Search\Domain\Port\HotelRoomTypeWriterInterface: '@App\Search\Infrastructure\Persistence\HotelRoomTypeWriter'
 
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
