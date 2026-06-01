@@ -3,7 +3,7 @@
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **book.it** (5614 symbols, 12216 relationships, 50 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **book.it** (6243 symbols, 13575 relationships, 51 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
@@ -105,6 +105,16 @@ Important for test and code analysis use make commands !
 | `make generate-migration`   | Generate a new Doctrine migration                  |
 | `make migrate`              | Run pending migrations                             |
 | `make up` / `make down`     | Start / stop Docker services                       |
+
+## Reference Documentation
+
+| File | Content | Regenerate |
+|------|---------|------------|
+| `openapi.yaml` | HTTP REST API spec (routes, request/response schemas) | `make openapi` |
+| `asyncapi.yaml` | Async messaging spec (RabbitMQ commands, operations, payloads) | manual |
+| `domainevents.yaml` | Domain event catalogue — all events with properties and listeners per context | `make events` |
+
+Consult these files to understand existing contracts before adding or changing routes, async commands, or domain events.
 
 ## Error Handling
 
