@@ -12,6 +12,9 @@ services:
             tags:
                 - {name: messenger.message_handler, bus: messenger.bus.default}
 
+    App\Search\Domain\:
+        resource: '../../src/Search/Domain/'
+
     App\Search\Infrastructure\:
         resource: '../../src/Search/Infrastructure/'
 
@@ -24,24 +27,7 @@ services:
         resource: '../../src/Search/Application/'
         exclude:
             - '../../src/Search/Application/**/*Query.php'
-
-
-    App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Domain\Port\AvailableRoomTypeFinderInterface: '@App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder'
-
-    App\Search\Infrastructure\Persistence\HotelRoomTypeWriter:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-            $hotelConnection: '@doctrine.dbal.hotel_connection'
-
-    App\Search\Domain\Port\HotelRoomTypeWriterInterface: '@App\Search\Infrastructure\Persistence\HotelRoomTypeWriter'
-
-    App\Search\Domain\Port\RoomIndexWriterInterface: '@App\Search\Infrastructure\Persistence\RoomIndexWriter'
-
-    App\Search\Domain\Port\UnavailablePeriodWriterInterface: '@App\Search\Infrastructure\Persistence\UnavailablePeriodWriter'
+            - '../../src/Search/Application/**/*Command.php'
 
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
@@ -49,3 +35,22 @@ services:
             $schema: 'search'
         tags:
             - {name: doctrine.middleware, connection: search}
+
+    # Finder — reads from search schema
+    App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
+    # Infrastructure writers — only DBAL dependencies live here
+    App\Search\Infrastructure\Persistence\HotelRoomTypeWriter:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+            $hotelConnection: '@doctrine.dbal.hotel_connection'
+
+    App\Search\Infrastructure\Persistence\RoomIndexWriter:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
+    App\Search\Infrastructure\Persistence\UnavailablePeriodWriter:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
