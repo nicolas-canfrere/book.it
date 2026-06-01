@@ -1855,6 +1855,63 @@ paths:
           description: Acknowledged
         '422':
           description: 'Validation error'
+  /api/v1/search:
+    get:
+      tags:
+        - Search
+      summary: 'Search available room types'
+      operationId: get_search_available_room_types
+      parameters:
+        -
+          name: city
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+            maxLength: 255
+        -
+          name: checkIn
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+        -
+          name: checkOut
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+        -
+          name: guests
+          in: query
+          required: false
+          schema:
+            type: integer
+            nullable: true
+            default: null
+            maximum: 20
+            minimum: 1
+      responses:
+        '200':
+          description: 'List of available hotel room types matching the criteria'
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -2473,6 +2530,28 @@ components:
           type: string
           default: ''
       type: object
+    SearchAvailableRoomTypesRequest:
+      properties:
+        city:
+          type: string
+          nullable: true
+          default: null
+          maxLength: 255
+        checkIn:
+          type: string
+          nullable: true
+          default: null
+        checkOut:
+          type: string
+          nullable: true
+          default: null
+        guests:
+          type: integer
+          nullable: true
+          default: null
+          maximum: 20
+          minimum: 1
+      type: object
 tags:
   -
     name: Hotels
@@ -2498,4 +2577,7 @@ tags:
   -
     name: Payment
     description: Payment
+  -
+    name: Search
+    description: Search
 
