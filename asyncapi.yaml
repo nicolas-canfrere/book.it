@@ -73,6 +73,8 @@ channels:
         $ref: '#/components/messages/RemoveSearchUnavailablePeriodBySourceCommand'
       RemoveSearchUnavailablePeriodByPeriodCommand:
         $ref: '#/components/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
+      UpdateSearchBaseRateCommand:
+        $ref: '#/components/messages/UpdateSearchBaseRateCommand'
 
   # Consumer reads from the queue
   bookit/commands/queue:
@@ -116,6 +118,8 @@ channels:
         $ref: '#/components/messages/RemoveSearchUnavailablePeriodBySourceCommand'
       RemoveSearchUnavailablePeriodByPeriodCommand:
         $ref: '#/components/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
+      UpdateSearchBaseRateCommand:
+        $ref: '#/components/messages/UpdateSearchBaseRateCommand'
 
 operations:
 
@@ -373,6 +377,23 @@ operations:
     messages:
       - $ref: '#/channels/bookit~1commands~1exchange/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
 
+  dispatchUpdateSearchBaseRate:
+    action: send
+    channel:
+      $ref: '#/channels/bookit~1commands~1exchange'
+    summary: Propagate a base rate change to the search projection
+    description: |
+      Dispatched by `BaseRateSetListener` (Search context) in response to the
+      `BaseRateSet` domain event.
+
+      **Trigger:** `PUT /api/v1/rooms/{roomId}/base-rate`
+    bindings:
+      amqp:
+        deliveryMode: 2
+        bindingVersion: 0.3.0
+    messages:
+      - $ref: '#/channels/bookit~1commands~1exchange/messages/UpdateSearchBaseRateCommand'
+
   # ── Search projection consumers ───────────────────────────────────────────────
 
   handleRegisterSearchRoomType:
@@ -502,6 +523,19 @@ operations:
       and `checkOut` combination.
     messages:
       - $ref: '#/channels/bookit~1commands~1queue/messages/RemoveSearchUnavailablePeriodByPeriodCommand'
+
+  handleUpdateSearchBaseRate:
+    action: receive
+    channel:
+      $ref: '#/channels/bookit~1commands~1queue'
+    summary: Update base price in the search projection
+    description: |
+      Handled by `UpdateSearchBaseRateCommandHandler` (Search context).
+
+      Updates `base_price_cents` on `search.hotel_room_types` for the room type associated
+      with the given room (resolved via `room_index` lookup).
+    messages:
+      - $ref: '#/channels/bookit~1commands~1queue/messages/UpdateSearchBaseRateCommand'
 
 components:
 
@@ -687,6 +721,19 @@ components:
             roomId: c3d4e5f6-a7b8-9012-cdef-123456789012
             checkIn: '2026-07-01'
             checkOut: '2026-07-08'
+
+    UpdateSearchBaseRateCommand:
+      name: UpdateSearchBaseRateCommand
+      title: Update Search Base Rate
+      summary: Propagate a room base rate change to the search projection
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/UpdateSearchBaseRatePayload'
+      examples:
+        - name: typical
+          payload:
+            roomId: c3d4e5f6-a7b8-9012-cdef-123456789012
+            amountCents: 15000
 
   schemas:
 
@@ -895,3 +942,18 @@ components:
         checkOut:
           type: string
           format: date
+
+    UpdateSearchBaseRatePayload:
+      type: object
+      required:
+        - roomId
+        - amountCents
+      properties:
+        roomId:
+          type: string
+          format: uuid
+          description: UUID v4 of the room whose base rate changed
+        amountCents:
+          type: integer
+          minimum: 0
+          description: New base price in cents

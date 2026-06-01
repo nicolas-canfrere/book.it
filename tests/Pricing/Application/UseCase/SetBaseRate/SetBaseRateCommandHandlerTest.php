@@ -21,6 +21,7 @@ final class SetBaseRateCommandHandlerTest extends TestCase
     public function itDispatchesBaseRateSet(): void
     {
         $repository = $this->createMock(BaseRateRepositoryInterface::class);
+        $repository->expects($this->once())->method('save');
         $roomExists = $this->createMock(RoomExistsInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
