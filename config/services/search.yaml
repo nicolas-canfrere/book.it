@@ -85,6 +85,8 @@ services:
 
     App\Search\Domain\Port\RoomIndexWriterInterface: '@App\Search\Infrastructure\Persistence\RoomIndexWriter'
 
+    App\Search\Domain\Port\UnavailablePeriodWriterInterface: '@App\Search\Infrastructure\Persistence\UnavailablePeriodWriter'
+
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
