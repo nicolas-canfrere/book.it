@@ -4,104 +4,92 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\Application\UseCase\RegisterHotel;
 
-use App\Hotel\Application\Service\RegisterHotelCommandFactory;
+use App\Hotel\Application\UseCase\RegisterHotel\RegisterHotelCommand;
 use App\Hotel\Application\UseCase\RegisterHotel\RegisterHotelCommandHandler;
-use App\Hotel\Domain\Exception\HotelAlreadyExistsException;
+use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
-use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
+use App\Shared\Domain\Event\HotelRegistered;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
+use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
-#[Group('integration')]
-final class RegisterHotelCommandHandlerTest extends KernelTestCase
+#[Group('unit')]
+final class RegisterHotelCommandHandlerTest extends TestCase
 {
-    private InMemoryHotelRepository $hotelRepository;
-    private RegisterHotelCommandHandler $handler;
-    private RegisterHotelCommandFactory $commandFactory;
-
-    protected function setUp(): void
+    #[Test]
+    public function itDispatchesHotelRegisteredOnSuccess(): void
     {
-        $this->hotelRepository = new InMemoryHotelRepository();
-        static::getContainer()->set(HotelRepositoryInterface::class, $this->hotelRepository);
-        $this->handler = static::getContainer()->get(RegisterHotelCommandHandler::class);
-        $this->commandFactory = static::getContainer()->get(RegisterHotelCommandFactory::class);
+        $repository = $this->createMock(HotelRepositoryInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+
+        $repository->method('existsByNameAndAddress')->willReturn(false);
+
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static function (object $event): bool {
+                return $event instanceof HotelRegistered
+                    && 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11' === $event->hotelId
+                    && 'Le Grand Hôtel' === $event->name
+                    && 'Paris' === $event->city
+                    && 'FR' === $event->country
+                    && null === $event->starRating;
+            }));
+
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher);
+
+        ($handler)(new RegisterHotelCommand(
+            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            name: 'Le Grand Hôtel',
+            address: new Address('1 rue de la Paix', '75001', 'Paris', 'FR'),
+            createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
+        ));
     }
 
     #[Test]
-    public function itPersistsTheHotel(): void
+    public function itDispatchesStarRatingWhenProvided(): void
     {
-        $command = $this->commandFactory->create(
-            name: 'Hotel Ibis Paris',
-            streetAddress: '15 rue de Rivoli',
-            postalCode: '75001',
-            city: 'Paris',
-            country: 'FR',
-        );
+        $repository = $this->createMock(HotelRepositoryInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        ($this->handler)($command);
+        $repository->method('existsByNameAndAddress')->willReturn(false);
 
-        $hotel = $this->hotelRepository->get($command->id);
+        $dispatcher->expects($this->once())
+            ->method('dispatch')
+            ->with($this->callback(static function (object $event): bool {
+                return $event instanceof HotelRegistered && 4 === $event->starRating;
+            }));
 
-        self::assertNotNull($hotel);
-        self::assertSame($command->id, $hotel->id);
-        self::assertSame($command->name, $hotel->name);
-        self::assertSame('15 rue de Rivoli', $hotel->address->streetAddress);
-        self::assertSame('75001', $hotel->address->postalCode);
-        self::assertSame('Paris', $hotel->address->city);
-        self::assertSame('FR', $hotel->address->country);
-        self::assertEquals($command->createdAt, $hotel->createdAt);
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher);
+
+        ($handler)(new RegisterHotelCommand(
+            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12',
+            name: 'Luxury Palace',
+            address: new Address('5 avenue Foch', '75016', 'Paris', 'FR'),
+            createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
+            starRating: new \App\Hotel\Domain\ValueObject\StarRating(4, false),
+        ));
     }
 
     #[Test]
-    public function itThrowsWhenHotelAlreadyExists(): void
+    public function itDoesNotDispatchWhenHotelAlreadyExists(): void
     {
-        $command = $this->commandFactory->create(
-            name: 'Hotel Ibis Paris',
-            streetAddress: '15 rue de Rivoli',
-            postalCode: '75001',
-            city: 'Paris',
-            country: 'FR',
-        );
+        $repository = $this->createMock(HotelRepositoryInterface::class);
+        $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
-        ($this->handler)($command);
+        $repository->method('existsByNameAndAddress')->willReturn(true);
 
-        $this->expectException(HotelAlreadyExistsException::class);
+        $dispatcher->expects($this->never())->method('dispatch');
 
-        $duplicate = $this->commandFactory->create(
-            name: 'Hotel Ibis Paris',
-            streetAddress: '15 rue de Rivoli',
-            postalCode: '75001',
-            city: 'Paris',
-            country: 'FR',
-        );
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher);
 
-        ($this->handler)($duplicate);
-    }
+        $this->expectException(\App\Hotel\Domain\Exception\HotelAlreadyExistsException::class);
 
-    #[Test]
-    public function itAllowsSameNameInDifferentCity(): void
-    {
-        $paris = $this->commandFactory->create(
-            name: 'Hotel Ibis',
-            streetAddress: '15 rue de Rivoli',
-            postalCode: '75001',
-            city: 'Paris',
-            country: 'FR',
-        );
-
-        $lyon = $this->commandFactory->create(
-            name: 'Hotel Ibis',
-            streetAddress: '10 rue de la Republique',
-            postalCode: '69001',
-            city: 'Lyon',
-            country: 'FR',
-        );
-
-        ($this->handler)($paris);
-        ($this->handler)($lyon);
-
-        self::assertNotNull($this->hotelRepository->get($paris->id));
-        self::assertNotNull($this->hotelRepository->get($lyon->id));
+        ($handler)(new RegisterHotelCommand(
+            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a13',
+            name: 'Le Grand Hôtel',
+            address: new Address('1 rue de la Paix', '75001', 'Paris', 'FR'),
+            createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
+        ));
     }
 }
