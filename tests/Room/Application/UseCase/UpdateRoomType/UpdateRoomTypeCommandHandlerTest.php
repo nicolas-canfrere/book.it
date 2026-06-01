@@ -92,7 +92,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
                 bedEntries: [['type' => 'single', 'count' => 1]],
             ));
             self::fail('Expected RoomTypeNotFoundException was not thrown');
-        } catch (RoomTypeNotFoundException $e) {
+        } catch (RoomTypeNotFoundException) {
             // expected
         }
 
@@ -126,7 +126,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
                 bedEntries: [['type' => 'single', 'count' => 1]],
             ));
             self::fail('Expected RoomTypeAlreadyExistsException was not thrown');
-        } catch (RoomTypeAlreadyExistsException $e) {
+        } catch (RoomTypeAlreadyExistsException) {
             // expected
         }
 

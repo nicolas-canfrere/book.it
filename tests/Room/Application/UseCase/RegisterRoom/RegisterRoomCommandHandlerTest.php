@@ -195,7 +195,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
                 createdAt: new \DateTimeImmutable(),
             ));
             self::fail('Expected RoomAlreadyExistsException was not thrown');
-        } catch (RoomAlreadyExistsException $e) {
+        } catch (RoomAlreadyExistsException) {
             // expected
         }
 

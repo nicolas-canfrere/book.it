@@ -38,7 +38,7 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
         try {
             ($this->handler)(new DeclareHotelAmenitiesCommand('unknown-id', []));
             self::fail('Expected HotelNotFoundException was not thrown');
-        } catch (HotelNotFoundException $e) {
+        } catch (HotelNotFoundException) {
             // expected
         }
 

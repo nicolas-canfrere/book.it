@@ -93,7 +93,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
         try {
             ($this->handler)(new ClassifyHotelCommand('unknown-id', 3, false));
             self::fail('Expected HotelNotFoundException was not thrown');
-        } catch (HotelNotFoundException $e) {
+        } catch (HotelNotFoundException) {
             // expected
         }
 

@@ -82,7 +82,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
                 createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
             ));
             self::fail('Expected HotelAlreadyExistsException was not thrown');
-        } catch (\App\Hotel\Domain\Exception\HotelAlreadyExistsException $e) {
+        } catch (\App\Hotel\Domain\Exception\HotelAlreadyExistsException) {
             // expected
         }
 
