@@ -8,11 +8,14 @@ use App\Hotel\Domain\Exception\HotelNotFoundException;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\StarRating;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\StarRatingClassified;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class ClassifyHotelCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private HotelRepositoryInterface $hotelRepository,
+        private EventDispatcherInterface $eventDispatcher,
     ) {
     }
 
@@ -29,5 +32,10 @@ final readonly class ClassifyHotelCommandHandler implements SyncCommandHandlerIn
             : null;
 
         $this->hotelRepository->save($hotel->withStarRating($starRating));
+
+        $this->eventDispatcher->dispatch(new StarRatingClassified(
+            hotelId: $command->hotelId,
+            starRating: $command->stars,
+        ));
     }
 }

@@ -13,17 +13,20 @@ use App\Hotel\Domain\ValueObject\StarRating;
 use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\TestCase;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class ClassifyHotelCommandHandlerTest extends TestCase
 {
     private InMemoryHotelRepository $repository;
+    private EventDispatcherInterface $dispatcher;
     private ClassifyHotelCommandHandler $handler;
 
     protected function setUp(): void
     {
         $this->repository = new InMemoryHotelRepository();
-        $this->handler = new ClassifyHotelCommandHandler($this->repository);
+        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $this->handler = new ClassifyHotelCommandHandler($this->repository, $this->dispatcher);
     }
 
     public function test_it_sets_a_star_rating(): void
