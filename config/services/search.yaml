@@ -51,6 +51,14 @@ services:
         arguments:
             $connection: '@doctrine.dbal.search_connection'
 
+    App\Search\Infrastructure\EventListener\BlockedPeriodCreatedListener:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
+    App\Search\Infrastructure\EventListener\BlockedPeriodDeletedListener:
+        arguments:
+            $connection: '@doctrine.dbal.search_connection'
+
     bookit.doctrine.middleware.search_path.search:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
