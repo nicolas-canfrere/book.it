@@ -42,8 +42,8 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
             ->method('dispatch')
             ->with($this->callback(static function (object $event): bool {
                 return $event instanceof StarRatingClassified
-                    && $event->hotelId === 'hotel-id-1'
-                    && $event->starRating === 4;
+                    && 'hotel-id-1' === $event->hotelId
+                    && 4 === $event->starRating;
             }));
 
         $handler = new ClassifyHotelCommandHandler($repository, $dispatcher);
@@ -63,8 +63,8 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
             ->method('dispatch')
             ->with($this->callback(static function (object $event): bool {
                 return $event instanceof StarRatingClassified
-                    && $event->hotelId === 'hotel-id-1'
-                    && $event->starRating === null;
+                    && 'hotel-id-1' === $event->hotelId
+                    && null === $event->starRating;
             }));
 
         $handler = new ClassifyHotelCommandHandler($repository, $dispatcher);
