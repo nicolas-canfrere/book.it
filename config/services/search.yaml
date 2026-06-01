@@ -25,50 +25,6 @@ services:
         exclude:
             - '../../src/Search/Application/**/*Query.php'
 
-    App\Search\Infrastructure\EventListener\StarRatingClassifiedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\HotelAmenityDeclaredListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\RoomTypeRegisteredListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-            $hotelConnection: '@doctrine.dbal.hotel_connection'
-
-    App\Search\Infrastructure\EventListener\RoomTypeUpdatedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\RoomTypeAmenityDeclaredListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\RoomTypeDeletedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\RoomRegisteredListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\BlockedPeriodCreatedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\BlockedPeriodDeletedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\AvailabilityHoldCreatedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
-
-    App\Search\Infrastructure\EventListener\AvailabilityHoldDeletedListener:
-        arguments:
-            $connection: '@doctrine.dbal.search_connection'
 
     App\Search\Infrastructure\Finder\DbalAvailableRoomTypeFinder:
         arguments:
