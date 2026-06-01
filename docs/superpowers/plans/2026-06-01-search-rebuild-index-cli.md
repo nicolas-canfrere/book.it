@@ -15,32 +15,13 @@
 | Action | Path |
 |--------|------|
 | Create | `src/Search/UI/Console/RebuildSearchIndexCommand.php` |
-| Modify | `config/services/search.yaml` — explicit wiring for cross-context connections |
 | Create | `tests/Search/Functional/Console/RebuildSearchIndexCommandTest.php` |
 
----
-
-## Task 1 — DI wiring for cross-context connections
-
-**Files:**
-- Modify: `config/services/search.yaml`
-
-- [ ] **Step 1: Add explicit service definition for the command**
-
-In `config/services/search.yaml`, add after the last existing service definition (before the `bookit.doctrine.middleware` block):
-
-```yaml
-    App\Search\UI\Console\RebuildSearchIndexCommand:
-        arguments:
-            $searchConnection: '@doctrine.dbal.search_connection'
-            $roomConnection: '@doctrine.dbal.room_connection'
-            $pricingConnection: '@doctrine.dbal.pricing_connection'
-            $availabilityConnection: '@doctrine.dbal.availability_connection'
-```
+> **DI note:** All `Connection` arguments are autowired by Symfony via the `{connectionName}Connection` naming convention — no explicit YAML wiring needed.
 
 ---
 
-## Task 2 — Command skeleton + failing test
+## Task 1 — Command skeleton + failing test
 
 **Files:**
 - Create: `src/Search/UI/Console/RebuildSearchIndexCommand.php`
@@ -255,7 +236,7 @@ git commit -m "feat(search): add search:rebuild-index command skeleton with DI w
 
 ---
 
-## Task 3 — Truncate + rebuild hotel_room_types
+## Task 2 — Truncate + rebuild hotel_room_types
 
 **Files:**
 - Modify: `src/Search/UI/Console/RebuildSearchIndexCommand.php`
@@ -341,7 +322,7 @@ Expected: both tests pass.
 
 ---
 
-## Task 4 — Rebuild room_index
+## Task 3 — Rebuild room_index
 
 **Files:**
 - Modify: `src/Search/UI/Console/RebuildSearchIndexCommand.php`
@@ -409,7 +390,7 @@ Expected: all tests pass.
 
 ---
 
-## Task 5 — Apply base rates
+## Task 4 — Apply base rates
 
 **Files:**
 - Modify: `src/Search/UI/Console/RebuildSearchIndexCommand.php`
@@ -473,7 +454,7 @@ Expected: all tests pass.
 
 ---
 
-## Task 6 — Rebuild unavailable_periods
+## Task 5 — Rebuild unavailable_periods
 
 **Files:**
 - Modify: `src/Search/UI/Console/RebuildSearchIndexCommand.php`
@@ -554,7 +535,7 @@ Expected: all tests pass.
 
 ---
 
-## Task 7 — Verify truncate clears stale data + final checks
+## Task 6 — Verify truncate clears stale data + final checks
 
 **Files:**
 - Modify: `tests/Search/Functional/Console/RebuildSearchIndexCommandTest.php`
