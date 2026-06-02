@@ -42,18 +42,11 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
                 continue;
             }
 
-            if ('' === $number) {
-                $violations[] = ['field' => $lineField, 'message' => 'Room number must not be blank.'];
-                continue;
-            }
-
-            if (mb_strlen($number) > 50) {
-                $violations[] = ['field' => $lineField, 'message' => 'Room number must not exceed 50 characters.'];
-                continue;
-            }
-
-            if ($floor < -20 || $floor > 300) {
-                $violations[] = ['field' => $lineField, 'message' => 'Room floor must be between -20 and 300.'];
+            try {
+                new RoomNumber($number);
+                new RoomFloor($floor);
+            } catch (\InvalidArgumentException $e) {
+                $violations[] = ['field' => $lineField, 'message' => $e->getMessage()];
                 continue;
             }
 
