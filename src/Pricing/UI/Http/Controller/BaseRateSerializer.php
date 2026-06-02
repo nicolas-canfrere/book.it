@@ -9,14 +9,14 @@ use App\Pricing\Domain\Model\BaseRate;
 final class BaseRateSerializer
 {
     /**
-     * @return array{roomId: string, amountCents: int, updatedAt: int}
+     * @return array{roomId: string, amountCents: int, updatedAt: string}
      */
     public function serialize(BaseRate $baseRate): array
     {
         return [
             'roomId' => $baseRate->roomId,
             'amountCents' => $baseRate->amountCents,
-            'updatedAt' => $baseRate->updatedAt->getTimestamp(),
+            'updatedAt' => $baseRate->updatedAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }

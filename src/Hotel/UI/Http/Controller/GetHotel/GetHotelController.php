@@ -41,7 +41,7 @@ final readonly class GetHotelController
                         new OA\Property(property: 'postalCode', type: 'string', example: '75001'),
                         new OA\Property(property: 'city', type: 'string', example: 'Paris'),
                         new OA\Property(property: 'country', type: 'string', example: 'FR'),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                         new OA\Property(
                             property: 'starRating',
                             properties: [

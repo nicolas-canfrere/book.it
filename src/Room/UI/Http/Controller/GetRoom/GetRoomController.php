@@ -38,7 +38,7 @@ final readonly class GetRoomController
                         new OA\Property(property: 'id', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'number', type: 'string', example: '101'),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

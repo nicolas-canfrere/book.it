@@ -9,7 +9,7 @@ use App\Pricing\Domain\Model\Promotion;
 final class PromotionSerializer
 {
     /**
-     * @return array{id: string, roomId: string, checkIn: string, checkOut: string, discountPercent: int, createdAt: int}
+     * @return array{id: string, roomId: string, checkIn: string, checkOut: string, discountPercent: int, createdAt: string}
      */
     public function serialize(Promotion $promotion): array
     {
@@ -19,7 +19,7 @@ final class PromotionSerializer
             'checkIn' => $promotion->getCheckIn()->format('Y-m-d'),
             'checkOut' => $promotion->getCheckOut()->format('Y-m-d'),
             'discountPercent' => $promotion->getDiscountPercent(),
-            'createdAt' => $promotion->createdAt->getTimestamp(),
+            'createdAt' => $promotion->createdAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }

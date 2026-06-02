@@ -49,7 +49,7 @@ final readonly class BlockPeriodController
                         new OA\Property(property: 'roomId', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'checkIn', type: 'string', format: 'date', example: '2025-06-10'),
                         new OA\Property(property: 'checkOut', type: 'string', format: 'date', example: '2025-06-13'),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

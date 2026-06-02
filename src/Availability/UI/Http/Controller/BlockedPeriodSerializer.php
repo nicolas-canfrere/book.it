@@ -9,7 +9,7 @@ use App\Availability\Domain\Model\BlockedPeriod;
 final class BlockedPeriodSerializer
 {
     /**
-     * @return array{id: string, roomId: string, checkIn: string, checkOut: string, createdAt: int}
+     * @return array{id: string, roomId: string, checkIn: string, checkOut: string, createdAt: string}
      */
     public function serialize(BlockedPeriod $period): array
     {
@@ -18,7 +18,7 @@ final class BlockedPeriodSerializer
             'roomId' => $period->roomId,
             'checkIn' => $period->period->checkIn->format('Y-m-d'),
             'checkOut' => $period->period->checkOut->format('Y-m-d'),
-            'createdAt' => $period->createdAt->getTimestamp(),
+            'createdAt' => $period->createdAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }

@@ -9,7 +9,7 @@ use App\Room\Domain\Model\Room;
 final class RoomSerializer
 {
     /**
-     * @return array{id: string, hotelId: string, number: string, floor: int, roomTypeId: string, createdAt: int}
+     * @return array{id: string, hotelId: string, number: string, floor: int, roomTypeId: string, createdAt: string}
      */
     public function serialize(Room $room): array
     {
@@ -19,7 +19,7 @@ final class RoomSerializer
             'number' => $room->number->value,
             'floor' => $room->floor->value,
             'roomTypeId' => $room->roomTypeId,
-            'createdAt' => $room->createdAt->getTimestamp(),
+            'createdAt' => $room->createdAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }

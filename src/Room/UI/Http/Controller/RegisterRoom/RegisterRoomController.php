@@ -53,7 +53,7 @@ final readonly class RegisterRoomController
                         new OA\Property(property: 'number', type: 'string', example: '101'),
                         new OA\Property(property: 'floor', type: 'integer', example: 1),
                         new OA\Property(property: 'roomTypeId', type: 'string', format: 'uuid'),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),
