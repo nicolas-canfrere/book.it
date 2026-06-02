@@ -9,6 +9,7 @@ use App\Shared\Infrastructure\Bus\CorrelationStamp;
 use App\Shared\Infrastructure\Bus\Middleware\CorrelationMiddleware;
 use App\Shared\Infrastructure\Correlation\RequestCorrelationContext;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Bridge\Amqp\Transport\AmqpStamp;
 use Symfony\Component\Messenger\Envelope;
@@ -18,7 +19,8 @@ use Symfony\Component\Messenger\Middleware\StackInterface;
 #[Group('unit')]
 final class CorrelationMiddlewareTest extends TestCase
 {
-    public function test_dispatch_attaches_correlation_stamp_and_amqp_stamp(): void
+    #[Test]
+    public function itDispatchAttachesCorrelationStampAndAmqpStamp(): void
     {
         $context = new RequestCorrelationContext();
         $context->setId('req-dispatch-001');
@@ -41,7 +43,8 @@ final class CorrelationMiddlewareTest extends TestCase
         self::assertSame('req-dispatch-001', $attributes['headers']['X-Request-Id']);
     }
 
-    public function test_receive_restores_context_from_stamp(): void
+    #[Test]
+    public function itReceiveRestoresContextFromStamp(): void
     {
         $context = new RequestCorrelationContext();
         $middleware = new CorrelationMiddleware($context);
@@ -55,7 +58,8 @@ final class CorrelationMiddlewareTest extends TestCase
         self::assertSame('req-receive-002', $context->getId());
     }
 
-    public function test_receive_does_not_add_extra_stamps(): void
+    #[Test]
+    public function itReceiveDoesNotAddExtraStamps(): void
     {
         $context = new RequestCorrelationContext();
         $middleware = new CorrelationMiddleware($context);

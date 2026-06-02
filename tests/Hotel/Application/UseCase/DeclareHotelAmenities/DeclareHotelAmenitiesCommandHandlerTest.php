@@ -14,6 +14,7 @@ use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Shared\Domain\Event\HotelAmenityDeclared;
 use App\Tests\Fake\FakeEventDispatcher;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
@@ -31,7 +32,8 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
         $this->handler = new DeclareHotelAmenitiesCommandHandler($this->repository, $this->dispatcher);
     }
 
-    public function test_throws_when_hotel_not_found(): void
+    #[Test]
+    public function itThrowsWhenHotelNotFound(): void
     {
         $this->repository->method('get')->willReturn(null);
 
@@ -45,7 +47,8 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
         self::assertEmpty($this->dispatcher->getDispatched());
     }
 
-    public function test_saves_declared_amenities(): void
+    #[Test]
+    public function itSavesDeclaredAmenities(): void
     {
         $hotel = new Hotel(
             'hotel-id',
@@ -69,7 +72,8 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
         self::assertSame(['pool', 'gym'], $event->amenities);
     }
 
-    public function test_saves_empty_list(): void
+    #[Test]
+    public function itSavesEmptyList(): void
     {
         $hotel = new Hotel(
             'hotel-id',

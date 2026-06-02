@@ -8,12 +8,14 @@ use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCance
 use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommandHandler;
 use App\Payment\Domain\Port\ReservationPaymentCancellerInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('integration')]
 final class HandlePaymentCancellationCommandHandlerTest extends KernelTestCase
 {
-    public function test_calls_canceller_with_reservation_id(): void
+    #[Test]
+    public function itCallsCancellerWithReservationId(): void
     {
         $canceller = new class implements ReservationPaymentCancellerInterface {
             public ?string $calledWith = null;

@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Hotel\Functional;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
 final class ClassifyHotelTest extends WebTestCase
 {
-    public function test_it_sets_a_star_rating_on_a_hotel(): void
+    #[Test]
+    public function itItSetsAStarRatingOnAHotel(): void
     {
         $client = static::createClient();
         $id = $this->registerHotel($client);
@@ -29,7 +31,8 @@ final class ClassifyHotelTest extends WebTestCase
         self::assertSame(['stars' => 4, 'superior' => false], $body['starRating']);
     }
 
-    public function test_it_sets_a_superior_star_rating(): void
+    #[Test]
+    public function itItSetsASuperiorStarRating(): void
     {
         $client = static::createClient();
         $id = $this->registerHotel($client);
@@ -47,7 +50,8 @@ final class ClassifyHotelTest extends WebTestCase
         self::assertSame(['stars' => 5, 'superior' => true], $body['starRating']);
     }
 
-    public function test_it_removes_a_star_rating_when_stars_is_null(): void
+    #[Test]
+    public function itItRemovesAStarRatingWhenStarsIsNull(): void
     {
         $client = static::createClient();
         $id = $this->registerHotel($client);
@@ -69,7 +73,8 @@ final class ClassifyHotelTest extends WebTestCase
         self::assertNull($body['starRating']);
     }
 
-    public function test_it_returns_404_for_unknown_hotel(): void
+    #[Test]
+    public function itItReturns404ForUnknownHotel(): void
     {
         $client = static::createClient();
 
@@ -81,7 +86,8 @@ final class ClassifyHotelTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
-    public function test_it_returns_422_when_superior_true_without_stars(): void
+    #[Test]
+    public function itItReturns422WhenSuperiorTrueWithoutStars(): void
     {
         $client = static::createClient();
         $id = $this->registerHotel($client);
@@ -94,7 +100,8 @@ final class ClassifyHotelTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
     }
 
-    public function test_it_returns_422_when_stars_out_of_range(): void
+    #[Test]
+    public function itItReturns422WhenStarsOutOfRange(): void
     {
         $client = static::createClient();
         $id = $this->registerHotel($client);

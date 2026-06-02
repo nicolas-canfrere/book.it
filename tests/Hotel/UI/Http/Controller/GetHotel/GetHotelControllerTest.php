@@ -75,7 +75,7 @@ final class GetHotelControllerTest extends WebTestCase
     }
 
     #[Test]
-    public function test_response_includes_amenities_field(): void
+    public function itResponseIncludesAmenitiesField(): void
     {
         $client = self::createClient();
 

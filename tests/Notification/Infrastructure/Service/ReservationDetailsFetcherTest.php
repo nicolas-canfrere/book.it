@@ -12,12 +12,14 @@ use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class ReservationDetailsFetcherTest extends TestCase
 {
-    public function test_returns_details_when_reservation_found(): void
+    #[Test]
+    public function itReturnsDetailsWhenReservationFound(): void
     {
         $reservation = new Reservation(
             id: 'res-001',
@@ -55,7 +57,8 @@ final class ReservationDetailsFetcherTest extends TestCase
         self::assertSame(40000, $details->totalPriceCents);
     }
 
-    public function test_returns_null_when_reservation_not_found(): void
+    #[Test]
+    public function itReturnsNullWhenReservationNotFound(): void
     {
         $queryBus = new class implements SyncQueryBusInterface {
             public function ask(object $query): mixed

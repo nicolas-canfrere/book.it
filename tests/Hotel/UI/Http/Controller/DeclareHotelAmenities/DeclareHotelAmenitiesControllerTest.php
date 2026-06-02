@@ -5,13 +5,15 @@ declare(strict_types=1);
 namespace App\Tests\Hotel\UI\Http\Controller\DeclareHotelAmenities;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
 final class DeclareHotelAmenitiesControllerTest extends WebTestCase
 {
-    public function test_declares_amenities_on_existing_hotel(): void
+    #[Test]
+    public function itDeclaresAmenitiesOnExistingHotel(): void
     {
         $client = self::createClient();
         $id = $this->registerHotel($client);
@@ -26,7 +28,8 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_replaces_amenities_with_empty_list(): void
+    #[Test]
+    public function itReplacesAmenitiesWithEmptyList(): void
     {
         $client = self::createClient();
         $id = $this->registerHotel($client, 'Empty Amenities Hotel');
@@ -48,7 +51,8 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_returns_404_for_unknown_hotel(): void
+    #[Test]
+    public function itReturns404ForUnknownHotel(): void
     {
         $client = self::createClient();
 
@@ -62,7 +66,8 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
-    public function test_returns_422_for_unknown_amenity_value(): void
+    #[Test]
+    public function itReturns422ForUnknownAmenityValue(): void
     {
         $client = self::createClient();
         $id = $this->registerHotel($client, 'Invalid Amenity Hotel');
@@ -77,7 +82,8 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
     }
 
-    public function test_returns_422_for_duplicate_values(): void
+    #[Test]
+    public function itReturns422ForDuplicateValues(): void
     {
         $client = self::createClient();
         $id = $this->registerHotel($client, 'Duplicate Amenity Hotel');

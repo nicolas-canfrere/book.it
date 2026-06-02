@@ -7,6 +7,7 @@ namespace App\Tests\Availability\Infrastructure\Persistence\InMemory;
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
@@ -19,7 +20,8 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         $this->repository = new InMemoryAvailabilityHoldRepository();
     }
 
-    public function test_add_and_has_active_overlap(): void
+    #[Test]
+    public function itAddAndHasActiveOverlap(): void
     {
         $roomId = 'room-1';
         $checkIn = new \DateTimeImmutable('2030-06-01');
@@ -37,7 +39,8 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         self::assertTrue($this->repository->hasActiveOverlap($roomId, $checkIn, $checkOut));
     }
 
-    public function test_expired_hold_does_not_count_as_overlap(): void
+    #[Test]
+    public function itExpiredHoldDoesNotCountAsOverlap(): void
     {
         $roomId = 'room-2';
         $checkIn = new \DateTimeImmutable('2030-07-01');
@@ -55,7 +58,8 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         self::assertFalse($this->repository->hasActiveOverlap($roomId, $checkIn, $checkOut));
     }
 
-    public function test_delete_by_reservation_id_removes_hold(): void
+    #[Test]
+    public function itDeleteByReservationIdRemovesHold(): void
     {
         $roomId = 'room-3';
         $checkIn = new \DateTimeImmutable('2030-08-01');
@@ -75,7 +79,8 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         self::assertFalse($this->repository->hasActiveOverlap($roomId, $checkIn, $checkOut));
     }
 
-    public function test_no_overlap_when_repository_is_empty(): void
+    #[Test]
+    public function itNoOverlapWhenRepositoryIsEmpty(): void
     {
         self::assertFalse($this->repository->hasActiveOverlap(
             'room-4',

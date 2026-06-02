@@ -6,12 +6,14 @@ namespace App\Tests\Pricing\Domain\Model;
 
 use App\Pricing\Domain\Model\CancellationPolicy;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class CancellationPolicyTest extends TestCase
 {
-    public function test_constructs_with_valid_data(): void
+    #[Test]
+    public function itConstructsWithValidData(): void
     {
         $policy = new CancellationPolicy(
             roomId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
@@ -24,7 +26,8 @@ final class CancellationPolicyTest extends TestCase
         self::assertSame('2026-05-19T00:00:00+00:00', $policy->updatedAt->format(\DateTimeInterface::ATOM));
     }
 
-    public function test_throws_on_zero_threshold(): void
+    #[Test]
+    public function itThrowsOnZeroThreshold(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Days threshold must be greater than zero.');
@@ -36,7 +39,8 @@ final class CancellationPolicyTest extends TestCase
         );
     }
 
-    public function test_throws_on_negative_threshold(): void
+    #[Test]
+    public function itThrowsOnNegativeThreshold(): void
     {
         $this->expectException(\InvalidArgumentException::class);
         $this->expectExceptionMessage('Days threshold must be greater than zero.');

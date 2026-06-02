@@ -10,7 +10,7 @@ use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 use Symfony\Component\Yaml\Yaml;
 
-#[Group('functional')]
+#[Group('integration')]
 final class GenerateEventsCatalogCommandTest extends KernelTestCase
 {
     public function testGeneratesDomainEventsYaml(): void

@@ -222,7 +222,7 @@ final class ListHotelsControllerTest extends WebTestCase
     }
 
     #[Test]
-    public function test_filters_by_amenities(): void
+    public function itFiltersByAmenities(): void
     {
         $client = self::createClient();
 

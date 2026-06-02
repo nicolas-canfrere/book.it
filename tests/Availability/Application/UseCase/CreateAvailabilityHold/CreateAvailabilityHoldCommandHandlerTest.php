@@ -30,7 +30,8 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
         $this->handler = new CreateAvailabilityHoldCommandHandler($this->repository, $this->dispatcher);
     }
 
-    public function test_creates_hold_when_no_active_overlap(): void
+    #[Test]
+    public function itCreatesHoldWhenNoActiveOverlap(): void
     {
         $this->repository->method('hasActiveOverlap')->willReturn(false);
         $this->repository->expects(self::once())->method('add')
@@ -47,7 +48,8 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
         ));
     }
 
-    public function test_throws_when_active_overlap_exists(): void
+    #[Test]
+    public function itThrowsWhenActiveOverlapExists(): void
     {
         $this->repository->method('hasActiveOverlap')->willReturn(true);
         $this->repository->expects(self::never())->method('add');

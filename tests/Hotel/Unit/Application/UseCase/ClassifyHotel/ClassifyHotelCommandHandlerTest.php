@@ -32,7 +32,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     }
 
     #[Test]
-    public function test_it_sets_a_star_rating(): void
+    public function itItSetsAStarRating(): void
     {
         $this->repository->add($this->aHotel('hotel-1'));
 
@@ -51,7 +51,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     }
 
     #[Test]
-    public function test_it_sets_a_superior_star_rating(): void
+    public function itItSetsASuperiorStarRating(): void
     {
         $this->repository->add($this->aHotel('hotel-1'));
 
@@ -70,7 +70,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     }
 
     #[Test]
-    public function test_it_removes_a_star_rating_when_stars_is_null(): void
+    public function itItRemovesAStarRatingWhenStarsIsNull(): void
     {
         $hotel = $this->aHotel('hotel-1')->withStarRating(new StarRating(3, false));
         $this->repository->add($hotel);
@@ -88,7 +88,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     }
 
     #[Test]
-    public function test_it_throws_when_hotel_not_found(): void
+    public function itItThrowsWhenHotelNotFound(): void
     {
         try {
             ($this->handler)(new ClassifyHotelCommand('unknown-id', 3, false));

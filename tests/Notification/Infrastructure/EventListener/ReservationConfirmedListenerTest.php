@@ -9,12 +9,14 @@ use App\Notification\Infrastructure\EventListener\ReservationConfirmedListener;
 use App\Shared\Domain\Event\ReservationConfirmed;
 use App\Tests\Fake\FakeAsyncCommandDispatcher;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class ReservationConfirmedListenerTest extends TestCase
 {
-    public function test_dispatches_send_booking_confirmation_email_command(): void
+    #[Test]
+    public function itDispatchesSendBookingConfirmationEmailCommand(): void
     {
         $dispatcher = new FakeAsyncCommandDispatcher();
         $listener = new ReservationConfirmedListener($dispatcher);

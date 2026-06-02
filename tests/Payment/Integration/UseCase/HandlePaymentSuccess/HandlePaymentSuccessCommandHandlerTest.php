@@ -8,12 +8,14 @@ use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCom
 use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCommandHandler;
 use App\Payment\Domain\Port\ReservationPaymentConfirmerInterface;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('integration')]
 final class HandlePaymentSuccessCommandHandlerTest extends KernelTestCase
 {
-    public function test_calls_confirmer_with_reservation_id(): void
+    #[Test]
+    public function itCallsConfirmerWithReservationId(): void
     {
         $confirmer = new class implements ReservationPaymentConfirmerInterface {
             public ?string $calledWith = null;

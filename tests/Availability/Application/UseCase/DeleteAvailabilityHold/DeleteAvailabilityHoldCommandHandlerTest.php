@@ -28,7 +28,8 @@ final class DeleteAvailabilityHoldCommandHandlerTest extends TestCase
         $this->handler = new DeleteAvailabilityHoldCommandHandler($this->repository, $this->dispatcher);
     }
 
-    public function test_deletes_hold_by_reservation_id(): void
+    #[Test]
+    public function itDeletesHoldByReservationId(): void
     {
         $this->repository->expects(self::once())
             ->method('deleteByReservationId')

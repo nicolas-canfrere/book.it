@@ -17,6 +17,7 @@ use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use App\Tests\Reservation\Infrastructure\Service\SequentialGuestIdGenerator;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('integration')]
@@ -34,7 +35,8 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
         );
     }
 
-    public function test_pre_registers_guests_on_confirmed_reservation(): void
+    #[Test]
+    public function itPreRegistersGuestsOnConfirmedReservation(): void
     {
         $reservation = $this->makeConfirmedReservation();
         $this->repository->add($reservation);
@@ -57,7 +59,8 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
         self::assertSame('Bob', $saved->guests[1]->firstName);
     }
 
-    public function test_throws_when_reservation_not_found(): void
+    #[Test]
+    public function itThrowsWhenReservationNotFound(): void
     {
         $this->expectException(ReservationNotFoundException::class);
         ($this->handler)(new PreRegisterGuestsCommand(
@@ -67,7 +70,8 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
         ));
     }
 
-    public function test_throws_when_pre_registration_not_allowed(): void
+    #[Test]
+    public function itThrowsWhenPreRegistrationNotAllowed(): void
     {
         $reservation = $this->makeConfirmedReservation();
         $reservation->status = ReservationStatus::CheckedIn;
