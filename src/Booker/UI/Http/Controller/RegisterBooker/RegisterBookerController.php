@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class RegisterBookerController
 {
@@ -24,6 +25,7 @@ final readonly class RegisterBookerController
         private SyncCommandBusInterface $commandBus,
         private SyncQueryBusInterface $queryBus,
         private BookerSerializer $bookerSerializer,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -39,6 +41,7 @@ final readonly class RegisterBookerController
             new OA\Response(
                 response: Response::HTTP_CREATED,
                 description: 'Booker registered',
+                headers: [new OA\Header(header: 'Location', description: 'URL of the created booker', schema: new OA\Schema(type: 'string', format: 'uri'))],
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'id', type: 'string', format: 'uuid'),
@@ -99,6 +102,7 @@ final readonly class RegisterBookerController
         return new JsonResponse(
             $this->bookerSerializer->serialize($booker),
             Response::HTTP_CREATED,
+            ['Location' => $this->urlGenerator->generate('booker_get_booker', ['id' => $command->id])],
         );
     }
 }

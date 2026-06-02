@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 use Symfony\Component\Routing\Requirement\Requirement;
 
 final readonly class RegisterRoomController
@@ -25,6 +26,7 @@ final readonly class RegisterRoomController
         private SyncCommandBusInterface $commandBus,
         private SyncQueryBusInterface $queryBus,
         private RoomSerializer $roomSerializer,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -43,6 +45,7 @@ final readonly class RegisterRoomController
             new OA\Response(
                 response: Response::HTTP_CREATED,
                 description: 'Room registered',
+                headers: [new OA\Header(header: 'Location', description: 'URL of the created room', schema: new OA\Schema(type: 'string', format: 'uri'))],
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'id', type: 'string', format: 'uuid'),
@@ -93,6 +96,6 @@ final readonly class RegisterRoomController
             throw new NotFoundHttpException();
         }
 
-        return new JsonResponse($this->roomSerializer->serialize($room), Response::HTTP_CREATED);
+        return new JsonResponse($this->roomSerializer->serialize($room), Response::HTTP_CREATED, ['Location' => $this->urlGenerator->generate('room_get_room', ['id' => $command->id])]);
     }
 }
