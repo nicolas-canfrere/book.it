@@ -75,6 +75,7 @@ final readonly class RegisterBookerController
                     schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'),
                 ),
             ),
+            new OA\Response(response: Response::HTTP_UNSUPPORTED_MEDIA_TYPE, description: 'Unsupported media type', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
         ],
     )]
     public function __invoke(

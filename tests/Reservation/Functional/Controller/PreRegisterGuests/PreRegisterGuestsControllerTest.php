@@ -84,6 +84,20 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(204);
     }
 
+    public function test_returns_415_when_content_type_is_not_json(): void
+    {
+        $client = static::createClient();
+
+        $client->request(
+            method: 'PUT',
+            uri: '/api/v1/reservations/550e8400-e29b-41d4-a716-446655440099/guests',
+            server: ['CONTENT_TYPE' => 'text/plain'],
+            content: 'guests[]=Alice',
+        );
+
+        self::assertResponseStatusCodeSame(415);
+    }
+
     public function test_returns_409_when_check_in_date_is_today_or_passed(): void
     {
         $client = static::createClient();

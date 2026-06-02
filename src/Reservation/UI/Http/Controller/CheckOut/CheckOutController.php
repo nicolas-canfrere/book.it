@@ -37,12 +37,13 @@ final readonly class CheckOutController
             new OA\Response(response: Response::HTTP_NO_CONTENT, description: 'Checked out'),
             new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Reservation not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
             new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'Check-out not allowed or validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'))),
+            new OA\Response(response: Response::HTTP_UNSUPPORTED_MEDIA_TYPE, description: 'Unsupported media type', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
         ],
     )]
     #[OA\Parameter(name: 'reservationId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
     public function __invoke(
         string $reservationId,
-        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
+        #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         CheckOutRequest $request,
     ): Response {
         $this->commandBus->execute(new CheckOutCommand(
