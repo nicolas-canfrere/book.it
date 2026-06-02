@@ -9,7 +9,7 @@ use App\Booker\Domain\Model\Booker;
 final class BookerSerializer
 {
     /**
-     * @return array{id: string, firstName: string, lastName: string, email: string, phone: string, dateOfBirth: string, registeredAt: int}
+     * @return array{id: string, firstName: string, lastName: string, email: string, phone: string, dateOfBirth: string, registeredAt: string}
      */
     public function serialize(Booker $booker): array
     {
@@ -20,7 +20,7 @@ final class BookerSerializer
             'email' => $booker->email,
             'phone' => $booker->phone,
             'dateOfBirth' => $booker->dateOfBirth->format('Y-m-d'),
-            'registeredAt' => $booker->registeredAt->getTimestamp(),
+            'registeredAt' => $booker->registeredAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }

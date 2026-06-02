@@ -41,7 +41,7 @@ final readonly class GetBookerController
                         new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jane.doe@example.com'),
                         new OA\Property(property: 'phone', type: 'string', example: '+33612345678'),
                         new OA\Property(property: 'dateOfBirth', type: 'string', format: 'date', example: '1990-01-15'),
-                        new OA\Property(property: 'registeredAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'registeredAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

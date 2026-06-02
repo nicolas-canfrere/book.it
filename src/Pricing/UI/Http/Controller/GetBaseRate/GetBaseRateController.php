@@ -36,7 +36,7 @@ final readonly class GetBaseRateController
                     properties: [
                         new OA\Property(property: 'roomId', type: 'string', format: 'uuid'),
                         new OA\Property(property: 'amountCents', type: 'integer', example: 12000),
-                        new OA\Property(property: 'updatedAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'updatedAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

@@ -15,7 +15,7 @@ final class RoomCatalogueSerializer
 
     /**
      * @return array{
-     *     data: list<array{id: string, hotelId: string, number: string, createdAt: int}>,
+     *     data: list<array{id: string, hotelId: string, number: string, floor: int, roomTypeId: string, createdAt: string}>,
      *     meta: array{page: int, limit: int, total: int, totalPages: int}
      * }
      */

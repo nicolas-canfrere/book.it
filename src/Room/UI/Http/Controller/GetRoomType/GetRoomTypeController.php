@@ -55,7 +55,7 @@ final readonly class GetRoomTypeController
                             ),
                         ),
                         new OA\Property(property: 'amenities', type: 'array', items: new OA\Items(type: 'string'), example: ['wifi', 'tv']),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

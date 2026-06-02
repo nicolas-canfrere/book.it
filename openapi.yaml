@@ -120,7 +120,7 @@ paths:
                   postalCode: { type: string, example: '75001' }
                   city: { type: string, example: Paris }
                   country: { type: string, example: FR }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                   starRating: { properties: { stars: { type: integer, maximum: 5, minimum: 1 }, superior: { type: boolean } }, type: object, nullable: true }
                   amenities: { type: array, items: { type: string, example: wifi } }
                 type: object
@@ -253,7 +253,7 @@ paths:
                   postalCode: { type: string, example: '75001' }
                   city: { type: string, example: Paris }
                   country: { type: string, example: FR }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Not found'
@@ -315,7 +315,7 @@ paths:
               schema:
                 type: array
                 items:
-                  properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string, example: '101' }, floor: { type: integer, example: 1 }, roomTypeId: { type: string, format: uuid }, createdAt: { description: 'Unix timestamp', type: integer } }
+                  properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string, example: '101' }, floor: { type: integer, example: 1 }, roomTypeId: { type: string, format: uuid }, createdAt: { type: string, format: date-time } }
                   type: object
         '404':
           description: 'Hotel not found'
@@ -418,7 +418,7 @@ paths:
                   isAccessible: { type: boolean }
                   bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
                   amenities: { type: array, items: { type: string }, example: [wifi, tv] }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room type not found'
@@ -470,7 +470,7 @@ paths:
                   isAccessible: { type: boolean }
                   bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
                   amenities: { type: array, items: { type: string }, example: [wifi, tv] }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room type not found'
@@ -558,7 +558,7 @@ paths:
                   id: { type: string, format: uuid }
                   hotelId: { type: string, format: uuid }
                   number: { type: string, example: '101' }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room not found'
@@ -620,7 +620,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, name: { type: string, example: Standard }, livingSpaceCount: { type: integer, example: 1 }, surfaceM2: { type: integer, example: 25, nullable: true }, guestCapacity: { type: integer, example: 2 }, isAccessible: { type: boolean }, bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }, amenities: { type: array, items: { type: string }, example: [wifi, tv] }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, name: { type: string, example: Standard }, livingSpaceCount: { type: integer, example: 1 }, surfaceM2: { type: integer, example: 25, nullable: true }, guestCapacity: { type: integer, example: 2 }, isAccessible: { type: boolean }, bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }, amenities: { type: array, items: { type: string }, example: [wifi, tv] }, createdAt: { type: string, format: date-time } }, type: object } }
                   meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 10 }, totalPages: { type: integer, example: 1 } }, type: object }
                 type: object
         '422':
@@ -671,7 +671,7 @@ paths:
                   isAccessible: { type: boolean }
                   bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }
                   amenities: { type: array, items: { type: string }, example: [wifi, tv] }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Hotel not found'
@@ -783,7 +783,7 @@ paths:
                   number: { type: string, example: '101' }
                   floor: { type: integer, example: 1 }
                   roomTypeId: { type: string, format: uuid }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Hotel not found or Room Type not found'
@@ -837,7 +837,7 @@ paths:
                   email: { type: string, format: email, example: jane.doe@example.com }
                   phone: { type: string, example: '+33612345678' }
                   dateOfBirth: { type: string, format: date, example: '1990-01-15' }
-                  registeredAt: { description: 'Unix timestamp', type: integer }
+                  registeredAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Booker not found'
@@ -876,7 +876,7 @@ paths:
                   email: { type: string, format: email, example: jean.dupont@example.com }
                   phone: { type: string, example: '+33612345678' }
                   dateOfBirth: { type: string, format: date, example: '1990-05-15' }
-                  registeredAt: { description: 'Unix timestamp', type: integer }
+                  registeredAt: { type: string, format: date-time }
                 type: object
         '409':
           description: 'Email already taken'
@@ -957,7 +957,7 @@ paths:
                   roomId: { type: string, format: uuid }
                   checkIn: { type: string, format: date, example: '2025-06-10' }
                   checkOut: { type: string, format: date, example: '2025-06-13' }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room not found'
@@ -1075,7 +1075,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  promotions: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, discountPercent: { type: integer, example: 20 }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                  promotions: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, discountPercent: { type: integer, example: 20 }, createdAt: { type: string, format: date-time } }, type: object } }
                 type: object
     post:
       tags:
@@ -1109,7 +1109,7 @@ paths:
                   checkIn: { type: string, format: date, example: '2025-07-01' }
                   checkOut: { type: string, format: date, example: '2025-08-31' }
                   discountPercent: { type: integer, example: 20 }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room not found'
@@ -1157,7 +1157,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  ratePeriods: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, amountCents: { type: integer, example: 15000 }, createdAt: { description: 'Unix timestamp', type: integer } }, type: object } }
+                  ratePeriods: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, amountCents: { type: integer, example: 15000 }, createdAt: { type: string, format: date-time } }, type: object } }
                 type: object
     post:
       tags:
@@ -1191,7 +1191,7 @@ paths:
                   checkIn: { type: string, format: date, example: '2025-07-01' }
                   checkOut: { type: string, format: date, example: '2025-08-31' }
                   amountCents: { type: integer, example: 15000 }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room not found'
@@ -1354,7 +1354,7 @@ paths:
                   checkIn: { type: string, format: date, example: '2025-07-01' }
                   checkOut: { type: string, format: date, example: '2025-09-01' }
                   discountPercent: { type: integer, example: 25 }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Promotion not found'
@@ -1452,7 +1452,7 @@ paths:
                   checkIn: { type: string, format: date, example: '2025-07-01' }
                   checkOut: { type: string, format: date, example: '2025-09-01' }
                   amountCents: { type: integer, example: 16000 }
-                  createdAt: { description: 'Unix timestamp', type: integer }
+                  createdAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Rate period not found'
@@ -1533,7 +1533,7 @@ paths:
                 properties:
                   roomId: { type: string, format: uuid }
                   amountCents: { type: integer, example: 12000 }
-                  updatedAt: { description: 'Unix timestamp', type: integer }
+                  updatedAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room not found or base rate not configured'
@@ -1570,7 +1570,7 @@ paths:
                 properties:
                   roomId: { type: string, format: uuid }
                   amountCents: { type: integer, example: 12000 }
-                  updatedAt: { description: 'Unix timestamp', type: integer }
+                  updatedAt: { type: string, format: date-time }
                 type: object
         '404':
           description: 'Room not found'

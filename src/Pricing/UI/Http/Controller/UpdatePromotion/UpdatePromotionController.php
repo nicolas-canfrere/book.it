@@ -50,7 +50,7 @@ final readonly class UpdatePromotionController
                         new OA\Property(property: 'checkIn', type: 'string', format: 'date', example: '2025-07-01'),
                         new OA\Property(property: 'checkOut', type: 'string', format: 'date', example: '2025-09-01'),
                         new OA\Property(property: 'discountPercent', type: 'integer', example: 25),
-                        new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

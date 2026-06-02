@@ -50,7 +50,7 @@ final readonly class RegisterBookerController
                         new OA\Property(property: 'email', type: 'string', format: 'email', example: 'jean.dupont@example.com'),
                         new OA\Property(property: 'phone', type: 'string', example: '+33612345678'),
                         new OA\Property(property: 'dateOfBirth', type: 'string', format: 'date', example: '1990-05-15'),
-                        new OA\Property(property: 'registeredAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(property: 'registeredAt', type: 'string', format: 'date-time'),
                     ],
                 ),
             ),

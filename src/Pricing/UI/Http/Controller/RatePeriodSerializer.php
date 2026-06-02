@@ -9,7 +9,7 @@ use App\Pricing\Domain\Model\RatePeriod;
 final class RatePeriodSerializer
 {
     /**
-     * @return array{id: string, roomId: string, checkIn: string, checkOut: string, amountCents: int, createdAt: int}
+     * @return array{id: string, roomId: string, checkIn: string, checkOut: string, amountCents: int, createdAt: string}
      */
     public function serialize(RatePeriod $ratePeriod): array
     {
@@ -19,7 +19,7 @@ final class RatePeriodSerializer
             'checkIn' => $ratePeriod->checkIn->format('Y-m-d'),
             'checkOut' => $ratePeriod->checkOut->format('Y-m-d'),
             'amountCents' => $ratePeriod->amountCents,
-            'createdAt' => $ratePeriod->createdAt->getTimestamp(),
+            'createdAt' => $ratePeriod->createdAt->format(\DateTimeInterface::ATOM),
         ];
     }
 }
