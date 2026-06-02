@@ -43,7 +43,7 @@ final readonly class PreRegisterGuestsController
     #[OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
     public function __invoke(
         string $id,
-        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
+        #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         PreRegisterGuestsRequest $request,
     ): Response {
         $this->commandBus->execute(new PreRegisterGuestsCommand(

@@ -108,6 +108,20 @@ final class CheckInControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(409);
     }
 
+    public function test_returns_415_when_content_type_is_not_json(): void
+    {
+        $client = static::createClient();
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/reservations/550e8400-e29b-41d4-a716-446655440000/check-in',
+            server: ['CONTENT_TYPE' => 'text/plain'],
+            content: 'guests[]=Alice',
+        );
+
+        self::assertResponseStatusCodeSame(415);
+    }
+
     private function createCancelledReservation(KernelBrowser $client, string $checkIn, string $checkOut): string
     {
         [$roomId, $bookerId] = $this->setupRoomAndBooker($client);

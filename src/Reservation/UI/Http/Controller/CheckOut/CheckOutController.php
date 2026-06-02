@@ -42,7 +42,7 @@ final readonly class CheckOutController
     #[OA\Parameter(name: 'reservationId', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
     public function __invoke(
         string $reservationId,
-        #[MapRequestPayload(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
+        #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         CheckOutRequest $request,
     ): Response {
         $this->commandBus->execute(new CheckOutCommand(

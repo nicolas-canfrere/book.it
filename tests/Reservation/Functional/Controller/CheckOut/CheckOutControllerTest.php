@@ -41,4 +41,16 @@ final class CheckOutControllerTest extends WebTestCase
 
         self::assertResponseStatusCodeSame(404);
     }
+
+    public function test_returns_415_when_content_type_is_not_json(): void
+    {
+        $this->client->request(
+            method: 'POST',
+            uri: '/api/v1/reservations/550e8400-e29b-41d4-a716-446655440000/check-out',
+            server: ['CONTENT_TYPE' => 'text/plain'],
+            content: 'actualDepartureDate=2025-06-13',
+        );
+
+        self::assertResponseStatusCodeSame(415);
+    }
 }
