@@ -20,7 +20,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
     #[Test]
     public function itDispatchesHotelRegisteredOnSuccess(): void
     {
-        $repository = $this->createMock(HotelRepositoryInterface::class);
+        $repository = $this->createStub(HotelRepositoryInterface::class);
         $dispatcher = new FakeEventDispatcher();
 
         $repository->method('existsByNameAndAddress')->willReturn(false);
@@ -45,7 +45,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
     #[Test]
     public function itDispatchesStarRatingWhenProvided(): void
     {
-        $repository = $this->createMock(HotelRepositoryInterface::class);
+        $repository = $this->createStub(HotelRepositoryInterface::class);
         $dispatcher = new FakeEventDispatcher();
 
         $repository->method('existsByNameAndAddress')->willReturn(false);
@@ -67,7 +67,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
     #[Test]
     public function itDoesNotDispatchWhenHotelAlreadyExists(): void
     {
-        $repository = $this->createMock(HotelRepositoryInterface::class);
+        $repository = $this->createStub(HotelRepositoryInterface::class);
         $dispatcher = new FakeEventDispatcher();
 
         $repository->method('existsByNameAndAddress')->willReturn(true);

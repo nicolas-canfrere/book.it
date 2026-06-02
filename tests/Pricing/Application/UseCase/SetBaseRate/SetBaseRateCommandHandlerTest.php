@@ -22,7 +22,7 @@ final class SetBaseRateCommandHandlerTest extends TestCase
     {
         $repository = $this->createMock(BaseRateRepositoryInterface::class);
         $repository->expects($this->once())->method('save');
-        $roomExists = $this->createMock(RoomExistsInterface::class);
+        $roomExists = $this->createStub(RoomExistsInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $roomExists->method('exists')->willReturn(true);
@@ -47,8 +47,8 @@ final class SetBaseRateCommandHandlerTest extends TestCase
     #[Test]
     public function itDoesNotDispatchWhenRoomNotFound(): void
     {
-        $repository = $this->createMock(BaseRateRepositoryInterface::class);
-        $roomExists = $this->createMock(RoomExistsInterface::class);
+        $repository = $this->createStub(BaseRateRepositoryInterface::class);
+        $roomExists = $this->createStub(RoomExistsInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $roomExists->method('exists')->willReturn(false);

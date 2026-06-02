@@ -19,25 +19,18 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 #[Group('unit')]
 final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
 {
-    private MockObject&AvailabilityHoldRepositoryInterface $repository;
-    private MockObject&EventDispatcherInterface $dispatcher;
-    private CreateAvailabilityHoldCommandHandler $handler;
-
-    protected function setUp(): void
-    {
-        $this->repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
-        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->handler = new CreateAvailabilityHoldCommandHandler($this->repository, $this->dispatcher);
-    }
-
     #[Test]
     public function itCreatesHoldWhenNoActiveOverlap(): void
     {
-        $this->repository->method('hasActiveOverlap')->willReturn(false);
-        $this->repository->expects(self::once())->method('add')
+        /** @var AvailabilityHoldRepositoryInterface&MockObject $repository */
+        $repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
+        $repository->method('hasActiveOverlap')->willReturn(false);
+        $repository->expects(self::once())->method('add')
             ->with(self::isInstanceOf(AvailabilityHold::class));
 
-        ($this->handler)(new CreateAvailabilityHoldCommand(
+        $handler = new CreateAvailabilityHoldCommandHandler($repository, $this->createStub(EventDispatcherInterface::class));
+
+        ($handler)(new CreateAvailabilityHoldCommand(
             id: 'hold-uuid',
             roomId: 'room-uuid',
             reservationId: 'res-uuid',
@@ -51,12 +44,16 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
     #[Test]
     public function itThrowsWhenActiveOverlapExists(): void
     {
-        $this->repository->method('hasActiveOverlap')->willReturn(true);
-        $this->repository->expects(self::never())->method('add');
+        /** @var AvailabilityHoldRepositoryInterface&MockObject $repository */
+        $repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
+        $repository->method('hasActiveOverlap')->willReturn(true);
+        $repository->expects(self::never())->method('add');
+
+        $handler = new CreateAvailabilityHoldCommandHandler($repository, $this->createStub(EventDispatcherInterface::class));
 
         $this->expectException(AvailabilityHoldOverlapException::class);
 
-        ($this->handler)(new CreateAvailabilityHoldCommand(
+        ($handler)(new CreateAvailabilityHoldCommand(
             id: 'hold-uuid',
             roomId: 'room-uuid',
             reservationId: 'res-uuid',
@@ -70,7 +67,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
     #[Test]
     public function itDispatchesAvailabilityHoldCreated(): void
     {
-        $repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
+        $repository = $this->createStub(AvailabilityHoldRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $repository->method('hasActiveOverlap')->willReturn(false);

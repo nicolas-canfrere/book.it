@@ -26,7 +26,7 @@ final class DeleteBlockedPeriodByRoomAndPeriodCommandHandlerTest extends TestCas
             ->method('removeByRoomAndPeriod')
             ->with('room-1', $checkIn, $checkOut);
 
-        $handler = new DeleteBlockedPeriodByRoomAndPeriodCommandHandler($repo, $this->createMock(EventDispatcherInterface::class));
+        $handler = new DeleteBlockedPeriodByRoomAndPeriodCommandHandler($repo, $this->createStub(EventDispatcherInterface::class));
 
         ($handler)(new DeleteBlockedPeriodByRoomAndPeriodCommand('room-1', $checkIn, $checkOut));
     }

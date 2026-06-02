@@ -26,7 +26,7 @@ final class GetBlockedPeriodQueryHandlerTest extends TestCase
         $this->repository = new InMemoryBlockedPeriodRepository();
         $this->handler = new GetBlockedPeriodQueryHandler($this->repository);
 
-        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createMock(EventDispatcherInterface::class));
+        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             roomId: '550e8400-e29b-41d4-a716-446655440000',

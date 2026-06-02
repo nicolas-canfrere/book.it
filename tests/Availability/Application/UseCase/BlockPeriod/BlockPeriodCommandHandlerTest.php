@@ -29,7 +29,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     {
         $this->repository = new InMemoryBlockedPeriodRepository();
         $this->roomExists = new FakeRoomExistenceChecker();
-        $dispatcher = $this->createMock(EventDispatcherInterface::class);
+        $dispatcher = $this->createStub(EventDispatcherInterface::class);
         $this->handler = new BlockPeriodCommandHandler($this->repository, $this->roomExists, $dispatcher);
     }
 
@@ -140,8 +140,8 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     #[Test]
     public function itDispatchesBlockedPeriodCreated(): void
     {
-        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
-        $roomExists = $this->createMock(RoomExistsInterface::class);
+        $repository = $this->createStub(BlockedPeriodRepositoryInterface::class);
+        $roomExists = $this->createStub(RoomExistsInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $roomExists->method('exists')->willReturn(true);
@@ -174,8 +174,8 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     #[Test]
     public function itDoesNotDispatchWhenRoomDoesNotExist(): void
     {
-        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
-        $roomExists = $this->createMock(RoomExistsInterface::class);
+        $repository = $this->createStub(BlockedPeriodRepositoryInterface::class);
+        $roomExists = $this->createStub(RoomExistsInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $roomExists->method('exists')->willReturn(false);
