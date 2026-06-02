@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\Hotel\UI\Http\Controller\GetHotelAmenities;
@@ -25,7 +26,6 @@ final class GetHotelAmenitiesControllerTest extends WebTestCase
 
         /** @var array{amenities: string[]} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-        self::assertArrayHasKey('amenities', $body);
         self::assertEqualsCanonicalizing(HotelAmenity::values(), $body['amenities']);
     }
 }
