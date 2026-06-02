@@ -24,7 +24,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 ['starRating' => 4, 'hotelId' => 'hotel-id-1'],
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateStarRating('hotel-id-1', 4);
     }
 
@@ -39,7 +39,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 ['starRating' => null, 'hotelId' => 'hotel-id-1'],
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateStarRating('hotel-id-1', null);
     }
 
@@ -54,7 +54,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 ['amenities' => '["pool","gym"]', 'hotelId' => 'hotel-id-1'],
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateHotelAmenities('hotel-id-1', ['pool', 'gym']);
     }
 
@@ -62,7 +62,7 @@ final class HotelRoomTypeWriterTest extends TestCase
     public function itUpsertsRoomTypeWithDenormalizedHotelData(): void
     {
         $searchConnection = $this->createMock(Connection::class);
-        $hotelConnection = $this->createMock(Connection::class);
+        $hotelConnection = $this->createStub(Connection::class);
 
         $hotelConnection->method('fetchAssociative')->willReturn([
             'name' => 'Le Grand Hôtel',
@@ -97,7 +97,7 @@ final class HotelRoomTypeWriterTest extends TestCase
     public function itSkipsUpsertWhenHotelNotFound(): void
     {
         $searchConnection = $this->createMock(Connection::class);
-        $hotelConnection = $this->createMock(Connection::class);
+        $hotelConnection = $this->createStub(Connection::class);
 
         $hotelConnection->method('fetchAssociative')->willReturn(false);
         $searchConnection->expects($this->never())->method('executeStatement');
@@ -121,7 +121,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 }),
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateRoomType('rt-id-1', 'Standard Plus', 3, [['type' => 'king', 'count' => 1]]);
     }
 
@@ -136,7 +136,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 ['amenities' => '["wifi","tv"]', 'roomTypeId' => 'rt-id-1'],
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateRoomAmenities('rt-id-1', ['wifi', 'tv']);
     }
 
@@ -151,7 +151,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 ['roomTypeId' => 'rt-id-1'],
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->deleteRoomType('rt-id-1');
     }
 
@@ -175,7 +175,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                 ['amountCents' => 15000, 'roomTypeId' => 'rt-id-1'],
             );
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateBaseRateByRoom('room-id-1', 15000);
     }
 
@@ -186,7 +186,7 @@ final class HotelRoomTypeWriterTest extends TestCase
         $connection->method('fetchAssociative')->willReturn(false);
         $connection->expects($this->never())->method('executeStatement');
 
-        (new HotelRoomTypeWriter($connection, $this->createMock(Connection::class)))
+        (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
             ->updateBaseRateByRoom('unknown-room', 15000);
     }
 }

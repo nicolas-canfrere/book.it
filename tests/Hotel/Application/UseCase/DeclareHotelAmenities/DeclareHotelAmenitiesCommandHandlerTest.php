@@ -14,29 +14,30 @@ use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Shared\Domain\Event\HotelAmenityDeclared;
 use App\Tests\Fake\FakeEventDispatcher;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
 {
-    private HotelRepositoryInterface&MockObject $repository;
     private FakeEventDispatcher $dispatcher;
-    private DeclareHotelAmenitiesCommandHandler $handler;
 
     protected function setUp(): void
     {
-        $this->repository = $this->createMock(HotelRepositoryInterface::class);
         $this->dispatcher = new FakeEventDispatcher();
-        $this->handler = new DeclareHotelAmenitiesCommandHandler($this->repository, $this->dispatcher);
     }
 
-    public function test_throws_when_hotel_not_found(): void
+    #[Test]
+    public function itThrowsWhenHotelNotFound(): void
     {
-        $this->repository->method('get')->willReturn(null);
+        $repository = $this->createStub(HotelRepositoryInterface::class);
+        $repository->method('get')->willReturn(null);
+
+        $handler = new DeclareHotelAmenitiesCommandHandler($repository, $this->dispatcher);
 
         try {
-            ($this->handler)(new DeclareHotelAmenitiesCommand('unknown-id', []));
+            ($handler)(new DeclareHotelAmenitiesCommand('unknown-id', []));
             self::fail('Expected HotelNotFoundException was not thrown');
         } catch (HotelNotFoundException) {
             // expected
@@ -45,23 +46,28 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
         self::assertEmpty($this->dispatcher->getDispatched());
     }
 
-    public function test_saves_declared_amenities(): void
+    #[Test]
+    public function itSavesDeclaredAmenities(): void
     {
+        /** @var HotelRepositoryInterface&MockObject $repository */
+        $repository = $this->createMock(HotelRepositoryInterface::class);
         $hotel = new Hotel(
             'hotel-id',
             'Test Hotel',
             new Address('1 rue Test', '75001', 'Paris', 'FR'),
             new \DateTimeImmutable(),
         );
-        $this->repository->method('get')->willReturn($hotel);
-        $this->repository
+        $repository->method('get')->willReturn($hotel);
+        $repository
             ->expects(self::once())
             ->method('save')
             ->with(self::callback(
                 static fn(Hotel $h) => $h->amenities === [HotelAmenity::Pool, HotelAmenity::Gym]
             ));
 
-        ($this->handler)(new DeclareHotelAmenitiesCommand('hotel-id', ['pool', 'gym']));
+        $handler = new DeclareHotelAmenitiesCommandHandler($repository, $this->dispatcher);
+
+        ($handler)(new DeclareHotelAmenitiesCommand('hotel-id', ['pool', 'gym']));
 
         $event = $this->dispatcher->getLastDispatched();
         self::assertInstanceOf(HotelAmenityDeclared::class, $event);
@@ -69,8 +75,11 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
         self::assertSame(['pool', 'gym'], $event->amenities);
     }
 
-    public function test_saves_empty_list(): void
+    #[Test]
+    public function itSavesEmptyList(): void
     {
+        /** @var HotelRepositoryInterface&MockObject $repository */
+        $repository = $this->createMock(HotelRepositoryInterface::class);
         $hotel = new Hotel(
             'hotel-id',
             'Test Hotel',
@@ -78,15 +87,17 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
             new \DateTimeImmutable(),
             amenities: [HotelAmenity::Pool],
         );
-        $this->repository->method('get')->willReturn($hotel);
-        $this->repository
+        $repository->method('get')->willReturn($hotel);
+        $repository
             ->expects(self::once())
             ->method('save')
             ->with(self::callback(
                 static fn(Hotel $h) => [] === $h->amenities
             ));
 
-        ($this->handler)(new DeclareHotelAmenitiesCommand('hotel-id', []));
+        $handler = new DeclareHotelAmenitiesCommandHandler($repository, $this->dispatcher);
+
+        ($handler)(new DeclareHotelAmenitiesCommand('hotel-id', []));
 
         $event = $this->dispatcher->getLastDispatched();
         self::assertInstanceOf(HotelAmenityDeclared::class, $event);

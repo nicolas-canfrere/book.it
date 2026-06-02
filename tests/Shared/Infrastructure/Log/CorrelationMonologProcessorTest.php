@@ -10,12 +10,14 @@ use App\Shared\Infrastructure\Log\CorrelationMonologProcessor;
 use Monolog\Level;
 use Monolog\LogRecord;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class CorrelationMonologProcessorTest extends TestCase
 {
-    public function test_injects_request_id_into_extra(): void
+    #[Test]
+    public function itInjectsRequestIdIntoExtra(): void
     {
         $context = new RequestCorrelationContext();
         $context->setId('trace-xyz-789');
@@ -35,7 +37,8 @@ final class CorrelationMonologProcessorTest extends TestCase
         self::assertSame('trace-xyz-789', $result->extra['request_id']);
     }
 
-    public function test_preserves_existing_extra_fields(): void
+    #[Test]
+    public function itPreservesExistingExtraFields(): void
     {
         $context = new RequestCorrelationContext();
         $context->setId('trace-id');

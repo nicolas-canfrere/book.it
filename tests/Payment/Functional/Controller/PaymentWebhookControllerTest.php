@@ -5,34 +5,39 @@ declare(strict_types=1);
 namespace App\Tests\Payment\Functional\Controller;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
 final class PaymentWebhookControllerTest extends WebTestCase
 {
-    public function test_success_webhook_returns_204(): void
+    #[Test]
+    public function itSuccessWebhookReturns204(): void
     {
         $client = static::createClient();
         $this->post($client, '/api/v1/payment/webhooks/success', ['reservation_id' => '550e8400-e29b-41d4-a716-446655440001']);
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_failed_webhook_returns_204(): void
+    #[Test]
+    public function itFailedWebhookReturns204(): void
     {
         $client = static::createClient();
         $this->post($client, '/api/v1/payment/webhooks/failed', ['reservation_id' => '550e8400-e29b-41d4-a716-446655440001']);
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_cancel_webhook_returns_204(): void
+    #[Test]
+    public function itCancelWebhookReturns204(): void
     {
         $client = static::createClient();
         $this->post($client, '/api/v1/payment/webhooks/cancel', ['reservation_id' => '550e8400-e29b-41d4-a716-446655440001']);
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_success_webhook_returns_422_if_reservation_id_missing(): void
+    #[Test]
+    public function itSuccessWebhookReturns422IfReservationIdMissing(): void
     {
         $client = static::createClient();
         $this->post($client, '/api/v1/payment/webhooks/success', []);

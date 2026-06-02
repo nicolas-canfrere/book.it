@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Reservation\Functional\Controller\CheckOut;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -18,7 +19,8 @@ final class CheckOutControllerTest extends WebTestCase
         $this->client = static::createClient();
     }
 
-    public function test_returns_422_when_actual_departure_date_is_missing(): void
+    #[Test]
+    public function itReturns422WhenActualDepartureDateIsMissing(): void
     {
         $this->client->request(
             method: 'POST',
@@ -30,7 +32,8 @@ final class CheckOutControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
     }
 
-    public function test_returns_404_when_reservation_does_not_exist(): void
+    #[Test]
+    public function itReturns404WhenReservationDoesNotExist(): void
     {
         $this->client->request(
             method: 'POST',
@@ -42,7 +45,8 @@ final class CheckOutControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
-    public function test_returns_415_when_content_type_is_not_json(): void
+    #[Test]
+    public function itReturns415WhenContentTypeIsNotJson(): void
     {
         $this->client->request(
             method: 'POST',

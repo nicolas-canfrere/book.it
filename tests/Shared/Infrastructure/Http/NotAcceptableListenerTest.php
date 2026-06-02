@@ -6,6 +6,7 @@ namespace App\Tests\Shared\Infrastructure\Http;
 
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
@@ -22,7 +23,8 @@ final class NotAcceptableListenerTest extends WebTestCase
     }
 
     #[DataProvider('acceptableTypes')]
-    public function test_allows_request_when_accept_is_compatible(string $accept): void
+    #[Test]
+    public function itAllowsRequestWhenAcceptIsCompatible(string $accept): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/v1/hotels', server: ['HTTP_ACCEPT' => $accept]);
@@ -30,7 +32,8 @@ final class NotAcceptableListenerTest extends WebTestCase
         self::assertNotSame(406, $client->getResponse()->getStatusCode());
     }
 
-    public function test_returns_406_when_accept_excludes_json(): void
+    #[Test]
+    public function itReturns406WhenAcceptExcludesJson(): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/v1/hotels', server: ['HTTP_ACCEPT' => 'text/html']);
@@ -39,7 +42,8 @@ final class NotAcceptableListenerTest extends WebTestCase
         self::assertResponseHeaderSame('Content-Type', 'application/problem+json');
     }
 
-    public function test_returns_406_for_multiple_non_json_types(): void
+    #[Test]
+    public function itReturns406ForMultipleNonJsonTypes(): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/v1/hotels', server: ['HTTP_ACCEPT' => 'text/html,text/xml']);
@@ -47,7 +51,8 @@ final class NotAcceptableListenerTest extends WebTestCase
         self::assertResponseStatusCodeSame(406);
     }
 
-    public function test_passes_through_when_no_accept_header(): void
+    #[Test]
+    public function itPassesThroughWhenNoAcceptHeader(): void
     {
         $client = static::createClient();
         $client->request('GET', '/api/v1/hotels');

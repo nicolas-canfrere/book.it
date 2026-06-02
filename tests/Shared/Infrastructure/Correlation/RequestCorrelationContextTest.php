@@ -6,12 +6,14 @@ namespace App\Tests\Shared\Infrastructure\Correlation;
 
 use App\Shared\Infrastructure\Correlation\RequestCorrelationContext;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class RequestCorrelationContextTest extends TestCase
 {
-    public function test_get_id_without_set_returns_valid_uuid_v4(): void
+    #[Test]
+    public function itGetIdWithoutSetReturnsValidUuidV4(): void
     {
         $context = new RequestCorrelationContext();
 
@@ -21,7 +23,8 @@ final class RequestCorrelationContextTest extends TestCase
         );
     }
 
-    public function test_get_id_returns_id_set_via_set_id(): void
+    #[Test]
+    public function itGetIdReturnsIdSetViaSetId(): void
     {
         $context = new RequestCorrelationContext();
         $context->setId('my-trace-abc-123');
@@ -29,7 +32,8 @@ final class RequestCorrelationContextTest extends TestCase
         self::assertSame('my-trace-abc-123', $context->getId());
     }
 
-    public function test_two_instances_produce_different_default_ids(): void
+    #[Test]
+    public function itTwoInstancesProduceDifferentDefaultIds(): void
     {
         $a = new RequestCorrelationContext();
         $b = new RequestCorrelationContext();

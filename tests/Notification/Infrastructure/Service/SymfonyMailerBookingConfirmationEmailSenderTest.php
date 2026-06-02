@@ -8,6 +8,7 @@ use App\Notification\Domain\ReadModel\BookerContact;
 use App\Notification\Domain\ReadModel\ReservationDetails;
 use App\Notification\Infrastructure\Service\SymfonyMailerBookingConfirmationEmailSender;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
@@ -25,7 +26,8 @@ final class SymfonyMailerBookingConfirmationEmailSenderTest extends TestCase
         $this->mailer = $this->createMock(MailerInterface::class);
     }
 
-    public function test_sends_templated_email_with_correct_templates_and_context(): void
+    #[Test]
+    public function itSendsTemplatedEmailWithCorrectTemplatesAndContext(): void
     {
         $sender = new SymfonyMailerBookingConfirmationEmailSender($this->mailer, 'noreply@book.it');
 

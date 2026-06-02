@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Reservation\Functional\Controller\PreRegisterGuests;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[Group('functional')]
 final class PreRegisterGuestsControllerTest extends WebTestCase
 {
-    public function test_pre_registers_guests_and_returns_204(): void
+    #[Test]
+    public function itPreRegistersGuestsAndReturns204(): void
     {
         $client = static::createClient();
         $reservationId = $this->createConfirmedReservation($client);
@@ -32,7 +34,8 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_returns_422_when_guest_first_name_is_blank(): void
+    #[Test]
+    public function itReturns422WhenGuestFirstNameIsBlank(): void
     {
         $client = static::createClient();
         $reservationId = $this->createConfirmedReservation($client);
@@ -51,7 +54,8 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(422);
     }
 
-    public function test_returns_404_when_reservation_not_found(): void
+    #[Test]
+    public function itReturns404WhenReservationNotFound(): void
     {
         $client = static::createClient();
 
@@ -65,7 +69,8 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
-    public function test_pre_registers_guests_on_pending_reservation(): void
+    #[Test]
+    public function itPreRegistersGuestsOnPendingReservation(): void
     {
         $client = static::createClient();
         $reservationId = $this->createPendingReservation($client);
@@ -84,7 +89,8 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_returns_415_when_content_type_is_not_json(): void
+    #[Test]
+    public function itReturns415WhenContentTypeIsNotJson(): void
     {
         $client = static::createClient();
 
@@ -98,7 +104,8 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(415);
     }
 
-    public function test_returns_409_when_check_in_date_is_today_or_passed(): void
+    #[Test]
+    public function itReturns409WhenCheckInDateIsTodayOrPassed(): void
     {
         $client = static::createClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');

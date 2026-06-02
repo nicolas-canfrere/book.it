@@ -9,6 +9,7 @@ use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Infrastructure\Persistence\Doctrine\HotelRepository;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('functional')]
@@ -27,7 +28,8 @@ final class HotelRepositoryAmenitiesTest extends KernelTestCase
         $this->repository = self::getContainer()->get(HotelRepository::class);
     }
 
-    public function test_save_and_reload_amenities(): void
+    #[Test]
+    public function itSaveAndReloadAmenities(): void
     {
         $hotel = new Hotel(
             self::ID_1,
@@ -45,7 +47,8 @@ final class HotelRepositoryAmenitiesTest extends KernelTestCase
         self::assertSame([HotelAmenity::Pool, HotelAmenity::Gym], $reloaded->amenities);
     }
 
-    public function test_save_empty_amenities(): void
+    #[Test]
+    public function itSaveEmptyAmenities(): void
     {
         $hotel = new Hotel(
             self::ID_2,
@@ -62,7 +65,8 @@ final class HotelRepositoryAmenitiesTest extends KernelTestCase
         self::assertSame([], $reloaded->amenities);
     }
 
-    public function test_list_filters_by_amenities_and_semantics(): void
+    #[Test]
+    public function itListFiltersByAmenitiesAndSemantics(): void
     {
         $hotelA = new Hotel(
             self::ID_3,

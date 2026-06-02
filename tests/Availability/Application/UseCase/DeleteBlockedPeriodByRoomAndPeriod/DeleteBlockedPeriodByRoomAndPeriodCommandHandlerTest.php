@@ -19,7 +19,7 @@ final class DeleteBlockedPeriodByRoomAndPeriodCommandHandlerTest extends TestCas
     #[Test]
     public function itDispatchesBlockedPeriodDeleted(): void
     {
-        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $repository = $this->createStub(BlockedPeriodRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $checkIn = new \DateTimeImmutable('2026-07-01');

@@ -12,6 +12,7 @@ use App\Notification\Domain\Port\ReservationDetailsFetcherInterface;
 use App\Notification\Domain\ReadModel\BookerContact;
 use App\Notification\Domain\ReadModel\ReservationDetails;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\Log\LoggerInterface;
@@ -33,7 +34,8 @@ final class SendBookingConfirmationEmailCommandHandlerTest extends TestCase
         $this->logger = $this->createMock(LoggerInterface::class);
     }
 
-    public function test_sends_email_when_booker_and_reservation_exist(): void
+    #[Test]
+    public function itSendsEmailWhenBookerAndReservationExist(): void
     {
         $this->bookerContactFetcher = new class implements BookerContactFetcherInterface {
             public function fetch(string $bookerId): BookerContact
@@ -66,7 +68,8 @@ final class SendBookingConfirmationEmailCommandHandlerTest extends TestCase
         ($this->handler)(new SendBookingConfirmationEmailCommand('res-001', 'booker-001'));
     }
 
-    public function test_logs_warning_and_does_not_send_when_booker_not_found(): void
+    #[Test]
+    public function itLogsWarningAndDoesNotSendWhenBookerNotFound(): void
     {
         $this->bookerContactFetcher = new class implements BookerContactFetcherInterface {
             public function fetch(string $bookerId): ?BookerContact
@@ -99,7 +102,8 @@ final class SendBookingConfirmationEmailCommandHandlerTest extends TestCase
         ($this->handler)(new SendBookingConfirmationEmailCommand('res-001', 'booker-unknown'));
     }
 
-    public function test_logs_warning_and_does_not_send_when_reservation_not_found(): void
+    #[Test]
+    public function itLogsWarningAndDoesNotSendWhenReservationNotFound(): void
     {
         $this->bookerContactFetcher = new class implements BookerContactFetcherInterface {
             public function fetch(string $bookerId): BookerContact

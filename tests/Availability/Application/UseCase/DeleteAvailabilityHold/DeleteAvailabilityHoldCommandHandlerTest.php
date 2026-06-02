@@ -17,30 +17,24 @@ use Psr\EventDispatcher\EventDispatcherInterface;
 #[Group('unit')]
 final class DeleteAvailabilityHoldCommandHandlerTest extends TestCase
 {
-    private MockObject&AvailabilityHoldRepositoryInterface $repository;
-    private MockObject&EventDispatcherInterface $dispatcher;
-    private DeleteAvailabilityHoldCommandHandler $handler;
-
-    protected function setUp(): void
+    #[Test]
+    public function itDeletesHoldByReservationId(): void
     {
-        $this->repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
-        $this->dispatcher = $this->createMock(EventDispatcherInterface::class);
-        $this->handler = new DeleteAvailabilityHoldCommandHandler($this->repository, $this->dispatcher);
-    }
-
-    public function test_deletes_hold_by_reservation_id(): void
-    {
-        $this->repository->expects(self::once())
+        /** @var AvailabilityHoldRepositoryInterface&MockObject $repository */
+        $repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
+        $repository->expects(self::once())
             ->method('deleteByReservationId')
             ->with('res-uuid');
 
-        ($this->handler)(new DeleteAvailabilityHoldCommand(reservationId: 'res-uuid'));
+        $handler = new DeleteAvailabilityHoldCommandHandler($repository, $this->createStub(EventDispatcherInterface::class));
+
+        ($handler)(new DeleteAvailabilityHoldCommand(reservationId: 'res-uuid'));
     }
 
     #[Test]
     public function itDispatchesAvailabilityHoldDeleted(): void
     {
-        $repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
+        $repository = $this->createStub(AvailabilityHoldRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $dispatcher->expects($this->once())

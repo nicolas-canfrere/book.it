@@ -17,6 +17,7 @@ use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use App\Tests\Reservation\Infrastructure\Service\SequentialGuestIdGenerator;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('integration')]
@@ -34,7 +35,8 @@ final class CheckInCommandHandlerTest extends KernelTestCase
         );
     }
 
-    public function test_checks_in_and_transitions_status(): void
+    #[Test]
+    public function itChecksInAndTransitionsStatus(): void
     {
         $reservation = $this->makeConfirmedReservation();
         $this->repository->add($reservation);
@@ -55,7 +57,8 @@ final class CheckInCommandHandlerTest extends KernelTestCase
         self::assertSame('1990-01-15', $saved->guests[0]->dateOfBirth->format('Y-m-d'));
     }
 
-    public function test_throws_when_reservation_not_found(): void
+    #[Test]
+    public function itThrowsWhenReservationNotFound(): void
     {
         $this->expectException(ReservationNotFoundException::class);
         ($this->handler)(new CheckInCommand(
@@ -65,7 +68,8 @@ final class CheckInCommandHandlerTest extends KernelTestCase
         ));
     }
 
-    public function test_throws_when_check_in_not_allowed(): void
+    #[Test]
+    public function itThrowsWhenCheckInNotAllowed(): void
     {
         $reservation = $this->makeConfirmedReservation();
         $this->repository->add($reservation);

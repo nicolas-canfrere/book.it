@@ -29,9 +29,9 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
     protected function setUp(): void
     {
         $this->repository = new InMemoryBlockedPeriodRepository();
-        $this->handler = new DeleteBlockedPeriodCommandHandler($this->repository, $this->createMock(EventDispatcherInterface::class));
+        $this->handler = new DeleteBlockedPeriodCommandHandler($this->repository, $this->createStub(EventDispatcherInterface::class));
 
-        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createMock(EventDispatcherInterface::class));
+        $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
             roomId: '550e8400-e29b-41d4-a716-446655440000',
@@ -60,7 +60,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
     #[Test]
     public function itDispatchesBlockedPeriodDeleted(): void
     {
-        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $repository = $this->createStub(BlockedPeriodRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $checkIn = new \DateTimeImmutable('2026-07-01');
@@ -92,7 +92,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
     #[Test]
     public function itDoesNotDispatchWhenNotFound(): void
     {
-        $repository = $this->createMock(BlockedPeriodRepositoryInterface::class);
+        $repository = $this->createStub(BlockedPeriodRepositoryInterface::class);
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
 
         $repository->method('get')->willReturn(null);

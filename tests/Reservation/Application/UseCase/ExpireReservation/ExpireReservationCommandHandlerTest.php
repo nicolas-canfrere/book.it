@@ -15,6 +15,7 @@ use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationExpired;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -33,7 +34,8 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         $this->handler = new ExpireReservationCommandHandler($this->repository, $this->eventDispatcher);
     }
 
-    public function test_expires_pending_reservation_and_dispatches_event(): void
+    #[Test]
+    public function itExpiresPendingReservationAndDispatchesEvent(): void
     {
         $reservation = $this->makePendingReservation();
         $this->repository->method('get')->willReturn($reservation);
@@ -46,7 +48,8 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         self::assertSame(ReservationStatus::Expired, $reservation->status);
     }
 
-    public function test_is_noop_when_reservation_not_found(): void
+    #[Test]
+    public function itIsNoopWhenReservationNotFound(): void
     {
         $this->repository->method('get')->willReturn(null);
         $this->repository->expects(self::never())->method('save');
@@ -55,7 +58,8 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         ($this->handler)(new ExpireReservationCommand('res-uuid'));
     }
 
-    public function test_is_noop_when_reservation_already_confirmed(): void
+    #[Test]
+    public function itIsNoopWhenReservationAlreadyConfirmed(): void
     {
         $reservation = $this->makePendingReservation();
         $reservation->status = ReservationStatus::Confirmed;
@@ -66,7 +70,8 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         ($this->handler)(new ExpireReservationCommand('res-uuid'));
     }
 
-    public function test_is_noop_when_reservation_already_expired(): void
+    #[Test]
+    public function itIsNoopWhenReservationAlreadyExpired(): void
     {
         $reservation = $this->makePendingReservation();
         $reservation->status = ReservationStatus::Expired;

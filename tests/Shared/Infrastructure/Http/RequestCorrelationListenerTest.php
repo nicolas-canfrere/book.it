@@ -5,12 +5,14 @@ declare(strict_types=1);
 namespace App\Tests\Shared\Infrastructure\Http;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
 final class RequestCorrelationListenerTest extends WebTestCase
 {
-    public function test_response_echoes_incoming_x_request_id_when_valid_uuid_v4(): void
+    #[Test]
+    public function itResponseEchoesIncomingXRequestIdWhenValidUuidV4(): void
     {
         $client = static::createClient();
         $client->request(
@@ -28,7 +30,8 @@ final class RequestCorrelationListenerTest extends WebTestCase
         );
     }
 
-    public function test_response_generates_x_request_id_when_incoming_header_is_not_valid_uuid_v4(): void
+    #[Test]
+    public function itResponseGeneratesXRequestIdWhenIncomingHeaderIsNotValidUuidV4(): void
     {
         $client = static::createClient();
         $client->request(
@@ -49,7 +52,8 @@ final class RequestCorrelationListenerTest extends WebTestCase
         );
     }
 
-    public function test_response_generates_x_request_id_when_header_absent(): void
+    #[Test]
+    public function itResponseGeneratesXRequestIdWhenHeaderAbsent(): void
     {
         $client = static::createClient();
         $client->request(

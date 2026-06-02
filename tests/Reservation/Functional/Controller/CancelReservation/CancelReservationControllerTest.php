@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Reservation\Functional\Controller\CancelReservation;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
@@ -12,7 +13,8 @@ use Symfony\Component\HttpFoundation\Response;
 #[Group('functional')]
 final class CancelReservationControllerTest extends WebTestCase
 {
-    public function test_cancel_confirmed_reservation_returns_204(): void
+    #[Test]
+    public function itCancelConfirmedReservationReturns204(): void
     {
         $client = static::createClient();
         $reservationId = $this->createConfirmedReservation($client, '2099-08-01', '2099-08-05');
@@ -26,7 +28,8 @@ final class CancelReservationControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(204);
     }
 
-    public function test_returns_404_when_reservation_not_found(): void
+    #[Test]
+    public function itReturns404WhenReservationNotFound(): void
     {
         $client = static::createClient();
 
@@ -39,7 +42,8 @@ final class CancelReservationControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(404);
     }
 
-    public function test_returns_409_when_reservation_is_not_confirmed(): void
+    #[Test]
+    public function itReturns409WhenReservationIsNotConfirmed(): void
     {
         $client = static::createClient();
         $reservationId = $this->createCancelledReservation($client, '2099-08-01', '2099-08-05');
@@ -53,7 +57,8 @@ final class CancelReservationControllerTest extends WebTestCase
         self::assertResponseStatusCodeSame(409);
     }
 
-    public function test_returns_409_when_check_in_date_is_today(): void
+    #[Test]
+    public function itReturns409WhenCheckInDateIsToday(): void
     {
         $client = static::createClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');

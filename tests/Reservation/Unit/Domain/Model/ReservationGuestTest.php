@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
@@ -21,7 +22,8 @@ final class ReservationGuestTest extends TestCase
 {
     // --- preRegisterGuests ---
 
-    public function test_pre_register_guests_sets_guests_when_confirmed(): void
+    #[Test]
+    public function itPreRegisterGuestsSetsGuestsWhenConfirmed(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
         $guest = $this->makeGuest();
@@ -31,7 +33,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame([$guest], $reservation->guests);
     }
 
-    public function test_pre_register_guests_sets_guests_when_pending(): void
+    #[Test]
+    public function itPreRegisterGuestsSetsGuestsWhenPending(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Pending);
         $guest = $this->makeGuest();
@@ -41,7 +44,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame([$guest], $reservation->guests);
     }
 
-    public function test_pre_register_guests_replaces_existing_guests(): void
+    #[Test]
+    public function itPreRegisterGuestsReplacesExistingGuests(): void
     {
         $reservation = $this->makeReservation();
         $reservation->preRegisterGuests([$this->makeGuest('g-1')], new \DateTimeImmutable('2026-06-10'));
@@ -53,7 +57,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame($newGuest, $reservation->guests[0]);
     }
 
-    public function test_pre_register_guests_allows_empty_list(): void
+    #[Test]
+    public function itPreRegisterGuestsAllowsEmptyList(): void
     {
         $reservation = $this->makeReservation();
         $reservation->preRegisterGuests([$this->makeGuest()], new \DateTimeImmutable('2026-06-10'));
@@ -62,7 +67,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame([], $reservation->guests);
     }
 
-    public function test_pre_register_guests_throws_when_checked_in(): void
+    #[Test]
+    public function itPreRegisterGuestsThrowsWhenCheckedIn(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::CheckedIn);
 
@@ -70,7 +76,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->preRegisterGuests([], new \DateTimeImmutable('2026-06-15'));
     }
 
-    public function test_pre_register_guests_throws_when_cancelled(): void
+    #[Test]
+    public function itPreRegisterGuestsThrowsWhenCancelled(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Cancelled);
 
@@ -78,7 +85,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->preRegisterGuests([], new \DateTimeImmutable('2026-06-15'));
     }
 
-    public function test_pre_register_guests_throws_when_expired(): void
+    #[Test]
+    public function itPreRegisterGuestsThrowsWhenExpired(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Expired);
 
@@ -86,7 +94,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->preRegisterGuests([], new \DateTimeImmutable('2026-06-15'));
     }
 
-    public function test_pre_register_guests_throws_on_check_in_date(): void
+    #[Test]
+    public function itPreRegisterGuestsThrowsOnCheckInDate(): void
     {
         $reservation = $this->makeReservation();
 
@@ -94,7 +103,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->preRegisterGuests([], new \DateTimeImmutable('2026-07-01')); // same as check-in
     }
 
-    public function test_pre_register_guests_throws_after_check_in_date(): void
+    #[Test]
+    public function itPreRegisterGuestsThrowsAfterCheckInDate(): void
     {
         $reservation = $this->makeReservation();
 
@@ -104,7 +114,8 @@ final class ReservationGuestTest extends TestCase
 
     // --- checkIn ---
 
-    public function test_check_in_transitions_status_to_checked_in(): void
+    #[Test]
+    public function itCheckInTransitionsStatusToCheckedIn(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
         $guest = $this->makeGuest();
@@ -114,7 +125,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame(ReservationStatus::CheckedIn, $reservation->status);
     }
 
-    public function test_check_in_sets_guests(): void
+    #[Test]
+    public function itCheckInSetsGuests(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
         $guest = $this->makeGuest();
@@ -124,7 +136,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame([$guest], $reservation->guests);
     }
 
-    public function test_check_in_replaces_pre_registered_guests(): void
+    #[Test]
+    public function itCheckInReplacesPreRegisteredGuests(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
         $reservation->preRegisterGuests([$this->makeGuest('g-1')], new \DateTimeImmutable('2026-06-15'));
@@ -136,7 +149,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame($finalGuest, $reservation->guests[0]);
     }
 
-    public function test_check_in_allowed_after_check_in_date(): void
+    #[Test]
+    public function itCheckInAllowedAfterCheckInDate(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
 
@@ -145,7 +159,8 @@ final class ReservationGuestTest extends TestCase
         self::assertSame(ReservationStatus::CheckedIn, $reservation->status);
     }
 
-    public function test_check_in_throws_when_not_confirmed(): void
+    #[Test]
+    public function itCheckInThrowsWhenNotConfirmed(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Pending);
 
@@ -153,7 +168,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->checkIn([], new \DateTimeImmutable('2026-07-01'));
     }
 
-    public function test_check_in_throws_when_cancelled(): void
+    #[Test]
+    public function itCheckInThrowsWhenCancelled(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Cancelled);
 
@@ -161,7 +177,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->checkIn([], new \DateTimeImmutable('2026-07-01'));
     }
 
-    public function test_check_in_throws_when_expired(): void
+    #[Test]
+    public function itCheckInThrowsWhenExpired(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Expired);
 
@@ -169,7 +186,8 @@ final class ReservationGuestTest extends TestCase
         $reservation->checkIn([], new \DateTimeImmutable('2026-07-01'));
     }
 
-    public function test_check_in_throws_before_check_in_date(): void
+    #[Test]
+    public function itCheckInThrowsBeforeCheckInDate(): void
     {
         $reservation = $this->makeReservation(ReservationStatus::Confirmed);
 

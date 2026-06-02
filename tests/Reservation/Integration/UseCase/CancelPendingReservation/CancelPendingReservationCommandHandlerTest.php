@@ -16,13 +16,15 @@ use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationPaymentCancelled;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 use Symfony\Component\EventDispatcher\EventDispatcher;
 
 #[Group('integration')]
 final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
 {
-    public function test_cancels_pending_reservation_and_dispatches_event(): void
+    #[Test]
+    public function itCancelsPendingReservationAndDispatchesEvent(): void
     {
         $reservation = new Reservation(
             id: 'res-001',
@@ -54,7 +56,8 @@ final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
         self::assertSame('res-001', $dispatchedEvents[0]->reservationId);
     }
 
-    public function test_is_idempotent_if_reservation_not_pending(): void
+    #[Test]
+    public function itIsIdempotentIfReservationNotPending(): void
     {
         $repository = new InMemoryReservationRepository(null);
         $dispatcher = new EventDispatcher();
