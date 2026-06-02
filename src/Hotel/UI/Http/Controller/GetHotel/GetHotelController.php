@@ -42,6 +42,20 @@ final readonly class GetHotelController
                         new OA\Property(property: 'city', type: 'string', example: 'Paris'),
                         new OA\Property(property: 'country', type: 'string', example: 'FR'),
                         new OA\Property(property: 'createdAt', description: 'Unix timestamp', type: 'integer'),
+                        new OA\Property(
+                            property: 'starRating',
+                            properties: [
+                                new OA\Property(property: 'stars', type: 'integer', minimum: 1, maximum: 5),
+                                new OA\Property(property: 'superior', type: 'boolean'),
+                            ],
+                            type: 'object',
+                            nullable: true,
+                        ),
+                        new OA\Property(
+                            property: 'amenities',
+                            type: 'array',
+                            items: new OA\Items(type: 'string', example: 'wifi'),
+                        ),
                     ],
                 ),
             ),
