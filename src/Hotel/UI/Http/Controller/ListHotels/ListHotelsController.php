@@ -52,6 +52,11 @@ final readonly class ListHotelsController
                                         type: 'object',
                                         nullable: true,
                                     ),
+                                    new OA\Property(
+                                        property: 'amenities',
+                                        type: 'array',
+                                        items: new OA\Items(type: 'string', example: 'wifi'),
+                                    ),
                                 ],
                                 type: 'object',
                             ),
