@@ -16,6 +16,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 
 final readonly class RegisterHotelController
 {
@@ -24,6 +25,7 @@ final readonly class RegisterHotelController
         private SyncCommandBusInterface $commandBus,
         private SyncQueryBusInterface $queryBus,
         private HotelSerializer $hotelSerializer,
+        private UrlGeneratorInterface $urlGenerator,
     ) {
     }
 
@@ -39,6 +41,7 @@ final readonly class RegisterHotelController
             new OA\Response(
                 response: Response::HTTP_CREATED,
                 description: 'Hotel registered',
+                headers: [new OA\Header(header: 'Location', description: 'URL of the created hotel', schema: new OA\Schema(type: 'string', format: 'uri'))],
                 content: new OA\JsonContent(
                     properties: [
                         new OA\Property(property: 'id', type: 'string', format: 'uuid'),
@@ -100,7 +103,8 @@ final readonly class RegisterHotelController
 
         return new JsonResponse(
             $this->hotelSerializer->serialize($hotel),
-            Response::HTTP_CREATED
+            Response::HTTP_CREATED,
+            ['Location' => $this->urlGenerator->generate('hotel_get_hotel', ['id' => $command->id])],
         );
     }
 }
