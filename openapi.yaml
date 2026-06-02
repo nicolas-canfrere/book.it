@@ -116,6 +116,21 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /api/v1/hotel-amenities:
+    get:
+      tags:
+        - Hotels
+      summary: 'List all possible hotel amenities'
+      operationId: get_hotel_get_amenities_catalogue
+      responses:
+        '200':
+          description: 'Amenities catalogue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  amenities: { type: array, items: { type: string }, example: [pool, spa, gym] }
+                type: object
   /api/v1/hotels:
     get:
       tags:
@@ -513,6 +528,21 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /api/v1/room-type-amenities:
+    get:
+      tags:
+        - 'Room Types'
+      summary: 'List all possible room type amenities'
+      operationId: get_room_get_amenities_catalogue
+      responses:
+        '200':
+          description: 'Amenities catalogue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  amenities: { type: array, items: { type: string }, example: [wifi, tv, balcony] }
+                type: object
   '/api/v1/hotels/{hotelId}/room-types':
     get:
       tags:
