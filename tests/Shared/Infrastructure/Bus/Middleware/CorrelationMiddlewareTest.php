@@ -1,4 +1,5 @@
 <?php
+
 // tests/Shared/Infrastructure/Bus/Middleware/CorrelationMiddlewareTest.php
 declare(strict_types=1);
 
@@ -17,34 +18,6 @@ use Symfony\Component\Messenger\Middleware\StackInterface;
 #[Group('unit')]
 final class CorrelationMiddlewareTest extends TestCase
 {
-    private function makeNextMiddleware(EnvelopeCapture $capture): MiddlewareInterface
-    {
-        return new class($capture) implements MiddlewareInterface {
-            public function __construct(private readonly EnvelopeCapture $capture) {}
-
-            public function handle(Envelope $envelope, StackInterface $stack): Envelope
-            {
-                $this->capture->envelope = $envelope;
-
-                return $envelope;
-            }
-        };
-    }
-
-    private function makeStack(EnvelopeCapture $capture): StackInterface
-    {
-        $next = $this->makeNextMiddleware($capture);
-
-        return new class($next) implements StackInterface {
-            public function __construct(private readonly MiddlewareInterface $next) {}
-
-            public function next(): MiddlewareInterface
-            {
-                return $this->next;
-            }
-        };
-    }
-
     public function test_dispatch_attaches_correlation_stamp_and_amqp_stamp(): void
     {
         $context = new RequestCorrelationContext();
@@ -96,5 +69,37 @@ final class CorrelationMiddlewareTest extends TestCase
         $captured = $capture->envelope;
         self::assertNotNull($captured);
         self::assertCount(1, $captured->all(CorrelationStamp::class));
+    }
+
+    private function makeNextMiddleware(EnvelopeCapture $capture): MiddlewareInterface
+    {
+        return new class($capture) implements MiddlewareInterface {
+            public function __construct(private readonly EnvelopeCapture $capture)
+            {
+            }
+
+            public function handle(Envelope $envelope, StackInterface $stack): Envelope
+            {
+                $this->capture->envelope = $envelope;
+
+                return $envelope;
+            }
+        };
+    }
+
+    private function makeStack(EnvelopeCapture $capture): StackInterface
+    {
+        $next = $this->makeNextMiddleware($capture);
+
+        return new class($next) implements StackInterface {
+            public function __construct(private readonly MiddlewareInterface $next)
+            {
+            }
+
+            public function next(): MiddlewareInterface
+            {
+                return $this->next;
+            }
+        };
     }
 }

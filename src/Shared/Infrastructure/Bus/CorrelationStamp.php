@@ -1,4 +1,5 @@
 <?php
+
 // src/Shared/Infrastructure/Bus/CorrelationStamp.php
 declare(strict_types=1);
 
@@ -8,7 +9,9 @@ use Symfony\Component\Messenger\Stamp\StampInterface;
 
 final readonly class CorrelationStamp implements StampInterface
 {
-    public function __construct(private string $requestId) {}
+    public function __construct(private string $requestId)
+    {
+    }
 
     public function getRequestId(): string
     {

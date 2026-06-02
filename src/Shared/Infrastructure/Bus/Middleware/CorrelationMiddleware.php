@@ -1,4 +1,5 @@
 <?php
+
 // src/Shared/Infrastructure/Bus/Middleware/CorrelationMiddleware.php
 declare(strict_types=1);
 
@@ -13,7 +14,9 @@ use Symfony\Component\Messenger\Middleware\StackInterface;
 
 final readonly class CorrelationMiddleware implements MiddlewareInterface
 {
-    public function __construct(private RequestCorrelationContext $context) {}
+    public function __construct(private RequestCorrelationContext $context)
+    {
+    }
 
     public function handle(Envelope $envelope, StackInterface $stack): Envelope
     {

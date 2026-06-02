@@ -1,4 +1,5 @@
 <?php
+
 // tests/Shared/Infrastructure/Bus/CorrelationStampTest.php
 declare(strict_types=1);
 
@@ -21,6 +22,7 @@ final class CorrelationStampTest extends TestCase
 
     public function test_implements_stamp_interface(): void
     {
+        // @phpstan-ignore staticMethod.alreadyNarrowedType
         self::assertInstanceOf(StampInterface::class, new CorrelationStamp('any'));
     }
 }

@@ -24,7 +24,10 @@ final readonly class RequestCorrelationListener
             return;
         }
 
-        $id = $event->getRequest()->headers->get('X-Request-Id') ?? Uuid::v4()->toRfc4122();
+        $raw = $event->getRequest()->headers->get('X-Request-Id');
+        $id = (null !== $raw && 1 === preg_match('/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i', $raw))
+            ? $raw
+            : Uuid::v4()->toRfc4122();
         $this->context->setId($id);
     }
 
