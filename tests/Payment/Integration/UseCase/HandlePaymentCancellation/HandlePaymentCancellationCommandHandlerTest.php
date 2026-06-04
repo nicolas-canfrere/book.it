@@ -6,29 +6,36 @@ namespace App\Tests\Payment\Integration\UseCase\HandlePaymentCancellation;
 
 use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommand;
 use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommandHandler;
-use App\Payment\Domain\Port\ReservationPaymentCancellerInterface;
+use App\Shared\Domain\Event\PaymentCancelled;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
+use Psr\EventDispatcher\EventDispatcherInterface;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
 
 #[Group('integration')]
 final class HandlePaymentCancellationCommandHandlerTest extends KernelTestCase
 {
     #[Test]
-    public function itCallsCancellerWithReservationId(): void
+    public function itDispatchesPaymentCancelledEvent(): void
     {
-        $canceller = new class implements ReservationPaymentCancellerInterface {
-            public ?string $calledWith = null;
-
-            public function cancel(string $reservationId): void
+        $dispatched = [];
+        $dispatcher = new class ($dispatched) implements EventDispatcherInterface {
+            public function __construct(private array &$dispatched)
             {
-                $this->calledWith = $reservationId;
+            }
+
+            public function dispatch(object $event): object
+            {
+                $this->dispatched[] = $event;
+
+                return $event;
             }
         };
 
-        $handler = new HandlePaymentCancellationCommandHandler($canceller);
+        $handler = new HandlePaymentCancellationCommandHandler($dispatcher);
         ($handler)(new HandlePaymentCancellationCommand('res-001'));
 
-        self::assertSame('res-001', $canceller->calledWith);
+        self::assertCount(1, $dispatched);
+        self::assertEquals(new PaymentCancelled('res-001'), $dispatched[0]);
     }
 }
