@@ -9,12 +9,13 @@ use App\Booker\Application\Contract\BookerView;
 use App\Reservation\Infrastructure\Service\BookerExistenceChecker;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class BookerExistenceCheckerTest extends TestCase
 {
-    private BookerFinder $bookerFinder;
+    private BookerFinder&Stub $bookerFinder;
     private BookerExistenceChecker $checker;
 
     protected function setUp(): void
@@ -26,7 +27,6 @@ final class BookerExistenceCheckerTest extends TestCase
     #[Test]
     public function itReturnsFalseWhenBookerDoesNotExist(): void
     {
-        /** @phpstan-ignore-next-line method.notFound */
         $this->bookerFinder->method('find')->willReturn(null);
 
         self::assertFalse($this->checker->exists('unknown-id'));
@@ -41,7 +41,6 @@ final class BookerExistenceCheckerTest extends TestCase
             lastName: 'Dupont',
             email: 'jean.dupont@example.com',
         );
-        /** @phpstan-ignore-next-line method.notFound */
         $this->bookerFinder->method('find')->willReturn($view);
 
         self::assertTrue($this->checker->exists('b1b2b3b4-0000-0000-0000-000000000001'));
