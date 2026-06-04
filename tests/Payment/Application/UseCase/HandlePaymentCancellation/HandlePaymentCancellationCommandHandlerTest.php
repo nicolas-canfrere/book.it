@@ -8,13 +8,15 @@ use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCance
 use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommandHandler;
 use App\Shared\Domain\Event\PaymentCancelled;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class HandlePaymentCancellationCommandHandlerTest extends TestCase
 {
-    public function test_it_dispatches_payment_cancelled_event(): void
+    #[Test]
+    public function itDispatchesPaymentCancelledEvent(): void
     {
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher

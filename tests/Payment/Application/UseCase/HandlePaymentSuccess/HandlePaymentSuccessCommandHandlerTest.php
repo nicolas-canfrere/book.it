@@ -8,13 +8,15 @@ use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCom
 use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCommandHandler;
 use App\Shared\Domain\Event\PaymentConfirmed;
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 #[Group('unit')]
 final class HandlePaymentSuccessCommandHandlerTest extends TestCase
 {
-    public function test_it_dispatches_payment_confirmed_event(): void
+    #[Test]
+    public function itDispatchesPaymentConfirmedEvent(): void
     {
         $dispatcher = $this->createMock(EventDispatcherInterface::class);
         $dispatcher
