@@ -5,17 +5,16 @@ declare(strict_types=1);
 namespace App\Availability\Infrastructure\Service;
 
 use App\Availability\Domain\Port\RoomExistsInterface;
-use App\Room\Application\UseCase\GetRoom\GetRoomQuery;
-use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Room\Application\Contract\RoomFinderInterface;
 
 final readonly class RoomExistenceChecker implements RoomExistsInterface
 {
-    public function __construct(private SyncQueryBusInterface $queryBus)
+    public function __construct(private RoomFinderInterface $rooms)
     {
     }
 
     public function exists(string $roomId): bool
     {
-        return null !== $this->queryBus->ask(new GetRoomQuery($roomId));
+        return null !== $this->rooms->find($roomId);
     }
 }

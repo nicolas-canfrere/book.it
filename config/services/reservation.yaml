@@ -26,6 +26,7 @@ services:
         exclude:
             - '../../src/Reservation/Application/**/*Command.php'
             - '../../src/Reservation/Application/**/*Query.php'
+            - '../../src/Reservation/Application/Contract/*View.php'
 
     App\Reservation\Infrastructure\:
         resource: '../../src/Reservation/Infrastructure/'

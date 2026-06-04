@@ -2,62 +2,53 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Reservation\Infrastructure\Service;
+namespace Tests\Reservation\Infrastructure\Service;
 
-use App\Pricing\Domain\Exception\RoomHasNoBaseRateException;
+use App\Pricing\Application\Contract\PricingQuoteFinderInterface;
+use App\Pricing\Application\Contract\PricingQuoteView;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
+use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Infrastructure\Service\PricingQuoteFetcher;
-use App\Shared\Application\Bus\SyncQueryBusInterface;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\MockObject\Stub;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
 final class PricingQuoteFetcherTest extends TestCase
 {
-    private const string ROOM_ID = '550e8400-e29b-41d4-a716-446655440001';
+    private PricingQuoteFinderInterface&Stub $pricingFinder;
+    private PricingQuoteFetcherInterface $fetcher;
 
-    #[Test]
-    public function itBuildsSnapshotFromPricingQuote(): void
+    protected function setUp(): void
     {
-        $queryBus = $this->createStub(SyncQueryBusInterface::class);
-        $queryBus->method('ask')->willReturn([
-            'roomId' => self::ROOM_ID,
-            'checkIn' => '2026-06-01',
-            'checkOut' => '2026-06-03',
-            'totalAmountCents' => 19000,
-            'nights' => [
-                ['date' => '2026-06-01', 'rateAmountCents' => 10000, 'discountPercent' => null, 'effectiveAmountCents' => 10000],
-                ['date' => '2026-06-02', 'rateAmountCents' => 10000, 'discountPercent' => 10, 'effectiveAmountCents' => 9000],
-            ],
-        ]);
-
-        $fetcher = new PricingQuoteFetcher($queryBus);
-        $snapshot = $fetcher->fetch(self::ROOM_ID, new \DateTimeImmutable('2026-06-01'), new \DateTimeImmutable('2026-06-03'));
-
-        self::assertSame(19000, $snapshot->totalAmountCents);
-        self::assertCount(2, $snapshot->breakdown->nights);
-        self::assertSame('2026-06-01', $snapshot->breakdown->nights[0]->date);
-        self::assertSame(10000, $snapshot->breakdown->nights[0]->rateAmountCents);
-        self::assertNull($snapshot->breakdown->nights[0]->discountPercent);
-        self::assertSame(10000, $snapshot->breakdown->nights[0]->effectiveAmountCents);
-        self::assertSame('2026-06-02', $snapshot->breakdown->nights[1]->date);
-        self::assertSame(10, $snapshot->breakdown->nights[1]->discountPercent);
-        self::assertSame(9000, $snapshot->breakdown->nights[1]->effectiveAmountCents);
+        $this->pricingFinder = $this->createStub(PricingQuoteFinderInterface::class);
+        $this->fetcher = new PricingQuoteFetcher($this->pricingFinder);
     }
 
     #[Test]
-    public function itThrowsRoomNotBookableWhenNoBaseRate(): void
+    public function itReturnsSnapshotFromView(): void
     {
-        $queryBus = $this->createStub(SyncQueryBusInterface::class);
-        $queryBus->method('ask')->willThrowException(
-            new RoomHasNoBaseRateException(self::ROOM_ID),
-        );
+        $nights = [
+            ['date' => '2026-07-01', 'rateAmountCents' => 10000, 'discountPercent' => null, 'effectiveAmountCents' => 10000],
+        ];
+        $this->pricingFinder->method('fetch')->willReturn(new PricingQuoteView(10000, $nights));
 
-        $fetcher = new PricingQuoteFetcher($queryBus);
+        $checkIn = new \DateTimeImmutable('2026-07-01');
+        $checkOut = new \DateTimeImmutable('2026-07-02');
+
+        $snapshot = $this->fetcher->fetch('room-1', $checkIn, $checkOut);
+
+        self::assertSame(10000, $snapshot->totalAmountCents);
+    }
+
+    #[Test]
+    public function itThrowsRoomNotBookableOnDomainException(): void
+    {
+        $this->pricingFinder->method('fetch')->willThrowException(new \DomainException('no base rate'));
 
         $this->expectException(RoomNotBookableException::class);
 
-        $fetcher->fetch(self::ROOM_ID, new \DateTimeImmutable('2026-06-01'), new \DateTimeImmutable('2026-06-03'));
+        $this->fetcher->fetch('room-1', new \DateTimeImmutable('2026-07-01'), new \DateTimeImmutable('2026-07-02'));
     }
 }

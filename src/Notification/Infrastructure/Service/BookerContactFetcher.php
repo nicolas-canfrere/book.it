@@ -4,31 +4,28 @@ declare(strict_types=1);
 
 namespace App\Notification\Infrastructure\Service;
 
-use App\Booker\Application\UseCase\GetBooker\GetBookerQuery;
-use App\Booker\Domain\Model\Booker;
+use App\Booker\Application\Contract\BookerFinderInterface;
 use App\Notification\Domain\Port\BookerContactFetcherInterface;
 use App\Notification\Domain\ReadModel\BookerContact;
-use App\Shared\Application\Bus\SyncQueryBusInterface;
 
 final readonly class BookerContactFetcher implements BookerContactFetcherInterface
 {
-    public function __construct(private SyncQueryBusInterface $queryBus)
+    public function __construct(private BookerFinderInterface $bookers)
     {
     }
 
     public function fetch(string $bookerId): ?BookerContact
     {
-        /** @var Booker|null $booker */
-        $booker = $this->queryBus->ask(new GetBookerQuery($bookerId));
+        $view = $this->bookers->find($bookerId);
 
-        if (null === $booker) {
+        if (null === $view) {
             return null;
         }
 
         return new BookerContact(
-            firstName: $booker->firstName,
-            lastName: $booker->lastName,
-            email: $booker->email,
+            firstName: $view->firstName,
+            lastName: $view->lastName,
+            email: $view->email,
         );
     }
 }

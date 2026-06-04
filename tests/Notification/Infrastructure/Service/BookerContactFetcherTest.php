@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Notification\Infrastructure\Service;
 
-use App\Booker\Domain\Model\Booker;
+use App\Booker\Application\Contract\BookerFinderInterface;
+use App\Booker\Application\Contract\BookerView;
+use App\Notification\Domain\Port\BookerContactFetcherInterface;
 use App\Notification\Infrastructure\Service\BookerContactFetcher;
-use App\Shared\Application\Bus\SyncQueryBusInterface;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -14,53 +15,35 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class BookerContactFetcherTest extends TestCase
 {
+    private BookerFinderInterface&\PHPUnit\Framework\MockObject\Stub $bookerFinder;
+    private BookerContactFetcherInterface $fetcher;
+
+    protected function setUp(): void
+    {
+        $this->bookerFinder = $this->createStub(BookerFinderInterface::class);
+        $this->fetcher = new BookerContactFetcher($this->bookerFinder);
+    }
+
     #[Test]
     public function itReturnsContactWhenBookerFound(): void
     {
-        $booker = new Booker(
-            id: 'booker-001',
-            firstName: 'Jean',
-            lastName: 'Dupont',
-            email: 'jean.dupont@example.com',
-            phone: '+33600000000',
-            dateOfBirth: new \DateTimeImmutable('1980-01-01'),
-            registeredAt: new \DateTimeImmutable(),
+        $this->bookerFinder->method('find')->willReturn(
+            new BookerView('booker-1', 'Alice', 'Dupont', 'alice@example.com')
         );
 
-        $queryBus = new class($booker) implements SyncQueryBusInterface {
-            public function __construct(private readonly Booker $booker)
-            {
-            }
-
-            public function ask(object $query): mixed
-            {
-                /** @phpstan-ignore-next-line return.type */
-                return $this->booker;
-            }
-        };
-
-        $fetcher = new BookerContactFetcher($queryBus);
-        $contact = $fetcher->fetch('booker-001');
+        $contact = $this->fetcher->fetch('booker-1');
 
         self::assertNotNull($contact);
-        self::assertSame('Jean', $contact->firstName);
+        self::assertSame('Alice', $contact->firstName);
         self::assertSame('Dupont', $contact->lastName);
-        self::assertSame('jean.dupont@example.com', $contact->email);
+        self::assertSame('alice@example.com', $contact->email);
     }
 
     #[Test]
     public function itReturnsNullWhenBookerNotFound(): void
     {
-        $queryBus = new class implements SyncQueryBusInterface {
-            public function ask(object $query): mixed
-            {
-                /** @phpstan-ignore-next-line return.type */
-                return null;
-            }
-        };
+        $this->bookerFinder->method('find')->willReturn(null);
 
-        $fetcher = new BookerContactFetcher($queryBus);
-
-        self::assertNull($fetcher->fetch('unknown'));
+        self::assertNull($this->fetcher->fetch('unknown'));
     }
 }

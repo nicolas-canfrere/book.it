@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Application\UseCase\GetPricingQuote;
 
+use App\Pricing\Application\Contract\PricingQuoteCalculatorInterface;
 use App\Pricing\Domain\Exception\RoomHasNoBaseRateException;
 use App\Pricing\Domain\Exception\RoomNotFoundException;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
@@ -13,7 +14,7 @@ use App\Pricing\Domain\Port\RoomExistsInterface;
 use App\Pricing\Domain\ValueObject\DatePeriod;
 use App\Shared\Application\Bus\SyncQueryHandlerInterface;
 
-final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInterface
+final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInterface, PricingQuoteCalculatorInterface
 {
     public function __construct(
         private RoomExistsInterface $roomExists,
@@ -89,5 +90,10 @@ final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInte
             'totalAmountCents' => $total,
             'nights' => $nights,
         ];
+    }
+
+    public function calculate(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): array
+    {
+        return ($this)(new GetPricingQuoteQuery($roomId, $checkIn, $checkOut));
     }
 }

@@ -4,25 +4,24 @@ declare(strict_types=1);
 
 namespace App\Reservation\Infrastructure\Service;
 
-use App\Pricing\Application\UseCase\GetCancellationPolicy\GetCancellationPolicyQuery;
+use App\Pricing\Application\Contract\CancellationPolicyFinderInterface;
 use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
-use App\Shared\Application\Bus\SyncQueryBusInterface;
 
 final readonly class PricingCancellationPolicyFetcher implements CancellationPolicyFetcherInterface
 {
-    public function __construct(private SyncQueryBusInterface $queryBus)
+    public function __construct(private CancellationPolicyFinderInterface $cancellationPolicies)
     {
     }
 
     public function fetch(string $roomId): CancellationTerms
     {
-        try {
-            $policy = $this->queryBus->ask(new GetCancellationPolicyQuery($roomId));
+        $view = $this->cancellationPolicies->find($roomId);
 
-            return CancellationTerms::withThreshold($policy->daysThreshold);
-        } catch (\DomainException) {
+        if (null === $view) {
             return CancellationTerms::alwaysRefundable();
         }
+
+        return CancellationTerms::withThreshold($view->daysThreshold);
     }
 }
