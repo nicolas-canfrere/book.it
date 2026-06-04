@@ -32,7 +32,7 @@ final class ReservationDetailsFetcherTest extends TestCase
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
         $this->reservationFinder->method('find')->willReturn(
-            new ReservationView($checkIn, $checkOut, 40000)
+            new ReservationView('res-1', $checkIn, $checkOut, 40000)
         );
 
         $details = $this->fetcher->fetch('res-1');

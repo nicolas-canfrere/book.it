@@ -23,6 +23,7 @@ final readonly class DoctrineReservationFinder implements ReservationFinderInter
         }
 
         return new ReservationView(
+            id: $reservation->id,
             checkIn: $reservation->period->checkIn,
             checkOut: $reservation->period->checkOut,
             totalPriceCents: $reservation->totalPrice,

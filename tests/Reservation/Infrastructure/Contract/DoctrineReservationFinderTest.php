@@ -52,6 +52,7 @@ final class DoctrineReservationFinderTest extends TestCase
         $view = $this->finder->find('res-1');
 
         self::assertInstanceOf(ReservationView::class, $view);
+        self::assertSame('res-1', $view->id);
         self::assertEquals($checkIn, $view->checkIn);
         self::assertEquals($checkOut, $view->checkOut);
         self::assertSame(40000, $view->totalPriceCents);
