@@ -1,0 +1,49 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Tests\Reservation\Infrastructure\Service;
+
+use App\Booker\Application\Contract\BookerFinder;
+use App\Booker\Application\Contract\BookerView;
+use App\Reservation\Infrastructure\Service\BookerExistenceChecker;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
+use PHPUnit\Framework\TestCase;
+
+#[Group('unit')]
+final class BookerExistenceCheckerTest extends TestCase
+{
+    private BookerFinder $bookerFinder;
+    private BookerExistenceChecker $checker;
+
+    protected function setUp(): void
+    {
+        $this->bookerFinder = $this->createStub(BookerFinder::class);
+        $this->checker = new BookerExistenceChecker($this->bookerFinder);
+    }
+
+    #[Test]
+    public function itReturnsFalseWhenBookerDoesNotExist(): void
+    {
+        /** @phpstan-ignore-next-line method.notFound */
+        $this->bookerFinder->method('find')->willReturn(null);
+
+        self::assertFalse($this->checker->exists('unknown-id'));
+    }
+
+    #[Test]
+    public function itReturnsTrueWhenBookerExists(): void
+    {
+        $view = new BookerView(
+            id: 'b1b2b3b4-0000-0000-0000-000000000001',
+            firstName: 'Jean',
+            lastName: 'Dupont',
+            email: 'jean.dupont@example.com',
+        );
+        /** @phpstan-ignore-next-line method.notFound */
+        $this->bookerFinder->method('find')->willReturn($view);
+
+        self::assertTrue($this->checker->exists('b1b2b3b4-0000-0000-0000-000000000001'));
+    }
+}

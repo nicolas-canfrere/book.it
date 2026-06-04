@@ -28,6 +28,7 @@ final class DoctrineBookerFinderTest extends TestCase
     #[Test]
     public function itReturnsNullWhenBookerDoesNotExist(): void
     {
+        /** @phpstan-ignore-next-line method.notFound */
         $this->repository->method('get')->willReturn(null);
 
         self::assertNull($this->finder->find('unknown-id'));
@@ -45,6 +46,7 @@ final class DoctrineBookerFinderTest extends TestCase
             dateOfBirth: new \DateTimeImmutable('1985-03-15'),
             registeredAt: new \DateTimeImmutable('2024-01-01'),
         );
+        /** @phpstan-ignore-next-line method.notFound */
         $this->repository->method('get')->willReturn($booker);
 
         $view = $this->finder->find('b1b2b3b4-0000-0000-0000-000000000001');
