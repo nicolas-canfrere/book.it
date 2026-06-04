@@ -23,6 +23,7 @@ services:
             - '../../src/Room/Application/**/*Exception.php'
             - '../../src/Room/Application/**/*Command.php'
             - '../../src/Room/Application/**/*Query.php'
+            - '../../src/Room/Application/Contract/*View.php'
 
     App\Room\Infrastructure\:
         resource: '../../src/Room/Infrastructure/'
