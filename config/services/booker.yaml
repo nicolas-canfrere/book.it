@@ -23,6 +23,7 @@ services:
             - '../../src/Booker/Application/**/*Exception.php'
             - '../../src/Booker/Application/**/*Command.php'
             - '../../src/Booker/Application/**/*Query.php'
+            - '../../src/Booker/Application/Contract/*View.php'
 
     App\Booker\Infrastructure\:
         resource: '../../src/Booker/Infrastructure/'
