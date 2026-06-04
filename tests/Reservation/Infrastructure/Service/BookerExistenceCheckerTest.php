@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Reservation\Infrastructure\Service;
 
-use App\Booker\Application\Contract\BookerFinder;
+use App\Booker\Application\Contract\BookerFinderInterface;
 use App\Booker\Application\Contract\BookerView;
 use App\Reservation\Infrastructure\Service\BookerExistenceChecker;
 use PHPUnit\Framework\Attributes\Group;
@@ -15,12 +15,12 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class BookerExistenceCheckerTest extends TestCase
 {
-    private BookerFinder&Stub $bookerFinder;
+    private BookerFinderInterface&Stub $bookerFinder;
     private BookerExistenceChecker $checker;
 
     protected function setUp(): void
     {
-        $this->bookerFinder = $this->createStub(BookerFinder::class);
+        $this->bookerFinder = $this->createStub(BookerFinderInterface::class);
         $this->checker = new BookerExistenceChecker($this->bookerFinder);
     }
 

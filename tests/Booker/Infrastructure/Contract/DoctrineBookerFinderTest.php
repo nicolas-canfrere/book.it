@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Tests\Booker\Infrastructure\Contract;
 
-use App\Booker\Application\Contract\BookerFinder;
+use App\Booker\Application\Contract\BookerFinderInterface;
 use App\Booker\Application\Contract\BookerView;
 use App\Booker\Domain\Model\Booker;
 use App\Booker\Domain\Port\BookerRepositoryInterface;
@@ -18,7 +18,7 @@ use PHPUnit\Framework\TestCase;
 final class DoctrineBookerFinderTest extends TestCase
 {
     private BookerRepositoryInterface&Stub $repository;
-    private BookerFinder $finder;
+    private BookerFinderInterface $finder;
 
     protected function setUp(): void
     {

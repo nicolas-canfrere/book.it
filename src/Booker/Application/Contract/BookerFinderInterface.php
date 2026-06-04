@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Booker\Application\Contract;
 
-interface BookerFinder
+interface BookerFinderInterface
 {
     public function find(string $bookerId): ?BookerView;
 }
