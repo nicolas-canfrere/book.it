@@ -19,9 +19,10 @@ final class HandlePaymentSuccessCommandHandlerTest extends KernelTestCase
     public function itDispatchesPaymentConfirmedEvent(): void
     {
         $dispatched = [];
-        $dispatcher = new class ($dispatched) implements EventDispatcherInterface {
+        $dispatcher = new class($dispatched) implements EventDispatcherInterface {
             /**
              * @param array<int, object> $dispatched
+             *
              * @phpstan-ignore-next-line property.onlyWritten
              */
             public function __construct(private array &$dispatched)
