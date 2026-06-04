@@ -11,6 +11,7 @@ final readonly class PricingQuoteView
      */
     public function __construct(
         public int $totalAmountCents,
+        /** @var list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}> */
         public array $nights,
     ) {
     }
