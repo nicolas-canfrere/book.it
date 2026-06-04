@@ -23,6 +23,7 @@ services:
             - '../../src/Hotel/Application/**/*Exception.php'
             - '../../src/Hotel/Application/**/*Command.php'
             - '../../src/Hotel/Application/**/*Query.php'
+            - '../../src/Hotel/Application/Contract/*View.php'
 
     App\Hotel\Infrastructure\:
         resource: '../../src/Hotel/Infrastructure/'
