@@ -63,6 +63,18 @@ events:
       reservationId: string
     listeners:
       - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationPaymentCancelledListener }
+  PaymentConfirmed:
+    class: App\Shared\Domain\Event\PaymentConfirmed
+    properties:
+      reservationId: string
+    listeners:
+      - { context: Reservation, class: App\Reservation\Infrastructure\EventListener\PaymentConfirmedListener }
+  PaymentCancelled:
+    class: App\Shared\Domain\Event\PaymentCancelled
+    properties:
+      reservationId: string
+    listeners:
+      - { context: Reservation, class: App\Reservation\Infrastructure\EventListener\PaymentCancelledListener }
   AvailabilityHoldCreated:
     class: App\Shared\Domain\Event\AvailabilityHoldCreated
     properties:
