@@ -1,0 +1,219 @@
+# Frontières inter-contextes (voir docs/decoupling-inter-contextes.md).
+#
+# Chaque contexte est un layer ; sa surface publiée (App\{Context}\Application\Contract\*)
+# est un layer séparé. Un contexte ne peut dépendre d'un autre QUE via son layer *Contract.
+# Les couches techniques (UI/Application/Domain/Infrastructure) sont vérifiées par deptrac.yaml.
+deptrac:
+    paths:
+        - ./src
+    exclude_files:
+        - '#.*[Tt]est.*#'
+    layers:
+        -
+            name: Availability
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Availability\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Availability\\Application\\Contract\\.*'
+        -
+            name: AvailabilityContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Availability\\Application\\Contract\\.*'
+        -
+            name: Booker
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Booker\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Booker\\Application\\Contract\\.*'
+        -
+            name: BookerContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Booker\\Application\\Contract\\.*'
+        -
+            name: Hotel
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Hotel\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Hotel\\Application\\Contract\\.*'
+        -
+            name: HotelContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Hotel\\Application\\Contract\\.*'
+        -
+            name: Notification
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Notification\\.*'
+        -
+            name: Payment
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Payment\\.*'
+        -
+            name: Pricing
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Pricing\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Pricing\\Application\\Contract\\.*'
+        -
+            name: PricingContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Pricing\\Application\\Contract\\.*'
+        -
+            name: Reservation
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Reservation\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Reservation\\Application\\Contract\\.*'
+        -
+            name: ReservationContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Reservation\\Application\\Contract\\.*'
+        -
+            name: Room
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Room\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Room\\Application\\Contract\\.*'
+        -
+            name: RoomContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Room\\Application\\Contract\\.*'
+        -
+            name: Search
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Search\\.*'
+        -
+            name: Shared
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Shared\\.*'
+        -
+            name: Vendor
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: '.*\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\.*'
+    ruleset:
+        # Chaque contexte peut utiliser son propre contrat (il l'implémente),
+        # Shared, les vendors, et UNIQUEMENT les contrats publiés des contextes
+        # qu'il consomme. Tout import des internes d'un autre contexte → violation.
+        Availability:
+            - AvailabilityContract
+            - RoomContract
+            - Shared
+            - Vendor
+        Booker:
+            - BookerContract
+            - Shared
+            - Vendor
+        Hotel:
+            - HotelContract
+            - Shared
+            - Vendor
+        Notification:
+            - BookerContract
+            - ReservationContract
+            - Shared
+            - Vendor
+        Payment:
+            - Shared
+            - Vendor
+        Pricing:
+            - PricingContract
+            - RoomContract
+            - Shared
+            - Vendor
+        Reservation:
+            - ReservationContract
+            - AvailabilityContract
+            - BookerContract
+            - PricingContract
+            - RoomContract
+            - Shared
+            - Vendor
+        Room:
+            - RoomContract
+            - HotelContract
+            - Shared
+            - Vendor
+        Search:
+            - Shared
+            - Vendor
+        # Les contrats publiés sont des DTO/interfaces purs : aucune dépendance
+        # (Shared toléré si un jour nécessaire — à ajouter explicitement).
+        AvailabilityContract: ~
+        BookerContract: ~
+        HotelContract: ~
+        PricingContract: ~
+        ReservationContract: ~
+        RoomContract: ~
+        Shared:
+            - Vendor
+        Vendor: ~
