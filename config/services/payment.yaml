@@ -9,9 +9,6 @@ services:
             tags:
                 - {name: messenger.message_handler, bus: sync.command.bus}
 
-    App\Payment\Domain\:
-        resource: '../../src/Payment/Domain/'
-
     App\Payment\Application\:
         resource: '../../src/Payment/Application/'
         exclude:
