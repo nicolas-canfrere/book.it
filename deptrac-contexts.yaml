@@ -1,4 +1,4 @@
-# Frontières inter-contextes (voir docs/decoupling-inter-contextes.md).
+# Frontières inter-contextes (voir docs/adr/0015-cross-context-communication-via-published-contracts.md).
 #
 # Chaque contexte est un layer ; sa surface publiée (App\{Context}\Application\Contract\*)
 # est un layer séparé. Un contexte ne peut dépendre d'un autre QUE via son layer *Contract.

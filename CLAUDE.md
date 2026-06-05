@@ -84,7 +84,19 @@ Each bounded context (examples: `Hotel`, `Room`, `Availability`, `Pricing`, `Boo
 
 - Domain port interfaces (e.g. `*RepositoryInterface`, `*IdGeneratorInterface`) live in `Domain\Port\`, **not** `Application\Service\`
 - `Shared` (`App\Shared\`) is a cross-cutting context — usable by all layers
-- Architecture rules are enforced by deptrac: `make deptrac` (also runs as part of `make lint`)
+- Architecture rules are enforced by deptrac: `make deptrac` (also runs as part of `make lint`). Two analyses run: `deptrac.yaml` (technical layers) and `deptrac-contexts.yaml` (context boundaries). ⚠️ deptrac 4: `--config-file` must come **before** the `analyse` command — placed after, it is silently ignored.
+
+### Bounded context boundaries
+
+See ADR 0015 (`docs/adr/0015-cross-context-communication-via-published-contracts.md`). The rules:
+
+- **NEVER import another context's internals** — no use-case `Query`/`Command` classes, no aggregates, no repositories from a foreign context. The only allowed cross-context import is `App\{Context}\Application\Contract\*`.
+- **Reads** go through a **published contract**: the producer exposes an interface (`*FinderInterface`, `*CheckerInterface`) + a stable DTO (`*View`) in `Application\Contract\`, implemented in `Infrastructure\Contract\` (e.g. `DoctrineBookerFinder`). The consumer keeps its own port in `Domain\Port\`; its Infrastructure adapter delegates to the producer's contract.
+- **Writes** go through **event choreography**: publish a domain event (fact), the other context reacts with its own listener + command. Never dispatch another context's command. Cross-context events are pure readonly DTOs in `App\Shared\Domain\Event\` (identifiers + primitives, never aggregates) — both sides depend only on `Shared`. Catalogue: `domainevents.yaml`.
+- Contract classes are **pure** — interfaces and DTOs with zero dependencies (not even `Shared`, unless explicitly added to `deptrac-contexts.yaml`).
+- A `*View` is a published API: changing it breaks consumers — treat with the same care as an HTTP contract.
+- Adding a new contract or a new consumer requires updating the allowlist in `deptrac-contexts.yaml` (one layer per context + one `*Contract` layer per published surface). This friction is intentional: new coupling must be explicit and reviewable.
+- `SyncQueryBus` is for **intra-context** use only.
 
 ## Commands
 
