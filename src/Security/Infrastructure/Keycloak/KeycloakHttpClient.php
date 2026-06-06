@@ -26,7 +26,9 @@ final class KeycloakHttpClient implements KeycloakHttpClientInterface
         private readonly LoggerInterface $logger,
         ?\Closure $sleeper = null,
     ) {
-        $this->sleeper = $sleeper ?? static function (int $us): void { usleep($us); };
+        $this->sleeper = $sleeper ?? static function (int $us): void {
+            usleep($us);
+        };
     }
 
     public function createUser(string $email, string $password): ResponseInterface
@@ -62,7 +64,7 @@ final class KeycloakHttpClient implements KeycloakHttpClientInterface
 
             try {
                 $options['auth_bearer'] = $this->ensureToken();
-                $response = $this->httpClient->request($method, $this->keycloakBaseUrl.$path, $options);
+                $response = $this->httpClient->request($method, $this->keycloakBaseUrl . $path, $options);
                 $status = $response->getStatusCode();
             } catch (\Throwable $e) {
                 if ($attempt >= $this->retryPolicy->maxAttempts) {
@@ -125,8 +127,12 @@ final class KeycloakHttpClient implements KeycloakHttpClientInterface
             ],
         );
 
-        $token = $response->toArray()['access_token'];
-        $this->adminToken = \is_string($token) ? $token : '';
+        $token = $response->toArray()['access_token'] ?? null;
+        if (!\is_string($token) || '' === $token) {
+            throw new KeycloakUnavailableException('Keycloak token endpoint returned no access_token');
+        }
+
+        $this->adminToken = $token;
 
         return $this->adminToken;
     }
