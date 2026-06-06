@@ -41,7 +41,7 @@ final readonly class GetSupportedLocalesController
 
         return new JsonResponse([
             'supported' => $view->supported,
-            'default'   => $view->default,
+            'default' => $view->default,
         ]);
     }
 }

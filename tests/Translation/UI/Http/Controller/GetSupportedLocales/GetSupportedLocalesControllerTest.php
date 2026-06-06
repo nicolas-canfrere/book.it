@@ -18,7 +18,8 @@ final class GetSupportedLocalesControllerTest extends WebTestCase
         $client->request('GET', '/api/v1/translations/locales');
 
         self::assertResponseStatusCodeSame(200);
-        $body = json_decode((string) $client->getResponse()->getContent(), true);
+        $body = json_decode((string) $client->getResponse()->getContent(), associative: true);
+        self::assertIsArray($body);
         self::assertArrayHasKey('supported', $body);
         self::assertArrayHasKey('default', $body);
         self::assertIsArray($body['supported']);
