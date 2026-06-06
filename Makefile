@@ -95,7 +95,7 @@ keycloak-export: ## Export Keycloak realm config to .docker/keycloak/import/ (us
 	$(DOCKER_COMPOSE) exec keycloack /opt/keycloak/bin/kc.sh export \
 		--dir /tmp/kc-export \
 		$(if $(or $(REALM),$(KEYCLOAK_REALM)),--realm $(or $(REALM),$(KEYCLOAK_REALM))) \
-		--users realm_file
+		--users skip
 	$(DOCKER_COMPOSE) cp keycloack:/tmp/kc-export/. .docker/keycloak/import/
 	@echo "Realm exported to .docker/keycloak/import/"
 
