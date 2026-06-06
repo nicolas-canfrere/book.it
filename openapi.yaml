@@ -1956,6 +1956,50 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /api/v1/operators:
+    post:
+      tags:
+        - Operators
+      summary: 'Register a new operator'
+      operationId: post_operator_register_operator
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterOperatorRequest'
+      responses:
+        '201':
+          description: 'Operator registered'
+          content:
+            application/json:
+              schema:
+                properties:
+                  id: { type: string, format: uuid }
+                  firstName: { type: string, example: Alice }
+                  lastName: { type: string, example: Martin }
+                  email: { type: string, format: email }
+                  phone: { type: string, example: '+33612345678' }
+                  registeredAt: { type: string, format: date-time }
+                type: object
+        '409':
+          description: 'Email already taken'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+        '415':
+          description: 'Unsupported media type'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
   /api/v1/payment/webhooks/cancel:
     post:
       tags:
@@ -2708,6 +2752,43 @@ components:
             type: object
           default: []
       type: object
+    RegisterOperatorRequest:
+      properties:
+        firstName:
+          type: string
+          example: Alice
+          nullable: true
+          default: null
+          maxLength: 100
+          minLength: 1
+        lastName:
+          type: string
+          example: Martin
+          nullable: true
+          default: null
+          maxLength: 100
+          minLength: 1
+        email:
+          type: string
+          format: email
+          example: alice.martin@hotel.com
+          nullable: true
+          default: null
+        phone:
+          type: string
+          example: '+33612345678'
+          nullable: true
+          default: null
+          maxLength: 50
+          minLength: 5
+        password:
+          type: string
+          example: MySecurePassword123!
+          nullable: true
+          default: null
+          maxLength: 100
+          minLength: 8
+      type: object
     HandlePaymentCancellationRequest:
       properties:
         reservation_id:
@@ -2770,6 +2851,9 @@ tags:
   -
     name: Reservation
     description: Reservation
+  -
+    name: Operators
+    description: Operators
   -
     name: Payment
     description: Payment
