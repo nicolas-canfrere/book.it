@@ -21,6 +21,7 @@ COMPOSER_CLI = docker run $(DOCKER_FLAGS) -i --rm \
 DOCKER_COMPOSE_FILE ?= compose.yaml
 DOCKER_ENV_FILES = --env-file .env $(if $(wildcard .env.compose),--env-file .env.compose)
 DOCKER_COMPOSE = docker compose -f $(DOCKER_COMPOSE_FILE) $(DOCKER_ENV_FILES)
+KEYCLOAK_REALM ?= $(shell grep -m1 '^KEYCLOAK_REALM=' .env | cut -d= -f2)
 DOCKER_COMPOSE_RUN = $(DOCKER_COMPOSE) --progress quiet run --rm --remove-orphans
 
 help: ## Display this help
@@ -93,7 +94,7 @@ keycloak-export: ## Export Keycloak realm config to .docker/keycloak/import/ (us
 	mkdir -p .docker/keycloak/import
 	$(DOCKER_COMPOSE) exec keycloack /opt/keycloak/bin/kc.sh export \
 		--dir /tmp/kc-export \
-		--realm $(or $(REALM),$(KEYCLOAK_REALM)) \
+		$(if $(or $(REALM),$(KEYCLOAK_REALM)),--realm $(or $(REALM),$(KEYCLOAK_REALM))) \
 		--users realm_file
 	$(DOCKER_COMPOSE) cp keycloack:/tmp/kc-export/. .docker/keycloak/import/
 	@echo "Realm exported to .docker/keycloak/import/"
