@@ -46,10 +46,8 @@ Translation/
 └── UI/
     └── Http/
         └── Controller/
-            ├── SetHotelTranslation/
-            ├── GetHotelTranslation/
-            ├── SetRoomTypeTranslation/
-            └── GetRoomTypeTranslation/
+            ├── SetTranslation/
+            └── GetTranslation/
 ```
 
 ---
@@ -190,8 +188,9 @@ The caller (controller) maps null to HTTP 404.
 ### Write
 
 ```
-PUT /translations/hotel/{hotelId}
-PUT /translations/room-type/{roomTypeId}
+PUT /translations/{subjectType}/{subjectId}
+
+Path requirements: subjectType matches 'hotel|room_type', subjectId matches UUID v4
 
 Body:
 {
@@ -200,18 +199,20 @@ Body:
 }
 
 Response: 204 No Content
-Errors:   422 if locale not in supported list
+Errors:   404 if subjectType does not match requirement (Symfony route rejection)
+          422 if locale not in supported list
           422 if text is blank
           400 if body is malformed
 ```
 
-Both routes share `SetTranslationCommand` — only `SubjectType` differs. `{hotelId}` and `{roomTypeId}` use `Requirement::UUID_V4`.
+Single `SetTranslationController` — `subjectType` from the URL is cast to `SubjectType` enum in the controller.
 
 ### Read
 
 ```
-GET /translations/hotel/{hotelId}?locale=fr_FR
-GET /translations/room-type/{roomTypeId}?locale=fr_FR
+GET /translations/{subjectType}/{subjectId}?locale=fr_FR
+
+Path requirements: subjectType matches 'hotel|room_type', subjectId matches UUID v4
 
 Response 200:
 {
@@ -222,7 +223,7 @@ Response 200:
 Response 404: if neither requested locale nor default locale has a translation
 ```
 
-The `locale` field in the response reflects the **actual locale returned**, which may differ from the requested locale when fallback is applied. This lets the client know a fallback occurred.
+Single `GetTranslationController`. The `locale` field in the response reflects the **actual locale returned**, which may differ from the requested locale when fallback is applied.
 
 ---
 
@@ -250,8 +251,14 @@ Mappings go in `config/services/exceptions.yaml`.
   - returns requested locale when available
   - falls back to default locale
   - returns null when nothing found
-- `SetHotelTranslationControllerTest` / `GetHotelTranslationControllerTest` — functional, `#[Group('functional')]`
-- `SetRoomTypeTranslationControllerTest` / `GetRoomTypeTranslationControllerTest` — functional, `#[Group('functional')]`
+- `SetTranslationControllerTest` — functional, `#[Group('functional')]`
+  - sets hotel translation
+  - sets room-type translation
+  - rejects unknown subjectType (404)
+- `GetTranslationControllerTest` — functional, `#[Group('functional')]`
+  - returns translation for requested locale
+  - returns fallback locale
+  - returns 404 when nothing found
 
 ---
 
