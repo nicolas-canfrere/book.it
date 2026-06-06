@@ -35,14 +35,6 @@ final class KeycloakAccountRegistrarTest extends TestCase
         );
     }
 
-    private function mockTokenResponse(): ResponseInterface&MockObject
-    {
-        $response = $this->createMock(ResponseInterface::class);
-        $response->method('toArray')->willReturn(['access_token' => 'test-token']);
-
-        return $response;
-    }
-
     #[Test]
     public function it_creates_account_and_saves_mapping(): void
     {
@@ -78,7 +70,8 @@ final class KeycloakAccountRegistrarTest extends TestCase
     #[Test]
     public function it_unregisters_account_and_removes_mapping(): void
     {
-        $this->mappingRepository->method('findExternalId')
+        $this->mappingRepository->expects(self::once())
+            ->method('findExternalId')
             ->with('booker-uuid', 'booker')
             ->willReturn('keycloak-uuid');
 
@@ -102,5 +95,13 @@ final class KeycloakAccountRegistrarTest extends TestCase
         $this->mappingRepository->expects(self::never())->method('delete');
 
         $this->registrar->unregister('booker-uuid', 'booker');
+    }
+
+    private function mockTokenResponse(): ResponseInterface&MockObject
+    {
+        $response = $this->createMock(ResponseInterface::class);
+        $response->method('toArray')->willReturn(['access_token' => 'test-token']);
+
+        return $response;
     }
 }

@@ -266,6 +266,7 @@ final class CreateReservationControllerTest extends WebTestCase
                 'email' => 'alice.' . uniqid() . '@example.com',
                 'phone' => '+33612345678',
                 'dateOfBirth' => '1990-01-01',
+                'password' => 'SecurePass123!',
             ], \JSON_THROW_ON_ERROR),
         );
         /** @var array{id: string} $bookerBody */

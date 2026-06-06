@@ -35,6 +35,8 @@ services:
         exclude:
             - '../../src/Booker/UI/**/*Request.php'
 
+    App\Booker\Domain\Port\ExternalAccountRegistrarInterface: '@App\Booker\Infrastructure\Contract\SecurityAccountRegistrarAdapter'
+
     App\Booker\Infrastructure\Persistence\Doctrine\BookerRepository:
         arguments:
             $booker: '@doctrine.dbal.booker_connection'
@@ -45,3 +47,8 @@ services:
             $schema: 'booker'
         tags:
             - {name: doctrine.middleware, connection: booker}
+
+when@test:
+    services:
+        App\Booker\Domain\Port\ExternalAccountRegistrarInterface:
+            class: App\Tests\Booker\Infrastructure\ExternalAccount\NullExternalAccountRegistrar

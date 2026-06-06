@@ -53,7 +53,8 @@ final class IdentityMappingRepositoryTest extends TestCase
     #[Test]
     public function it_finds_external_id(): void
     {
-        $this->connection->method('fetchOne')
+        $this->connection->expects(self::once())
+            ->method('fetchOne')
             ->with(
                 'SELECT external_id FROM security.identity_mapping WHERE internal_id = ? AND context = ?',
                 ['booker-uuid', 'booker'],

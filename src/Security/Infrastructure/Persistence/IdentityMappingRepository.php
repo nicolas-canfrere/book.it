@@ -37,6 +37,6 @@ readonly class IdentityMappingRepository
             [$internalId, $context],
         );
 
-        return false !== $result ? (string) $result : null;
+        return \is_string($result) ? $result : null;
     }
 }

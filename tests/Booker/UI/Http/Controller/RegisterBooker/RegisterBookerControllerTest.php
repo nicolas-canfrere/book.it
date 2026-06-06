@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace App\Tests\Booker\UI\Http\Controller\RegisterBooker;
 
+use App\Booker\Domain\Port\ExternalAccountRegistrarInterface;
+use App\Tests\Booker\Infrastructure\ExternalAccount\ThrowingExternalAccountRegistrar;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -18,6 +20,7 @@ final class RegisterBookerControllerTest extends WebTestCase
         'email' => 'jean.dupont@example.com',
         'phone' => '+33612345678',
         'dateOfBirth' => '1990-05-15',
+        'password' => 'SecurePass123!',
     ];
 
     #[Test]
@@ -160,5 +163,57 @@ final class RegisterBookerControllerTest extends WebTestCase
         );
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+    }
+
+    #[Test]
+    public function itReturns422WhenPasswordIsTooShort(): void
+    {
+        $client = static::createClient();
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['password' => 'short', 'email' => 'short-pw@example.com']);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/bookers',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        /** @var array{violations: list<array{field: string, message: string}>} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        $fields = array_column($body['violations'], 'field');
+        self::assertContains('password', $fields);
+    }
+
+    #[Test]
+    public function itReturns500WhenExternalAccountCreationFails(): void
+    {
+        $client = static::createClient();
+        static::getContainer()->set(
+            ExternalAccountRegistrarInterface::class,
+            new ThrowingExternalAccountRegistrar(),
+        );
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['email' => 'keycloak-fail@example.com']);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/bookers',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $response->getStatusCode());
+        self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
+
+        /** @var array{type: string, title: string, status: int} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('https://book.it/problems/external-account-creation-failed', $body['type']);
+        self::assertSame('External Account Creation Failed', $body['title']);
+        self::assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $body['status']);
     }
 }

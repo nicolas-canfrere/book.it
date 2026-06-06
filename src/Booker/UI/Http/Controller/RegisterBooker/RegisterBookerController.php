@@ -86,12 +86,12 @@ final readonly class RegisterBookerController
         RegisterBookerRequest $request,
     ): Response {
         $command = $this->commandFactory->create(
-            $request->firstName,
-            $request->lastName,
-            $request->email,
-            $request->phone,
-            $request->dateOfBirth,
-            $request->password,
+            $request->firstName ?? '',
+            $request->lastName ?? '',
+            $request->email ?? '',
+            $request->phone ?? '',
+            $request->dateOfBirth ?? '',
+            $request->password ?? '',
         );
         $this->commandBus->execute($command);
 

@@ -92,7 +92,8 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
             ],
         );
 
-        $this->adminToken = $response->toArray()['access_token'];
+        $token = $response->toArray()['access_token'];
+        $this->adminToken = \is_string($token) ? $token : '';
 
         return $this->adminToken;
     }

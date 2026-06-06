@@ -36,6 +36,10 @@ services:
                     type: 'https://book.it/problems/booker-underage'
                     title: 'Booker Underage'
                     status: 422
+                App\Booker\Domain\Exception\ExternalAccountCreationException:
+                    type: 'https://book.it/problems/external-account-creation-failed'
+                    title: 'External Account Creation Failed'
+                    status: 500
                 App\Availability\Domain\Exception\RoomNotFoundException:
                     type: 'https://book.it/problems/room-not-found'
                     title: 'Room Not Found'

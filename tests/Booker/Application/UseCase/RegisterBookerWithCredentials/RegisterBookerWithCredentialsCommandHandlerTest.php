@@ -32,24 +32,6 @@ final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
         );
     }
 
-    private function makeCommand(
-        string $dateOfBirth = '1990-01-01',
-        string $registeredAt = '2025-01-01',
-        string $email = 'jean@example.com',
-        string $id = 'uuid-1',
-    ): RegisterBookerWithCredentialsCommand {
-        return new RegisterBookerWithCredentialsCommand(
-            $id,
-            'Jean',
-            'Dupont',
-            $email,
-            '+33612345678',
-            new \DateTimeImmutable($dateOfBirth),
-            'password123',
-            new \DateTimeImmutable($registeredAt),
-        );
-    }
-
     #[Test]
     public function it_throws_underage_exception_before_calling_keycloak(): void
     {
@@ -98,5 +80,23 @@ final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
         $this->repository->expects(self::once())->method('add');
 
         ($this->handler)($command);
+    }
+
+    private function makeCommand(
+        string $dateOfBirth = '1990-01-01',
+        string $registeredAt = '2025-01-01',
+        string $email = 'jean@example.com',
+        string $id = 'uuid-1',
+    ): RegisterBookerWithCredentialsCommand {
+        return new RegisterBookerWithCredentialsCommand(
+            $id,
+            'Jean',
+            'Dupont',
+            $email,
+            '+33612345678',
+            new \DateTimeImmutable($dateOfBirth),
+            'password123',
+            new \DateTimeImmutable($registeredAt),
+        );
     }
 }
