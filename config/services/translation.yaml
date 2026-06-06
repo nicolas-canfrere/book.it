@@ -1,0 +1,52 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+
+    App\Translation\Domain\:
+        resource: '../../src/Translation/Domain/'
+        exclude:
+            - '../../src/Translation/Domain/Model/'
+
+    App\Translation\Application\:
+        resource: '../../src/Translation/Application/'
+        exclude:
+            - '../../src/Translation/Application/**/*Command.php'
+            - '../../src/Translation/Application/**/*Query.php'
+
+    App\Translation\Infrastructure\:
+        resource: '../../src/Translation/Infrastructure/'
+
+    App\Translation\UI\:
+        resource: '../../src/Translation/UI/'
+        exclude:
+            - '../../src/Translation/UI/**/*Request.php'
+
+    bookit.doctrine.middleware.search_path.translation:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'translation'
+        tags:
+            - {name: doctrine.middleware, connection: translation}
+
+    App\Translation\Application\UseCase\SetTranslation\SetTranslationCommandHandler:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
+
+    App\Translation\Application\UseCase\GetTranslation\GetTranslationQueryHandler:
+        arguments:
+            $defaultLocale: '%app.default_locale%'
+
+    App\Translation\Application\UseCase\GetSupportedLocales\GetSupportedLocalesQueryHandler:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
+            $defaultLocale: '%app.default_locale%'

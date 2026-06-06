@@ -161,6 +161,12 @@ deptrac:
                     type: classLike
                     value: 'App\\Security\\Application\\Contract\\.*'
         -
+            name: Translation
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Translation\\.*'
+        -
             name: Shared
             collectors:
                 -
@@ -224,6 +230,9 @@ deptrac:
             - Shared
             - Vendor
         Search:
+            - Shared
+            - Vendor
+        Translation:
             - Shared
             - Vendor
         Security:
