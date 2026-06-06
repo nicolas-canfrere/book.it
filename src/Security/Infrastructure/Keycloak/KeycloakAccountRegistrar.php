@@ -8,44 +8,18 @@ use App\Security\Application\Contract\AccountRegistrarInterface;
 use App\Security\Application\Contract\AccountRegistrationFailedException;
 use App\Security\Infrastructure\Persistence\IdentityMappingRepository;
 use Psr\Log\LoggerInterface;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class KeycloakAccountRegistrar implements AccountRegistrarInterface
 {
-    private ?string $adminToken = null;
-
     public function __construct(
-        private readonly HttpClientInterface $httpClient,
+        private readonly KeycloakHttpClientInterface $keycloakClient,
         private readonly IdentityMappingRepository $mappingRepository,
-        private readonly string $keycloakBaseUrl,
-        private readonly string $keycloakRealm,
-        private readonly string $keycloakClientId,
-        private readonly string $keycloakClientSecret,
         private readonly LoggerInterface $logger,
-    ) {
-    }
+    ) {}
 
     public function register(string $internalId, string $context, string $email, string $password): void
     {
-        $response = $this->httpClient->request(
-            'POST',
-            "{$this->keycloakBaseUrl}/admin/realms/{$this->keycloakRealm}/users",
-            [
-                'auth_bearer' => $this->fetchAdminToken(),
-                'json' => [
-                    'email' => $email,
-                    'username' => $email,
-                    'emailVerified' => true,
-                    'enabled' => true,
-                    'credentials' => [[
-                        'type' => 'password',
-                        'value' => $password,
-                        'temporary' => false,
-                    ]],
-                ],
-            ],
-        );
-
+        $response = $this->keycloakClient->createUser($email, $password);
         $statusCode = $response->getStatusCode();
 
         if (201 !== $statusCode) {
@@ -83,12 +57,7 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
         }
 
         try {
-            $this->httpClient->request(
-                'DELETE',
-                "{$this->keycloakBaseUrl}/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}",
-                ['auth_bearer' => $this->fetchAdminToken()],
-            );
-
+            $this->keycloakClient->deleteUser($keycloakId);
             $this->logger->info('Keycloak account deleted', [
                 'internal_id' => $internalId,
                 'context' => $context,
@@ -104,31 +73,5 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
         }
 
         $this->mappingRepository->delete($internalId, $context);
-    }
-
-    private function fetchAdminToken(): string
-    {
-        if (null !== $this->adminToken) {
-            return $this->adminToken;
-        }
-
-        $this->logger->debug('Fetching Keycloak admin token', ['realm' => $this->keycloakRealm]);
-
-        $response = $this->httpClient->request(
-            'POST',
-            "{$this->keycloakBaseUrl}/realms/{$this->keycloakRealm}/protocol/openid-connect/token",
-            [
-                'body' => [
-                    'grant_type' => 'client_credentials',
-                    'client_id' => $this->keycloakClientId,
-                    'client_secret' => $this->keycloakClientSecret,
-                ],
-            ],
-        );
-
-        $token = $response->toArray()['access_token'];
-        $this->adminToken = \is_string($token) ? $token : '';
-
-        return $this->adminToken;
     }
 }

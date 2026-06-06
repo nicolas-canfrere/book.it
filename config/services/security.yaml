@@ -6,13 +6,15 @@ services:
         autoconfigure: true
 
     App\Security\Application\Contract\AccountRegistrarInterface: '@App\Security\Infrastructure\Keycloak\KeycloakAccountRegistrar'
+    App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface: '@App\Security\Infrastructure\Keycloak\KeycloakHttpClient'
 
     App\Security\Infrastructure\:
         resource: '../../src/Security/Infrastructure/'
         exclude:
             - '../../src/Security/Infrastructure/**/*Exception.php'
 
-    App\Security\Infrastructure\Keycloak\KeycloakAccountRegistrar:
+
+    App\Security\Infrastructure\Keycloak\KeycloakHttpClient:
         arguments:
             $keycloakBaseUrl: '%env(KEYCLOAK_BASE_URL)%'
             $keycloakRealm: '%env(KEYCLOAK_REALM)%'
