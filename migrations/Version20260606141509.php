@@ -14,7 +14,7 @@ final class Version20260606141509 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Create operator schema and operator table';
     }
 
     public function up(Schema $schema): void
