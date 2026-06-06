@@ -15,7 +15,8 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
         private readonly KeycloakHttpClientInterface $keycloakClient,
         private readonly IdentityMappingRepository $mappingRepository,
         private readonly LoggerInterface $logger,
-    ) {}
+    ) {
+    }
 
     public function register(string $internalId, string $context, string $email, string $password): void
     {

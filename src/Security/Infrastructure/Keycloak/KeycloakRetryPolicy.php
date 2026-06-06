@@ -9,5 +9,6 @@ final readonly class KeycloakRetryPolicy
     public function __construct(
         public int $maxAttempts,
         public int $baseDelayMs,
-    ) {}
+    ) {
+    }
 }
