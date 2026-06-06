@@ -1,0 +1,20 @@
+services:
+    keycloack:
+        image: ${KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak:latest}
+        container_name: ${KEYCLOAK_CONTAINER_NAME:-keycloack-dev}
+        command: start-dev
+        environment:
+            KC_DB: ${KEYCLOAK_DB_TYPE}
+            KC_DB_URL: ${KEYCLOAK_DB_URL}
+            KC_DB_USERNAME:  ${KEYCLOAK_POSTGRES_USER:-postgres}
+            KC_DB_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD:-postgres}
+            KC_HOSTNAME: localhost
+            KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_USERNAME}
+            KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
+        ports:
+            - "${KEYCLOAK_PORT:-8080}:8080"
+        depends_on:
+            keycloack_database:
+                condition: service_healthy
+        networks:
+            - ${NETWORK_NAME:-default-nw}
