@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Booker\UI\Http\Controller\RegisterBooker;
 
-use App\Booker\Application\Service\RegisterBookerCommandFactory;
+use App\Booker\Application\Service\RegisterBookerWithCredentialsCommandFactory;
 use App\Booker\Application\UseCase\GetBooker\GetBookerQuery;
 use App\Booker\UI\Http\Controller\BookerSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
@@ -21,7 +21,7 @@ use Symfony\Component\Routing\Generator\UrlGeneratorInterface;
 final readonly class RegisterBookerController
 {
     public function __construct(
-        private RegisterBookerCommandFactory $commandFactory,
+        private RegisterBookerWithCredentialsCommandFactory $commandFactory,
         private SyncCommandBusInterface $commandBus,
         private SyncQueryBusInterface $queryBus,
         private BookerSerializer $bookerSerializer,
@@ -91,6 +91,7 @@ final readonly class RegisterBookerController
             $request->email,
             $request->phone,
             $request->dateOfBirth,
+            $request->password,
         );
         $this->commandBus->execute($command);
 
