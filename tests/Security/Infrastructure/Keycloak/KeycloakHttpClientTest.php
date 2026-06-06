@@ -195,6 +195,9 @@ final class KeycloakHttpClientTest extends TestCase
         return $response;
     }
 
+    /**
+     * @param array<string, list<string>> $headers
+     */
     private function makeResponse(int $status, array $headers = []): ResponseInterface&MockObject
     {
         $response = $this->createMock(ResponseInterface::class);
