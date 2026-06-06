@@ -144,3 +144,7 @@ services:
                     type: 'https://book.it/problems/cancellation-not-allowed'
                     title: 'Cancellation Not Allowed'
                     status: 409
+                App\Security\Infrastructure\Keycloak\KeycloakUnavailableException:
+                    type: 'https://book.it/problems/keycloak-unavailable'
+                    title: 'Keycloak Service Unavailable'
+                    status: 503
