@@ -39,7 +39,7 @@ final class KeycloakHttpClientTest extends TestCase
             keycloakClientId: 'client-id',
             keycloakClientSecret: 'client-secret',
             logger: new NullLogger(),
-            sleeper: \Closure::fromCallable($sleeper),
+            sleeper: $sleeper,
         );
     }
 
