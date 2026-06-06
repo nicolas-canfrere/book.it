@@ -26,6 +26,11 @@ services:
     App\Translation\Infrastructure\:
         resource: '../../src/Translation/Infrastructure/'
 
+    App\Translation\UI\:
+        resource: '../../src/Translation/UI/'
+        exclude:
+            - '../../src/Translation/UI/**/*Request.php'
+
     bookit.doctrine.middleware.search_path.translation:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
@@ -39,4 +44,9 @@ services:
 
     App\Translation\Application\UseCase\GetTranslation\GetTranslationQueryHandler:
         arguments:
+            $defaultLocale: '%app.default_locale%'
+
+    App\Translation\Application\UseCase\GetSupportedLocales\GetSupportedLocalesQueryHandler:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
             $defaultLocale: '%app.default_locale%'
