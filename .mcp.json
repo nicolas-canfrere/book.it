@@ -5,7 +5,7 @@
             "args": [],
             "env": {
                 "POSTGRES_URL": "postgresql://admin:admin@localhost:15432/bookit",
-                "POSTGRES_SCHEMAS": "public,hotel,room,booker",
+                "POSTGRES_SCHEMAS": "public,hotel,room,booker,availability,operator,pricing,reservation,search,security,translation",
                 "POSTGRES_READONLY": "true"
             }
         }
