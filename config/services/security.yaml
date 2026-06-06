@@ -6,13 +6,16 @@ services:
         autoconfigure: true
 
     App\Security\Application\Contract\AccountRegistrarInterface: '@App\Security\Infrastructure\Keycloak\KeycloakAccountRegistrar'
-    App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface: '@App\Security\Infrastructure\Keycloak\KeycloakHttpClient'
 
     App\Security\Infrastructure\:
         resource: '../../src/Security/Infrastructure/'
         exclude:
             - '../../src/Security/Infrastructure/**/*Exception.php'
 
+    App\Security\Infrastructure\Keycloak\KeycloakRetryPolicy:
+        arguments:
+            $maxAttempts: '%env(int:KEYCLOAK_MAX_RETRIES)%'
+            $baseDelayMs: '%env(int:KEYCLOAK_RETRY_BASE_DELAY)%'
 
     App\Security\Infrastructure\Keycloak\KeycloakHttpClient:
         arguments:
@@ -20,6 +23,8 @@ services:
             $keycloakRealm: '%env(KEYCLOAK_REALM)%'
             $keycloakClientId: '%env(KEYCLOACK_CLIENT_ID)%'
             $keycloakClientSecret: '%env(KEYCLOACK_CLIENT_SECRET)%'
+
+    App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface: '@App\Security\Infrastructure\Keycloak\KeycloakHttpClient'
 
     App\Security\Infrastructure\Persistence\IdentityMappingRepository:
         arguments:
