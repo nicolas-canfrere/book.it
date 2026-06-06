@@ -1,0 +1,31 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+
+    App\Security\Application\Contract\AccountRegistrarInterface: '@App\Security\Infrastructure\Keycloak\KeycloakAccountRegistrar'
+
+    App\Security\Infrastructure\:
+        resource: '../../src/Security/Infrastructure/'
+        exclude:
+            - '../../src/Security/Infrastructure/**/*Exception.php'
+
+    App\Security\Infrastructure\Keycloak\KeycloakAccountRegistrar:
+        arguments:
+            $keycloakBaseUrl: '%env(KEYCLOAK_BASE_URL)%'
+            $keycloakRealm: '%env(KEYCLOAK_REALM)%'
+            $keycloakClientId: '%env(KEYCLOACK_CLIENT_ID)%'
+            $keycloakClientSecret: '%env(KEYCLOACK_CLIENT_SECRET)%'
+
+    App\Security\Infrastructure\Persistence\IdentityMappingRepository:
+        arguments:
+            $connection: '@doctrine.dbal.security_connection'
+
+    bookit.doctrine.middleware.search_path.security:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'security'
+        tags:
+            - {name: doctrine.middleware, connection: security}
