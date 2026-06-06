@@ -10,12 +10,14 @@ use App\Booker\Domain\Model\Booker;
 use App\Booker\Domain\Port\BookerRepositoryInterface;
 use App\Booker\Domain\Port\ExternalAccountRegistrarInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use Psr\Log\LoggerInterface;
 
 final readonly class RegisterBookerWithCredentialsCommandHandler implements SyncCommandHandlerInterface
 {
     public function __construct(
         private BookerRepositoryInterface $bookerRepository,
         private ExternalAccountRegistrarInterface $accountRegistrar,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -44,8 +46,18 @@ final readonly class RegisterBookerWithCredentialsCommandHandler implements Sync
                 $command->registeredAt,
             ));
         } catch (\Throwable $e) {
+            $this->logger->error('Booker persistence failed after account creation — compensating', [
+                'booker_id' => $command->id,
+                'email' => $command->email,
+                'error' => $e->getMessage(),
+            ]);
             $this->accountRegistrar->unregister($command->id);
             throw $e;
         }
+
+        $this->logger->info('Booker registered', [
+            'booker_id' => $command->id,
+            'email' => $command->email,
+        ]);
     }
 }

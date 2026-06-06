@@ -14,6 +14,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 #[Group('unit')]
 final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
@@ -29,6 +30,7 @@ final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
         $this->handler = new RegisterBookerWithCredentialsCommandHandler(
             $this->repository,
             $this->accountRegistrar,
+            new NullLogger(),
         );
     }
 

@@ -7,6 +7,7 @@ namespace App\Security\Infrastructure\Keycloak;
 use App\Security\Application\Contract\AccountRegistrarInterface;
 use App\Security\Application\Contract\AccountRegistrationFailedException;
 use App\Security\Infrastructure\Persistence\IdentityMappingRepository;
+use Psr\Log\LoggerInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class KeycloakAccountRegistrar implements AccountRegistrarInterface
@@ -20,6 +21,7 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
         private readonly string $keycloakRealm,
         private readonly string $keycloakClientId,
         private readonly string $keycloakClientSecret,
+        private readonly LoggerInterface $logger,
     ) {
     }
 
@@ -44,7 +46,15 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
             ],
         );
 
-        if (201 !== $response->getStatusCode()) {
+        $statusCode = $response->getStatusCode();
+
+        if (201 !== $statusCode) {
+            $this->logger->error('Keycloak account creation failed', [
+                'internal_id' => $internalId,
+                'context' => $context,
+                'email' => $email,
+                'status_code' => $statusCode,
+            ]);
             throw new AccountRegistrationFailedException($email);
         }
 
@@ -52,12 +62,23 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
         $keycloakId = basename($location);
 
         $this->mappingRepository->save($internalId, $context, $keycloakId);
+
+        $this->logger->info('Keycloak account created', [
+            'internal_id' => $internalId,
+            'context' => $context,
+            'keycloak_id' => $keycloakId,
+        ]);
     }
 
     public function unregister(string $internalId, string $context): void
     {
         $keycloakId = $this->mappingRepository->findExternalId($internalId, $context);
         if (null === $keycloakId) {
+            $this->logger->debug('Keycloak unregister skipped: no mapping found', [
+                'internal_id' => $internalId,
+                'context' => $context,
+            ]);
+
             return;
         }
 
@@ -67,8 +88,19 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
                 "{$this->keycloakBaseUrl}/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}",
                 ['auth_bearer' => $this->fetchAdminToken()],
             );
-        } catch (\Throwable) {
-            // best-effort: log and continue
+
+            $this->logger->info('Keycloak account deleted', [
+                'internal_id' => $internalId,
+                'context' => $context,
+                'keycloak_id' => $keycloakId,
+            ]);
+        } catch (\Throwable $e) {
+            $this->logger->warning('Keycloak account deletion failed (best-effort)', [
+                'internal_id' => $internalId,
+                'context' => $context,
+                'keycloak_id' => $keycloakId,
+                'error' => $e->getMessage(),
+            ]);
         }
 
         $this->mappingRepository->delete($internalId, $context);
@@ -79,6 +111,8 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
         if (null !== $this->adminToken) {
             return $this->adminToken;
         }
+
+        $this->logger->debug('Fetching Keycloak admin token', ['realm' => $this->keycloakRealm]);
 
         $response = $this->httpClient->request(
             'POST',
