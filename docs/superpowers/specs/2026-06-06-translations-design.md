@@ -38,8 +38,9 @@ Translation/
 │   └── Exception/      UnsupportedLocaleException, TranslationNotFoundException
 ├── Application/
 │   └── UseCase/
-│       ├── SetTranslation/    SetTranslationCommand + Handler
-│       └── GetTranslation/    GetTranslationQuery  + Handler
+│       ├── SetTranslation/        SetTranslationCommand + Handler
+│       ├── GetTranslation/        GetTranslationQuery  + Handler
+│       └── GetSupportedLocales/   GetSupportedLocalesQuery + Handler
 ├── Infrastructure/
 │   └── Persistence/
 │       └── Doctrine/   TranslationRepository (DBAL)
@@ -47,7 +48,8 @@ Translation/
     └── Http/
         └── Controller/
             ├── SetTranslation/
-            └── GetTranslation/
+            ├── GetTranslation/
+            └── GetSupportedLocales/
 ```
 
 ---
@@ -181,6 +183,27 @@ Handler steps:
 
 The caller (controller) maps null to HTTP 404.
 
+### `GetSupportedLocales`
+
+```
+GetSupportedLocalesQuery()   — no parameters
+```
+
+Handler returns a `SupportedLocalesView` DTO (Application layer, not a domain model — no persistence involved):
+
+```php
+final readonly class SupportedLocalesView
+{
+    /** @param list<string> $supported */
+    public function __construct(
+        public array $supported,
+        public string $default,
+    ) {}
+}
+```
+
+Handler receives `$supportedLocales` and `$defaultLocale` by injection and builds the view directly — no repository call.
+
 ---
 
 ## HTTP Endpoints
@@ -225,6 +248,20 @@ Response 404: if neither requested locale nor default locale has a translation
 
 Single `GetTranslationController`. The `locale` field in the response reflects the **actual locale returned**, which may differ from the requested locale when fallback is applied.
 
+### Locale configuration
+
+```
+GET /translations/locales
+
+Response 200:
+{
+    "supported": ["fr_FR", "en_GB", "de_DE"],
+    "default":   "en_GB"
+}
+```
+
+No authentication required — the backoffice uses this endpoint to populate locale dropdowns. Response is derived entirely from `app.supported_locales` and `app.default_locale` — no database query.
+
 ---
 
 ## Error Handling
@@ -259,6 +296,10 @@ Mappings go in `config/services/exceptions.yaml`.
   - returns translation for requested locale
   - returns fallback locale
   - returns 404 when nothing found
+- `GetSupportedLocalesQueryHandlerTest` — unit, `#[Group('unit')]`
+  - returns configured supported locales and default
+- `GetSupportedLocalesControllerTest` — functional, `#[Group('functional')]`
+  - returns 200 with supported locales and default locale
 
 ---
 

@@ -2,9 +2,9 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Implement a `Translation` bounded context exposing `PUT /translations/{subjectType}/{subjectId}` and `GET /translations/{subjectType}/{subjectId}?locale=fr_FR` so operators can set multi-locale descriptions on Hotels and Room Types.
+**Goal:** Implement a `Translation` bounded context exposing `PUT /translations/{subjectType}/{subjectId}`, `GET /translations/{subjectType}/{subjectId}?locale=fr_FR`, and `GET /translations/locales` so operators can set multi-locale descriptions on Hotels and Room Types, and the backoffice can discover available locales.
 
-**Architecture:** Autonomous `Translation` bounded context — no dependency on Hotel or Room. One DBAL table `translation(subject_type, subject_id, locale, text)` with a unique constraint and upsert semantics. Two use cases: `SetTranslation` (command, upsert) and `GetTranslation` (query, with fallback to `app.default_locale`). Two controllers sharing the same `{subjectType}` path parameter validated by route requirements.
+**Architecture:** Autonomous `Translation` bounded context — no dependency on Hotel or Room. One DBAL table `translation(subject_type, subject_id, locale, text)` with a unique constraint and upsert semantics. Three use cases: `SetTranslation` (command, upsert), `GetTranslation` (query, with fallback to `app.default_locale`), and `GetSupportedLocales` (query, no DB — reads injected config). Two controllers sharing the `{subjectType}` path parameter, one dedicated locales endpoint.
 
 **Tech Stack:** PHP 8.4, Symfony 8.0, Doctrine DBAL (raw SQL, `$translationConnection`), PHPUnit 13, `#[MapRequestPayload]` / `#[MapQueryString]`.
 
@@ -24,19 +24,25 @@ src/Translation/Application/UseCase/SetTranslation/SetTranslationCommand.php
 src/Translation/Application/UseCase/SetTranslation/SetTranslationCommandHandler.php
 src/Translation/Application/UseCase/GetTranslation/GetTranslationQuery.php
 src/Translation/Application/UseCase/GetTranslation/GetTranslationQueryHandler.php
+src/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQuery.php
+src/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQueryHandler.php
+src/Translation/Application/UseCase/GetSupportedLocales/SupportedLocalesView.php
 src/Translation/Infrastructure/Persistence/Doctrine/TranslationRepository.php
 src/Translation/Infrastructure/Service/TranslationUuidGenerator.php
 src/Translation/UI/Http/Controller/SetTranslation/SetTranslationController.php
 src/Translation/UI/Http/Controller/SetTranslation/SetTranslationRequest.php
 src/Translation/UI/Http/Controller/GetTranslation/GetTranslationController.php
 src/Translation/UI/Http/Controller/GetTranslation/GetTranslationRequest.php
+src/Translation/UI/Http/Controller/GetSupportedLocales/GetSupportedLocalesController.php
 src/Translation/UI/Http/Controller/TranslationSerializer.php
 config/services/translation.yaml
 tests/Translation/Domain/ValueObject/LocaleTest.php
 tests/Translation/Application/UseCase/SetTranslation/SetTranslationCommandHandlerTest.php
 tests/Translation/Application/UseCase/GetTranslation/GetTranslationQueryHandlerTest.php
+tests/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQueryHandlerTest.php
 tests/Translation/UI/Http/Controller/SetTranslation/SetTranslationControllerTest.php
 tests/Translation/UI/Http/Controller/GetTranslation/GetTranslationControllerTest.php
+tests/Translation/UI/Http/Controller/GetSupportedLocales/GetSupportedLocalesControllerTest.php
 ```
 
 **Modify:**
@@ -919,7 +925,237 @@ git commit -m "feat(translation): wire DI config, locale parameters and exceptio
 
 ---
 
-## Task 7: SetTranslationController
+## Task 7: GetSupportedLocalesController
+
+**Files:**
+- Create: `src/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQuery.php`
+- Create: `src/Translation/Application/UseCase/GetSupportedLocales/SupportedLocalesView.php`
+- Create: `src/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQueryHandler.php`
+- Create: `src/Translation/UI/Http/Controller/GetSupportedLocales/GetSupportedLocalesController.php`
+- Test: `tests/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQueryHandlerTest.php`
+- Test: `tests/Translation/UI/Http/Controller/GetSupportedLocales/GetSupportedLocalesControllerTest.php`
+
+- [ ] **Step 1: Write the failing handler test**
+
+```php
+// tests/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQueryHandlerTest.php
+<?php
+declare(strict_types=1);
+
+namespace App\Tests\Translation\Application\UseCase\GetSupportedLocales;
+
+use App\Translation\Application\UseCase\GetSupportedLocales\GetSupportedLocalesQuery;
+use App\Translation\Application\UseCase\GetSupportedLocales\GetSupportedLocalesQueryHandler;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\TestCase;
+
+#[Group('unit')]
+final class GetSupportedLocalesQueryHandlerTest extends TestCase
+{
+    public function test_returns_supported_locales_and_default(): void
+    {
+        $handler = new GetSupportedLocalesQueryHandler(['fr_FR', 'en_GB', 'de_DE'], 'en_GB');
+
+        $view = ($handler)(new GetSupportedLocalesQuery());
+
+        self::assertSame(['fr_FR', 'en_GB', 'de_DE'], $view->supported);
+        self::assertSame('en_GB', $view->default);
+    }
+}
+```
+
+- [ ] **Step 2: Run test to confirm it fails**
+
+```bash
+make unit-test
+```
+
+Expected: failures — `GetSupportedLocalesQuery` and `GetSupportedLocalesQueryHandler` do not exist.
+
+- [ ] **Step 3: Write the failing functional test**
+
+```php
+// tests/Translation/UI/Http/Controller/GetSupportedLocales/GetSupportedLocalesControllerTest.php
+<?php
+declare(strict_types=1);
+
+namespace App\Tests\Translation\UI\Http\Controller\GetSupportedLocales;
+
+use PHPUnit\Framework\Attributes\Group;
+use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+
+#[Group('functional')]
+final class GetSupportedLocalesControllerTest extends WebTestCase
+{
+    public function test_returns_200_with_supported_locales_and_default(): void
+    {
+        $client = static::createClient();
+        $client->request('GET', '/translations/locales');
+
+        self::assertResponseStatusCodeSame(200);
+        $body = json_decode((string) $client->getResponse()->getContent(), true);
+        self::assertArrayHasKey('supported', $body);
+        self::assertArrayHasKey('default', $body);
+        self::assertIsArray($body['supported']);
+        self::assertNotEmpty($body['supported']);
+        self::assertContains($body['default'], $body['supported']);
+    }
+}
+```
+
+- [ ] **Step 4: Run functional test to confirm it fails**
+
+```bash
+make functional-test
+```
+
+Expected: failure — route `/translations/locales` not found.
+
+- [ ] **Step 5: Implement query, view and handler**
+
+```php
+// src/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQuery.php
+<?php
+declare(strict_types=1);
+
+namespace App\Translation\Application\UseCase\GetSupportedLocales;
+
+use App\Shared\Application\Bus\SyncQueryInterface;
+
+final readonly class GetSupportedLocalesQuery implements SyncQueryInterface
+{
+}
+```
+
+```php
+// src/Translation/Application/UseCase/GetSupportedLocales/SupportedLocalesView.php
+<?php
+declare(strict_types=1);
+
+namespace App\Translation\Application\UseCase\GetSupportedLocales;
+
+final readonly class SupportedLocalesView
+{
+    /** @param list<string> $supported */
+    public function __construct(
+        public array $supported,
+        public string $default,
+    ) {
+    }
+}
+```
+
+```php
+// src/Translation/Application/UseCase/GetSupportedLocales/GetSupportedLocalesQueryHandler.php
+<?php
+declare(strict_types=1);
+
+namespace App\Translation\Application\UseCase\GetSupportedLocales;
+
+use App\Shared\Application\Bus\SyncQueryHandlerInterface;
+
+final readonly class GetSupportedLocalesQueryHandler implements SyncQueryHandlerInterface
+{
+    /** @param list<string> $supportedLocales */
+    public function __construct(
+        private array $supportedLocales,
+        private string $defaultLocale,
+    ) {
+    }
+
+    public function __invoke(GetSupportedLocalesQuery $query): SupportedLocalesView
+    {
+        return new SupportedLocalesView($this->supportedLocales, $this->defaultLocale);
+    }
+}
+```
+
+- [ ] **Step 6: Implement the controller**
+
+```php
+// src/Translation/UI/Http/Controller/GetSupportedLocales/GetSupportedLocalesController.php
+<?php
+declare(strict_types=1);
+
+namespace App\Translation\UI\Http\Controller\GetSupportedLocales;
+
+use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Translation\Application\UseCase\GetSupportedLocales\GetSupportedLocalesQuery;
+use OpenApi\Attributes as OA;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Attribute\Route;
+
+final readonly class GetSupportedLocalesController
+{
+    public function __construct(private SyncQueryBusInterface $queryBus)
+    {
+    }
+
+    #[Route('/translations/locales', name: 'translation_supported_locales', methods: ['GET'])]
+    #[OA\Get(
+        summary: 'List supported locales and the default fallback locale',
+        tags: ['Translation'],
+        responses: [
+            new OA\Response(
+                response: Response::HTTP_OK,
+                description: 'Supported locales',
+                content: new OA\JsonContent(
+                    required: ['supported', 'default'],
+                    properties: [
+                        new OA\Property(property: 'supported', type: 'array', items: new OA\Items(type: 'string'), example: ['fr_FR', 'en_GB', 'de_DE']),
+                        new OA\Property(property: 'default', type: 'string', example: 'en_GB'),
+                    ],
+                ),
+            ),
+        ],
+    )]
+    public function __invoke(): Response
+    {
+        $view = $this->queryBus->ask(new GetSupportedLocalesQuery());
+
+        return new JsonResponse([
+            'supported' => $view->supported,
+            'default'   => $view->default,
+        ]);
+    }
+}
+```
+
+- [ ] **Step 7: Wire the handler in `config/services/translation.yaml`**
+
+Add after the `GetTranslationQueryHandler` explicit wiring:
+
+```yaml
+    App\Translation\Application\UseCase\GetSupportedLocales\GetSupportedLocalesQueryHandler:
+        arguments:
+            $supportedLocales: '%app.supported_locales%'
+            $defaultLocale: '%app.default_locale%'
+```
+
+- [ ] **Step 8: Run all tests to confirm they pass**
+
+```bash
+make unit-test
+make functional-test
+```
+
+Expected: all `GetSupportedLocalesQueryHandlerTest` and `GetSupportedLocalesControllerTest` cases pass.
+
+- [ ] **Step 9: Commit**
+
+```bash
+git add src/Translation/Application/UseCase/GetSupportedLocales/ \
+        src/Translation/UI/Http/Controller/GetSupportedLocales/ \
+        tests/Translation/Application/UseCase/GetSupportedLocales/ \
+        tests/Translation/UI/Http/Controller/GetSupportedLocales/ \
+        config/services/translation.yaml
+git commit -m "feat(translation): add GetSupportedLocales use case and controller"
+```
+
+---
+
+## Task 9: SetTranslationController
 
 **Files:**
 - Create: `src/Translation/UI/Http/Controller/SetTranslation/SetTranslationRequest.php`
@@ -1141,7 +1377,7 @@ git commit -m "feat(translation): add SetTranslationController"
 
 ---
 
-## Task 8: GetTranslationController
+## Task 10: GetTranslationController
 
 **Files:**
 - Create: `src/Translation/UI/Http/Controller/TranslationSerializer.php`
@@ -1379,7 +1615,7 @@ git commit -m "feat(translation): add GetTranslationController and TranslationSe
 
 ---
 
-## Task 9: OpenAPI, lint and full test suite
+## Task 11: OpenAPI, lint and full test suite
 
 - [ ] **Step 1: Regenerate the OpenAPI spec**
 
