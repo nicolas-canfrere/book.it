@@ -697,6 +697,69 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  '/api/v1/hotels/{hotelId}/room-type-catalogue':
+    get:
+      tags:
+        - 'Room Types'
+      summary: 'List Room Types of a Hotel — Booker-facing catalogue, filterable by Room Amenities'
+      operationId: get_room_list_room_type_catalogue
+      parameters:
+        -
+          name: hotelId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: amenities
+          in: query
+          required: false
+          schema:
+            oneOf:
+              -
+                type: array
+                items:
+                  type: string
+              -
+                type: object
+                additionalProperties:
+                  type: string
+            default: []
+        -
+          name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 1
+            minimum: 1
+        -
+          name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 20
+            maximum: 100
+            minimum: 1
+      responses:
+        '200':
+          description: 'Paginated Room Type Catalogue'
+          content:
+            application/json:
+              schema:
+                properties:
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, name: { type: string, example: 'Suite Balcony' }, livingSpaceCount: { type: integer, example: 2 }, surfaceM2: { type: integer, example: 45, nullable: true }, guestCapacity: { type: integer, example: 2 }, isAccessible: { type: boolean }, bedComposition: { type: array, items: { properties: { type: { type: string, example: double }, count: { type: integer, example: 1 } }, type: object } }, amenities: { type: array, items: { type: string }, example: [wifi, balcony] }, createdAt: { type: string, format: date-time } }, type: object } }
+                  meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 3 }, totalPages: { type: integer, example: 1 } }, type: object }
+                type: object
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
   '/api/v1/hotels/{hotelId}/rooms':
     get:
       tags:
@@ -2435,6 +2498,29 @@ components:
       type: object
     ListRoomTypesRequest:
       properties:
+        page:
+          type: integer
+          default: 1
+          minimum: 1
+        limit:
+          type: integer
+          default: 20
+          maximum: 100
+          minimum: 1
+      type: object
+    ListRoomTypesByAmenityRequest:
+      properties:
+        amenities:
+          oneOf:
+            -
+              type: array
+              items:
+                type: string
+            -
+              type: object
+              additionalProperties:
+                type: string
+          default: []
         page:
           type: integer
           default: 1

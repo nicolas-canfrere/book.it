@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\Application\UseCase\ListRoomTypesByAmenity;
 
+use App\Room\Application\UseCase\DeclareRoomTypeAmenities\DeclareRoomTypeAmenitiesCommand;
+use App\Room\Application\UseCase\DeclareRoomTypeAmenities\DeclareRoomTypeAmenitiesCommandHandler;
 use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQuery;
 use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
-use App\Room\Application\UseCase\DeclareRoomTypeAmenities\DeclareRoomTypeAmenitiesCommand;
-use App\Room\Application\UseCase\DeclareRoomTypeAmenities\DeclareRoomTypeAmenitiesCommandHandler;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeCatalogueFinder;
