@@ -89,6 +89,15 @@ functional-test: ## Run functional tests
 	@$(DOCKER_COMPOSE_TEST) down --remove-orphans -v
 
 ##@ Docker
+keycloak-export: ## Export Keycloak realm config to .docker/keycloak/import/ (usage: make keycloak-export REALM=bookit)
+	mkdir -p .docker/keycloak/import
+	$(DOCKER_COMPOSE) exec keycloack /opt/keycloak/bin/kc.sh export \
+		--dir /tmp/kc-export \
+		--realm $(or $(REALM),$(KEYCLOAK_REALM)) \
+		--users realm_file
+	$(DOCKER_COMPOSE) cp keycloack:/tmp/kc-export/. .docker/keycloak/import/
+	@echo "Realm exported to .docker/keycloak/import/"
+
 up: ## Start all services (creates shared network if needed)
 	docker network create bookit-nw 2>/dev/null || true
 	$(DOCKER_COMPOSE) up -d

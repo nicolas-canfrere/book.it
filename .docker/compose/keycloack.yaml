@@ -2,7 +2,7 @@ services:
     keycloack:
         image: ${KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak:latest}
         container_name: ${KEYCLOAK_CONTAINER_NAME:-keycloack-dev}
-        command: start-dev
+        command: start-dev --import-realm
         environment:
             KC_DB: ${KEYCLOAK_DB_TYPE}
             KC_DB_URL: ${KEYCLOAK_DB_URL}
@@ -13,6 +13,8 @@ services:
             KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_PASSWORD}
         ports:
             - "${KEYCLOAK_PORT:-8080}:8080"
+        volumes:
+            - ./../keycloak/import:/opt/keycloak/data/import:ro
         depends_on:
             keycloack_database:
                 condition: service_healthy
