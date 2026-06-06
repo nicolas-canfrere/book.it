@@ -2165,6 +2165,56 @@ paths:
                   default: { type: string, example: en_GB }
                 type: object
   '/api/v1/translations/{subjectType}/{subjectId}':
+    get:
+      tags:
+        - Translation
+      summary: 'Get the translation for a hotel or room type'
+      operationId: get_translation_get
+      parameters:
+        -
+          name: subjectType
+          in: path
+          required: true
+          schema:
+            type: string
+            pattern: hotel|room_type
+            enum:
+              - hotel
+              - room_type
+        -
+          name: subjectId
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+            pattern: '[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}'
+        -
+          name: locale
+          in: query
+          required: true
+          schema:
+            type: string
+            example: fr_FR
+      responses:
+        '200':
+          description: 'Translation found'
+          content:
+            application/json:
+              schema:
+                required:
+                  - locale
+                  - text
+                properties:
+                  locale: { description: 'Actual locale returned — may differ from requested if fallback applied', type: string, example: fr_FR }
+                  text: { type: string, example: 'Un magnifique hôtel.' }
+                type: object
+        '404':
+          description: 'No translation found for subject'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
     put:
       tags:
         - Translation
@@ -2903,6 +2953,13 @@ components:
           default: null
           maximum: 20
           minimum: 1
+      type: object
+    GetTranslationRequest:
+      properties:
+        locale:
+          type: string
+          default: ''
+          maxLength: 10
       type: object
     SetTranslationRequest:
       required:
