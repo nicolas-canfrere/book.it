@@ -6,6 +6,7 @@ imports:
     - { resource: './services/availability.yaml' }
     - { resource: './services/pricing.yaml' }
     - { resource: './services/reservation.yaml' }
+    - { resource: './services/operator.yaml' }
     - { resource: './services/exceptions.yaml' }
     - { resource: './services/payment.yaml' }
     - { resource: './services/notification.yaml' }

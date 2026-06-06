@@ -1,0 +1,50 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+        App\Shared\Application\Bus\AsyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: messenger.bus.default}
+
+    App\Operator\Domain\:
+        resource: '../../src/Operator/Domain/'
+        exclude:
+            - '../../src/Operator/Domain/Model/'
+
+    App\Operator\Application\:
+        resource: '../../src/Operator/Application/'
+        exclude:
+            - '../../src/Operator/Application/**/*Exception.php'
+            - '../../src/Operator/Application/**/*Command.php'
+            - '../../src/Operator/Application/**/*Query.php'
+            - '../../src/Operator/Application/Contract/*View.php'
+
+    App\Operator\Infrastructure\:
+        resource: '../../src/Operator/Infrastructure/'
+        exclude:
+            - '../../src/Operator/Infrastructure/**/*Exception.php'
+
+    App\Operator\UI\:
+        resource: '../../src/Operator/UI/'
+        exclude:
+            - '../../src/Operator/UI/**/*Request.php'
+
+    App\Operator\Domain\Port\ExternalAccountRegistrarInterface: '@App\Operator\Infrastructure\Contract\SecurityAccountRegistrarAdapter'
+
+    App\Operator\Infrastructure\Persistence\Doctrine\OperatorRepository:
+        arguments:
+            $operatorConnection: '@doctrine.dbal.operator_connection'
+
+when@test:
+    services:
+        App\Operator\Domain\Port\ExternalAccountRegistrarInterface:
+            class: App\Tests\Operator\Infrastructure\ExternalAccount\NullExternalAccountRegistrar
