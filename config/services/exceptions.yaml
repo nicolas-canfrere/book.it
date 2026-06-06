@@ -156,3 +156,7 @@ services:
                     type: 'https://book.it/problems/external-account-creation-failed'
                     title: 'External Account Creation Failed'
                     status: 500
+                App\Translation\Domain\Exception\UnsupportedLocaleException:
+                    type: 'https://book.it/problems/unsupported-locale'
+                    title: 'Unsupported Locale'
+                    status: 422

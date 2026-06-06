@@ -40,8 +40,8 @@ final class SetTranslationCommandHandlerTest extends TestCase
         $this->idGenerator->method('generate')->willReturn('550e8400-e29b-41d4-a716-446655440000');
         $this->repository->method('findBySubjectAndLocale')->willReturn(null);
         $this->repository->expects($this->once())->method('save')->with(
-            $this->callback(static fn (Translation $t): bool =>
-                '550e8400-e29b-41d4-a716-446655440000' === $t->id
+            $this->callback(
+                static fn(Translation $t): bool => '550e8400-e29b-41d4-a716-446655440000' === $t->id
                 && SubjectType::Hotel === $t->subjectType
                 && 'hotel-uuid' === $t->subjectId
                 && 'fr_FR' === $t->locale
@@ -59,8 +59,8 @@ final class SetTranslationCommandHandlerTest extends TestCase
         $existing = new Translation('existing-id', SubjectType::Hotel, 'hotel-uuid', 'fr_FR', 'Old text', $createdAt);
         $this->repository->method('findBySubjectAndLocale')->willReturn($existing);
         $this->repository->expects($this->once())->method('save')->with(
-            $this->callback(static fn (Translation $t): bool =>
-                'existing-id' === $t->id
+            $this->callback(
+                static fn(Translation $t): bool => 'existing-id' === $t->id
                 && 'New text' === $t->text
                 && $createdAt === $t->createdAt
             )
@@ -84,7 +84,7 @@ final class SetTranslationCommandHandlerTest extends TestCase
         $this->idGenerator->method('generate')->willReturn('550e8400-e29b-41d4-a716-446655440001');
         $this->repository->method('findBySubjectAndLocale')->willReturn(null);
         $this->repository->expects($this->once())->method('save')->with(
-            $this->callback(static fn (Translation $t): bool => SubjectType::RoomType === $t->subjectType)
+            $this->callback(static fn(Translation $t): bool => SubjectType::RoomType === $t->subjectType)
         );
 
         ($this->handler)(new SetTranslationCommand(SubjectType::RoomType, 'room-type-uuid', 'en_GB', 'Cosy room'));
