@@ -19,6 +19,7 @@ final class GetBookerControllerTest extends WebTestCase
         'email' => 'jean.dupont@example.com',
         'phone' => '+33612345678',
         'dateOfBirth' => '1990-05-15',
+        'password' => 'SecurePass123!',
     ];
 
     #[Test]

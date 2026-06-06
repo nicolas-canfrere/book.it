@@ -1,0 +1,22 @@
+services:
+    keycloack_database:
+        image: ${KEYCLOAK_DB_IMAGE:-postgres:latest}
+        container_name: ${KEYCLOAK_DB_CONTAINER_NAME:-database-dev}
+        environment:
+            POSTGRES_DB: ${KEYCLOAK_POSTGRES_DB:-postgres}
+            POSTGRES_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD:-postgres}
+            POSTGRES_USER: ${KEYCLOAK_POSTGRES_USER:-postgres}
+        ports:
+            - "${KEYCLOAK_DB_PORT:-5432}:5432"
+        healthcheck:
+            test: [ "CMD", "pg_isready", "-d", "${KEYCLOAK_POSTGRES_DB:-postgres}", "-U", "${KEYCLOAK_POSTGRES_USER:-postgres}" ]
+            timeout: 5s
+            retries: 5
+            start_period: 60s
+        volumes:
+            - keycloack_database_data:/var/lib/postgresql/data:rw
+        networks:
+            - ${NETWORK_NAME:-default-nw}
+
+volumes:
+    keycloack_database_data:

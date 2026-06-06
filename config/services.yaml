@@ -10,4 +10,5 @@ imports:
     - { resource: './services/payment.yaml' }
     - { resource: './services/notification.yaml' }
     - { resource: './services/search.yaml' }
+    - { resource: './services/security.yaml' }
 

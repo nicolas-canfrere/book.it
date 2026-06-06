@@ -2457,6 +2457,13 @@ components:
           example: '1990-05-15'
           nullable: true
           default: null
+        password:
+          type: string
+          example: MySecurePassword123!
+          nullable: true
+          default: null
+          maxLength: 100
+          minLength: 8
       type: object
     BlockPeriodRequest:
       properties:

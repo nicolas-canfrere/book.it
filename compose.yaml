@@ -1,4 +1,6 @@
 include:
+  - .docker/compose/keycloack.database.yaml
+  - .docker/compose/keycloack.yaml
   - .docker/compose/database.yaml
   - .docker/compose/rabbitmq.yaml
   - .docker/compose/mailer.yaml

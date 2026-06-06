@@ -30,6 +30,10 @@ final readonly class RegisterBookerRequest
         #[Assert\Date]
         #[OA\Property(type: 'string', format: 'date', example: '1990-05-15')]
         public ?string $dateOfBirth = null,
+        #[Assert\NotBlank]
+        #[Assert\Length(min: 8, max: 100)]
+        #[OA\Property(type: 'string', example: 'MySecurePassword123!', minLength: 8, maxLength: 100)]
+        public ?string $password = null,
     ) {
     }
 }
