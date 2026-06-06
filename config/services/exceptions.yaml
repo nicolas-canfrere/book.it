@@ -148,3 +148,11 @@ services:
                     type: 'https://book.it/problems/keycloak-unavailable'
                     title: 'Keycloak Service Unavailable'
                     status: 503
+                App\Operator\Domain\Exception\OperatorAlreadyExistsException:
+                    type: 'https://book.it/problems/operator-already-exists'
+                    title: 'Operator Already Exists'
+                    status: 409
+                App\Operator\Domain\Exception\ExternalAccountCreationException:
+                    type: 'https://book.it/problems/external-account-creation-failed'
+                    title: 'External Account Creation Failed'
+                    status: 500

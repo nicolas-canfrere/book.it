@@ -157,6 +157,27 @@ _Avoid_: booker creation, account creation, sign-up
 
 ---
 
+**Operator**:
+A registered professional account representing a person who manages one or more Hotels on the platform. Created by an administrator — not self-registered. An Operator is a persistent account, not a per-Hotel identity.
+_Avoid_: manager, admin, hotel owner, staff
+
+**Operator Registration**:
+The act of an administrator creating an Operator account. Rejected if an Operator with the same email already exists. No age requirement applies.
+_Avoid_: operator creation, account creation
+
+## Relationships
+
+- An **Operator** is uniquely identified by their email address
+- An **Operator** has a first name, last name, email, and phone number
+- An **Operator Registration** produces exactly one **Operator**, or raises a conflict if the email is already taken
+- The association between an **Operator** and a **Hotel** is established separately, after **Operator Registration**
+
+## Flagged ambiguities
+
+- Operator endpoint authentication is deferred — the registration endpoint is currently unprotected; a Keycloak `admin` role guard is planned for a later iteration
+
+---
+
 **Blocked Period** *(Période de blocage)* :
 Une plage de nuits consécutives pendant laquelle une Room est indisponible à la réservation. Exprimée par une date de check-in (inclusive) et une date de check-out (exclusive). Une Room est disponible par défaut — un Blocked Period en suspend explicitement la disponibilité.
 _Avoid_: unavailability, closure, restriction, fermeture
