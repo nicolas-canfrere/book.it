@@ -33,16 +33,18 @@ services:
         exclude:
             - '../../src/Operator/Infrastructure/**/*Exception.php'
 
-    App\Operator\UI\:
-        resource: '../../src/Operator/UI/'
-        exclude:
-            - '../../src/Operator/UI/**/*Request.php'
-
     App\Operator\Domain\Port\ExternalAccountRegistrarInterface: '@App\Operator\Infrastructure\Contract\SecurityAccountRegistrarAdapter'
 
     App\Operator\Infrastructure\Persistence\Doctrine\OperatorRepository:
         arguments:
-            $operatorConnection: '@doctrine.dbal.operator_connection'
+            $operator: '@doctrine.dbal.operator_connection'
+
+    bookit.doctrine.middleware.search_path.operator:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'operator'
+        tags:
+            - {name: doctrine.middleware, connection: operator}
 
 when@test:
     services:
