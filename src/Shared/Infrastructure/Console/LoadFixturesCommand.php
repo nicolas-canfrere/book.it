@@ -15,7 +15,7 @@ use Symfony\Component\Console\Style\SymfonyStyle;
 #[AsCommand(name: 'app:fixtures:load', description: 'Load fixtures (truncates all tables first)')]
 final class LoadFixturesCommand extends Command
 {
-    public function __construct(private readonly Connection $bookit)
+    public function __construct(private readonly Connection $bookitConnection)
     {
         parent::__construct();
     }
@@ -40,7 +40,7 @@ final class LoadFixturesCommand extends Command
     {
         $io->section('Truncating tables');
 
-        $this->bookit->executeStatement(
+        $this->bookitConnection->executeStatement(
             'TRUNCATE hotel, room_type, room, booker, reservation,
              blocked_period, availability_hold,
              pricing_base_rate, pricing_rate_period, pricing_promotion, pricing_cancellation_policy
@@ -54,7 +54,7 @@ final class LoadFixturesCommand extends Command
     {
         $io->section('Loading hotel');
 
-        $this->bookit->insert('hotel', [
+        $this->bookitConnection->insert('hotel', [
             'id' => FixtureIds::HOTEL_ID,
             'name' => 'Grand Hôtel du Lac',
             'street_address' => '15 rue de la Paix',
@@ -74,7 +74,7 @@ final class LoadFixturesCommand extends Command
     {
         $io->section('Loading room types');
 
-        $this->bookit->insert('room_type', [
+        $this->bookitConnection->insert('room_type', [
             'id' => FixtureIds::ROOM_TYPE_STANDARD_ID,
             'hotel_id' => FixtureIds::HOTEL_ID,
             'name' => 'Chambre Standard',
@@ -86,7 +86,7 @@ final class LoadFixturesCommand extends Command
             'created_at' => '2026-01-01 00:00:00',
         ], ['is_accessible' => Types::BOOLEAN]);
 
-        $this->bookit->insert('room_type', [
+        $this->bookitConnection->insert('room_type', [
             'id' => FixtureIds::ROOM_TYPE_SUITE_ID,
             'hotel_id' => FixtureIds::HOTEL_ID,
             'name' => 'Suite Deluxe',
@@ -113,7 +113,7 @@ final class LoadFixturesCommand extends Command
         ];
 
         foreach ($periods as [$id, $roomId, $amountCents]) {
-            $this->bookit->insert('pricing_rate_period', [
+            $this->bookitConnection->insert('pricing_rate_period', [
                 'id' => $id,
                 'room_id' => $roomId,
                 'check_in' => '2026-07-01',
@@ -139,7 +139,7 @@ final class LoadFixturesCommand extends Command
         ];
 
         foreach ($rates as [$roomId, $amountCents]) {
-            $this->bookit->insert('pricing_base_rate', [
+            $this->bookitConnection->insert('pricing_base_rate', [
                 'room_id' => $roomId,
                 'amount_cents' => $amountCents,
                 'updated_at' => '2026-01-01 00:00:00',
@@ -160,7 +160,7 @@ final class LoadFixturesCommand extends Command
         ];
 
         foreach ($rooms as [$id, $number, $floor, $roomTypeId]) {
-            $this->bookit->insert('room', [
+            $this->bookitConnection->insert('room', [
                 'id' => $id,
                 'hotel_id' => FixtureIds::HOTEL_ID,
                 'room_number' => $number,

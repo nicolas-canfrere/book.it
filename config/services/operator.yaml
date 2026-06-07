@@ -40,10 +40,6 @@ services:
 
     App\Operator\Domain\Port\ExternalAccountRegistrarInterface: '@App\Operator\Infrastructure\Contract\SecurityAccountRegistrarAdapter'
 
-    App\Operator\Infrastructure\Persistence\Doctrine\OperatorRepository:
-        arguments:
-            $operator: '@doctrine.dbal.operator_connection'
-
     bookit.doctrine.middleware.search_path.operator:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

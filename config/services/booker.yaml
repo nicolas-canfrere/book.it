@@ -37,10 +37,6 @@ services:
 
     App\Booker\Domain\Port\ExternalAccountRegistrarInterface: '@App\Booker\Infrastructure\Contract\SecurityAccountRegistrarAdapter'
 
-    App\Booker\Infrastructure\Persistence\Doctrine\BookerRepository:
-        arguments:
-            $booker: '@doctrine.dbal.booker_connection'
-
     bookit.doctrine.middleware.search_path.booker:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

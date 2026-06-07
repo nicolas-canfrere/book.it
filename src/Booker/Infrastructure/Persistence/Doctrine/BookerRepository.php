@@ -11,13 +11,13 @@ use Doctrine\DBAL\Connection;
 final readonly class BookerRepository implements BookerRepositoryInterface
 {
     public function __construct(
-        private Connection $booker,
+        private Connection $bookerConnection,
     ) {
     }
 
     public function add(Booker $booker): void
     {
-        $this->booker->insert('booker', [
+        $this->bookerConnection->insert('booker', [
             'id' => $booker->id,
             'first_name' => $booker->firstName,
             'last_name' => $booker->lastName,
@@ -31,7 +31,7 @@ final readonly class BookerRepository implements BookerRepositoryInterface
     public function get(string $id): ?Booker
     {
         /** @var array{id: string, first_name: string, last_name: string, email: string, phone: string, date_of_birth: string, registered_at: string}|false $row */
-        $row = $this->booker->fetchAssociative(
+        $row = $this->bookerConnection->fetchAssociative(
             'SELECT id, first_name, last_name, email, phone, date_of_birth, registered_at FROM booker WHERE id = :id',
             ['id' => $id],
         );
@@ -54,7 +54,7 @@ final readonly class BookerRepository implements BookerRepositoryInterface
     public function existsByEmail(string $email): bool
     {
         /** @var int|string $count */
-        $count = $this->booker->fetchOne(
+        $count = $this->bookerConnection->fetchOne(
             'SELECT COUNT(*) FROM booker WHERE LOWER(email) = LOWER(:email)',
             ['email' => $email],
         );
