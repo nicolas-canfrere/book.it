@@ -27,7 +27,8 @@ final class DoctrineOperatorFinderTest extends TestCase
     #[Test]
     public function itReturnsOperatorViewWhenFound(): void
     {
-        $this->connection->method('fetchAssociative')
+        $this->connection->expects(self::once())
+            ->method('fetchAssociative')
             ->with('SELECT id, email FROM operator WHERE id = ?', ['op-uuid'])
             ->willReturn(['id' => 'op-uuid', 'email' => 'op@example.com']);
 
