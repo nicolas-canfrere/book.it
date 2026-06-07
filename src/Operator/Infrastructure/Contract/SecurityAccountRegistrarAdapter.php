@@ -29,4 +29,9 @@ final readonly class SecurityAccountRegistrarAdapter implements ExternalAccountR
     {
         $this->accountRegistrar->unregister($operatorId, 'operator');
     }
+
+    public function assignAdminRole(string $operatorId): void
+    {
+        $this->accountRegistrar->assignRole($operatorId, 'operator', 'ROLE_ADMIN');
+    }
 }

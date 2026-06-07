@@ -22,17 +22,17 @@ final class KeycloakJwksProvider implements KeycloakJwksProviderInterface
 
     public function getPublicKeys(): array
     {
-        /** @var array<string, Key> */
-        return $this->cache->get('keycloak_jwks', function (ItemInterface $item): array {
+        /** @var array{keys: list<array<string, string>>} $jwks */
+        $jwks = $this->cache->get('keycloak_jwks', function (ItemInterface $item): array {
             $item->expiresAfter(3600);
 
             $url = "{$this->keycloakBaseUrl}/realms/{$this->keycloakRealm}/protocol/openid-connect/certs";
             $response = $this->httpClient->request('GET', $url);
 
-            /** @var array{keys: list<array<string, string>>} $jwks */
-            $jwks = $response->toArray();
-
-            return JWK::parseKeySet($jwks);
+            return $response->toArray();
         });
+
+        /** @var array<string, Key> */
+        return JWK::parseKeySet($jwks);
     }
 }

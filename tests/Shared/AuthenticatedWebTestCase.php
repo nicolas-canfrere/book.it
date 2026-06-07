@@ -33,7 +33,10 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
         self::$publicKey = $details['key'];
     }
 
-    protected static function createAuthenticatedClient(): KernelBrowser
+    /**
+     * @param list<string> $roles Keycloak realm roles to embed in the JWT (e.g. ['ROLE_OPERATOR', 'ROLE_ADMIN'])
+     */
+    protected static function createAuthenticatedClient(array $roles = ['ROLE_OPERATOR']): KernelBrowser
     {
         $client = static::createClient();
         $client->disableReboot();
@@ -82,6 +85,7 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
             'iss' => 'http://keycloack:8080/realms/bookit',
             'iat' => time(),
             'exp' => time() + 3600,
+            'realm_access' => ['roles' => $roles],
         ], self::$privateKey, 'RS256');
 
         $client->setServerParameter('HTTP_AUTHORIZATION', "Bearer {$token}");

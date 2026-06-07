@@ -47,9 +47,41 @@
   "failureFactor" : 30,
   "roles" : {
     "realm" : [ {
+      "id" : "eb153fc5-98d6-4211-ba42-d78886cb1083",
+      "name" : "ROLE_ADMIN_OPERATOR",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "ac7cff68-d2c8-4d41-981a-a68a146835ce",
+      "attributes" : { }
+    }, {
       "id" : "5143c945-750f-49ea-93d8-94873e82aa84",
       "name" : "uma_authorization",
       "description" : "${role_uma_authorization}",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "ac7cff68-d2c8-4d41-981a-a68a146835ce",
+      "attributes" : { }
+    }, {
+      "id" : "1f2c0320-b12f-49c8-a192-761858aa2085",
+      "name" : "ROLE_OPERATOR",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "ac7cff68-d2c8-4d41-981a-a68a146835ce",
+      "attributes" : { }
+    }, {
+      "id" : "520156a9-1dee-42e6-b4c0-40610d18a7d7",
+      "name" : "ROLE_ADMIN",
+      "description" : "",
+      "composite" : false,
+      "clientRole" : false,
+      "containerId" : "ac7cff68-d2c8-4d41-981a-a68a146835ce",
+      "attributes" : { }
+    }, {
+      "id" : "dbea795f-e115-47f9-9bb7-3c0575681461",
+      "name" : "ROLE_USER",
+      "description" : "",
       "composite" : false,
       "clientRole" : false,
       "containerId" : "ac7cff68-d2c8-4d41-981a-a68a146835ce",
@@ -246,6 +278,7 @@
         "containerId" : "6fd0ce54-99ef-4536-9ad8-bb2e1a5213ec",
         "attributes" : { }
       } ],
+      "bookit_bo" : [ ],
       "security-admin-console" : [ ],
       "admin-cli" : [ ],
       "account-console" : [ ],
@@ -566,6 +599,45 @@
         "jsonType.label" : "String"
       }
     } ],
+    "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
+    "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
+  }, {
+    "id" : "caedcf6a-964b-4afb-85c0-f59a5b791cf7",
+    "clientId" : "bookit_bo",
+    "name" : "",
+    "description" : "",
+    "rootUrl" : "",
+    "adminUrl" : "",
+    "baseUrl" : "",
+    "surrogateAuthRequired" : false,
+    "enabled" : true,
+    "alwaysDisplayInConsole" : false,
+    "clientAuthenticatorType" : "client-secret",
+    "secret" : "AFzarwwpIrz8g0GoKWNvpvy9QcaucOyP",
+    "redirectUris" : [ "http://localhost:3000/api/auth/callback/keycloak" ],
+    "webOrigins" : [ "http://localhost:3000" ],
+    "notBefore" : 0,
+    "bearerOnly" : false,
+    "consentRequired" : false,
+    "standardFlowEnabled" : true,
+    "implicitFlowEnabled" : false,
+    "directAccessGrantsEnabled" : true,
+    "serviceAccountsEnabled" : false,
+    "publicClient" : false,
+    "frontchannelLogout" : true,
+    "protocol" : "openid-connect",
+    "attributes" : {
+      "realm_client" : "false",
+      "oidc.ciba.grant.enabled" : "false",
+      "client.secret.creation.time" : "1780854545",
+      "backchannel.logout.session.required" : "true",
+      "display.on.consent.screen" : "false",
+      "oauth2.device.authorization.grant.enabled" : "false",
+      "backchannel.logout.revoke.offline.tokens" : "false"
+    },
+    "authenticationFlowBindingOverrides" : { },
+    "fullScopeAllowed" : true,
+    "nodeReRegistrationTimeout" : -1,
     "defaultClientScopes" : [ "web-origins", "acr", "roles", "profile", "basic", "email" ],
     "optionalClientScopes" : [ "address", "phone", "organization", "offline_access", "microprofile-jwt" ]
   }, {
@@ -1934,7 +2006,7 @@
     "alias" : "UPDATE_PROFILE",
     "name" : "Update Profile",
     "providerId" : "UPDATE_PROFILE",
-    "enabled" : true,
+    "enabled" : false,
     "defaultAction" : false,
     "priority" : 40,
     "config" : { }
@@ -1974,7 +2046,7 @@
     "alias" : "VERIFY_PROFILE",
     "name" : "Verify Profile",
     "providerId" : "VERIFY_PROFILE",
-    "enabled" : true,
+    "enabled" : false,
     "defaultAction" : false,
     "priority" : 90,
     "config" : { }

@@ -120,4 +120,30 @@ final class KeycloakAccountRegistrarTest extends TestCase
 
         $this->registrar->unregister('booker-uuid', 'booker');
     }
+
+    #[Test]
+    public function itAssignsRealmRole(): void
+    {
+        $this->mappingRepository->expects(self::once())
+            ->method('findExternalId')
+            ->with('operator-uuid', 'operator')
+            ->willReturn('keycloak-uuid');
+
+        $this->keycloakClient->expects(self::once())
+            ->method('assignRealmRole')
+            ->with('keycloak-uuid', 'ROLE_ADMIN');
+
+        $this->registrar->assignRole('operator-uuid', 'operator', 'ROLE_ADMIN');
+    }
+
+    #[Test]
+    public function itThrowsWhenNoMappingFoundForRoleAssignment(): void
+    {
+        $this->mappingRepository->method('findExternalId')->willReturn(null);
+
+        $this->keycloakClient->expects(self::never())->method('assignRealmRole');
+
+        $this->expectException(\RuntimeException::class);
+        $this->registrar->assignRole('operator-uuid', 'operator', 'ROLE_ADMIN');
+    }
 }

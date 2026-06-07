@@ -6,12 +6,22 @@ namespace App\Security\Infrastructure\Keycloak;
 
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final readonly class OperatorUser implements UserInterface
+final class OperatorUser implements UserInterface
 {
+    /**
+     * @var list<string>
+     */
+    private array $roles = [];
+
+    /**
+     * @param list<string> $roles
+     */
     public function __construct(
-        public string $id,
-        public string $email,
+        public readonly string $id,
+        public readonly string $email,
+        array $roles = [],
     ) {
+        $this->setRoles($roles);
     }
 
     public function getUserIdentifier(): string
@@ -26,6 +36,15 @@ final readonly class OperatorUser implements UserInterface
     /** @return list<string> */
     public function getRoles(): array
     {
-        return ['ROLE_OPERATOR'];
+        return $this->roles;
+    }
+
+    /**
+     * @param list<string> $roles
+     */
+    private function setRoles(array $roles): void
+    {
+        $roles = array_merge($roles, ['ROLE_OPERATOR']);
+        $this->roles = array_unique($roles);
     }
 }

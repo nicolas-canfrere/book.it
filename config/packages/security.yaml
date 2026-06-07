@@ -10,6 +10,7 @@ security:
                 - App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator
 
     access_control:
+        - { path: ^/api/v1/operators$, roles: ROLE_ADMIN, methods: [POST] }
         - { path: ^/, roles: ROLE_OPERATOR }
 
 when@test:
