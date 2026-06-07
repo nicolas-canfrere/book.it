@@ -44,6 +44,10 @@ services:
         arguments:
             $operator: '@doctrine.dbal.operator_connection'
 
+    App\Operator\Infrastructure\Contract\DoctrineOperatorFinder:
+        arguments:
+            $operator: '@doctrine.dbal.operator_connection'
+
     bookit.doctrine.middleware.search_path.operator:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
