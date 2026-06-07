@@ -65,7 +65,13 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
             throw new AuthenticationException('Operator not found');
         }
 
-        $user = new OperatorUser($operator->id, $operator->email);
+        $realmRoles = (array) ($payload->realm_access?->roles ?? []);
+        $roles = ['ROLE_OPERATOR'];
+        if (\in_array('ROLE_ADMIN', $realmRoles, true)) {
+            $roles[] = 'ROLE_ADMIN';
+        }
+
+        $user = new OperatorUser($operator->id, $operator->email, $roles);
 
         return new SelfValidatingPassport(
             new UserBadge($user->getUserIdentifier(), static fn() => $user)

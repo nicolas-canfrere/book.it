@@ -8,9 +8,13 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 final readonly class OperatorUser implements UserInterface
 {
+    /**
+     * @param list<string> $roles
+     */
     public function __construct(
         public string $id,
         public string $email,
+        private array $roles = ['ROLE_OPERATOR'],
     ) {
     }
 
@@ -26,6 +30,6 @@ final readonly class OperatorUser implements UserInterface
     /** @return list<string> */
     public function getRoles(): array
     {
-        return ['ROLE_OPERATOR'];
+        return $this->roles;
     }
 }
