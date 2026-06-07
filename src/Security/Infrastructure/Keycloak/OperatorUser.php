@@ -28,8 +28,4 @@ final readonly class OperatorUser implements UserInterface
     {
         return ['ROLE_OPERATOR'];
     }
-
-    public function eraseCredentials(): void
-    {
-    }
 }
