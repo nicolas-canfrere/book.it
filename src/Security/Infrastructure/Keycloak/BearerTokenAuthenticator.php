@@ -69,9 +69,11 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
         $realmRoles = ($realmAccess instanceof \stdClass && isset($realmAccess->roles) && \is_array($realmAccess->roles))
             ? $realmAccess->roles
             : [];
-        $roles = ['ROLE_OPERATOR'];
-        if (\in_array('ROLE_ADMIN', $realmRoles, true)) {
-            $roles[] = 'ROLE_ADMIN';
+        $roles = [];
+        foreach ($realmRoles as $role) {
+            if (str_starts_with($role, 'ROLE_')) {
+                $roles[] = $role;
+            }
         }
 
         $user = new OperatorUser($operator->id, $operator->email, $roles);
