@@ -23,7 +23,7 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
     ) {
     }
 
-    public function supports(Request $request): ?bool
+    public function supports(Request $request): bool
     {
         $header = $request->headers->get('Authorization', '');
 
@@ -36,8 +36,7 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
 
         try {
             $keys = $this->jwksProvider->getPublicKeys();
-            // If keys is an array and has only one key, use it directly
-            if (is_array($keys) && count($keys) === 1) {
+            if (1 === count($keys)) {
                 $payload = JWT::decode($token, reset($keys));
             } else {
                 $payload = JWT::decode($token, $keys);
@@ -50,10 +49,11 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
             throw new AuthenticationException('Invalid token issuer');
         }
 
-        $sub = (string) ($payload->sub ?? '');
+        $rawSub = $payload->sub ?? '';
+        $sub = \is_scalar($rawSub) ? (string) $rawSub : '';
 
         return new SelfValidatingPassport(
-            new UserBadge($sub, static fn (string $id) => new InMemoryUser($id, null, ['ROLE_OPERATOR']))
+            new UserBadge($sub, static fn(string $id) => new InMemoryUser($id, null, ['ROLE_OPERATOR']))
         );
     }
 
@@ -62,7 +62,7 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
         return null;
     }
 
-    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): ?Response
+    public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
         return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
     }

@@ -25,8 +25,14 @@ final class BearerTokenAuthenticatorTest extends TestCase
     protected function setUp(): void
     {
         $resource = openssl_pkey_new(['private_key_bits' => 2048, 'private_key_type' => \OPENSSL_KEYTYPE_RSA]);
-        openssl_pkey_export($resource, $this->privateKey);
-        $this->publicKey = openssl_pkey_get_details($resource)['key'];
+        \assert($resource instanceof \OpenSSLAsymmetricKey);
+        $privateKey = '';
+        openssl_pkey_export($resource, $privateKey);
+        \assert(\is_string($privateKey));
+        $this->privateKey = $privateKey;
+        $details = openssl_pkey_get_details($resource);
+        \assert(\is_array($details) && \is_string($details['key']));
+        $this->publicKey = $details['key'];
     }
 
     #[Test]
@@ -89,6 +95,7 @@ final class BearerTokenAuthenticatorTest extends TestCase
         $this->makeAuthenticator()->authenticate($request);
     }
 
+    /** @param array<string, mixed> $overrides */
     private function makeToken(array $overrides = []): string
     {
         $payload = array_merge([
