@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace App\Security\Infrastructure\Keycloak;
 
-use Firebase\JWT\Key;
 use Symfony\Contracts\Cache\CacheInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
