@@ -11,13 +11,13 @@ use Doctrine\DBAL\Connection;
 final readonly class DoctrineOperatorFinder implements OperatorFinderInterface
 {
     public function __construct(
-        private Connection $operator,
+        private Connection $operatorConnection,
     ) {
     }
 
     public function find(string $operatorId): ?OperatorView
     {
-        $row = $this->operator->fetchAssociative(
+        $row = $this->operatorConnection->fetchAssociative(
             'SELECT id, email FROM operator WHERE id = ?',
             [$operatorId],
         );
