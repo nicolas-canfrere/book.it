@@ -38,12 +38,23 @@ final class RegisterAdminOperatorCommand extends Command
 
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
+        /** @var string $firstName */
+        $firstName = $input->getArgument('firstName');
+        /** @var string $lastName */
+        $lastName = $input->getArgument('lastName');
+        /** @var string $email */
+        $email = $input->getArgument('email');
+        /** @var string $phone */
+        $phone = $input->getArgument('phone');
+        /** @var string $password */
+        $password = $input->getArgument('password');
+
         $registerCommand = $this->commandFactory->create(
-            (string) $input->getArgument('firstName'),
-            (string) $input->getArgument('lastName'),
-            (string) $input->getArgument('email'),
-            (string) $input->getArgument('phone'),
-            (string) $input->getArgument('password'),
+            $firstName,
+            $lastName,
+            $email,
+            $phone,
+            $password,
         );
 
         $this->commandBus->execute($registerCommand);

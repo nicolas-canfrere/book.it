@@ -65,7 +65,10 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
             throw new AuthenticationException('Operator not found');
         }
 
-        $realmRoles = (array) ($payload->realm_access?->roles ?? []);
+        $realmAccess = $payload->realm_access ?? null;
+        $realmRoles = ($realmAccess instanceof \stdClass && isset($realmAccess->roles) && \is_array($realmAccess->roles))
+            ? $realmAccess->roles
+            : [];
         $roles = ['ROLE_OPERATOR'];
         if (\in_array('ROLE_ADMIN', $realmRoles, true)) {
             $roles[] = 'ROLE_ADMIN';
