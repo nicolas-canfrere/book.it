@@ -16,7 +16,9 @@ final readonly class OperatorUser implements UserInterface
 
     public function getUserIdentifier(): string
     {
-        \assert('' !== $this->email);
+        if ('' === $this->email) {
+            throw new \LogicException('OperatorUser email cannot be empty');
+        }
 
         return $this->email;
     }
