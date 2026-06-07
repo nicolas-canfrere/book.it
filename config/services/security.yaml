@@ -36,3 +36,17 @@ services:
             $schema: 'security'
         tags:
             - {name: doctrine.middleware, connection: security}
+
+    App\Security\Infrastructure\Keycloak\KeycloakJwksProvider:
+        arguments:
+            $httpClient: '@http_client'
+            $cache: '@cache.app'
+            $keycloakBaseUrl: '%env(KEYCLOAK_BASE_URL)%'
+            $keycloakRealm: '%env(KEYCLOAK_REALM)%'
+
+    App\Security\Infrastructure\Keycloak\KeycloakJwksProviderInterface: '@App\Security\Infrastructure\Keycloak\KeycloakJwksProvider'
+
+    App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator:
+        arguments:
+            $jwksProvider: '@App\Security\Infrastructure\Keycloak\KeycloakJwksProviderInterface'
+            $keycloakIssuer: '%env(KEYCLOAK_BASE_URL)%/realms/%env(KEYCLOAK_REALM)%'
