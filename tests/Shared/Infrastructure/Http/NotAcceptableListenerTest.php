@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Infrastructure\Http;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class NotAcceptableListenerTest extends WebTestCase
+final class NotAcceptableListenerTest extends AuthenticatedWebTestCase
 {
     /** @return iterable<string, array{string}> */
     public static function acceptableTypes(): iterable
@@ -26,7 +26,7 @@ final class NotAcceptableListenerTest extends WebTestCase
     #[Test]
     public function itAllowsRequestWhenAcceptIsCompatible(string $accept): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request('GET', '/api/v1/hotels', server: ['HTTP_ACCEPT' => $accept]);
 
         self::assertNotSame(406, $client->getResponse()->getStatusCode());
@@ -35,7 +35,7 @@ final class NotAcceptableListenerTest extends WebTestCase
     #[Test]
     public function itReturns406WhenAcceptExcludesJson(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request('GET', '/api/v1/hotels', server: ['HTTP_ACCEPT' => 'text/html']);
 
         self::assertResponseStatusCodeSame(406);
@@ -45,7 +45,7 @@ final class NotAcceptableListenerTest extends WebTestCase
     #[Test]
     public function itReturns406ForMultipleNonJsonTypes(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request('GET', '/api/v1/hotels', server: ['HTTP_ACCEPT' => 'text/html,text/xml']);
 
         self::assertResponseStatusCodeSame(406);
@@ -54,7 +54,7 @@ final class NotAcceptableListenerTest extends WebTestCase
     #[Test]
     public function itPassesThroughWhenNoAcceptHeader(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request('GET', '/api/v1/hotels');
 
         self::assertNotSame(406, $client->getResponse()->getStatusCode());

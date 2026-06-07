@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\GetPricingQuote;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetPricingQuoteControllerTest extends WebTestCase
+final class GetPricingQuoteControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsQuoteWithCorrectTotalWhenBaseRateExistsAndNoPromotions(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -52,7 +52,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
     #[Test]
     public function itReturnsDiscountedNightsWhenPromotionCoversPartOfPeriod(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -104,7 +104,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'GET',
@@ -125,7 +125,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenRoomExistsButHasNoBaseRate(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -147,7 +147,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCheckInIsNotBeforeCheckOut(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -165,7 +165,7 @@ final class GetPricingQuoteControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCheckInOrCheckOutIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(

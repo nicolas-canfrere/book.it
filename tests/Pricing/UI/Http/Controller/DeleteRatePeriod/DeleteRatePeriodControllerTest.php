@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\DeleteRatePeriod;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class DeleteRatePeriodControllerTest extends WebTestCase
+final class DeleteRatePeriodControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itDeletesRatePeriodAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
         $ratePeriodId = $this->createRatePeriod($client, $roomId, '2025-07-01', '2025-08-31', 150.00);
 
@@ -43,7 +43,7 @@ final class DeleteRatePeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRatePeriodNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(

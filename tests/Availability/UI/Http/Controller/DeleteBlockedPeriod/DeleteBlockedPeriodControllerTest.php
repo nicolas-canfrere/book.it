@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Availability\UI\Http\Controller\DeleteBlockedPeriod;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class DeleteBlockedPeriodControllerTest extends WebTestCase
+final class DeleteBlockedPeriodControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itDeletesABlockedPeriodAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $blockedPeriodId = $this->blockPeriodAndGetId($client);
 
         $client->request('DELETE', "/api/v1/blocked-periods/{$blockedPeriodId}");
@@ -27,7 +27,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenBlockedPeriodDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('DELETE', '/api/v1/blocked-periods/00000000-0000-4000-8000-000000000000');
 
@@ -45,7 +45,7 @@ final class DeleteBlockedPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('DELETE', '/api/v1/blocked-periods/not-a-uuid');
 

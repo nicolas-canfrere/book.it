@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\GetBaseRate;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetBaseRateControllerTest extends WebTestCase
+final class GetBaseRateControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsBaseRate(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -45,7 +45,7 @@ final class GetBaseRateControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'GET',
@@ -66,7 +66,7 @@ final class GetBaseRateControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenNoBaseRateConfigured(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(

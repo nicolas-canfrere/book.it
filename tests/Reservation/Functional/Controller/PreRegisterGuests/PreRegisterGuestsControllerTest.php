@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\Functional\Controller\PreRegisterGuests;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class PreRegisterGuestsControllerTest extends WebTestCase
+final class PreRegisterGuestsControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itPreRegistersGuestsAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createConfirmedReservation($client);
 
         $client->request(
@@ -37,7 +37,7 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenGuestFirstNameIsBlank(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createConfirmedReservation($client);
 
         $client->request(
@@ -57,7 +57,7 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenReservationNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'PUT',
@@ -72,7 +72,7 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
     #[Test]
     public function itPreRegistersGuestsOnPendingReservation(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createPendingReservation($client);
 
         $client->request(
@@ -92,7 +92,7 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
     #[Test]
     public function itReturns415WhenContentTypeIsNotJson(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'PUT',
@@ -107,7 +107,7 @@ final class PreRegisterGuestsControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenCheckInDateIsTodayOrPassed(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');
         $tomorrow = (new \DateTimeImmutable('today'))->modify('+1 day')->format('Y-m-d');
         $reservationId = $this->createPendingReservation($client, $today, $tomorrow);

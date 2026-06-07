@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Availability\UI\Http\Controller\CheckAvailability;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class CheckAvailabilityControllerTest extends WebTestCase
+final class CheckAvailabilityControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsTrueWhenRoomIsAvailable(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request('GET', "/api/v1/rooms/{$roomId}/availability?checkIn=2025-06-10&checkOut=2025-06-13");
@@ -32,7 +32,7 @@ final class CheckAvailabilityControllerTest extends WebTestCase
     #[Test]
     public function itReturnsFalseWhenRoomIsBlocked(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -55,7 +55,7 @@ final class CheckAvailabilityControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCheckInIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request('GET', "/api/v1/rooms/{$roomId}/availability?checkOut=2025-06-13");
@@ -66,7 +66,7 @@ final class CheckAvailabilityControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenDateFormatIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request('GET', "/api/v1/rooms/{$roomId}/availability?checkIn=not-a-date&checkOut=2025-06-13");
@@ -77,7 +77,7 @@ final class CheckAvailabilityControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/rooms/not-a-uuid/availability?checkIn=2025-06-10&checkOut=2025-06-13');
 

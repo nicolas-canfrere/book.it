@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\GetCancellationPolicy;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetCancellationPolicyControllerTest extends WebTestCase
+final class GetCancellationPolicyControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itGetsCancellationPolicyAndReturns200(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $this->setCancellationPolicy($client, $roomId, 14);
@@ -39,7 +39,7 @@ final class GetCancellationPolicyControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenNoCancellationPolicySet(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'GET',

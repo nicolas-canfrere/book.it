@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Translation\UI\Http\Controller\GetTranslation;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class GetTranslationControllerTest extends WebTestCase
+final class GetTranslationControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturns200WithLocaleAndText(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = '660e8400-e29b-41d4-a716-446655440000';
         self::put($client, 'hotel', $hotelId, 'fr_FR', 'Bel hôtel parisien.');
 
@@ -31,7 +31,7 @@ final class GetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itReturnsFallbackLocaleWithActualLocaleInResponse(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = '660e8400-e29b-41d4-a716-446655440001';
         self::put($client, 'hotel', $hotelId, 'en_GB', 'Nice hotel.');
 
@@ -47,7 +47,7 @@ final class GetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenNoTranslationFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         self::get($client, 'hotel', '660e8400-e29b-41d4-a716-446655440099', 'fr_FR');
 
         self::assertResponseStatusCodeSame(404);
@@ -56,7 +56,7 @@ final class GetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itReturnsRoomTypeTranslation(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomTypeId = '660e8400-e29b-41d4-a716-446655440002';
         self::put($client, 'room_type', $roomTypeId, 'en_GB', 'Cosy room with sea view.');
 

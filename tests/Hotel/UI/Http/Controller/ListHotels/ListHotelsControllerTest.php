@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\UI\Http\Controller\ListHotels;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class ListHotelsControllerTest extends WebTestCase
+final class ListHotelsControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PARIS = [
         'name' => 'Hotel Ibis Paris',
@@ -40,7 +40,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itReturns200WithEmptyDataWhenNoHotelsExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotels');
 
@@ -59,7 +59,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsRegisteredHotelsSortedByName(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_LYON);
@@ -80,7 +80,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsCorrectHotelShape(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $this->registerHotel($client, self::HOTEL_PARIS);
 
         $client->request('GET', '/api/v1/hotels');
@@ -101,7 +101,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itPaginatesWithDefaultPageSize(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         for ($i = 1; $i <= 25; ++$i) {
             $this->registerHotel($client, [
@@ -125,7 +125,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsSecondPage(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         for ($i = 1; $i <= 5; ++$i) {
             $this->registerHotel($client, [
@@ -152,7 +152,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itFiltersByCity(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_LYON);
@@ -168,7 +168,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itFiltersByCountry(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_BERLIN);
@@ -184,7 +184,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itFiltersByCityAndCountry(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $this->registerHotel($client, self::HOTEL_PARIS);
         $this->registerHotel($client, self::HOTEL_BERLIN);
@@ -200,7 +200,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenPageIsZero(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotels?page=0');
 
@@ -212,7 +212,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenLimitExceedsMaximum(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotels?limit=101');
 
@@ -224,7 +224,7 @@ final class ListHotelsControllerTest extends WebTestCase
     #[Test]
     public function itFiltersByAmenities(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
 
         // Register two hotels
         $client->request('POST', '/api/v1/hotels', content: json_encode([

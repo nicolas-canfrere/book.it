@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Availability\UI\Http\Controller\BlockPeriod;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class BlockPeriodControllerTest extends WebTestCase
+final class BlockPeriodControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itBlocksAPeriodAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -41,7 +41,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenOverlapExists(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -73,7 +73,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -95,7 +95,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCheckInIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -111,7 +111,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCheckOutIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -127,7 +127,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenDateFormatIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -143,7 +143,7 @@ final class BlockPeriodControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',

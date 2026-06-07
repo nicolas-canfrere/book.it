@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\RegisterRoom;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class RegisterRoomControllerTest extends WebTestCase
+final class RegisterRoomControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel Test',
@@ -32,7 +32,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itRegistersARoomAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -59,7 +59,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenRoomNumberAlreadyExistsInHotel(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -92,7 +92,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -115,7 +115,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomTypeDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request(
@@ -139,7 +139,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenNumberIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -158,7 +158,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenFloorIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -177,7 +177,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenRoomTypeIdIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request(
@@ -195,7 +195,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenFloorIsOutOfRange(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -214,7 +214,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -229,7 +229,7 @@ final class RegisterRoomControllerTest extends WebTestCase
     #[Test]
     public function itAllowsSameRoomNumberInDifferentHotels(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId1 = $this->registerHotelAndGetId($client);
         $roomTypeId1 = $this->registerRoomTypeAndGetId($client, $hotelId1);
 

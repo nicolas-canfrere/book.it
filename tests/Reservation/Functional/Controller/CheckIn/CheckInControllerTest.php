@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\Functional\Controller\CheckIn;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class CheckInControllerTest extends WebTestCase
+final class CheckInControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itCheckInReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');
         $tomorrow = (new \DateTimeImmutable('today'))->modify('+1 day')->format('Y-m-d');
         $reservationId = $this->createConfirmedReservation($client, $today, $tomorrow);
@@ -38,7 +38,7 @@ final class CheckInControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenGuestLastNameIsBlank(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');
         $tomorrow = (new \DateTimeImmutable('today'))->modify('+1 day')->format('Y-m-d');
         $reservationId = $this->createConfirmedReservation($client, $today, $tomorrow);
@@ -60,7 +60,7 @@ final class CheckInControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenReservationNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -75,7 +75,7 @@ final class CheckInControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenReservationIsCancelled(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');
         $tomorrow = (new \DateTimeImmutable('today'))->modify('+1 day')->format('Y-m-d');
         $reservationId = $this->createCancelledReservation($client, $today, $tomorrow);
@@ -97,7 +97,7 @@ final class CheckInControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenCheckInIsInTheFuture(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createConfirmedReservation($client, '2099-07-01', '2099-07-03');
 
         $client->request(
@@ -117,7 +117,7 @@ final class CheckInControllerTest extends WebTestCase
     #[Test]
     public function itReturns415WhenContentTypeIsNotJson(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',

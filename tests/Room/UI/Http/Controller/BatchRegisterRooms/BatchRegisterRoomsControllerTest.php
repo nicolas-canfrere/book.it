@@ -4,15 +4,15 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\BatchRegisterRooms;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class BatchRegisterRoomsControllerTest extends WebTestCase
+final class BatchRegisterRoomsControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel Test',
@@ -33,7 +33,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itImportsBatchAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -71,7 +71,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns201WithEmptyArrayForHeaderOnlyCsv(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $csv = $this->makeCsvFile("number,floor,roomTypeId\n");
@@ -92,7 +92,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,00000000-0000-4000-8000-000000000001\n");
         $client->request(
@@ -107,7 +107,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelIdIsNotUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,00000000-0000-4000-8000-000000000001\n");
         $client->request(
@@ -122,7 +122,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenRoomTypeDoesNotExistInRow(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $csv = $this->makeCsvFile("number,floor,roomTypeId\n101,1,00000000-0000-4000-8000-000000000001\n");
@@ -147,7 +147,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WithViolationsWhenDuplicateInBatch(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -172,7 +172,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenNumberAlreadyExistsInHotel(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -203,7 +203,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WithAllViolationsAtOnce(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -226,7 +226,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCsvHeaderIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $csv = $this->makeCsvFile("number,floor\n101,1\n");
@@ -244,7 +244,7 @@ final class BatchRegisterRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenNoCsvFileProvided(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request(

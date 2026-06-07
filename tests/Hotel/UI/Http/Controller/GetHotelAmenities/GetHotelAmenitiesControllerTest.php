@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Tests\Hotel\UI\Http\Controller\GetHotelAmenities;
 
 use App\Hotel\Domain\ValueObject\HotelAmenity;
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetHotelAmenitiesControllerTest extends WebTestCase
+final class GetHotelAmenitiesControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsAllHotelAmenities(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotel-amenities');
 

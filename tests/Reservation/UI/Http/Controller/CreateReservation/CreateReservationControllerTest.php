@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\UI\Http\Controller\CreateReservation;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class CreateReservationControllerTest extends WebTestCase
+final class CreateReservationControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itCreatesAReservationAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$roomId, $bookerId] = $this->setupRoomAndBooker($client, guestCapacity: 3);
         $this->setBaseRate($client, $roomId, 10000);
 
@@ -60,7 +60,7 @@ final class CreateReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenGuestCountExceedsRoomCapacity(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$roomId, $bookerId] = $this->setupRoomAndBooker($client, guestCapacity: 1);
         $this->setBaseRate($client, $roomId, 10000);
 
@@ -89,7 +89,7 @@ final class CreateReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [, $bookerId] = $this->setupRoomAndBooker($client);
 
         $client->request(
@@ -118,7 +118,7 @@ final class CreateReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenBookerDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$roomId] = $this->setupRoomAndBooker($client);
 
         $client->request(
@@ -145,7 +145,7 @@ final class CreateReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenRoomIsNotAvailable(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$roomId, $bookerId] = $this->setupRoomAndBooker($client);
         $this->setBaseRate($client, $roomId, 10000);
         $this->blockPeriod($client, $roomId, '2030-06-01', '2030-06-10');
@@ -174,7 +174,7 @@ final class CreateReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenRoomHasNoPricing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$roomId, $bookerId] = $this->setupRoomAndBooker($client);
         // Intentionally NOT setting a base rate
 
@@ -202,7 +202,7 @@ final class CreateReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenRequestBodyIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',

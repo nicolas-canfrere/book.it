@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Translation\UI\Http\Controller\GetSupportedLocales;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class GetSupportedLocalesControllerTest extends WebTestCase
+final class GetSupportedLocalesControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturns200WithSupportedLocalesAndDefault(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request('GET', '/api/v1/translations/locales');
 
         self::assertResponseStatusCodeSame(200);

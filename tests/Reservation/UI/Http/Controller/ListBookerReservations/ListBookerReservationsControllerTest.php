@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\UI\Http\Controller\ListBookerReservations;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class ListBookerReservationsControllerTest extends WebTestCase
+final class ListBookerReservationsControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsPaginatedReservationsForBooker(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$bookerId, $roomId] = $this->setupBookerAndRoom($client);
         $this->createReservation($client, $bookerId, $roomId, '2030-06-01', '2030-06-03');
         $this->createReservation($client, $bookerId, $roomId, '2030-07-01', '2030-07-03');
@@ -38,7 +38,7 @@ final class ListBookerReservationsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsEmptyDataWhenPageExceedsTotal(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         [$bookerId, $roomId] = $this->setupBookerAndRoom($client);
         $this->createReservation($client, $bookerId, $roomId, '2030-06-01', '2030-06-03');
 
@@ -56,7 +56,7 @@ final class ListBookerReservationsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsEmptyListForUnknownBooker(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/reservations?bookerId=00000000-0000-4000-8000-000000000099&page=1&limit=20');
 
@@ -72,7 +72,7 @@ final class ListBookerReservationsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenBookerIdIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/reservations?page=1&limit=20');
 
@@ -83,7 +83,7 @@ final class ListBookerReservationsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenBookerIdIsNotAUuid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/reservations?bookerId=not-a-uuid');
 
@@ -93,7 +93,7 @@ final class ListBookerReservationsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenLimitExceeds100(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/reservations?bookerId=00000000-0000-4000-8000-000000000001&limit=101');
 
@@ -103,7 +103,7 @@ final class ListBookerReservationsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenPageIsZero(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/reservations?bookerId=00000000-0000-4000-8000-000000000001&page=0');
 

@@ -5,18 +5,18 @@ declare(strict_types=1);
 namespace App\Tests\Room\UI\Http\Controller\GetRoomTypeAmenities;
 
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetRoomTypeAmenitiesControllerTest extends WebTestCase
+final class GetRoomTypeAmenitiesControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsAllRoomTypeAmenities(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/room-type-amenities');
 

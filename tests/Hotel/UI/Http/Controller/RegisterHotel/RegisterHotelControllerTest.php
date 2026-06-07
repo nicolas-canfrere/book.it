@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\UI\Http\Controller\RegisterHotel;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class RegisterHotelControllerTest extends WebTestCase
+final class RegisterHotelControllerTest extends AuthenticatedWebTestCase
 {
     private const array VALID_PAYLOAD = [
         'name' => 'Hotel Ibis Paris',
@@ -23,7 +23,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itRegistersAHotelAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -49,7 +49,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenHotelAlreadyExists(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -82,7 +82,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns422AsAProblemDetailWithViolations(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = self::VALID_PAYLOAD;
         unset($payload['name']);
@@ -109,7 +109,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturnsAllViolationsSimultaneously(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -132,7 +132,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenNameIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = self::VALID_PAYLOAD;
         unset($payload['name']);
@@ -150,7 +150,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenCountryIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['country' => 'FRANCE']);
 
@@ -167,7 +167,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenNameIsTooShort(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['name' => 'A']);
 
@@ -184,7 +184,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itRegistersAHotelWithStarsAndSuperiorAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['stars' => 4, 'superior' => false]);
 
@@ -208,7 +208,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenSuperiorIsTrueAndStarsIsNull(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['superior' => true]);
 
@@ -225,7 +225,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenStarsIsOutOfRange(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['stars' => 6]);
 
@@ -242,7 +242,7 @@ final class RegisterHotelControllerTest extends WebTestCase
     #[Test]
     public function itRegistersAHotelWithStarsOnlyAndDefaultsSuperiorToFalse(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['stars' => 3]);
 

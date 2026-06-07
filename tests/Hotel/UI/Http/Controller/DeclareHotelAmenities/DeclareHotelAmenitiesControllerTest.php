@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\UI\Http\Controller\DeclareHotelAmenities;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class DeclareHotelAmenitiesControllerTest extends WebTestCase
+final class DeclareHotelAmenitiesControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itDeclaresAmenitiesOnExistingHotel(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
         $id = $this->registerHotel($client);
 
         $client->request(
@@ -31,7 +31,7 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReplacesAmenitiesWithEmptyList(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
         $id = $this->registerHotel($client, 'Empty Amenities Hotel');
 
         $client->request(
@@ -54,7 +54,7 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns404ForUnknownHotel(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
 
         $client->request(
             method: 'PATCH',
@@ -69,7 +69,7 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns422ForUnknownAmenityValue(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
         $id = $this->registerHotel($client, 'Invalid Amenity Hotel');
 
         $client->request(
@@ -85,7 +85,7 @@ final class DeclareHotelAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns422ForDuplicateValues(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
         $id = $this->registerHotel($client, 'Duplicate Amenity Hotel');
 
         $client->request(

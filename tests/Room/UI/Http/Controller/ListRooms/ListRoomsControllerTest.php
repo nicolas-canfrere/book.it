@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\ListRooms;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class ListRoomsControllerTest extends WebTestCase
+final class ListRoomsControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel List Rooms Test',
@@ -24,7 +24,7 @@ final class ListRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsEmptyCatalogueForHotelWithNoRooms(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request('GET', "/api/v1/hotels/{$hotelId}/rooms");
@@ -43,7 +43,7 @@ final class ListRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsRoomsSortedByNumberAscending(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
         $this->registerRoom($client, $hotelId, $roomTypeId, '202');
@@ -61,7 +61,7 @@ final class ListRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsPaginatedResults(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
         for ($i = 1; $i <= 5; ++$i) {
@@ -82,7 +82,7 @@ final class ListRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenPageIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request('GET', "/api/v1/hotels/{$hotelId}/rooms?page=0");
@@ -93,7 +93,7 @@ final class ListRoomsControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotels/not-a-uuid/rooms');
 

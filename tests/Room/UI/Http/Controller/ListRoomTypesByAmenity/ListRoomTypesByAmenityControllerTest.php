@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\ListRoomTypesByAmenity;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class ListRoomTypesByAmenityControllerTest extends WebTestCase
+final class ListRoomTypesByAmenityControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel Filtre',
@@ -24,7 +24,7 @@ final class ListRoomTypesByAmenityControllerTest extends WebTestCase
     #[Test]
     public function itReturnsAllRoomTypesWhenNoAmenityFilterGiven(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotel($client);
         $this->registerRoomTypeWithAmenities($client, $hotelId, 'Suite', ['wifi', 'balcony']);
         $this->registerRoomTypeWithAmenities($client, $hotelId, 'Standard', ['wifi']);
@@ -43,7 +43,7 @@ final class ListRoomTypesByAmenityControllerTest extends WebTestCase
     #[Test]
     public function itFiltersByASingleAmenityAndReturnsSortedResults(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotel($client);
         $this->registerRoomTypeWithAmenities($client, $hotelId, 'Suite', ['wifi', 'balcony']);
         $this->registerRoomTypeWithAmenities($client, $hotelId, 'Standard', ['wifi']);
@@ -64,7 +64,7 @@ final class ListRoomTypesByAmenityControllerTest extends WebTestCase
     #[Test]
     public function itFiltersByMultipleAmenitiesWithAndLogic(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotel($client);
         $this->registerRoomTypeWithAmenities($client, $hotelId, 'Suite', ['wifi', 'balcony']);
         $this->registerRoomTypeWithAmenities($client, $hotelId, 'Standard', ['wifi']);
@@ -84,7 +84,7 @@ final class ListRoomTypesByAmenityControllerTest extends WebTestCase
     #[Test]
     public function itRejects422ForAnInvalidAmenityValue(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotel($client);
 
         $client->request('GET', "/api/v1/hotels/{$hotelId}/room-type-catalogue?amenities[]=not_a_real_amenity");

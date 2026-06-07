@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\Functional;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class ListHotelsTest extends WebTestCase
+final class ListHotelsTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itFiltersHotelsWithMinStars(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $id4Stars = $this->registerHotel($client, 'Hotel Four Stars');
         $this->classifyHotel($client, $id4Stars, 4, false);
@@ -38,7 +38,7 @@ final class ListHotelsTest extends WebTestCase
     #[Test]
     public function itExcludesUnratedHotelsWhenMinStarsIsSet(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $idRated = $this->registerHotel($client, 'Hotel Rated');
         $this->classifyHotel($client, $idRated, 3, false);
@@ -56,7 +56,7 @@ final class ListHotelsTest extends WebTestCase
     #[Test]
     public function itReturnsAllHotelsWhenNoMinStarsFilter(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $idRated = $this->registerHotel($client, 'Hotel With Stars');
         $this->classifyHotel($client, $idRated, 3, false);
@@ -73,7 +73,7 @@ final class ListHotelsTest extends WebTestCase
     #[Test]
     public function itIncludesStarRatingFieldInCatalogueResponse(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $idRated = $this->registerHotel($client, 'Hotel Rated Stars');
         $this->classifyHotel($client, $idRated, 4, true);

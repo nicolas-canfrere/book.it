@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\RegisterRoomType;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class RegisterRoomTypeControllerTest extends WebTestCase
+final class RegisterRoomTypeControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel Test',
@@ -33,7 +33,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itRegistersARoomTypeAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request(
@@ -61,7 +61,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itAcceptsNullSurfaceM2(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $payload = self::VALID_PAYLOAD;
@@ -83,7 +83,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenNameAlreadyExistsInHotel(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request('POST', "/api/v1/hotels/{$hotelId}/room-types", server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR));
@@ -101,7 +101,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request('POST', '/api/v1/hotels/00000000-0000-4000-8000-000000000000/room-types', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR));
 
         self::assertSame(Response::HTTP_NOT_FOUND, $client->getResponse()->getStatusCode());
@@ -110,7 +110,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenNameIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $payload = self::VALID_PAYLOAD;
@@ -124,7 +124,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenBedCompositionIsEmpty(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $payload = array_merge(self::VALID_PAYLOAD, ['bedComposition' => []]);
@@ -137,7 +137,7 @@ final class RegisterRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenBedTypeIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $payload = array_merge(self::VALID_PAYLOAD, ['bedComposition' => [['type' => 'hammock', 'count' => 1]]]);
