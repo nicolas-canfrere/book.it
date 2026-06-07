@@ -47,6 +47,9 @@ services:
     App\Room\Domain\Port\RoomCapacityFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\RoomCapacityFinder
 
+    App\Room\Domain\Port\RoomTypeCatalogueFinderInterface:
+        class: App\Room\Infrastructure\Persistence\Doctrine\DbalRoomTypeCatalogueFinder
+
     bookit.doctrine.middleware.search_path.room:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
