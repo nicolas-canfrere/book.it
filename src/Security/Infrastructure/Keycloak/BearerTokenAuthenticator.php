@@ -4,12 +4,13 @@ declare(strict_types=1);
 
 namespace App\Security\Infrastructure\Keycloak;
 
+use App\Operator\Application\Contract\OperatorFinderInterface;
+use App\Security\Infrastructure\Persistence\IdentityMappingRepository;
 use Firebase\JWT\JWT;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Security\Core\Exception\AuthenticationException;
-use Symfony\Component\Security\Core\User\InMemoryUser;
 use Symfony\Component\Security\Http\Authenticator\AbstractAuthenticator;
 use Symfony\Component\Security\Http\Authenticator\Passport\Badge\UserBadge;
 use Symfony\Component\Security\Http\Authenticator\Passport\Passport;
@@ -20,6 +21,8 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
     public function __construct(
         private readonly KeycloakJwksProviderInterface $jwksProvider,
         private readonly string $keycloakIssuer,
+        private readonly IdentityMappingRepository $identityMapping,
+        private readonly OperatorFinderInterface $operatorFinder,
     ) {
     }
 
@@ -50,10 +53,22 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
         }
 
         $rawSub = $payload->sub ?? '';
-        $sub = \is_scalar($rawSub) ? (string) $rawSub : '';
+        $externalId = \is_scalar($rawSub) ? (string) $rawSub : '';
+
+        $internalId = $this->identityMapping->findInternalId($externalId, 'operator');
+        if (null === $internalId) {
+            throw new AuthenticationException('No operator found for this token');
+        }
+
+        $operator = $this->operatorFinder->find($internalId);
+        if (null === $operator) {
+            throw new AuthenticationException('Operator not found');
+        }
+
+        $user = new OperatorUser($operator->id, $operator->email);
 
         return new SelfValidatingPassport(
-            new UserBadge($sub, static fn(string $id) => new InMemoryUser($id, null, ['ROLE_OPERATOR']))
+            new UserBadge($user->getUserIdentifier(), static fn() => $user)
         );
     }
 

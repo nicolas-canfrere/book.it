@@ -71,4 +71,26 @@ final class IdentityMappingRepositoryTest extends TestCase
 
         self::assertNull($this->repository->findExternalId('booker-uuid', 'booker'));
     }
+
+    #[Test]
+    public function itFindsInternalId(): void
+    {
+        $this->connection->expects(self::once())
+            ->method('fetchOne')
+            ->with(
+                'SELECT internal_id FROM security.identity_mapping WHERE external_id = ? AND context = ?',
+                ['keycloak-uuid', 'operator'],
+            )
+            ->willReturn('operator-internal-uuid');
+
+        self::assertSame('operator-internal-uuid', $this->repository->findInternalId('keycloak-uuid', 'operator'));
+    }
+
+    #[Test]
+    public function itReturnsNullWhenNoInternalIdFound(): void
+    {
+        $this->connection->method('fetchOne')->willReturn(false);
+
+        self::assertNull($this->repository->findInternalId('unknown-uuid', 'operator'));
+    }
 }

@@ -6,10 +6,10 @@ namespace App\Security\Infrastructure\Persistence;
 
 use Doctrine\DBAL\Connection;
 
-readonly class IdentityMappingRepository
+class IdentityMappingRepository
 {
     public function __construct(
-        private Connection $connection,
+        private readonly Connection $connection,
     ) {
     }
 
@@ -35,6 +35,16 @@ readonly class IdentityMappingRepository
         $result = $this->connection->fetchOne(
             'SELECT external_id FROM security.identity_mapping WHERE internal_id = ? AND context = ?',
             [$internalId, $context],
+        );
+
+        return \is_string($result) ? $result : null;
+    }
+
+    public function findInternalId(string $externalId, string $context): ?string
+    {
+        $result = $this->connection->fetchOne(
+            'SELECT internal_id FROM security.identity_mapping WHERE external_id = ? AND context = ?',
+            [$externalId, $context],
         );
 
         return \is_string($result) ? $result : null;

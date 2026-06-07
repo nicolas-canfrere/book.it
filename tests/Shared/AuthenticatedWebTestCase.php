@@ -4,7 +4,10 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared;
 
+use App\Operator\Application\Contract\OperatorFinderInterface;
+use App\Operator\Application\Contract\OperatorView;
 use App\Security\Infrastructure\Keycloak\KeycloakJwksProviderInterface;
+use App\Security\Infrastructure\Persistence\IdentityMappingRepository;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -46,6 +49,30 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
                 public function getPublicKeys(): array
                 {
                     return ['default' => new Key($this->key, 'RS256')];
+                }
+            }
+        );
+
+        static::getContainer()->set(
+            IdentityMappingRepository::class,
+            new class extends IdentityMappingRepository {
+                public function __construct()
+                {
+                }
+
+                public function findInternalId(string $externalId, string $context): string
+                {
+                    return 'test-internal-operator-id';
+                }
+            }
+        );
+
+        static::getContainer()->set(
+            OperatorFinderInterface::class,
+            new class implements OperatorFinderInterface {
+                public function find(string $operatorId): OperatorView
+                {
+                    return new OperatorView($operatorId, 'test-operator@example.com');
                 }
             }
         );
