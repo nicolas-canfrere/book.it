@@ -11,4 +11,6 @@ interface KeycloakHttpClientInterface
     public function createUser(string $email, string $password): ResponseInterface;
 
     public function deleteUser(string $keycloakId): void;
+
+    public function assignRealmRole(string $keycloakId, string $roleName): void;
 }

@@ -53,6 +53,18 @@ final class KeycloakHttpClient implements KeycloakHttpClientInterface
         $this->request('DELETE', "/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}");
     }
 
+    public function assignRealmRole(string $keycloakId, string $roleName): void
+    {
+        $roleResponse = $this->request('GET', "/admin/realms/{$this->keycloakRealm}/roles/{$roleName}");
+        $role = $roleResponse->toArray();
+
+        $this->request(
+            'POST',
+            "/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}/role-mappings/realm",
+            ['json' => [['id' => $role['id'], 'name' => $role['name']]]],
+        );
+    }
+
     /**
      * @param array<string, mixed> $options
      */
