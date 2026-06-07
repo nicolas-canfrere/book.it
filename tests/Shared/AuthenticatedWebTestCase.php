@@ -42,7 +42,9 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
         static::getContainer()->set(
             KeycloakJwksProviderInterface::class,
             new class($publicKey) implements KeycloakJwksProviderInterface {
-                public function __construct(private string $key) {}
+                public function __construct(private string $key)
+                {
+                }
 
                 public function getPublicKeys(): array
                 {
@@ -54,9 +56,11 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
         static::getContainer()->set(
             IdentityMappingRepository::class,
             new class extends IdentityMappingRepository {
-                public function __construct() {}
+                public function __construct()
+                {
+                }
 
-                public function findInternalId(string $externalId, string $context): ?string
+                public function findInternalId(string $externalId, string $context): string
                 {
                     return 'test-internal-operator-id';
                 }
@@ -66,7 +70,7 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
         static::getContainer()->set(
             OperatorFinderInterface::class,
             new class implements OperatorFinderInterface {
-                public function find(string $operatorId): ?OperatorView
+                public function find(string $operatorId): OperatorView
                 {
                     return new OperatorView($operatorId, 'test-operator@example.com');
                 }
