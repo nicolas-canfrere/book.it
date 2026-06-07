@@ -6,10 +6,10 @@ namespace App\Security\Infrastructure\Persistence;
 
 use Doctrine\DBAL\Connection;
 
-readonly class IdentityMappingRepository
+class IdentityMappingRepository
 {
     public function __construct(
-        private Connection $connection,
+        private readonly Connection $connection,
     ) {
     }
 
