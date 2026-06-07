@@ -124,7 +124,8 @@ final class KeycloakAccountRegistrarTest extends TestCase
     #[Test]
     public function itAssignsRealmRole(): void
     {
-        $this->mappingRepository->method('findExternalId')
+        $this->mappingRepository->expects(self::once())
+            ->method('findExternalId')
             ->with('operator-uuid', 'operator')
             ->willReturn('keycloak-uuid');
 
