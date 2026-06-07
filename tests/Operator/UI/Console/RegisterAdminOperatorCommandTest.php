@@ -62,8 +62,17 @@ final class RegisterAdminOperatorCommandTest extends TestCase
 
         self::assertSame(0, $this->tester->getStatusCode());
         self::assertInstanceOf(RegisterOperatorCommand::class, $dispatchedCommands[0]);
+        self::assertSame('uuid-1', $dispatchedCommands[0]->id);
+        self::assertSame('Alice', $dispatchedCommands[0]->firstName);
+        self::assertSame('Martin', $dispatchedCommands[0]->lastName);
+        self::assertSame('alice@hotel.com', $dispatchedCommands[0]->email);
+        self::assertSame('+33612345678', $dispatchedCommands[0]->phone);
+        self::assertSame('SecurePass123!', $dispatchedCommands[0]->password);
+        self::assertSame($now, $dispatchedCommands[0]->registeredAt);
         self::assertInstanceOf(AssignAdminRoleToOperatorCommand::class, $dispatchedCommands[1]);
         self::assertSame('uuid-1', $dispatchedCommands[1]->operatorId);
-        self::assertStringContainsString('alice@hotel.com', $this->tester->getDisplay());
+        $display = $this->tester->getDisplay();
+        self::assertStringContainsString('alice@hotel.com', $display);
+        self::assertStringContainsString('uuid-1', $display);
     }
 }
