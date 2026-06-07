@@ -31,14 +31,6 @@ services:
         exclude:
             - '../../src/Availability/UI/**/*Request.php'
 
-    App\Availability\Infrastructure\Persistence\Doctrine\AvailabilityHoldRepository:
-        arguments:
-            $availabilityConnection: '@doctrine.dbal.availability_connection'
-
-    App\Availability\Infrastructure\Persistence\Doctrine\BlockedPeriodRepository:
-        arguments:
-            $availabilityConnection: '@doctrine.dbal.availability_connection'
-
     bookit.doctrine.middleware.search_path.availability:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

@@ -11,13 +11,13 @@ use Doctrine\DBAL\Connection;
 final readonly class OperatorRepository implements OperatorRepositoryInterface
 {
     public function __construct(
-        private Connection $operator,
+        private Connection $operatorConnection,
     ) {
     }
 
     public function add(Operator $operator): void
     {
-        $this->operator->insert('operator', [
+        $this->operatorConnection->insert('operator', [
             'id' => $operator->id,
             'first_name' => $operator->firstName,
             'last_name' => $operator->lastName,
@@ -30,7 +30,7 @@ final readonly class OperatorRepository implements OperatorRepositoryInterface
     public function existsByEmail(string $email): bool
     {
         /** @var int|string $count */
-        $count = $this->operator->fetchOne(
+        $count = $this->operatorConnection->fetchOne(
             'SELECT COUNT(*) FROM operator WHERE LOWER(email) = LOWER(:email)',
             ['email' => $email],
         );

@@ -9,13 +9,13 @@ use Doctrine\DBAL\Connection;
 class IdentityMappingRepository
 {
     public function __construct(
-        private readonly Connection $connection,
+        private readonly Connection $securityConnection,
     ) {
     }
 
     public function save(string $internalId, string $context, string $externalId): void
     {
-        $this->connection->insert('security.identity_mapping', [
+        $this->securityConnection->insert('security.identity_mapping', [
             'internal_id' => $internalId,
             'context' => $context,
             'external_id' => $externalId,
@@ -24,7 +24,7 @@ class IdentityMappingRepository
 
     public function delete(string $internalId, string $context): void
     {
-        $this->connection->delete('security.identity_mapping', [
+        $this->securityConnection->delete('security.identity_mapping', [
             'internal_id' => $internalId,
             'context' => $context,
         ]);
@@ -32,7 +32,7 @@ class IdentityMappingRepository
 
     public function findExternalId(string $internalId, string $context): ?string
     {
-        $result = $this->connection->fetchOne(
+        $result = $this->securityConnection->fetchOne(
             'SELECT external_id FROM security.identity_mapping WHERE internal_id = ? AND context = ?',
             [$internalId, $context],
         );
@@ -42,7 +42,7 @@ class IdentityMappingRepository
 
     public function findInternalId(string $externalId, string $context): ?string
     {
-        $result = $this->connection->fetchOne(
+        $result = $this->securityConnection->fetchOne(
             'SELECT internal_id FROM security.identity_mapping WHERE external_id = ? AND context = ?',
             [$externalId, $context],
         );

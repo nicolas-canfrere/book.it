@@ -36,10 +36,6 @@ services:
         exclude:
             - '../../src/Reservation/UI/**/*Request.php'
 
-    App\Reservation\Infrastructure\Persistence\Doctrine\ReservationRepository:
-        arguments:
-            $reservationConnection: '@doctrine.dbal.reservation_connection'
-
     bookit.doctrine.middleware.search_path.reservation:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

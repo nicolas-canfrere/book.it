@@ -26,10 +26,6 @@ services:
 
     App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface: '@App\Security\Infrastructure\Keycloak\KeycloakHttpClient'
 
-    App\Security\Infrastructure\Persistence\IdentityMappingRepository:
-        arguments:
-            $connection: '@doctrine.dbal.security_connection'
-
     bookit.doctrine.middleware.search_path.security:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
