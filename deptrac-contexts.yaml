@@ -73,6 +73,25 @@ deptrac:
                     type: classLike
                     value: 'App\\Notification\\.*'
         -
+            name: Operator
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Operator\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Operator\\Application\\Contract\\.*'
+        -
+            name: OperatorContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Operator\\Application\\Contract\\.*'
+        -
             name: Payment
             collectors:
                 -
@@ -208,6 +227,11 @@ deptrac:
             - ReservationContract
             - Shared
             - Vendor
+        Operator:
+            - OperatorContract
+            - SecurityContract
+            - Shared
+            - Vendor
         Payment:
             - Shared
             - Vendor
@@ -237,6 +261,7 @@ deptrac:
             - Vendor
         Security:
             - SecurityContract
+            - OperatorContract
             - Shared
             - Vendor
         # Les contrats publiés sont des DTO/interfaces purs : aucune dépendance
@@ -244,6 +269,8 @@ deptrac:
         AvailabilityContract: ~
         BookerContract: ~
         HotelContract: ~
+        NotificationContract: ~
+        OperatorContract: ~
         PricingContract: ~
         ReservationContract: ~
         RoomContract: ~
