@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 namespace App\Tests\Security\Infrastructure\Keycloak;
 
+use App\Operator\Application\Contract\OperatorFinderInterface;
+use App\Operator\Application\Contract\OperatorView;
 use App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator;
 use App\Security\Infrastructure\Keycloak\KeycloakJwksProviderInterface;
+use App\Security\Infrastructure\Keycloak\OperatorUser;
+use App\Security\Infrastructure\Persistence\IdentityMappingRepository;
 use Firebase\JWT\JWT;
 use Firebase\JWT\Key;
 use PHPUnit\Framework\Attributes\Group;
@@ -53,14 +57,47 @@ final class BearerTokenAuthenticatorTest extends TestCase
     #[Test]
     public function itAuthenticatesWithValidToken(): void
     {
+        $token = $this->makeToken(['sub' => 'keycloak-uuid-123']);
+        $request = Request::create('/api/v1/hotels');
+        $request->headers->set('Authorization', "Bearer {$token}");
+
+        $passport = $this->makeAuthenticator(
+            mappedInternalId: 'operator-internal-uuid',
+            operatorView: new OperatorView('operator-internal-uuid', 'op@example.com'),
+        )->authenticate($request);
+
+        self::assertInstanceOf(SelfValidatingPassport::class, $passport);
+        $user = $passport->getUser();
+        self::assertInstanceOf(OperatorUser::class, $user);
+        self::assertSame('op@example.com', $user->getUserIdentifier());
+        self::assertSame('operator-internal-uuid', $user->id);
+        self::assertSame(['ROLE_OPERATOR'], $user->getRoles());
+    }
+
+    #[Test]
+    public function itThrowsWhenNoIdentityMappingFound(): void
+    {
         $token = $this->makeToken();
         $request = Request::create('/api/v1/hotels');
         $request->headers->set('Authorization', "Bearer {$token}");
 
-        $passport = $this->makeAuthenticator()->authenticate($request);
+        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage('No operator found for this token');
 
-        self::assertInstanceOf(SelfValidatingPassport::class, $passport);
-        self::assertSame('user-uuid-123', $passport->getUser()->getUserIdentifier());
+        $this->makeAuthenticator(mappedInternalId: null)->authenticate($request);
+    }
+
+    #[Test]
+    public function itThrowsWhenOperatorNotFoundInDatabase(): void
+    {
+        $token = $this->makeToken();
+        $request = Request::create('/api/v1/hotels');
+        $request->headers->set('Authorization', "Bearer {$token}");
+
+        $this->expectException(AuthenticationException::class);
+        $this->expectExceptionMessage('Operator not found');
+
+        $this->makeAuthenticator(mappedInternalId: 'some-id', operatorView: null)->authenticate($request);
     }
 
     #[Test]
@@ -108,12 +145,20 @@ final class BearerTokenAuthenticatorTest extends TestCase
         return JWT::encode($payload, $this->privateKey, 'RS256');
     }
 
-    private function makeAuthenticator(): BearerTokenAuthenticator
-    {
+    private function makeAuthenticator(
+        ?string $mappedInternalId = 'operator-internal-uuid',
+        ?OperatorView $operatorView = null,
+    ): BearerTokenAuthenticator {
         $publicKey = $this->publicKey;
         $jwksProvider = $this->createStub(KeycloakJwksProviderInterface::class);
         $jwksProvider->method('getPublicKeys')->willReturn(['default' => new Key($publicKey, 'RS256')]);
 
-        return new BearerTokenAuthenticator($jwksProvider, $this->issuer);
+        $identityMapping = $this->createStub(IdentityMappingRepository::class);
+        $identityMapping->method('findInternalId')->willReturn($mappedInternalId);
+
+        $operatorFinder = $this->createStub(OperatorFinderInterface::class);
+        $operatorFinder->method('find')->willReturn($operatorView);
+
+        return new BearerTokenAuthenticator($jwksProvider, $this->issuer, $identityMapping, $operatorFinder);
     }
 }
