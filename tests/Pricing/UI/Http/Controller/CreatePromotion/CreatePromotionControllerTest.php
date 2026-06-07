@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\CreatePromotion;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class CreatePromotionControllerTest extends WebTestCase
+final class CreatePromotionControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itCreatesPromotionAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -42,7 +42,7 @@ final class CreatePromotionControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -65,7 +65,7 @@ final class CreatePromotionControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenPromotionsOverlap(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -97,7 +97,7 @@ final class CreatePromotionControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenDiscountPercentIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(

@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\Functional;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class ClassifyHotelTest extends WebTestCase
+final class ClassifyHotelTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itItSetsAStarRatingOnAHotel(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $id = $this->registerHotel($client);
 
         $client->request('PATCH', "/api/v1/hotels/{$id}/star-rating", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -34,7 +34,7 @@ final class ClassifyHotelTest extends WebTestCase
     #[Test]
     public function itItSetsASuperiorStarRating(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $id = $this->registerHotel($client);
 
         $client->request('PATCH', "/api/v1/hotels/{$id}/star-rating", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -53,7 +53,7 @@ final class ClassifyHotelTest extends WebTestCase
     #[Test]
     public function itItRemovesAStarRatingWhenStarsIsNull(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $id = $this->registerHotel($client);
 
         $client->request('PATCH', "/api/v1/hotels/{$id}/star-rating", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -76,7 +76,7 @@ final class ClassifyHotelTest extends WebTestCase
     #[Test]
     public function itItReturns404ForUnknownHotel(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('PATCH', '/api/v1/hotels/00000000-0000-4000-a000-000000000000/star-rating', [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
             'stars' => 3,
@@ -89,7 +89,7 @@ final class ClassifyHotelTest extends WebTestCase
     #[Test]
     public function itItReturns422WhenSuperiorTrueWithoutStars(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $id = $this->registerHotel($client);
 
         $client->request('PATCH', "/api/v1/hotels/{$id}/star-rating", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([
@@ -103,7 +103,7 @@ final class ClassifyHotelTest extends WebTestCase
     #[Test]
     public function itItReturns422WhenStarsOutOfRange(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $id = $this->registerHotel($client);
 
         $client->request('PATCH', "/api/v1/hotels/{$id}/star-rating", [], [], ['CONTENT_TYPE' => 'application/json'], json_encode([

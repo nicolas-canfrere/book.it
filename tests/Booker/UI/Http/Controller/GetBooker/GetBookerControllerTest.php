@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Booker\UI\Http\Controller\GetBooker;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetBookerControllerTest extends WebTestCase
+final class GetBookerControllerTest extends AuthenticatedWebTestCase
 {
     private const array VALID_PAYLOAD = [
         'firstName' => 'Jean',
@@ -25,7 +25,7 @@ final class GetBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns200WithCorrectBookerShape(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $id = $this->registerBookerAndGetId($client);
 
         $client->request('GET', "/api/v1/bookers/{$id}");
@@ -47,7 +47,7 @@ final class GetBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenBookerDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/bookers/00000000-0000-0000-0000-000000000000');
 
@@ -59,7 +59,7 @@ final class GetBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/bookers/not-a-uuid');
 

@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\GetRoom;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetRoomControllerTest extends WebTestCase
+final class GetRoomControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel Get Room Test',
@@ -24,7 +24,7 @@ final class GetRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns200WithCorrectRoomShape(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         ['hotelId' => $hotelId, 'roomId' => $roomId] = $this->registerRoomAndGetIds($client);
 
         $client->request('GET', "/api/v1/rooms/{$roomId}");
@@ -43,7 +43,7 @@ final class GetRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenRoomDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/rooms/00000000-0000-4000-8000-000000000000');
 
@@ -55,7 +55,7 @@ final class GetRoomControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/rooms/not-a-uuid');
 

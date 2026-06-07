@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\UpdatePromotion;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class UpdatePromotionControllerTest extends WebTestCase
+final class UpdatePromotionControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itUpdatesPromotionAndReturns200(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
         $promotionId = $this->createPromotion($client, $roomId, '2025-07-01', '2025-08-31', 20);
 
@@ -43,7 +43,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenPromotionNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -67,7 +67,7 @@ final class UpdatePromotionControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenUpdatedDatesOverlapAnotherPromotion(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $promotionId = $this->createPromotion($client, $roomId, '2025-07-01', '2025-07-31', 20);

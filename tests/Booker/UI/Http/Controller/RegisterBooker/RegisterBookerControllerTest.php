@@ -6,13 +6,13 @@ namespace App\Tests\Booker\UI\Http\Controller\RegisterBooker;
 
 use App\Booker\Domain\Port\ExternalAccountRegistrarInterface;
 use App\Tests\Booker\Infrastructure\ExternalAccount\ThrowingExternalAccountRegistrar;
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class RegisterBookerControllerTest extends WebTestCase
+final class RegisterBookerControllerTest extends AuthenticatedWebTestCase
 {
     private const array VALID_PAYLOAD = [
         'firstName' => 'Jean',
@@ -26,7 +26,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itRegistersABookerAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -52,7 +52,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenEmailAlreadyExists(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -83,7 +83,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenBookerIsUnderage(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $underageDate = (new \DateTimeImmutable())->modify('-17 years +1 day')->format('Y-m-d');
         $payload = array_merge(self::VALID_PAYLOAD, ['dateOfBirth' => $underageDate, 'email' => 'underage@example.com']);
@@ -109,7 +109,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns422AsAProblemDetailWithViolationsWhenFieldIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = self::VALID_PAYLOAD;
         unset($payload['email']);
@@ -134,7 +134,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenEmailIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['email' => 'not-an-email']);
 
@@ -151,7 +151,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenDateOfBirthIsInvalidFormat(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['dateOfBirth' => 'not-a-date', 'email' => 'other@example.com']);
 
@@ -168,7 +168,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenPasswordIsTooShort(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['password' => 'short', 'email' => 'short-pw@example.com']);
 
@@ -191,7 +191,7 @@ final class RegisterBookerControllerTest extends WebTestCase
     #[Test]
     public function itReturns500WhenExternalAccountCreationFails(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         static::getContainer()->set(
             ExternalAccountRegistrarInterface::class,
             new ThrowingExternalAccountRegistrar(),

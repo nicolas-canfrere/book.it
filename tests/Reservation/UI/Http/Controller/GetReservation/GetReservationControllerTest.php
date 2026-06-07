@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\UI\Http\Controller\GetReservation;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetReservationControllerTest extends WebTestCase
+final class GetReservationControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturns200WithAllFields(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createReservation($client);
 
         $client->request('GET', "/api/v1/reservations/{$reservationId}");
@@ -39,7 +39,7 @@ final class GetReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenReservationDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/reservations/00000000-0000-4000-8000-000000000099');
 

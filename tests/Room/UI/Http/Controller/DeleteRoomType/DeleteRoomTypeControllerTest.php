@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\DeleteRoomType;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class DeleteRoomTypeControllerTest extends WebTestCase
+final class DeleteRoomTypeControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = ['name' => 'Hotel Test', 'streetAddress' => '1 rue de la Paix', 'postalCode' => '75001', 'city' => 'Paris', 'country' => 'FR'];
     private const array ROOM_TYPE_PAYLOAD = ['name' => 'Single', 'livingSpaceCount' => 1, 'guestCapacity' => 1, 'isAccessible' => false, 'bedComposition' => [['type' => 'single', 'count' => 1]]];
@@ -19,7 +19,7 @@ final class DeleteRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itDeletesAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -34,7 +34,7 @@ final class DeleteRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenRoomTypeHasRooms(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -62,7 +62,7 @@ final class DeleteRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request('DELETE', "/api/v1/hotels/{$hotelId}/room-types/00000000-0000-4000-8000-000000000000");

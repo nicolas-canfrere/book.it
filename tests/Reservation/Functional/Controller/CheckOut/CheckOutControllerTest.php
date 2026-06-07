@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\Functional\Controller\CheckOut;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class CheckOutControllerTest extends WebTestCase
+final class CheckOutControllerTest extends AuthenticatedWebTestCase
 {
     private KernelBrowser $client;
 
     protected function setUp(): void
     {
-        $this->client = static::createClient();
+        $this->client = static::createAuthenticatedClient();
     }
 
     #[Test]

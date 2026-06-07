@@ -25,18 +25,6 @@ final class BearerAuthTest extends WebTestCase
         $this->publicKey = openssl_pkey_get_details($resource)['key'];
     }
 
-    private function makeToken(array $overrides = []): string
-    {
-        $payload = array_merge([
-            'sub' => 'operator-uuid-test',
-            'iss' => 'http://keycloack:8080/realms/bookit',
-            'iat' => time(),
-            'exp' => time() + 3600,
-        ], $overrides);
-
-        return JWT::encode($payload, $this->privateKey, 'RS256');
-    }
-
     #[Test]
     public function itReturns401WhenNoTokenProvided(): void
     {
@@ -55,8 +43,11 @@ final class BearerAuthTest extends WebTestCase
         $publicKey = $this->publicKey;
         static::getContainer()->set(
             KeycloakJwksProviderInterface::class,
-            new class ($publicKey) implements KeycloakJwksProviderInterface {
-                public function __construct(private string $key) {}
+            new class($publicKey) implements KeycloakJwksProviderInterface {
+                public function __construct(private string $key)
+                {
+                }
+
                 public function getPublicKeys(): array
                 {
                     return ['default' => new Key($this->key, 'RS256')];
@@ -79,8 +70,11 @@ final class BearerAuthTest extends WebTestCase
         $publicKey = $this->publicKey;
         static::getContainer()->set(
             KeycloakJwksProviderInterface::class,
-            new class ($publicKey) implements KeycloakJwksProviderInterface {
-                public function __construct(private string $key) {}
+            new class($publicKey) implements KeycloakJwksProviderInterface {
+                public function __construct(private string $key)
+                {
+                }
+
                 public function getPublicKeys(): array
                 {
                     return ['default' => new Key($this->key, 'RS256')];
@@ -93,5 +87,17 @@ final class BearerAuthTest extends WebTestCase
         ]);
 
         self::assertSame(Response::HTTP_UNAUTHORIZED, $client->getResponse()->getStatusCode());
+    }
+
+    private function makeToken(array $overrides = []): string
+    {
+        $payload = array_merge([
+            'sub' => 'operator-uuid-test',
+            'iss' => 'http://keycloack:8080/realms/bookit',
+            'iat' => time(),
+            'exp' => time() + 3600,
+        ], $overrides);
+
+        return JWT::encode($payload, $this->privateKey, 'RS256');
     }
 }

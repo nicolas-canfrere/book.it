@@ -4,21 +4,21 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\ListRoomTypes;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class ListRoomTypesControllerTest extends WebTestCase
+final class ListRoomTypesControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = ['name' => 'Hotel Test', 'streetAddress' => '1 rue de la Paix', 'postalCode' => '75001', 'city' => 'Paris', 'country' => 'FR'];
 
     #[Test]
     public function itReturnsAPaginatedList(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         foreach (['Suite', 'Double', 'Single'] as $name) {

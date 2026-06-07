@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\DeleteCancellationPolicy;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class DeleteCancellationPolicyControllerTest extends WebTestCase
+final class DeleteCancellationPolicyControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itDeletesCancellationPolicyAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $this->setCancellationPolicy($client, $roomId, 14);
@@ -32,7 +32,7 @@ final class DeleteCancellationPolicyControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenCancellationPolicyNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'DELETE',

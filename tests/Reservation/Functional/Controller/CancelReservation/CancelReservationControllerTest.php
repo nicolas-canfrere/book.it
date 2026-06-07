@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Reservation\Functional\Controller\CancelReservation;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class CancelReservationControllerTest extends WebTestCase
+final class CancelReservationControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itCancelConfirmedReservationReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createConfirmedReservation($client, '2099-08-01', '2099-08-05');
 
         $client->request(
@@ -31,7 +31,7 @@ final class CancelReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenReservationNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -45,7 +45,7 @@ final class CancelReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenReservationIsNotConfirmed(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $reservationId = $this->createCancelledReservation($client, '2099-08-01', '2099-08-05');
 
         $client->request(
@@ -60,7 +60,7 @@ final class CancelReservationControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenCheckInDateIsToday(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $today = (new \DateTimeImmutable('today'))->format('Y-m-d');
         $tomorrow = (new \DateTimeImmutable('today'))->modify('+1 day')->format('Y-m-d');
         $reservationId = $this->createConfirmedReservation($client, $today, $tomorrow);

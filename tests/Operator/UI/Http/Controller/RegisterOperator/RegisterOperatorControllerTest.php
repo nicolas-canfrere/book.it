@@ -6,13 +6,13 @@ namespace App\Tests\Operator\UI\Http\Controller\RegisterOperator;
 
 use App\Operator\Domain\Port\ExternalAccountRegistrarInterface;
 use App\Tests\Operator\Infrastructure\ExternalAccount\ThrowingExternalAccountRegistrar;
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class RegisterOperatorControllerTest extends WebTestCase
+final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
 {
     private const array VALID_PAYLOAD = [
         'firstName' => 'Alice',
@@ -25,7 +25,7 @@ final class RegisterOperatorControllerTest extends WebTestCase
     #[Test]
     public function itRegistersAnOperatorAndReturns201(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -50,7 +50,7 @@ final class RegisterOperatorControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenEmailAlreadyExists(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -81,7 +81,7 @@ final class RegisterOperatorControllerTest extends WebTestCase
     #[Test]
     public function itReturns422AsAProblemDetailWithViolationsWhenFieldIsMissing(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = self::VALID_PAYLOAD;
         unset($payload['email']);
@@ -106,7 +106,7 @@ final class RegisterOperatorControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenEmailIsInvalid(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['email' => 'not-an-email']);
 
@@ -123,7 +123,7 @@ final class RegisterOperatorControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenPasswordIsTooShort(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $payload = array_merge(self::VALID_PAYLOAD, ['password' => 'short', 'email' => 'short-pw@example.com']);
 
@@ -146,7 +146,7 @@ final class RegisterOperatorControllerTest extends WebTestCase
     #[Test]
     public function itReturns500WhenExternalAccountCreationFails(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         static::getContainer()->set(
             ExternalAccountRegistrarInterface::class,
             new ThrowingExternalAccountRegistrar(),

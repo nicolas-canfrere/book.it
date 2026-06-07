@@ -4,17 +4,17 @@ declare(strict_types=1);
 
 namespace App\Tests\Shared\Infrastructure\Http;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class RequestCorrelationListenerTest extends WebTestCase
+final class RequestCorrelationListenerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itResponseEchoesIncomingXRequestIdWhenValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request(
             'GET',
             '/api/v1/hotels',
@@ -33,7 +33,7 @@ final class RequestCorrelationListenerTest extends WebTestCase
     #[Test]
     public function itResponseGeneratesXRequestIdWhenIncomingHeaderIsNotValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request(
             'GET',
             '/api/v1/hotels',
@@ -55,7 +55,7 @@ final class RequestCorrelationListenerTest extends WebTestCase
     #[Test]
     public function itResponseGeneratesXRequestIdWhenHeaderAbsent(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $client->request(
             'GET',
             '/api/v1/hotels',

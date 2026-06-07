@@ -29,27 +29,6 @@ final class BearerTokenAuthenticatorTest extends TestCase
         $this->publicKey = openssl_pkey_get_details($resource)['key'];
     }
 
-    private function makeToken(array $overrides = []): string
-    {
-        $payload = array_merge([
-            'sub' => 'user-uuid-123',
-            'iss' => $this->issuer,
-            'iat' => time(),
-            'exp' => time() + 3600,
-        ], $overrides);
-
-        return JWT::encode($payload, $this->privateKey, 'RS256');
-    }
-
-    private function makeAuthenticator(): BearerTokenAuthenticator
-    {
-        $publicKey = $this->publicKey;
-        $jwksProvider = $this->createStub(KeycloakJwksProviderInterface::class);
-        $jwksProvider->method('getPublicKeys')->willReturn(['default' => new Key($publicKey, 'RS256')]);
-
-        return new BearerTokenAuthenticator($jwksProvider, $this->issuer);
-    }
-
     #[Test]
     public function itReturnsFalseWhenNoBearerHeader(): void
     {
@@ -108,5 +87,26 @@ final class BearerTokenAuthenticatorTest extends TestCase
 
         $this->expectException(AuthenticationException::class);
         $this->makeAuthenticator()->authenticate($request);
+    }
+
+    private function makeToken(array $overrides = []): string
+    {
+        $payload = array_merge([
+            'sub' => 'user-uuid-123',
+            'iss' => $this->issuer,
+            'iat' => time(),
+            'exp' => time() + 3600,
+        ], $overrides);
+
+        return JWT::encode($payload, $this->privateKey, 'RS256');
+    }
+
+    private function makeAuthenticator(): BearerTokenAuthenticator
+    {
+        $publicKey = $this->publicKey;
+        $jwksProvider = $this->createStub(KeycloakJwksProviderInterface::class);
+        $jwksProvider->method('getPublicKeys')->willReturn(['default' => new Key($publicKey, 'RS256')]);
+
+        return new BearerTokenAuthenticator($jwksProvider, $this->issuer);
     }
 }

@@ -4,13 +4,13 @@ declare(strict_types=1);
 
 namespace App\Tests\Hotel\UI\Http\Controller\GetHotel;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetHotelControllerTest extends WebTestCase
+final class GetHotelControllerTest extends AuthenticatedWebTestCase
 {
     private const array VALID_PAYLOAD = [
         'name' => 'Hotel Ibis Paris',
@@ -23,7 +23,7 @@ final class GetHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns200WithCorrectHotelShape(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             method: 'POST',
@@ -55,7 +55,7 @@ final class GetHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenHotelDoesNotExist(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotels/00000000-0000-0000-0000-000000000000');
 
@@ -67,7 +67,7 @@ final class GetHotelControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenIdIsNotAValidUuidV4(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request('GET', '/api/v1/hotels/not-a-uuid');
 
@@ -77,7 +77,7 @@ final class GetHotelControllerTest extends WebTestCase
     #[Test]
     public function itResponseIncludesAmenitiesField(): void
     {
-        $client = self::createClient();
+        $client = self::createAuthenticatedClient();
 
         // Register hotel
         $client->request('POST', '/api/v1/hotels', content: json_encode([

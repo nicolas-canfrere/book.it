@@ -4,19 +4,19 @@ declare(strict_types=1);
 
 namespace App\Tests\Pricing\UI\Http\Controller\GetPromotions;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class GetPromotionsControllerTest extends WebTestCase
+final class GetPromotionsControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itReturnsEmptyListWhenNoPromotions(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $client->request(
@@ -35,7 +35,7 @@ final class GetPromotionsControllerTest extends WebTestCase
     #[Test]
     public function itReturnsPromotionsSortedByCheckIn(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $roomId = $this->registerRoomAndGetId($client);
 
         $this->createPromotion($client, $roomId, '2025-09-01', '2025-09-30', 15);

@@ -4,18 +4,18 @@ declare(strict_types=1);
 
 namespace App\Tests\Translation\UI\Http\Controller\SetTranslation;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
 #[Group('functional')]
-final class SetTranslationControllerTest extends WebTestCase
+final class SetTranslationControllerTest extends AuthenticatedWebTestCase
 {
     #[Test]
     public function itSetsHotelTranslationAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         self::request($client, 'hotel', '550e8400-e29b-41d4-a716-446655440000', [
             'locale' => 'fr_FR',
             'text' => 'Un magnifique hôtel au cœur de Paris.',
@@ -27,7 +27,7 @@ final class SetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itSetsRoomTypeTranslationAndReturns204(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         self::request($client, 'room_type', '550e8400-e29b-41d4-a716-446655440001', [
             'locale' => 'en_GB',
             'text' => 'A cosy room with a sea view.',
@@ -39,7 +39,7 @@ final class SetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenLocaleIsNotSupported(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         self::request($client, 'hotel', '550e8400-e29b-41d4-a716-446655440000', [
             'locale' => 'ja_JP',
             'text' => 'テキスト',
@@ -51,7 +51,7 @@ final class SetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itReturns422WhenTextIsBlank(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         self::request($client, 'hotel', '550e8400-e29b-41d4-a716-446655440000', [
             'locale' => 'fr_FR',
             'text' => '',
@@ -63,7 +63,7 @@ final class SetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itReturns404ForUnknownSubjectType(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         self::request($client, 'unknown', '550e8400-e29b-41d4-a716-446655440000', [
             'locale' => 'fr_FR',
             'text' => 'Some text',
@@ -75,7 +75,7 @@ final class SetTranslationControllerTest extends WebTestCase
     #[Test]
     public function itUpsertOverwritesExistingTranslation(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = '550e8400-e29b-41d4-a716-446655440002';
 
         self::request($client, 'hotel', $hotelId, ['locale' => 'fr_FR', 'text' => 'Premier texte']);

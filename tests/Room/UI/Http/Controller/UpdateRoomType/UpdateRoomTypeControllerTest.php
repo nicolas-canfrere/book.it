@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\UpdateRoomType;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class UpdateRoomTypeControllerTest extends WebTestCase
+final class UpdateRoomTypeControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = ['name' => 'Hotel Test', 'streetAddress' => '1 rue de la Paix', 'postalCode' => '75001', 'city' => 'Paris', 'country' => 'FR'];
     private const array INITIAL_PAYLOAD = ['name' => 'Single', 'livingSpaceCount' => 1, 'guestCapacity' => 1, 'isAccessible' => false, 'bedComposition' => [['type' => 'single', 'count' => 1]]];
@@ -19,7 +19,7 @@ final class UpdateRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itUpdatesAndReturns200(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId, self::INITIAL_PAYLOAD);
 
@@ -40,7 +40,7 @@ final class UpdateRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns404WhenNotFound(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
 
         $client->request('PUT', "/api/v1/hotels/{$hotelId}/room-types/00000000-0000-4000-8000-000000000000", server: ['CONTENT_TYPE' => 'application/json'], content: json_encode(self::INITIAL_PAYLOAD, \JSON_THROW_ON_ERROR));
@@ -51,7 +51,7 @@ final class UpdateRoomTypeControllerTest extends WebTestCase
     #[Test]
     public function itReturns409WhenNewNameAlreadyTaken(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId, self::INITIAL_PAYLOAD);
         $this->registerRoomTypeAndGetId($client, $hotelId, array_merge(self::INITIAL_PAYLOAD, ['name' => 'Double']));

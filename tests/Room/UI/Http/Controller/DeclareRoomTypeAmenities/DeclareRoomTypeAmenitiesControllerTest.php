@@ -4,14 +4,14 @@ declare(strict_types=1);
 
 namespace App\Tests\Room\UI\Http\Controller\DeclareRoomTypeAmenities;
 
+use App\Tests\Shared\AuthenticatedWebTestCase;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Response;
 
 #[Group('functional')]
-final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
+final class DeclareRoomTypeAmenitiesControllerTest extends AuthenticatedWebTestCase
 {
     private const array HOTEL_PAYLOAD = [
         'name' => 'Hotel Test',
@@ -31,7 +31,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns204WithValidAmenities(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -48,7 +48,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns204WithEmptyList(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -65,7 +65,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns404ForUnknownRoomType(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
 
         $client->request(
             'PATCH',
@@ -80,7 +80,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns422ForUnknownAmenityValue(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
@@ -97,7 +97,7 @@ final class DeclareRoomTypeAmenitiesControllerTest extends WebTestCase
     #[Test]
     public function itReturns422ForDuplicateAmenityValue(): void
     {
-        $client = static::createClient();
+        $client = static::createAuthenticatedClient();
         $hotelId = $this->registerHotelAndGetId($client);
         $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
 
