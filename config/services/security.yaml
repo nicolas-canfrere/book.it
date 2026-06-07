@@ -45,4 +45,4 @@ services:
     App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator:
         arguments:
             $jwksProvider: '@App\Security\Infrastructure\Keycloak\KeycloakJwksProviderInterface'
-            $keycloakIssuer: '%env(KEYCLOAK_BASE_URL)%/realms/%env(KEYCLOAK_REALM)%'
+            $keycloakIssuer: '%env(KEYCLOAK_ISSUER)%'

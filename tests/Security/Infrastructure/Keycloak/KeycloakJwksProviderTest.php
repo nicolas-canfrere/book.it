@@ -35,7 +35,7 @@ final class KeycloakJwksProviderTest extends KernelTestCase
         $httpClient = new MockHttpClient([
             new MockResponse((string) json_encode(self::JWKS_FIXTURE)),
         ]);
-        $cache = new ArrayAdapter(storeSerialized: false);
+        $cache = new ArrayAdapter(storeSerialized: true);
 
         $provider = new KeycloakJwksProvider($httpClient, $cache, 'http://keycloak:8080', 'bookit');
 
@@ -54,7 +54,7 @@ final class KeycloakJwksProviderTest extends KernelTestCase
 
             return new MockResponse((string) json_encode(self::JWKS_FIXTURE));
         });
-        $cache = new ArrayAdapter(storeSerialized: false);
+        $cache = new ArrayAdapter(storeSerialized: true);
 
         $provider = new KeycloakJwksProvider($httpClient, $cache, 'http://keycloak:8080', 'bookit');
 
