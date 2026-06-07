@@ -25,7 +25,7 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
     #[Test]
     public function itRegistersAnOperatorAndReturns201(): void
     {
-        $client = static::createAuthenticatedClient();
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR', 'ROLE_ADMIN']);
 
         $client->request(
             method: 'POST',
@@ -50,7 +50,7 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
     #[Test]
     public function itReturns409WhenEmailAlreadyExists(): void
     {
-        $client = static::createAuthenticatedClient();
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR', 'ROLE_ADMIN']);
 
         $client->request(
             method: 'POST',
@@ -81,7 +81,7 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
     #[Test]
     public function itReturns422AsAProblemDetailWithViolationsWhenFieldIsMissing(): void
     {
-        $client = static::createAuthenticatedClient();
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR', 'ROLE_ADMIN']);
 
         $payload = self::VALID_PAYLOAD;
         unset($payload['email']);
@@ -106,7 +106,7 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
     #[Test]
     public function itReturns422WhenEmailIsInvalid(): void
     {
-        $client = static::createAuthenticatedClient();
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR', 'ROLE_ADMIN']);
 
         $payload = array_merge(self::VALID_PAYLOAD, ['email' => 'not-an-email']);
 
@@ -123,7 +123,7 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
     #[Test]
     public function itReturns422WhenPasswordIsTooShort(): void
     {
-        $client = static::createAuthenticatedClient();
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR', 'ROLE_ADMIN']);
 
         $payload = array_merge(self::VALID_PAYLOAD, ['password' => 'short', 'email' => 'short-pw@example.com']);
 
@@ -146,7 +146,7 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
     #[Test]
     public function itReturns500WhenExternalAccountCreationFails(): void
     {
-        $client = static::createAuthenticatedClient();
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR', 'ROLE_ADMIN']);
         static::getContainer()->set(
             ExternalAccountRegistrarInterface::class,
             new ThrowingExternalAccountRegistrar(),
@@ -170,5 +170,20 @@ final class RegisterOperatorControllerTest extends AuthenticatedWebTestCase
         self::assertSame('https://book.it/problems/external-account-creation-failed', $body['type']);
         self::assertSame('External Account Creation Failed', $body['title']);
         self::assertSame(Response::HTTP_INTERNAL_SERVER_ERROR, $body['status']);
+    }
+
+    #[Test]
+    public function itReturns403WhenCallerIsNotAdmin(): void
+    {
+        $client = static::createAuthenticatedClient(['ROLE_OPERATOR']);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/operators',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
+        );
+
+        self::assertSame(Response::HTTP_FORBIDDEN, $client->getResponse()->getStatusCode());
     }
 }
