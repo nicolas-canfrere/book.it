@@ -54,4 +54,14 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
         $this->expectException(ExternalAccountCreationException::class);
         $this->adapter->register('operator-id', 'email@example.com', 'password');
     }
+
+    #[Test]
+    public function itDelegatesAssignAdminRole(): void
+    {
+        $this->accountRegistrar->expects(self::once())
+            ->method('assignRole')
+            ->with('operator-id', 'operator', 'ROLE_ADMIN');
+
+        $this->adapter->assignAdminRole('operator-id');
+    }
 }

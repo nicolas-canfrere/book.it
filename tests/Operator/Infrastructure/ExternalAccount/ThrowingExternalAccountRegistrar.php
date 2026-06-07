@@ -17,4 +17,9 @@ final class ThrowingExternalAccountRegistrar implements ExternalAccountRegistrar
     public function unregister(string $operatorId): void
     {
     }
+
+    public function assignAdminRole(string $operatorId): void
+    {
+        throw new \RuntimeException('Keycloak unavailable');
+    }
 }

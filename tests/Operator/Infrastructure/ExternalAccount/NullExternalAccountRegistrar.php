@@ -15,4 +15,8 @@ final class NullExternalAccountRegistrar implements ExternalAccountRegistrarInte
     public function unregister(string $operatorId): void
     {
     }
+
+    public function assignAdminRole(string $operatorId): void
+    {
+    }
 }
