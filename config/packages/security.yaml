@@ -1,8 +1,4 @@
 security:
-    providers:
-        operators:
-            memory: ~
-
     firewalls:
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
@@ -10,7 +6,6 @@ security:
         api:
             pattern: ^/
             stateless: true
-            provider: operators
             custom_authenticators:
                 - App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator
 
