@@ -75,4 +75,26 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
 
         $this->mappingRepository->delete($internalId, $context);
     }
+
+    public function assignRole(string $internalId, string $context, string $roleName): void
+    {
+        $keycloakId = $this->mappingRepository->findExternalId($internalId, $context);
+        if (null === $keycloakId) {
+            $this->logger->error('Cannot assign role: no Keycloak mapping found', [
+                'internal_id' => $internalId,
+                'context' => $context,
+                'role' => $roleName,
+            ]);
+            throw new \RuntimeException("No Keycloak mapping found for {$internalId} (context: {$context})");
+        }
+
+        $this->keycloakClient->assignRealmRole($keycloakId, $roleName);
+
+        $this->logger->info('Realm role assigned', [
+            'internal_id' => $internalId,
+            'context' => $context,
+            'keycloak_id' => $keycloakId,
+            'role' => $roleName,
+        ]);
+    }
 }

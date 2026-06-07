@@ -9,4 +9,6 @@ interface AccountRegistrarInterface
     public function register(string $internalId, string $context, string $email, string $password): void;
 
     public function unregister(string $internalId, string $context): void;
+
+    public function assignRole(string $internalId, string $context, string $roleName): void;
 }
