@@ -71,7 +71,7 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
             : [];
         $roles = [];
         foreach ($realmRoles as $role) {
-            if (str_starts_with($role, 'ROLE_')) {
+            if (is_string($role) && str_starts_with($role, 'ROLE_')) {
                 $roles[] = $role;
             }
         }

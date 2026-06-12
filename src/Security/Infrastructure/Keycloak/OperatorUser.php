@@ -45,6 +45,6 @@ final class OperatorUser implements UserInterface
     private function setRoles(array $roles): void
     {
         $roles = array_merge($roles, ['ROLE_OPERATOR']);
-        $this->roles = array_unique($roles);
+        $this->roles = array_values(array_unique($roles));
     }
 }
