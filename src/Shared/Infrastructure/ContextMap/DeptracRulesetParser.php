@@ -9,18 +9,28 @@ final class DeptracRulesetParser
 {
     /**
      * @param string[] $excludedLayers
-     * @return array<string, string[]>
+     * @return array<string, list<string>>
      */
     public function parse(
         string $deptracYamlPath,
         array $excludedLayers = ['Shared', 'Vendor', 'Payment', 'Search', 'Translation'],
     ): array {
         $data = Yaml::parseFile($deptracYamlPath);
-        $ruleset = $data['deptrac']['ruleset'] ?? [];
+        if (!is_array($data)) {
+            return [];
+        }
+        $deptracConfig = $data['deptrac'] ?? [];
+        if (!is_array($deptracConfig)) {
+            return [];
+        }
+        $ruleset = $deptracConfig['ruleset'] ?? [];
+        if (!is_array($ruleset)) {
+            return [];
+        }
         $result = [];
 
         foreach ($ruleset as $context => $dependencies) {
-            if (null === $dependencies || str_ends_with($context, 'Contract')) {
+            if (!is_array($dependencies) || str_ends_with($context, 'Contract')) {
                 continue;
             }
             if (in_array($context, $excludedLayers, true)) {
@@ -29,12 +39,17 @@ final class DeptracRulesetParser
 
             $consumed = [];
             foreach ($dependencies as $dep) {
+                if (!is_string($dep)) {
+                    continue;
+                }
                 if (str_ends_with($dep, 'Contract') && $dep !== $context . 'Contract') {
                     $consumed[] = substr($dep, 0, -strlen('Contract'));
                 }
             }
 
-            $result[$context] = $consumed;
+            if (is_string($context)) {
+                $result[$context] = $consumed;
+            }
         }
 
         return $result;
