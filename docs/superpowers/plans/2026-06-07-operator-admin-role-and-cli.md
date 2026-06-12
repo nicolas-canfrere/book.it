@@ -766,7 +766,7 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
 
         $token = JWT::encode([
             'sub' => 'test-operator',
-            'iss' => 'http://keycloack:8080/realms/bookit',
+            'iss' => 'http://keycloak:8080/realms/bookit',
             'iat' => time(),
             'exp' => time() + 3600,
             'realm_access' => ['roles' => $roles],

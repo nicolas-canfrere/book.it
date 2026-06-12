@@ -125,7 +125,7 @@ App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator:
 Les vars suivantes existent déjà dans le projet :
 
 ```env
-KEYCLOAK_BASE_URL=http://keycloack:8080   # déjà présente
+KEYCLOAK_BASE_URL=http://keycloak:8080   # déjà présente
 KEYCLOAK_REALM=bookit                      # à ajouter
 ```
 

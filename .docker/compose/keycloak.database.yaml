@@ -1,5 +1,5 @@
 services:
-    keycloack_database:
+    keycloak_database:
         image: ${KEYCLOAK_DB_IMAGE:-postgres:latest}
         container_name: ${KEYCLOAK_DB_CONTAINER_NAME:-database-dev}
         environment:
@@ -14,9 +14,9 @@ services:
             retries: 5
             start_period: 60s
         volumes:
-            - keycloack_database_data:/var/lib/postgresql/data:rw
+            - keycloak_database_data:/var/lib/postgresql/data:rw
         networks:
             - ${NETWORK_NAME:-default-nw}
 
 volumes:
-    keycloack_database_data:
+    keycloak_database_data:
