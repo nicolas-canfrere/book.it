@@ -7,6 +7,9 @@ use Symfony\Component\Yaml\Yaml;
 
 final class YamlWriter
 {
+    /**
+     * @param array{version: string, generated_at: string, contexts: array<string, array{open_host_services: array{interfaces: string[], published_language: string[]}, consumed_by: string[], consumes: array<array{context: string}>}>} $contextMap
+     */
     public function write(array $contextMap, string $outputPath): void
     {
         $header = "# Generated — do not edit manually. Run: make contextmap\n";

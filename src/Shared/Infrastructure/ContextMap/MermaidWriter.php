@@ -5,6 +5,9 @@ namespace App\Shared\Infrastructure\ContextMap;
 
 final class MermaidWriter
 {
+    /**
+     * @param array{version: string, generated_at: string, contexts: array<string, array{open_host_services: array{interfaces: string[], published_language: string[]}, consumed_by: string[], consumes: array<array{context: string}>}>} $contextMap
+     */
     public function write(array $contextMap, string $outputPath): void
     {
         $lines = [
