@@ -12,7 +12,7 @@ graph LR
   Pricing -->|RoomFinderInterface| Room
   Reservation -->|AvailabilityCheckerInterface| Availability
   Reservation -->|BookerFinderInterface| Booker
-  Reservation -->|CancellationPolicyFinderInterface| Pricing
+  Reservation -->|CancellationPolicyFinderInterface, PricingQuoteCalculatorInterface, PricingQuoteFinderInterface| Pricing
   Reservation -->|RoomFinderInterface| Room
   Room -->|HotelFinderInterface| Hotel
   Security -->|OperatorFinderInterface| Operator

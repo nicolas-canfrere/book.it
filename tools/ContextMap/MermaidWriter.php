@@ -20,7 +20,13 @@ final class MermaidWriter
             foreach ($data['consumes'] as $relation) {
                 $producer = $relation['context'];
                 $interfaces = $contextMap['contexts'][$producer]['open_host_services']['interfaces'] ?? [];
-                $label = [] !== $interfaces ? $this->shortName($interfaces[0]) : $producer;
+                if ([] === $interfaces) {
+                    $label = $producer;
+                } elseif (1 === count($interfaces)) {
+                    $label = $this->shortName($interfaces[0]);
+                } else {
+                    $label = implode(', ', array_map([$this, 'shortName'], $interfaces));
+                }
                 $lines[] = "  {$consumer} -->|{$label}| {$producer}";
             }
         }

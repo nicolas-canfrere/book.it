@@ -1,6 +1,6 @@
 # Generated — do not edit manually. Run: make contextmap
 version: '1.0'
-generated_at: '2026-06-12T05:30:53+00:00'
+generated_at: '2026-06-12T05:42:48+00:00'
 contexts:
   Availability:
     open_host_services:
@@ -54,12 +54,6 @@ contexts:
     consumes:
       -
         context: Security
-  Payment:
-    open_host_services:
-      interfaces: {  }
-      published_language: {  }
-    consumed_by: {  }
-    consumes: {  }
   Pricing:
     open_host_services:
       interfaces:
@@ -104,12 +98,6 @@ contexts:
     consumes:
       -
         context: Hotel
-  Search:
-    open_host_services:
-      interfaces: {  }
-      published_language: {  }
-    consumed_by: {  }
-    consumes: {  }
   Security:
     open_host_services:
       interfaces:
@@ -121,15 +109,3 @@ contexts:
     consumes:
       -
         context: Operator
-  Shared:
-    open_host_services:
-      interfaces: {  }
-      published_language: {  }
-    consumed_by: {  }
-    consumes: {  }
-  Translation:
-    open_host_services:
-      interfaces: {  }
-      published_language: {  }
-    consumed_by: {  }
-    consumes: {  }

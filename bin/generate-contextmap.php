@@ -11,6 +11,12 @@ use Tools\ContextMap\MermaidWriter;
 use Tools\ContextMap\YamlWriter;
 
 $root     = dirname(__DIR__);
+
+if (!file_exists($root . '/deptrac-contexts.yaml')) {
+    fwrite(STDERR, "deptrac-contexts.yaml not found\n");
+    exit(2);
+}
+
 $contracts = (new ContractScanner())->scan($root . '/src');
 $consumes  = (new DeptracRulesetParser())->parse($root . '/deptrac-contexts.yaml');
 $map       = (new ContextMapBuilder())->build($contracts, $consumes);

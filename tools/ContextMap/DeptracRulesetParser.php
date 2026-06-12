@@ -14,8 +14,14 @@ final class DeptracRulesetParser
         $ruleset = $data['deptrac']['ruleset'] ?? [];
         $result = [];
 
+        $utilityLayers = ['Shared', 'Vendor', 'Payment', 'Search', 'Translation'];
+
         foreach ($ruleset as $context => $dependencies) {
             if (null === $dependencies || str_ends_with($context, 'Contract')) {
+                continue;
+            }
+            // Skip utility/infrastructure layers that are not bounded contexts
+            if (in_array($context, $utilityLayers, true)) {
                 continue;
             }
 
