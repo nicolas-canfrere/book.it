@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace App\Tests\ContextMap;
 
 use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Tools\ContextMap\ContractScanner;
 
@@ -37,7 +38,8 @@ class ContractScannerTest extends TestCase
         rmdir($dir);
     }
 
-    public function test_scans_interfaces_per_context(): void
+    #[Test]
+    public function itScansInterfacesPerContext(): void
     {
         $result = (new ContractScanner())->scan($this->tmpDir);
 
@@ -47,7 +49,8 @@ class ContractScannerTest extends TestCase
         );
     }
 
-    public function test_scans_views_per_context(): void
+    #[Test]
+    public function itScansViewsPerContext(): void
     {
         $result = (new ContractScanner())->scan($this->tmpDir);
 
@@ -57,7 +60,8 @@ class ContractScannerTest extends TestCase
         );
     }
 
-    public function test_ignores_non_interface_non_view_files(): void
+    #[Test]
+    public function itIgnoresNonInterfaceNonViewFiles(): void
     {
         $result = (new ContractScanner())->scan($this->tmpDir);
 
@@ -65,7 +69,8 @@ class ContractScannerTest extends TestCase
         self::assertCount(1, $result['Booker']['published_language']);
     }
 
-    public function test_scans_multiple_contexts(): void
+    #[Test]
+    public function itScansMultipleContexts(): void
     {
         $result = (new ContractScanner())->scan($this->tmpDir);
 
