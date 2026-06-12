@@ -11,6 +11,9 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 class ContextMapBuilderTest extends TestCase
 {
+    /**
+     * @var array<string, array{interfaces: string[], published_language: string[]}>
+     */
     private array $contracts = [
         'Booker' => [
             'interfaces' => ['App\\Booker\\Application\\Contract\\BookerFinderInterface'],
@@ -22,6 +25,9 @@ class ContextMapBuilderTest extends TestCase
         ],
     ];
 
+    /**
+     * @var array<string, string[]>
+     */
     private array $consumes = [
         'Room' => ['Hotel'],
         'Reservation' => ['Booker'],

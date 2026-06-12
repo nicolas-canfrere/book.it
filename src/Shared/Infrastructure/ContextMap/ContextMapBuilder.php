@@ -8,6 +8,7 @@ final class ContextMapBuilder
     /**
      * @param array<string, array{interfaces: string[], published_language: string[]}> $contracts
      * @param array<string, string[]> $consumes
+     * @return array{version: string, generated_at: string, contexts: array<string, array{open_host_services: array{interfaces: string[], published_language: string[]}, consumed_by: string[], consumes: array<array{context: string}>}>}
      */
     public function build(array $contracts, array $consumes): array
     {
