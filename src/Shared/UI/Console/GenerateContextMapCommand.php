@@ -56,12 +56,12 @@ final class GenerateContextMapCommand extends Command
 
         $outputYamlOption = $input->getOption('output-yaml');
         $outputYaml = is_string($outputYamlOption)
-            ? $this->projectDir.'/'.$outputYamlOption
+            ? $this->projectDir . '/' . $outputYamlOption
             : $config->getOutputYaml();
 
         $outputMermaidOption = $input->getOption('output-mermaid');
         $outputMermaid = is_string($outputMermaidOption)
-            ? $this->projectDir.'/'.$outputMermaidOption
+            ? $this->projectDir . '/' . $outputMermaidOption
             : $config->getOutputMermaid();
 
         $contracts = $this->contractScanner->scan($config->getSrcDir());

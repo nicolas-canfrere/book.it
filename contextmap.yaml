@@ -1,6 +1,6 @@
 # Generated — do not edit manually. Run: make contextmap
 version: '1.0'
-generated_at: '2026-06-12T21:08:52+00:00'
+generated_at: '2026-06-12T21:20:01+00:00'
 contexts:
   Availability:
     open_host_services:

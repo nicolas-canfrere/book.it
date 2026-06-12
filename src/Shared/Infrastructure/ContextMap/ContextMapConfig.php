@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\ContextMap;
@@ -12,16 +13,32 @@ final class ContextMapConfig
         private readonly string $outputYaml,
         private readonly string $outputMermaid,
         private readonly array $excludedLayers,
-    ) {}
+    ) {
+    }
 
-    public function getSrcDir(): string { return $this->srcDir; }
+    public function getSrcDir(): string
+    {
+        return $this->srcDir;
+    }
 
-    public function getDeptracFile(): string { return $this->deptracFile; }
+    public function getDeptracFile(): string
+    {
+        return $this->deptracFile;
+    }
 
-    public function getOutputYaml(): string { return $this->outputYaml; }
+    public function getOutputYaml(): string
+    {
+        return $this->outputYaml;
+    }
 
-    public function getOutputMermaid(): string { return $this->outputMermaid; }
+    public function getOutputMermaid(): string
+    {
+        return $this->outputMermaid;
+    }
 
     /** @return string[] */
-    public function getExcludedLayers(): array { return $this->excludedLayers; }
+    public function getExcludedLayers(): array
+    {
+        return $this->excludedLayers;
+    }
 }

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\ContextMap;
@@ -9,6 +10,7 @@ final class DeptracRulesetParser
 {
     /**
      * @param string[] $excludedLayers
+     *
      * @return array<string, list<string>>
      */
     public function parse(

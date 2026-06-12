@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\ContextMap;
@@ -28,14 +29,6 @@ class ContractScannerTest extends TestCase
     protected function tearDown(): void
     {
         $this->removeDir($this->tmpDir);
-    }
-
-    private function removeDir(string $dir): void
-    {
-        foreach (glob($dir . '/*') ?: [] as $file) {
-            is_dir($file) ? $this->removeDir($file) : unlink($file);
-        }
-        rmdir($dir);
     }
 
     #[Test]
@@ -76,5 +69,13 @@ class ContractScannerTest extends TestCase
 
         self::assertArrayHasKey('Booker', $result);
         self::assertArrayHasKey('Hotel', $result);
+    }
+
+    private function removeDir(string $dir): void
+    {
+        foreach (glob($dir . '/*') ?: [] as $file) {
+            is_dir($file) ? $this->removeDir($file) : unlink($file);
+        }
+        rmdir($dir);
     }
 }

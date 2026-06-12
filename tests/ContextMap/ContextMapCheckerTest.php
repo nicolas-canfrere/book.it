@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Tests\ContextMap;
@@ -36,7 +37,9 @@ class ContextMapCheckerTest extends TestCase
 
         // Create context map YAML
         $contextMapPath = $tmpDir . '/contextmap.yaml';
-        file_put_contents($contextMapPath, <<<'YAML'
+        file_put_contents(
+            $contextMapPath,
+            <<<'YAML'
 version: '1.0'
 contexts:
   Booker:
@@ -87,7 +90,9 @@ YAML
 
         // Create context map YAML with an interface listed but NO corresponding PHP file
         $contextMapPath = $tmpDir . '/contextmap.yaml';
-        file_put_contents($contextMapPath, <<<'YAML'
+        file_put_contents(
+            $contextMapPath,
+            <<<'YAML'
 version: '1.0'
 contexts:
   Booker:
@@ -127,7 +132,9 @@ YAML
 
         // Create context map YAML with a consumes relationship but no valid adapter
         $contextMapPath = $tmpDir . '/contextmap.yaml';
-        file_put_contents($contextMapPath, <<<'YAML'
+        file_put_contents(
+            $contextMapPath,
+            <<<'YAML'
 version: '1.0'
 contexts:
   Hotel:

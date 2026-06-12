@@ -21,35 +21,16 @@ class CheckContextMapCommandTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->tmpDir = sys_get_temp_dir().'/cmcheck_'.uniqid();
+        $this->tmpDir = sys_get_temp_dir() . '/cmcheck_' . uniqid();
         mkdir($this->tmpDir);
-        mkdir($this->tmpDir.'/src');
+        mkdir($this->tmpDir . '/src');
 
         $this->tester = $this->buildTester($this->tmpDir);
-    }
-
-    private function buildTester(string $projectDir): CommandTester
-    {
-        $command = new CheckContextMapCommand(
-            new ContextMapChecker(),
-            new ContextMapConfigLoader(),
-            $projectDir,
-        );
-
-        return new CommandTester($command);
     }
 
     protected function tearDown(): void
     {
         $this->removeDir($this->tmpDir);
-    }
-
-    private function removeDir(string $dir): void
-    {
-        foreach (glob($dir.'/*') ?: [] as $f) {
-            is_dir($f) ? $this->removeDir($f) : unlink($f);
-        }
-        rmdir($dir);
     }
 
     #[Test]
@@ -65,7 +46,7 @@ class CheckContextMapCommandTest extends TestCase
     #[Test]
     public function itReturnsSuccessWhenAllChecksPass(): void
     {
-        file_put_contents($this->tmpDir.'/contextmap.yaml', "contexts: {}\n");
+        file_put_contents($this->tmpDir . '/contextmap.yaml', "contexts: {}\n");
 
         $exitCode = $this->tester->execute([]);
 
@@ -83,11 +64,30 @@ contexts:
             interfaces:
                 - App\Booker\Application\Contract\MissingInterface
 YAML;
-        file_put_contents($this->tmpDir.'/contextmap.yaml', $yaml);
+        file_put_contents($this->tmpDir . '/contextmap.yaml', $yaml);
 
         $exitCode = $this->tester->execute([]);
 
         self::assertSame(Command::FAILURE, $exitCode);
         self::assertStringContainsString('[FAIL]', $this->tester->getDisplay());
+    }
+
+    private function buildTester(string $projectDir): CommandTester
+    {
+        $command = new CheckContextMapCommand(
+            new ContextMapChecker(),
+            new ContextMapConfigLoader(),
+            $projectDir,
+        );
+
+        return new CommandTester($command);
+    }
+
+    private function removeDir(string $dir): void
+    {
+        foreach (glob($dir . '/*') ?: [] as $f) {
+            is_dir($f) ? $this->removeDir($f) : unlink($f);
+        }
+        rmdir($dir);
     }
 }

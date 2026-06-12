@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\ContextMap;
@@ -20,6 +21,7 @@ final class ContextMapChecker
 
         if (!is_array($map) || !isset($map['contexts']) || !is_array($map['contexts'])) {
             $fail[] = 'Invalid contextmap: missing or invalid contexts key';
+
             return ['ok' => $ok, 'fail' => $fail];
         }
 
@@ -92,11 +94,11 @@ final class ContextMapChecker
             new \RecursiveDirectoryIterator($infraDir, \FilesystemIterator::SKIP_DOTS)
         );
         foreach ($it as $file) {
-            if (!$file instanceof \SplFileInfo || $file->getExtension() !== 'php') {
+            if (!$file instanceof \SplFileInfo || 'php' !== $file->getExtension()) {
                 continue;
             }
             $contents = file_get_contents($file->getPathname());
-            if ($contents === false) {
+            if (false === $contents) {
                 continue;
             }
             if (str_contains($contents, 'App\\' . $producer . '\\Application\\Contract\\')) {
