@@ -50,7 +50,7 @@ final class KeycloakUnavailableException extends \RuntimeException {}
 
 - [ ] **Step 3: Add env vars to `.env`**
 
-Append after the existing `KEYCLOACK_CLIENT_SECRET` line:
+Append after the existing `keycloak_CLIENT_SECRET` line:
 
 ```dotenv
 KEYCLOAK_MAX_RETRIES=3
@@ -798,8 +798,8 @@ services:
         arguments:
             $keycloakBaseUrl: '%env(KEYCLOAK_BASE_URL)%'
             $keycloakRealm: '%env(KEYCLOAK_REALM)%'
-            $keycloakClientId: '%env(KEYCLOACK_CLIENT_ID)%'
-            $keycloakClientSecret: '%env(KEYCLOACK_CLIENT_SECRET)%'
+            $keycloakClientId: '%env(keycloak_CLIENT_ID)%'
+            $keycloakClientSecret: '%env(keycloak_CLIENT_SECRET)%'
 
     App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface: '@App\Security\Infrastructure\Keycloak\KeycloakHttpClient'
 

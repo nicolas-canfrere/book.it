@@ -92,14 +92,14 @@ App\Security\Infrastructure\Keycloak\KeycloakHttpClient:
     arguments:
         $keycloakBaseUrl: '%env(KEYCLOAK_BASE_URL)%'
         $keycloakRealm: '%env(KEYCLOAK_REALM)%'
-        $keycloakClientId: '%env(KEYCLOACK_CLIENT_ID)%'
-        $keycloakClientSecret: '%env(KEYCLOACK_CLIENT_SECRET)%'
+        $keycloakClientId: '%env(keycloak_CLIENT_ID)%'
+        $keycloakClientSecret: '%env(keycloak_CLIENT_SECRET)%'
 
 App\Security\Infrastructure\Keycloak\KeycloakAccountRegistrar:
     # no explicit arguments — autowiring resolves KeycloakHttpClient
 ```
 
-The Keycloak connection env vars (`KEYCLOAK_BASE_URL`, `KEYCLOAK_REALM`, `KEYCLOACK_CLIENT_ID`, `KEYCLOACK_CLIENT_SECRET`) migrate from `KeycloakAccountRegistrar` to `KeycloakHttpClient`.
+The Keycloak connection env vars (`KEYCLOAK_BASE_URL`, `KEYCLOAK_REALM`, `keycloak_CLIENT_ID`, `keycloak_CLIENT_SECRET`) migrate from `KeycloakAccountRegistrar` to `KeycloakHttpClient`.
 
 ## Error handling
 

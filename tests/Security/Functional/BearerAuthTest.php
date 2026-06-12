@@ -127,7 +127,7 @@ final class BearerAuthTest extends WebTestCase
     {
         $payload = array_merge([
             'sub' => 'operator-uuid-test',
-            'iss' => 'http://keycloack:8080/realms/bookit',
+            'iss' => 'http://localhost:9000/realms/bookit',
             'iat' => time(),
             'exp' => time() + 3600,
         ], $overrides);

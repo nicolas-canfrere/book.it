@@ -21,8 +21,8 @@ services:
         arguments:
             $keycloakBaseUrl: '%env(KEYCLOAK_BASE_URL)%'
             $keycloakRealm: '%env(KEYCLOAK_REALM)%'
-            $keycloakClientId: '%env(KEYCLOACK_CLIENT_ID)%'
-            $keycloakClientSecret: '%env(KEYCLOACK_CLIENT_SECRET)%'
+            $keycloakClientId: '%env(KEYCLOAK_CLIENT_ID)%'
+            $keycloakClientSecret: '%env(KEYCLOAK_CLIENT_SECRET)%'
 
     App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface: '@App\Security\Infrastructure\Keycloak\KeycloakHttpClient'
 
