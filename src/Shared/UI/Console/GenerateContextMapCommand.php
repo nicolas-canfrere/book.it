@@ -34,8 +34,8 @@ final class GenerateContextMapCommand extends Command
     protected function configure(): void
     {
         $this
-            ->addOption('output-yaml', null, InputOption::VALUE_OPTIONAL, 'Output path for contextmap.yaml (relative to project dir)')
-            ->addOption('output-mermaid', null, InputOption::VALUE_OPTIONAL, 'Output path for context-map.md (relative to project dir)');
+            ->addOption('output-yaml', null, InputOption::VALUE_REQUIRED, 'Output path for contextmap.yaml (relative to project dir)')
+            ->addOption('output-mermaid', null, InputOption::VALUE_REQUIRED, 'Output path for context-map.md (relative to project dir)');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output): int

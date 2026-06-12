@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace App\Tests\ContextMap;
 
 use App\Shared\Infrastructure\ContextMap\ContextMapBuilder;
-use App\Shared\Infrastructure\ContextMap\ContextMapConfig;
 use App\Shared\Infrastructure\ContextMap\ContextMapConfigLoader;
 use App\Shared\Infrastructure\ContextMap\ContractScanner;
 use App\Shared\Infrastructure\ContextMap\DeptracRulesetParser;
@@ -14,7 +13,6 @@ use App\Shared\Infrastructure\ContextMap\YamlWriter;
 use App\Shared\UI\Console\GenerateContextMapCommand;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
-use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Tester\CommandTester;
