@@ -113,3 +113,9 @@ openapi: ## write openapi doc in yaml file at the root directory: openapi.yaml
 
 events: ## Generate domainevents.yaml from registered domain event listeners
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console app:events:catalog
+
+contextmap: ## Generate contextmap.yaml and docs/context-map.md from source
+	$(DOCKER_COMPOSE_RUN) --no-deps php php bin/generate-contextmap.php
+
+contextmap-check: ## Validate contextmap.yaml against source code
+	$(DOCKER_COMPOSE_RUN) --no-deps php php bin/check-contextmap.php

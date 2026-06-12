@@ -1,0 +1,135 @@
+# Generated — do not edit manually. Run: make contextmap
+version: '1.0'
+generated_at: '2026-06-12T05:30:53+00:00'
+contexts:
+  Availability:
+    open_host_services:
+      interfaces:
+        - App\Availability\Application\Contract\AvailabilityCheckerInterface
+      published_language: {  }
+    consumed_by:
+      - Reservation
+    consumes:
+      -
+        context: Room
+  Booker:
+    open_host_services:
+      interfaces:
+        - App\Booker\Application\Contract\BookerFinderInterface
+      published_language:
+        - App\Booker\Application\Contract\BookerView
+    consumed_by:
+      - Notification
+      - Reservation
+    consumes:
+      -
+        context: Security
+  Hotel:
+    open_host_services:
+      interfaces:
+        - App\Hotel\Application\Contract\HotelFinderInterface
+      published_language:
+        - App\Hotel\Application\Contract\HotelView
+    consumed_by:
+      - Room
+    consumes: {  }
+  Notification:
+    open_host_services:
+      interfaces: {  }
+      published_language: {  }
+    consumed_by: {  }
+    consumes:
+      -
+        context: Booker
+      -
+        context: Reservation
+  Operator:
+    open_host_services:
+      interfaces:
+        - App\Operator\Application\Contract\OperatorFinderInterface
+      published_language:
+        - App\Operator\Application\Contract\OperatorView
+    consumed_by:
+      - Security
+    consumes:
+      -
+        context: Security
+  Payment:
+    open_host_services:
+      interfaces: {  }
+      published_language: {  }
+    consumed_by: {  }
+    consumes: {  }
+  Pricing:
+    open_host_services:
+      interfaces:
+        - App\Pricing\Application\Contract\CancellationPolicyFinderInterface
+        - App\Pricing\Application\Contract\PricingQuoteCalculatorInterface
+        - App\Pricing\Application\Contract\PricingQuoteFinderInterface
+      published_language:
+        - App\Pricing\Application\Contract\CancellationPolicyView
+        - App\Pricing\Application\Contract\PricingQuoteView
+    consumed_by:
+      - Reservation
+    consumes:
+      -
+        context: Room
+  Reservation:
+    open_host_services:
+      interfaces:
+        - App\Reservation\Application\Contract\ReservationFinderInterface
+      published_language:
+        - App\Reservation\Application\Contract\ReservationView
+    consumed_by:
+      - Notification
+    consumes:
+      -
+        context: Availability
+      -
+        context: Booker
+      -
+        context: Pricing
+      -
+        context: Room
+  Room:
+    open_host_services:
+      interfaces:
+        - App\Room\Application\Contract\RoomFinderInterface
+      published_language:
+        - App\Room\Application\Contract\RoomView
+    consumed_by:
+      - Availability
+      - Pricing
+      - Reservation
+    consumes:
+      -
+        context: Hotel
+  Search:
+    open_host_services:
+      interfaces: {  }
+      published_language: {  }
+    consumed_by: {  }
+    consumes: {  }
+  Security:
+    open_host_services:
+      interfaces:
+        - App\Security\Application\Contract\AccountRegistrarInterface
+      published_language: {  }
+    consumed_by:
+      - Booker
+      - Operator
+    consumes:
+      -
+        context: Operator
+  Shared:
+    open_host_services:
+      interfaces: {  }
+      published_language: {  }
+    consumed_by: {  }
+    consumes: {  }
+  Translation:
+    open_host_services:
+      interfaces: {  }
+      published_language: {  }
+    consumed_by: {  }
+    consumes: {  }
