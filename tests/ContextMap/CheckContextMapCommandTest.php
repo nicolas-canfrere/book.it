@@ -65,18 +65,17 @@ class CheckContextMapCommandTest extends TestCase
     #[Test]
     public function itReturnsSuccessWhenAllChecksPass(): void
     {
-        // Write a valid contextmap.yaml with no contexts (empty map = all ok, no fails)
         file_put_contents($this->tmpDir.'/contextmap.yaml', "contexts: {}\n");
 
         $exitCode = $this->tester->execute([]);
 
         self::assertSame(Command::SUCCESS, $exitCode);
+        self::assertStringNotContainsString('[FAIL]', $this->tester->getDisplay());
     }
 
     #[Test]
     public function itReturnsFailureWhenChecksHaveFails(): void
     {
-        // Write a contextmap with a context referencing a non-existent class to trigger a fail
         $yaml = <<<YAML
 contexts:
     Booker:
