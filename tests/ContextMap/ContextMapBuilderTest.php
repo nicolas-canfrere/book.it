@@ -87,6 +87,6 @@ class ContextMapBuilderTest extends TestCase
         $result = (new ContextMapBuilder())->build($this->contracts, $this->consumes);
 
         self::assertSame('1.0', $result['version']);
-        self::assertArrayHasKey('generated_at', $result);
+        self::assertNotEmpty($result['generated_at']);
     }
 }

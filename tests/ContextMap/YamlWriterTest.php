@@ -40,7 +40,7 @@ class YamlWriterTest extends TestCase
         $outputPath = tempnam(sys_get_temp_dir(), 'yaml_');
         (new YamlWriter())->write($contextMap, $outputPath);
 
-        $content = file_get_contents($outputPath);
+        $content = (string) file_get_contents($outputPath);
         self::assertStringContainsString('# Generated', $content);
         self::assertStringContainsString('version: \'1.0\'', $content);
         self::assertStringContainsString('Hotel:', $content);

@@ -71,8 +71,6 @@ YAML
         $checker = new ContextMapChecker();
         $result = $checker->check($contextMapPath, $tmpDir);
 
-        self::assertIsArray($result['ok']);
-        self::assertIsArray($result['fail']);
         self::assertGreaterThan(0, count($result['ok']));
 
         // Cleanup
@@ -104,7 +102,6 @@ YAML
         $checker = new ContextMapChecker();
         $result = $checker->check($contextMapPath, $tmpDir);
 
-        self::assertIsArray($result['fail']);
         self::assertCount(1, $result['fail']);
         self::assertStringContainsString('BookerFinderInterface', $result['fail'][0]);
         self::assertStringContainsString('not found', $result['fail'][0]);
@@ -150,7 +147,6 @@ YAML
         $checker = new ContextMapChecker();
         $result = $checker->check($contextMapPath, $tmpDir);
 
-        self::assertIsArray($result['fail']);
         self::assertCount(1, $result['fail']);
         self::assertStringContainsString('Room consumes Hotel', $result['fail'][0]);
         self::assertStringContainsString('no adapter found', $result['fail'][0]);
@@ -169,6 +165,7 @@ YAML
             \RecursiveIteratorIterator::CHILD_FIRST
         );
         foreach ($it as $file) {
+            /** @var \SplFileInfo $file */
             if ($file->isDir()) {
                 rmdir($file->getPathname());
             } else {

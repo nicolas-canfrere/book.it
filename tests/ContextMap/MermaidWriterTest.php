@@ -40,7 +40,7 @@ class MermaidWriterTest extends TestCase
         $outputPath = tempnam(sys_get_temp_dir(), 'mermaid_');
         (new MermaidWriter())->write($contextMap, $outputPath);
 
-        $content = file_get_contents($outputPath);
+        $content = (string) file_get_contents($outputPath);
         self::assertStringContainsString('# Context Map', $content);
         self::assertStringContainsString('```mermaid', $content);
         self::assertStringContainsString('graph LR', $content);
@@ -78,7 +78,7 @@ class MermaidWriterTest extends TestCase
         $outputPath = tempnam(sys_get_temp_dir(), 'mermaid_');
         (new MermaidWriter())->write($contextMap, $outputPath);
 
-        $content = file_get_contents($outputPath);
+        $content = (string) file_get_contents($outputPath);
         self::assertStringContainsString('Consumer -->|Producer| Producer', $content);
 
         unlink($outputPath);
@@ -116,7 +116,7 @@ class MermaidWriterTest extends TestCase
         $outputPath = tempnam(sys_get_temp_dir(), 'mermaid_');
         (new MermaidWriter())->write($contextMap, $outputPath);
 
-        $content = file_get_contents($outputPath);
+        $content = (string) file_get_contents($outputPath);
         self::assertStringContainsString('Consumer -->|FinderInterface, CheckerInterface| Producer', $content);
 
         unlink($outputPath);
