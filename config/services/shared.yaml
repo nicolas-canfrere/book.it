@@ -26,3 +26,11 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    App\Shared\UI\Console\GenerateContextMapCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+
+    App\Shared\UI\Console\CheckContextMapCommand:
+        arguments:
+            $projectDir: '%kernel.project_dir%'
+

@@ -1,0 +1,28 @@
+# contextmap.config.yaml
+# Configuration for app:contextmap:generate and app:contextmap:check
+# All values are optional — remove any key to use the default.
+
+contextmap:
+  # Directory to scan for bounded contexts (relative to project root).
+  # The scanner looks for */Application/Contract/ subdirectories inside src_dir.
+  src_dir: src/
+
+  # Path to the deptrac ruleset file that defines cross-context dependencies
+  # (relative to project root). Used by app:contextmap:generate.
+  deptrac_file: deptrac-contexts.yaml
+
+  # Output path for the generated YAML context map (relative to project root).
+  output_yaml: contextmap.yaml
+
+  # Output path for the generated Mermaid diagram (relative to project root).
+  output_mermaid: docs/context-map.md
+
+  # Bounded context layers to exclude from the context map.
+  # Typically infrastructure or cross-cutting concerns that are not real
+  # domain contexts and would clutter the diagram.
+  excluded_layers:
+    - Shared
+    - Vendor
+    - Payment
+    - Search
+    - Translation
