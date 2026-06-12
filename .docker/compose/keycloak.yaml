@@ -1,7 +1,7 @@
 services:
-    keycloack:
+    keycloak:
         image: ${KEYCLOAK_IMAGE:-quay.io/keycloak/keycloak:latest}
-        container_name: ${KEYCLOAK_CONTAINER_NAME:-keycloack-dev}
+        container_name: ${KEYCLOAK_CONTAINER_NAME:-keycloak-dev}
         command: start-dev --import-realm
         environment:
             KC_DB: ${KEYCLOAK_DB_TYPE}
@@ -16,7 +16,7 @@ services:
         volumes:
             - ./../keycloak/import:/opt/keycloak/data/import:ro
         depends_on:
-            keycloack_database:
+            keycloak_database:
                 condition: service_healthy
         networks:
             - ${NETWORK_NAME:-default-nw}
