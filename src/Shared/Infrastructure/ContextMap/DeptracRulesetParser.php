@@ -17,7 +17,7 @@ final class DeptracRulesetParser
     ): array {
         try {
             $data = Yaml::parseFile($deptracYamlPath);
-        } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+        } catch (\Symfony\Component\Yaml\Exception\ParseException) {
             return [];
         }
         if (!is_array($data)) {
