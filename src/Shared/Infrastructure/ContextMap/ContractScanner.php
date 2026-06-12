@@ -11,7 +11,9 @@ final class ContractScanner
         $result = [];
 
         foreach (glob($srcDir . '/*/Application/Contract') ?: [] as $contractDir) {
-            preg_match('#/([^/]+)/Application/Contract$#', $contractDir, $matches);
+            if (!preg_match('#/([^/]+)/Application/Contract$#', $contractDir, $matches)) {
+                continue;
+            }
             $context = $matches[1];
             $interfaces = [];
             $views = [];
