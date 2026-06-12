@@ -10,7 +10,11 @@ final class ContextMapChecker
     /** @return array{ok: string[], fail: string[]} */
     public function check(string $contextMapPath, string $srcDir): array
     {
-        $map = Yaml::parseFile($contextMapPath);
+        try {
+            $map = Yaml::parseFile($contextMapPath);
+        } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+            return ['ok' => [], 'fail' => ['Invalid YAML in contextmap.yaml: ' . $e->getMessage()]];
+        }
         $ok = [];
         $fail = [];
 

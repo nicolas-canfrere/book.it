@@ -12,6 +12,10 @@ final class YamlWriter
      */
     public function write(array $contextMap, string $outputPath): void
     {
+        $dir = dirname($outputPath);
+        if (!is_dir($dir)) {
+            mkdir($dir, 0755, true);
+        }
         $header = "# Generated — do not edit manually. Run: make contextmap\n";
         file_put_contents($outputPath, $header . Yaml::dump($contextMap, 6, 2));
     }

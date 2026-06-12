@@ -15,7 +15,11 @@ final class DeptracRulesetParser
         string $deptracYamlPath,
         array $excludedLayers = ['Shared', 'Vendor', 'Payment', 'Search', 'Translation'],
     ): array {
-        $data = Yaml::parseFile($deptracYamlPath);
+        try {
+            $data = Yaml::parseFile($deptracYamlPath);
+        } catch (\Symfony\Component\Yaml\Exception\ParseException $e) {
+            return [];
+        }
         if (!is_array($data)) {
             return [];
         }

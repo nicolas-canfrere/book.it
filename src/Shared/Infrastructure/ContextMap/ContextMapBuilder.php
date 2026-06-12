@@ -18,6 +18,10 @@ final class ContextMapBuilder
                 $consumedBy[$producer][] = $consumer;
             }
         }
+        foreach ($consumedBy as &$consumers) {
+            sort($consumers);
+        }
+        unset($consumers);
 
         $allProducers = [];
         foreach ($consumes as $deps) {
@@ -40,7 +44,7 @@ final class ContextMapBuilder
                     'interfaces' => $contracts[$context]['interfaces'] ?? [],
                     'published_language' => $contracts[$context]['published_language'] ?? [],
                 ],
-                'consumed_by' => $consumedBy[$context] ?? [],
+                'consumed_by' => array_values(array_unique($consumedBy[$context] ?? [])),
                 'consumes' => array_map(
                     static fn(string $p): array => ['context' => $p],
                     $consumes[$context] ?? []
