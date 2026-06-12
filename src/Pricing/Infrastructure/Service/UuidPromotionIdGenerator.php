@@ -4,10 +4,10 @@ declare(strict_types=1);
 
 namespace App\Pricing\Infrastructure\Service;
 
-use App\Pricing\Domain\Port\IdGeneratorInterface;
+use App\Pricing\Domain\Port\PromotionIdGeneratorInterface;
 use Symfony\Component\Uid\Uuid;
 
-final class UuidIdGenerator implements IdGeneratorInterface
+final class UuidPromotionIdGenerator implements PromotionIdGeneratorInterface
 {
     public function generate(): string
     {

@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Pricing\Application\Service;
 
 use App\Pricing\Application\UseCase\CreatePromotion\CreatePromotionCommand;
-use App\Pricing\Domain\Port\IdGeneratorInterface;
+use App\Pricing\Domain\Port\PromotionIdGeneratorInterface;
 use Psr\Clock\ClockInterface;
 
 final readonly class CreatePromotionCommandFactory
 {
     public function __construct(
-        private IdGeneratorInterface $idGenerator,
+        private PromotionIdGeneratorInterface $idGenerator,
         private ClockInterface $clock,
     ) {
     }

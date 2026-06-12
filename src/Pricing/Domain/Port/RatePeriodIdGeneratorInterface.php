@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Port;
 
-interface IdGeneratorInterface
+interface RatePeriodIdGeneratorInterface
 {
     public function generate(): string;
 }
