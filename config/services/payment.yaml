@@ -21,3 +21,7 @@ services:
         resource: '../../src/Payment/UI/'
         exclude:
             - '../../src/Payment/UI/**/*Request.php'
+
+    App\Payment\Infrastructure\Security\HmacWebhookAuthenticator:
+        arguments:
+            $secret: '%env(PAYMENT_WEBHOOK_SECRET)%'

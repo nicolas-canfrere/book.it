@@ -3,6 +3,11 @@ security:
         dev:
             pattern: ^/(_profiler|_wdt|assets|build)/
             security: false
+        payment_webhooks:
+            pattern: ^/api/v1/payment/webhooks
+            stateless: true
+            custom_authenticators:
+                - App\Payment\Infrastructure\Security\HmacWebhookAuthenticator
         api:
             pattern: ^/
             stateless: true
@@ -10,6 +15,7 @@ security:
                 - App\Security\Infrastructure\Keycloak\BearerTokenAuthenticator
 
     access_control:
+        - { path: ^/api/v1/payment/webhooks, roles: ROLE_WEBHOOK }
         - { path: ^/api/v1/operators$, roles: ROLE_ADMIN, methods: [POST] }
         - { path: ^/, roles: ROLE_OPERATOR }
 
