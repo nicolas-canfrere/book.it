@@ -104,29 +104,36 @@ All commands run via `make`. Run `make help` for the full list.
 
 Important for test and code analysis use make commands !
 
-| Target                      | Purpose                                            |
-|-----------------------------|----------------------------------------------------|
-| `make test`                 | Run all tests (unit + functional)                  |
-| `make unit-test`            | Unit tests only (no DB)                            |
-| `make functional-test`      | Functional/integration tests (needs DB)            |
-| `make lint`                 | Full analysis: CS Fixer + PHPStan + Deptrac        |
-| `make static-code-analysis` | PHPStan only                                       |
-| `make deptrac`              | Architecture layer check only                      |
-| `make apply-cs`             | Auto-fix coding standards                          |
-| `make openapi`              | Regenerate `openapi.yaml` from route/OA attributes |
-| `make generate-migration`   | Generate a new Doctrine migration                  |
-| `make migrate`              | Run pending migrations                             |
-| `make up` / `make down`     | Start / stop Docker services                       |
+| Target                      | Purpose                                                           |
+|-----------------------------|-------------------------------------------------------------------|
+| `make test`                 | Run all tests (unit + functional)                                 |
+| `make unit-test`            | Unit tests only (no DB)                                           |
+| `make functional-test`      | Functional/integration tests (needs DB)                           |
+| `make lint`                 | Full analysis: CS Fixer + PHPStan + Deptrac                       |
+| `make static-code-analysis` | PHPStan only                                                      |
+| `make deptrac`              | Architecture layer check only                                     |
+| `make apply-cs`             | Auto-fix coding standards                                         |
+| `make fixtures`             | Load fixtures (truncates all tables first)                        |
+| `make generate-docs`        | Regenerate `openapi.yaml`, `domainevents.yaml`, `contextmap.yaml` |
+| `make openapi`              | Regenerate `openapi.yaml` from route/OA attributes                |
+| `make events`               | Regenerate `domainevents.yaml` from registered listeners          |
+| `make contextmap`           | Regenerate `contextmap.yaml` and `docs/context-map.md`            |
+| `make contextmap-check`     | Validate `contextmap.yaml` against source code                    |
+| `make generate-migration`   | Generate a new Doctrine migration                                 |
+| `make migrate`              | Run pending migrations                                            |
+| `make up` / `make down`     | Start / stop Docker services                                      |
 
 ## Reference Documentation
 
-| File | Content | Regenerate |
-|------|---------|------------|
-| `openapi.yaml` | HTTP REST API spec (routes, request/response schemas) | `make openapi` |
-| `asyncapi.yaml` | Async messaging spec (RabbitMQ commands, operations, payloads) | manual |
-| `domainevents.yaml` | Domain event catalogue — all events with properties and listeners per context | `make events` |
+| File                  | Content                                                                       | Regenerate        |
+|-----------------------|-------------------------------------------------------------------------------|-------------------|
+| `openapi.yaml`        | HTTP REST API spec (routes, request/response schemas)                         | `make openapi`    |
+| `asyncapi.yaml`       | Async messaging spec (RabbitMQ commands, operations, payloads)                | manual            |
+| `domainevents.yaml`   | Domain event catalogue — all events with properties and listeners per context | `make events`     |
+| `contextmap.yaml`     | Context map — bounded contexts, relationships, integration patterns           | `make contextmap` |
+| `docs/context-map.md` | Human-readable context map rendered from `contextmap.yaml`                    | `make contextmap` |
 
-Consult these files to understand existing contracts before adding or changing routes, async commands, or domain events.
+Consult these files to understand existing contracts before adding or changing routes, async commands, domain events, or cross-context integrations.
 
 ## Error Handling
 

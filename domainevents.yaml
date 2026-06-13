@@ -1,4 +1,4 @@
-generated_at: '2026-06-01T17:49:22+00:00'
+generated_at: '2026-06-13T04:28:53+00:00'
 events:
   ReservationCancelled:
     class: App\Shared\Domain\Event\ReservationCancelled
@@ -63,18 +63,18 @@ events:
       reservationId: string
     listeners:
       - { context: Availability, class: App\Availability\Infrastructure\EventListener\ReservationPaymentCancelledListener }
-  PaymentConfirmed:
-    class: App\Shared\Domain\Event\PaymentConfirmed
-    properties:
-      reservationId: string
-    listeners:
-      - { context: Reservation, class: App\Reservation\Infrastructure\EventListener\PaymentConfirmedListener }
   PaymentCancelled:
     class: App\Shared\Domain\Event\PaymentCancelled
     properties:
       reservationId: string
     listeners:
       - { context: Reservation, class: App\Reservation\Infrastructure\EventListener\PaymentCancelledListener }
+  PaymentConfirmed:
+    class: App\Shared\Domain\Event\PaymentConfirmed
+    properties:
+      reservationId: string
+    listeners:
+      - { context: Reservation, class: App\Reservation\Infrastructure\EventListener\PaymentConfirmedListener }
   AvailabilityHoldCreated:
     class: App\Shared\Domain\Event\AvailabilityHoldCreated
     properties:
@@ -92,6 +92,13 @@ events:
       reservationId: string
     listeners:
       - { context: Search, class: App\Search\Infrastructure\EventListener\AvailabilityHoldDeletedListener }
+  BaseRateSet:
+    class: App\Shared\Domain\Event\BaseRateSet
+    properties:
+      roomId: string
+      amountCents: int
+    listeners:
+      - { context: Search, class: App\Search\Infrastructure\EventListener\BaseRateSetListener }
   BlockedPeriodCreated:
     class: App\Shared\Domain\Event\BlockedPeriodCreated
     properties:
