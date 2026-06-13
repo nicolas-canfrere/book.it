@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Payment\Infrastructure\Security;
 
+use App\Shared\Infrastructure\Http\ProblemDetail;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -61,6 +62,17 @@ final class HmacWebhookAuthenticator extends AbstractAuthenticator
 
     public function onAuthenticationFailure(Request $request, AuthenticationException $exception): Response
     {
-        return new JsonResponse(['error' => 'Unauthorized'], Response::HTTP_UNAUTHORIZED);
+        $problem = new ProblemDetail(
+            type: 'about:blank',
+            title: 'Unauthorized',
+            status: Response::HTTP_UNAUTHORIZED,
+            detail: 'Invalid or missing webhook signature.',
+        );
+
+        return new JsonResponse(
+            $problem->toArray(),
+            $problem->status,
+            ['Content-Type' => 'application/problem+json'],
+        );
     }
 }
