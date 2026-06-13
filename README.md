@@ -44,28 +44,36 @@ The mail catcher (Mailpit) is available at `http://localhost:8025`.
 
 All development tasks run via `make`. Run `make help` for the full list.
 
-| Command                   | Description                                              |
-|---------------------------|----------------------------------------------------------|
-| `make up`                 | Start all services                                       |
-| `make down`               | Stop all services                                        |
-| `make install`            | Install PHP dependencies                                 |
-| `make migrate`            | Run database migrations                                  |
-| `make generate-migration` | Generate a new migration from schema diff                |
-| `make lint`               | Run PHPStan + PHP CS Fixer + deptrac                     |
-| `make apply-cs`           | Auto-fix coding style                                    |
-| `make test`               | Run all tests (unit + functional)                        |
-| `make unit-test`          | Run unit tests only                                      |
-| `make functional-test`    | Run functional/integration tests only                    |
-| `make openapi`            | Regenerate `openapi.yaml` from route attributes          |
-| `make events`             | Regenerate `domainevents.yaml` from registered listeners |
+| Command                      | Description                                                              |
+|------------------------------|--------------------------------------------------------------------------|
+| `make up`                    | Start all services                                                       |
+| `make down`                  | Stop all services                                                        |
+| `make install`               | Install PHP dependencies                                                 |
+| `make fixtures`              | Load fixtures (truncates all tables first)                               |
+| `make migrate`               | Run database migrations                                                  |
+| `make generate-migration`    | Generate a new migration from schema diff                                |
+| `make lint`                  | Full analysis: PHP CS Fixer + PHPStan + deptrac                          |
+| `make static-code-analysis`  | PHPStan only                                                             |
+| `make deptrac`               | Architecture layer check only (layers + bounded context boundaries)      |
+| `make apply-cs`              | Auto-fix coding style                                                    |
+| `make test`                  | Run all tests (unit + functional)                                        |
+| `make unit-test`             | Run unit tests only                                                      |
+| `make functional-test`       | Run functional/integration tests only                                    |
+| `make generate-docs`         | Regenerate `openapi.yaml`, `domainevents.yaml`, and `contextmap.yaml`    |
+| `make openapi`               | Regenerate `openapi.yaml` from route attributes                          |
+| `make events`                | Regenerate `domainevents.yaml` from registered listeners                 |
+| `make contextmap`            | Regenerate `contextmap.yaml` and `docs/context-map.md` from source       |
+| `make contextmap-check`      | Validate `contextmap.yaml` against source code                           |
 
 ## Documentation
 
-| File                                     | Content                                                                                                                     |
-|------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
-| [`openapi.yaml`](openapi.yaml)           | REST API specification — routes, request/response schemas. Regenerate with `make openapi`.                                  |
-| [`asyncapi.yaml`](asyncapi.yaml)         | Async messaging specification — RabbitMQ commands, producers, consumers, and payloads. Updated manually.                    |
-| [`domainevents.yaml`](domainevents.yaml) | Domain event catalogue — all events with their properties and listeners per bounded context. Regenerate with `make events`. |
+| File                                               | Content                                                                                                                     |
+|----------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------|
+| [`openapi.yaml`](openapi.yaml)                     | REST API specification — routes, request/response schemas. Regenerate with `make openapi`.                                  |
+| [`asyncapi.yaml`](asyncapi.yaml)                   | Async messaging specification — RabbitMQ commands, producers, consumers, and payloads. Updated manually.                    |
+| [`domainevents.yaml`](domainevents.yaml)           | Domain event catalogue — all events with their properties and listeners per bounded context. Regenerate with `make events`. |
+| [`contextmap.yaml`](contextmap.yaml)               | Context map — bounded contexts, their relationships, and integration patterns. Regenerate with `make contextmap`.           |
+| [`docs/context-map.md`](docs/context-map.md)       | Human-readable context map rendered from `contextmap.yaml`. Regenerate with `make contextmap`.                              |
 
 The REST API follows [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) (`application/problem+json`) for all error responses. Interactive API documentation is available at `http://localhost/api/doc` when the stack is running.
 

@@ -117,5 +117,7 @@ events: ## Generate domainevents.yaml from registered domain event listeners
 contextmap: ## Generate contextmap.yaml and docs/context-map.md from source
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console app:contextmap:generate
 
+generate-docs: openapi events contextmap ## generate openapi doc, domainevents doc and contextmap doc
+
 contextmap-check: ## Validate contextmap.yaml against source code
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console app:contextmap:check
