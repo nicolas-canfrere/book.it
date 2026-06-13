@@ -6,6 +6,7 @@ namespace App\Tests\Payment\Integration\UseCase\HandlePaymentCancellation;
 
 use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommand;
 use App\Payment\Application\UseCase\HandlePaymentCancellation\HandlePaymentCancellationCommandHandler;
+use App\Payment\Domain\Port\ProcessedWebhookEventRepositoryInterface;
 use App\Shared\Domain\Event\PaymentCancelled;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -37,8 +38,15 @@ final class HandlePaymentCancellationCommandHandlerTest extends KernelTestCase
             }
         };
 
-        $handler = new HandlePaymentCancellationCommandHandler($dispatcher);
-        ($handler)(new HandlePaymentCancellationCommand('res-001'));
+        $repository = new class() implements ProcessedWebhookEventRepositoryInterface {
+            public function record(string $eventId): bool
+            {
+                return true;
+            }
+        };
+
+        $handler = new HandlePaymentCancellationCommandHandler($dispatcher, $repository);
+        ($handler)(new HandlePaymentCancellationCommand('res-001', 'event-001'));
 
         self::assertCount(1, $dispatched);
         self::assertEquals(new PaymentCancelled('res-001'), $dispatched[0]);

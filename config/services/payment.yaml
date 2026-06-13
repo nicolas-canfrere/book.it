@@ -22,6 +22,9 @@ services:
         exclude:
             - '../../src/Payment/UI/**/*Request.php'
 
+    App\Payment\Domain\Port\ProcessedWebhookEventRepositoryInterface:
+        alias: App\Payment\Infrastructure\Persistence\DoctrineProcessedWebhookEventRepository
+
     App\Payment\Infrastructure\Security\HmacWebhookAuthenticator:
         arguments:
             $secret: '%env(PAYMENT_WEBHOOK_SECRET)%'
