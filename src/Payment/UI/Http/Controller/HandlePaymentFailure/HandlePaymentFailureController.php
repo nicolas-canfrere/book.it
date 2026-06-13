@@ -23,8 +23,11 @@ final readonly class HandlePaymentFailureController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['reservation_id'],
-                properties: [new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid')],
+                required: ['reservation_id', 'event_id'],
+                properties: [
+                    new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid'),
+                    new OA\Property(property: 'event_id', type: 'string', format: 'uuid'),
+                ],
             ),
         ),
         tags: ['Payment'],
@@ -38,7 +41,7 @@ final readonly class HandlePaymentFailureController
         #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         HandlePaymentFailureRequest $request,
     ): Response {
-        $this->commandBus->execute(new HandlePaymentFailureCommand($request->reservationId));
+        $this->commandBus->execute(new HandlePaymentFailureCommand($request->reservationId, $request->eventId));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
