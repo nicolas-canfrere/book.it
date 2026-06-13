@@ -97,7 +97,7 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
     protected static function postWebhookSigned(KernelBrowser $client, string $url, array $body): void
     {
         $content = json_encode($body, \JSON_THROW_ON_ERROR);
-        $secret = $_ENV['PAYMENT_WEBHOOK_SECRET'] ?? 'test-webhook-secret';
+        $secret = \is_string($_ENV['PAYMENT_WEBHOOK_SECRET'] ?? null) ? $_ENV['PAYMENT_WEBHOOK_SECRET'] : 'test-webhook-secret';
         $timestamp = time();
         $hmac = hash_hmac('sha256', $timestamp . "\n" . $content, $secret);
 

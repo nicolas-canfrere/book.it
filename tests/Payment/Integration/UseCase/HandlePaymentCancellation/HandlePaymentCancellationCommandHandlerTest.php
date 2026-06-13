@@ -38,7 +38,7 @@ final class HandlePaymentCancellationCommandHandlerTest extends KernelTestCase
             }
         };
 
-        $repository = new class() implements ProcessedWebhookEventRepositoryInterface {
+        $repository = new class implements ProcessedWebhookEventRepositoryInterface {
             public function record(string $eventId): bool
             {
                 return true;

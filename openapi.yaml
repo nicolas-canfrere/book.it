@@ -2082,8 +2082,12 @@ paths:
             schema:
               required:
                 - reservation_id
+                - event_id
               properties:
                 reservation_id:
+                  type: string
+                  format: uuid
+                event_id:
                   type: string
                   format: uuid
               type: object
@@ -2111,8 +2115,12 @@ paths:
             schema:
               required:
                 - reservation_id
+                - event_id
               properties:
                 reservation_id:
+                  type: string
+                  format: uuid
+                event_id:
                   type: string
                   format: uuid
               type: object
@@ -2140,8 +2148,12 @@ paths:
             schema:
               required:
                 - reservation_id
+                - event_id
               properties:
                 reservation_id:
+                  type: string
+                  format: uuid
+                event_id:
                   type: string
                   format: uuid
               type: object
@@ -3011,16 +3023,25 @@ components:
         reservation_id:
           type: string
           default: ''
+        event_id:
+          type: string
+          default: ''
       type: object
     HandlePaymentFailureRequest:
       properties:
         reservation_id:
           type: string
           default: ''
+        event_id:
+          type: string
+          default: ''
       type: object
     HandlePaymentSuccessRequest:
       properties:
         reservation_id:
+          type: string
+          default: ''
+        event_id:
           type: string
           default: ''
       type: object

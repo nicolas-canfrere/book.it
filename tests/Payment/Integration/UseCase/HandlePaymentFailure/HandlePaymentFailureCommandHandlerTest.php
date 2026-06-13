@@ -17,7 +17,7 @@ final class HandlePaymentFailureCommandHandlerTest extends KernelTestCase
     #[Test]
     public function itDoesNothingAndDoesNotThrow(): void
     {
-        $repository = new class() implements ProcessedWebhookEventRepositoryInterface {
+        $repository = new class implements ProcessedWebhookEventRepositoryInterface {
             public function record(string $eventId): bool
             {
                 return true;
