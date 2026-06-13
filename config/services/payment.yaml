@@ -21,3 +21,17 @@ services:
         resource: '../../src/Payment/UI/'
         exclude:
             - '../../src/Payment/UI/**/*Request.php'
+
+    App\Payment\Domain\Port\ProcessedWebhookEventRepositoryInterface:
+        alias: App\Payment\Infrastructure\Persistence\DoctrineProcessedWebhookEventRepository
+
+    App\Payment\Infrastructure\Security\HmacWebhookAuthenticator:
+        arguments:
+            $secret: '%env(PAYMENT_WEBHOOK_SECRET)%'
+
+    bookit.doctrine.middleware.search_path.payment:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'payment'
+        tags:
+            - {name: doctrine.middleware, connection: payment}

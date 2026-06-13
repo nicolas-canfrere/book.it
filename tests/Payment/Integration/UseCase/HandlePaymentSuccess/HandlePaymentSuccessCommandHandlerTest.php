@@ -6,6 +6,7 @@ namespace App\Tests\Payment\Integration\UseCase\HandlePaymentSuccess;
 
 use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCommand;
 use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCommandHandler;
+use App\Payment\Domain\Port\ProcessedWebhookEventRepositoryInterface;
 use App\Shared\Domain\Event\PaymentConfirmed;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -37,8 +38,15 @@ final class HandlePaymentSuccessCommandHandlerTest extends KernelTestCase
             }
         };
 
-        $handler = new HandlePaymentSuccessCommandHandler($dispatcher);
-        ($handler)(new HandlePaymentSuccessCommand('res-001'));
+        $repository = new class implements ProcessedWebhookEventRepositoryInterface {
+            public function record(string $eventId): bool
+            {
+                return true;
+            }
+        };
+
+        $handler = new HandlePaymentSuccessCommandHandler($dispatcher, $repository);
+        ($handler)(new HandlePaymentSuccessCommand('res-001', 'event-001'));
 
         self::assertCount(1, $dispatched);
         self::assertEquals(new PaymentConfirmed('res-001'), $dispatched[0]);

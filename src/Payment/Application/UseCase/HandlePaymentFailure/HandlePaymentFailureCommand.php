@@ -8,7 +8,9 @@ use App\Shared\Application\Bus\SyncCommandInterface;
 
 final readonly class HandlePaymentFailureCommand implements SyncCommandInterface
 {
-    public function __construct(public string $reservationId)
-    {
+    public function __construct(
+        public string $reservationId,
+        public string $eventId,
+    ) {
     }
 }

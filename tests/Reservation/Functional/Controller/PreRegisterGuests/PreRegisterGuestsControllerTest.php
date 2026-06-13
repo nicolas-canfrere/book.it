@@ -165,12 +165,10 @@ final class PreRegisterGuestsControllerTest extends AuthenticatedWebTestCase
 
     private function confirmReservation(KernelBrowser $client, string $reservationId): void
     {
-        $client->request(
-            method: 'POST',
-            uri: '/api/v1/payment/webhooks/success',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['reservation_id' => $reservationId], \JSON_THROW_ON_ERROR),
-        );
+        self::postWebhookSigned($client, '/api/v1/payment/webhooks/success', [
+            'reservation_id' => $reservationId,
+            'event_id' => \Symfony\Component\Uid\Uuid::v4()->toRfc4122(),
+        ]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }

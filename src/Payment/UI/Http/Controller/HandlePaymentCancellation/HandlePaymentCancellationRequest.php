@@ -14,6 +14,10 @@ final readonly class HandlePaymentCancellationRequest
         #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
         #[SerializedName('reservation_id')]
         public string $reservationId = '',
+        #[Assert\NotBlank]
+        #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
+        #[SerializedName('event_id')]
+        public string $eventId = '',
     ) {
     }
 }

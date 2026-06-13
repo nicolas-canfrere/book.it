@@ -23,8 +23,11 @@ final readonly class HandlePaymentCancellationController
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(
-                required: ['reservation_id'],
-                properties: [new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid')],
+                required: ['reservation_id', 'event_id'],
+                properties: [
+                    new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid'),
+                    new OA\Property(property: 'event_id', type: 'string', format: 'uuid'),
+                ],
             ),
         ),
         tags: ['Payment'],
@@ -32,13 +35,14 @@ final readonly class HandlePaymentCancellationController
             new OA\Response(response: 204, description: 'Acknowledged'),
             new OA\Response(response: 422, description: 'Validation error'),
             new OA\Response(response: Response::HTTP_UNSUPPORTED_MEDIA_TYPE, description: 'Unsupported media type', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
+            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Invalid or missing webhook signature', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
         ],
     )]
     public function __invoke(
         #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         HandlePaymentCancellationRequest $request,
     ): Response {
-        $this->commandBus->execute(new HandlePaymentCancellationCommand($request->reservationId));
+        $this->commandBus->execute(new HandlePaymentCancellationCommand($request->reservationId, $request->eventId));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }
