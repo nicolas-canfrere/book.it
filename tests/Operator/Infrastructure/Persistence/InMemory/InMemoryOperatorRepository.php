@@ -14,7 +14,7 @@ final class InMemoryOperatorRepository implements OperatorRepositoryInterface
 
     public function add(Operator $operator): void
     {
-        $this->operators[$operator->id] = $operator;
+        $this->operators[$operator->id->value] = $operator;
     }
 
     public function existsByEmail(string $email): bool

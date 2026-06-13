@@ -77,7 +77,7 @@ final readonly class RegisterOperatorController
         $this->commandBus->execute($command);
 
         return new JsonResponse([
-            'id' => $command->id,
+            'id' => $command->id->value,
             'firstName' => $command->firstName,
             'lastName' => $command->lastName,
             'email' => $command->email,

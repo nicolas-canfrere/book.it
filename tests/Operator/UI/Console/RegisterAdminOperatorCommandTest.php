@@ -10,6 +10,7 @@ use App\Operator\Application\UseCase\RegisterOperator\RegisterOperatorCommand;
 use App\Operator\Domain\Port\OperatorIdGeneratorInterface;
 use App\Operator\UI\Console\RegisterAdminOperatorCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\OperatorId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -42,7 +43,7 @@ final class RegisterAdminOperatorCommandTest extends TestCase
     public function itDispatchesRegisterThenAssignAdminRole(): void
     {
         $now = new \DateTimeImmutable();
-        $this->idGenerator->expects(self::once())->method('generate')->willReturn('uuid-1');
+        $this->idGenerator->expects(self::once())->method('generate')->willReturn(new OperatorId('uuid-1'));
         $this->clock->expects(self::once())->method('now')->willReturn($now);
 
         $dispatchedCommands = [];
@@ -62,7 +63,7 @@ final class RegisterAdminOperatorCommandTest extends TestCase
 
         self::assertSame(0, $this->tester->getStatusCode());
         self::assertInstanceOf(RegisterOperatorCommand::class, $dispatchedCommands[0]);
-        self::assertSame('uuid-1', $dispatchedCommands[0]->id);
+        self::assertEquals(new OperatorId('uuid-1'), $dispatchedCommands[0]->id);
         self::assertSame('Alice', $dispatchedCommands[0]->firstName);
         self::assertSame('Martin', $dispatchedCommands[0]->lastName);
         self::assertSame('alice@hotel.com', $dispatchedCommands[0]->email);
@@ -70,7 +71,7 @@ final class RegisterAdminOperatorCommandTest extends TestCase
         self::assertSame('SecurePass123!', $dispatchedCommands[0]->password);
         self::assertSame($now, $dispatchedCommands[0]->registeredAt);
         self::assertInstanceOf(AssignAdminRoleToOperatorCommand::class, $dispatchedCommands[1]);
-        self::assertSame('uuid-1', $dispatchedCommands[1]->operatorId);
+        self::assertEquals(new OperatorId('uuid-1'), $dispatchedCommands[1]->operatorId);
         $display = $this->tester->getDisplay();
         self::assertStringContainsString('alice@hotel.com', $display);
         self::assertStringContainsString('uuid-1', $display);

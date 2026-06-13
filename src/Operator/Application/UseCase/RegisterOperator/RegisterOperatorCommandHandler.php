@@ -39,7 +39,7 @@ final readonly class RegisterOperatorCommandHandler implements SyncCommandHandle
             ));
         } catch (\Throwable $e) {
             $this->logger->error('Operator persistence failed after account creation — compensating', [
-                'operator_id' => $command->id,
+                'operator_id' => $command->id->value,
                 'email' => $command->email,
                 'error' => $e->getMessage(),
             ]);
@@ -48,7 +48,7 @@ final readonly class RegisterOperatorCommandHandler implements SyncCommandHandle
         }
 
         $this->logger->info('Operator registered', [
-            'operator_id' => $command->id,
+            'operator_id' => $command->id->value,
             'email' => $command->email,
         ]);
     }

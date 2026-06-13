@@ -18,7 +18,7 @@ final readonly class OperatorRepository implements OperatorRepositoryInterface
     public function add(Operator $operator): void
     {
         $this->operatorConnection->insert('operator', [
-            'id' => $operator->id,
+            'id' => $operator->id->value,
             'first_name' => $operator->firstName,
             'last_name' => $operator->lastName,
             'email' => $operator->email,
