@@ -15,6 +15,8 @@ final readonly class HandlePaymentFailureCommandHandler implements SyncCommandHa
 
     public function __invoke(HandlePaymentFailureCommand $command): void
     {
-        $this->processedEvents->record($command->eventId);
+        if (!$this->processedEvents->record($command->eventId)) {
+            return;
+        }
     }
 }
