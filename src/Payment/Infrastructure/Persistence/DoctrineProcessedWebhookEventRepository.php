@@ -16,14 +16,19 @@ final readonly class DoctrineProcessedWebhookEventRepository implements Processe
 
     public function record(string $eventId): bool
     {
+        $this->bookitConnection->beginTransaction();
+
         try {
             $this->bookitConnection->executeStatement(
                 'INSERT INTO payment.webhook_events (event_id, processed_at) VALUES (:id, NOW())',
                 ['id' => $eventId],
             );
+            $this->bookitConnection->commit();
 
             return true;
         } catch (UniqueConstraintViolationException) {
+            $this->bookitConnection->rollBack();
+
             return false;
         }
     }

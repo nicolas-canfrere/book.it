@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace App\Tests\Payment\Functional\Controller;
 
+use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\KernelBrowser;
@@ -46,6 +47,51 @@ final class PaymentWebhookControllerTest extends WebTestCase
             'event_id' => '550e8400-e29b-41d4-a716-446655440004',
         ]);
         self::assertResponseStatusCodeSame(204);
+    }
+
+    #[Test]
+    public function itSuccessWebhookIsIdempotentForSameEventId(): void
+    {
+        $client = static::createClient();
+        $payload = ['reservation_id' => self::RESERVATION_ID, 'event_id' => '550e8400-e29b-41d4-a716-446655440010'];
+
+        $this->postSigned($client, '/api/v1/payment/webhooks/success', $payload);
+        self::assertResponseStatusCodeSame(204);
+
+        $this->postSigned($client, '/api/v1/payment/webhooks/success', $payload);
+        self::assertResponseStatusCodeSame(204);
+
+        self::assertSame(1, $this->countWebhookEvent($client, '550e8400-e29b-41d4-a716-446655440010'));
+    }
+
+    #[Test]
+    public function itFailedWebhookIsIdempotentForSameEventId(): void
+    {
+        $client = static::createClient();
+        $payload = ['reservation_id' => self::RESERVATION_ID, 'event_id' => '550e8400-e29b-41d4-a716-446655440011'];
+
+        $this->postSigned($client, '/api/v1/payment/webhooks/failed', $payload);
+        self::assertResponseStatusCodeSame(204);
+
+        $this->postSigned($client, '/api/v1/payment/webhooks/failed', $payload);
+        self::assertResponseStatusCodeSame(204);
+
+        self::assertSame(1, $this->countWebhookEvent($client, '550e8400-e29b-41d4-a716-446655440011'));
+    }
+
+    #[Test]
+    public function itCancelWebhookIsIdempotentForSameEventId(): void
+    {
+        $client = static::createClient();
+        $payload = ['reservation_id' => self::RESERVATION_ID, 'event_id' => '550e8400-e29b-41d4-a716-446655440012'];
+
+        $this->postSigned($client, '/api/v1/payment/webhooks/cancel', $payload);
+        self::assertResponseStatusCodeSame(204);
+
+        $this->postSigned($client, '/api/v1/payment/webhooks/cancel', $payload);
+        self::assertResponseStatusCodeSame(204);
+
+        self::assertSame(1, $this->countWebhookEvent($client, '550e8400-e29b-41d4-a716-446655440012'));
     }
 
     #[Test]
@@ -98,6 +144,20 @@ final class PaymentWebhookControllerTest extends WebTestCase
             content: $body,
         );
         self::assertResponseStatusCodeSame(401);
+    }
+
+    private function countWebhookEvent(KernelBrowser $client, string $eventId): int
+    {
+        /** @var Connection $connection */
+        $connection = $client->getContainer()->get('doctrine.dbal.bookit_connection');
+
+        /** @var string|int $count */
+        $count = $connection->fetchOne(
+            'SELECT COUNT(*) FROM payment.webhook_events WHERE event_id = :id',
+            ['id' => $eventId],
+        );
+
+        return (int) $count;
     }
 
     /** @param array<string, string> $body */
