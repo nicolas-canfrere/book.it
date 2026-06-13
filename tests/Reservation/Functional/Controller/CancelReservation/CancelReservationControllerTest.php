@@ -97,12 +97,10 @@ final class CancelReservationControllerTest extends AuthenticatedWebTestCase
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         $reservationId = $body['id'];
 
-        $client->request(
-            method: 'POST',
-            uri: '/api/v1/payment/webhooks/success',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['reservation_id' => $reservationId], \JSON_THROW_ON_ERROR),
-        );
+        self::postWebhookSigned($client, '/api/v1/payment/webhooks/success', [
+            'reservation_id' => $reservationId,
+            'event_id' => \Symfony\Component\Uid\Uuid::v4()->toRfc4122(),
+        ]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 
@@ -132,12 +130,10 @@ final class CancelReservationControllerTest extends AuthenticatedWebTestCase
         $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         $reservationId = $body['id'];
 
-        $client->request(
-            method: 'POST',
-            uri: '/api/v1/payment/webhooks/cancel',
-            server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['reservation_id' => $reservationId], \JSON_THROW_ON_ERROR),
-        );
+        self::postWebhookSigned($client, '/api/v1/payment/webhooks/cancel', [
+            'reservation_id' => $reservationId,
+            'event_id' => \Symfony\Component\Uid\Uuid::v4()->toRfc4122(),
+        ]);
 
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
 

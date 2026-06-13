@@ -92,4 +92,23 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
 
         return $client;
     }
+
+    /** @param array<string, string> $body */
+    protected static function postWebhookSigned(KernelBrowser $client, string $url, array $body): void
+    {
+        $content = json_encode($body, \JSON_THROW_ON_ERROR);
+        $secret = $_ENV['PAYMENT_WEBHOOK_SECRET'] ?? 'test-webhook-secret';
+        $timestamp = time();
+        $hmac = hash_hmac('sha256', $timestamp . "\n" . $content, $secret);
+
+        $client->request(
+            method: 'POST',
+            uri: $url,
+            server: [
+                'CONTENT_TYPE' => 'application/json',
+                'HTTP_X_WEBHOOK_SIGNATURE' => "t={$timestamp},v1={$hmac}",
+            ],
+            content: $content,
+        );
+    }
 }
