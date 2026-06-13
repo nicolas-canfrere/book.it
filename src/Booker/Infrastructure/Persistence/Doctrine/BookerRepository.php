@@ -6,6 +6,7 @@ namespace App\Booker\Infrastructure\Persistence\Doctrine;
 
 use App\Booker\Domain\Model\Booker;
 use App\Booker\Domain\Port\BookerRepositoryInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use Doctrine\DBAL\Connection;
 
 final readonly class BookerRepository implements BookerRepositoryInterface
@@ -18,7 +19,7 @@ final readonly class BookerRepository implements BookerRepositoryInterface
     public function add(Booker $booker): void
     {
         $this->bookerConnection->insert('booker', [
-            'id' => $booker->id,
+            'id' => (string) $booker->id,
             'first_name' => $booker->firstName,
             'last_name' => $booker->lastName,
             'email' => $booker->email,
@@ -28,12 +29,12 @@ final readonly class BookerRepository implements BookerRepositoryInterface
         ]);
     }
 
-    public function get(string $id): ?Booker
+    public function get(BookerId $id): ?Booker
     {
         /** @var array{id: string, first_name: string, last_name: string, email: string, phone: string, date_of_birth: string, registered_at: string}|false $row */
         $row = $this->bookerConnection->fetchAssociative(
             'SELECT id, first_name, last_name, email, phone, date_of_birth, registered_at FROM booker WHERE id = :id',
-            ['id' => $id],
+            ['id' => (string) $id],
         );
 
         if (false === $row) {
@@ -41,7 +42,7 @@ final readonly class BookerRepository implements BookerRepositoryInterface
         }
 
         return new Booker(
-            $row['id'],
+            new BookerId($row['id']),
             $row['first_name'],
             $row['last_name'],
             $row['email'],

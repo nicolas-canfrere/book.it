@@ -6,6 +6,7 @@ namespace App\Tests\Booker\Infrastructure\Persistence\InMemory;
 
 use App\Booker\Domain\Model\Booker;
 use App\Booker\Domain\Port\BookerRepositoryInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 
 final class InMemoryBookerRepository implements BookerRepositoryInterface
 {
@@ -14,12 +15,12 @@ final class InMemoryBookerRepository implements BookerRepositoryInterface
 
     public function add(Booker $booker): void
     {
-        $this->bookers[$booker->id] = $booker;
+        $this->bookers[$booker->id->value] = $booker;
     }
 
-    public function get(string $id): ?Booker
+    public function get(BookerId $id): ?Booker
     {
-        return $this->bookers[$id] ?? null;
+        return $this->bookers[$id->value] ?? null;
     }
 
     public function existsByEmail(string $email): bool

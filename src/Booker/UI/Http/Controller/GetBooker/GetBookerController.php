@@ -7,6 +7,7 @@ namespace App\Booker\UI\Http\Controller\GetBooker;
 use App\Booker\Application\UseCase\GetBooker\GetBookerQuery;
 use App\Booker\UI\Http\Controller\BookerSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -57,7 +58,7 @@ final readonly class GetBookerController
     )]
     public function __invoke(string $id): Response
     {
-        $query = new GetBookerQuery($id);
+        $query = new GetBookerQuery(new BookerId($id));
         $booker = $this->queryBus->ask($query);
         if (null === $booker) {
             throw new NotFoundHttpException('Booker not found.');

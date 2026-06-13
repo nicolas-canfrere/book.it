@@ -7,6 +7,7 @@ namespace App\Booker\Infrastructure\Contract;
 use App\Booker\Application\Contract\BookerFinderInterface;
 use App\Booker\Application\Contract\BookerView;
 use App\Booker\Domain\Port\BookerRepositoryInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 
 final readonly class DoctrineBookerFinder implements BookerFinderInterface
 {
@@ -16,14 +17,14 @@ final readonly class DoctrineBookerFinder implements BookerFinderInterface
 
     public function find(string $bookerId): ?BookerView
     {
-        $booker = $this->bookerRepository->get($bookerId);
+        $booker = $this->bookerRepository->get(new BookerId($bookerId));
 
         if (null === $booker) {
             return null;
         }
 
         return new BookerView(
-            id: $booker->id,
+            id: (string) $booker->id,
             firstName: $booker->firstName,
             lastName: $booker->lastName,
             email: $booker->email,

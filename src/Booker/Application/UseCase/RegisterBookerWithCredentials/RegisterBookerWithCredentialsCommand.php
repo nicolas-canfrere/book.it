@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Booker\Application\UseCase\RegisterBookerWithCredentials;
 
 use App\Shared\Application\Bus\SyncCommandInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 
 final readonly class RegisterBookerWithCredentialsCommand implements SyncCommandInterface
 {
     public function __construct(
-        public string $id,
+        public BookerId $id,
         public string $firstName,
         public string $lastName,
         public string $email,

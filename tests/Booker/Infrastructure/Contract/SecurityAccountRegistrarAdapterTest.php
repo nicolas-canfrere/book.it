@@ -8,6 +8,7 @@ use App\Booker\Domain\Exception\ExternalAccountCreationException;
 use App\Booker\Infrastructure\Contract\SecurityAccountRegistrarAdapter;
 use App\Security\Application\Contract\AccountRegistrarInterface;
 use App\Security\Application\Contract\AccountRegistrationFailedException;
+use App\Shared\Domain\ValueObject\BookerId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,7 +33,7 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->method('register')
             ->with('booker-id', 'booker', 'email@example.com', 'password');
 
-        $this->adapter->register('booker-id', 'email@example.com', 'password');
+        $this->adapter->register(new BookerId('booker-id'), 'email@example.com', 'password');
     }
 
     #[Test]
@@ -42,7 +43,7 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->method('unregister')
             ->with('booker-id', 'booker');
 
-        $this->adapter->unregister('booker-id');
+        $this->adapter->unregister(new BookerId('booker-id'));
     }
 
     #[Test]
@@ -52,6 +53,6 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->willThrowException(new AccountRegistrationFailedException('email@example.com'));
 
         $this->expectException(ExternalAccountCreationException::class);
-        $this->adapter->register('booker-id', 'email@example.com', 'password');
+        $this->adapter->register(new BookerId('booker-id'), 'email@example.com', 'password');
     }
 }

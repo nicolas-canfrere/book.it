@@ -14,7 +14,7 @@ final class BookerSerializer
     public function serialize(Booker $booker): array
     {
         return [
-            'id' => $booker->id,
+            'id' => $booker->id->value,
             'firstName' => $booker->firstName,
             'lastName' => $booker->lastName,
             'email' => $booker->email,

@@ -8,6 +8,7 @@ use App\Booker\Domain\Exception\ExternalAccountCreationException;
 use App\Booker\Domain\Port\ExternalAccountRegistrarInterface;
 use App\Security\Application\Contract\AccountRegistrarInterface;
 use App\Security\Application\Contract\AccountRegistrationFailedException;
+use App\Shared\Domain\ValueObject\BookerId;
 
 final readonly class SecurityAccountRegistrarAdapter implements ExternalAccountRegistrarInterface
 {
@@ -16,17 +17,17 @@ final readonly class SecurityAccountRegistrarAdapter implements ExternalAccountR
     ) {
     }
 
-    public function register(string $bookerId, string $email, string $password): void
+    public function register(BookerId $bookerId, string $email, string $password): void
     {
         try {
-            $this->accountRegistrar->register($bookerId, 'booker', $email, $password);
+            $this->accountRegistrar->register((string) $bookerId, 'booker', $email, $password);
         } catch (AccountRegistrationFailedException $e) {
             throw new ExternalAccountCreationException($email, $e);
         }
     }
 
-    public function unregister(string $bookerId): void
+    public function unregister(BookerId $bookerId): void
     {
-        $this->accountRegistrar->unregister($bookerId, 'booker');
+        $this->accountRegistrar->unregister((string) $bookerId, 'booker');
     }
 }

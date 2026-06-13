@@ -6,13 +6,12 @@ namespace App\Booker\Application\UseCase\GetBooker;
 
 use App\Booker\Domain\Model\Booker;
 use App\Shared\Application\Bus\SyncQueryInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 
-/**
- * @implements SyncQueryInterface<Booker|null>
- */
+/** @implements SyncQueryInterface<Booker|null> */
 final readonly class GetBookerQuery implements SyncQueryInterface
 {
-    public function __construct(public string $bookerId)
+    public function __construct(public BookerId $bookerId)
     {
     }
 }

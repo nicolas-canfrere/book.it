@@ -33,11 +33,12 @@ final readonly class RegisterBookerWithCredentialsCommandHandler implements Sync
             throw new BookerAlreadyExistsException($command->email);
         }
 
-        $this->accountRegistrar->register($command->id, $command->email, $command->password);
+        $bookerId = $command->id;
+        $this->accountRegistrar->register($bookerId, $command->email, $command->password);
 
         try {
             $this->bookerRepository->add(new Booker(
-                $command->id,
+                $bookerId,
                 $command->firstName,
                 $command->lastName,
                 $command->email,
@@ -47,16 +48,16 @@ final readonly class RegisterBookerWithCredentialsCommandHandler implements Sync
             ));
         } catch (\Throwable $e) {
             $this->logger->error('Booker persistence failed after account creation — compensating', [
-                'booker_id' => $command->id,
+                'booker_id' => $command->id->value,
                 'email' => $command->email,
                 'error' => $e->getMessage(),
             ]);
-            $this->accountRegistrar->unregister($command->id);
+            $this->accountRegistrar->unregister($bookerId);
             throw $e;
         }
 
         $this->logger->info('Booker registered', [
-            'booker_id' => $command->id,
+            'booker_id' => $command->id->value,
             'email' => $command->email,
         ]);
     }

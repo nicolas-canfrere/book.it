@@ -10,6 +10,7 @@ use App\Booker\Domain\Exception\BookerAlreadyExistsException;
 use App\Booker\Domain\Exception\BookerUnderageException;
 use App\Booker\Domain\Port\BookerRepositoryInterface;
 use App\Booker\Domain\Port\ExternalAccountRegistrarInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -63,7 +64,7 @@ final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
         $command = $this->makeCommand();
 
         $this->accountRegistrar->expects(self::once())->method('register');
-        $this->accountRegistrar->expects(self::once())->method('unregister')->with('uuid-1');
+        $this->accountRegistrar->expects(self::once())->method('unregister')->with(new BookerId('uuid-1'));
 
         $this->expectException(\RuntimeException::class);
         ($this->handler)($command);
@@ -77,7 +78,7 @@ final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
 
         $this->accountRegistrar->expects(self::once())
             ->method('register')
-            ->with('uuid-1', 'jean@example.com', 'password123');
+            ->with(new BookerId('uuid-1'), 'jean@example.com', 'password123');
         $this->accountRegistrar->expects(self::never())->method('unregister');
         $this->repository->expects(self::once())->method('add');
 
@@ -91,7 +92,7 @@ final class RegisterBookerWithCredentialsCommandHandlerTest extends TestCase
         string $id = 'uuid-1',
     ): RegisterBookerWithCredentialsCommand {
         return new RegisterBookerWithCredentialsCommand(
-            $id,
+            new BookerId($id),
             'Jean',
             'Dupont',
             $email,
