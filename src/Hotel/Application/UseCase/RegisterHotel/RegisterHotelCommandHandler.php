@@ -30,7 +30,7 @@ final readonly class RegisterHotelCommandHandler implements SyncCommandHandlerIn
         $this->hotelRepository->add($hotel);
 
         $this->eventDispatcher->dispatch(new HotelRegistered(
-            hotelId: $hotel->id,
+            hotelId: $hotel->id->value,
             name: $hotel->name,
             city: $hotel->address->city,
             country: $hotel->address->country,

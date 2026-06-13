@@ -8,6 +8,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
+use App\Shared\Domain\ValueObject\HotelId;
 
 interface HotelRepositoryInterface
 {
@@ -15,7 +16,7 @@ interface HotelRepositoryInterface
 
     public function save(Hotel $hotel): void;
 
-    public function get(string $id): ?Hotel;
+    public function get(HotelId $id): ?Hotel;
 
     public function existsByNameAndAddress(string $name, Address $address): bool;
 

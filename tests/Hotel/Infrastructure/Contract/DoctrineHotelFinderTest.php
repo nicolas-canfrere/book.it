@@ -10,6 +10,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Infrastructure\Contract\DoctrineHotelFinder;
+use App\Shared\Domain\ValueObject\HotelId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -39,7 +40,7 @@ final class DoctrineHotelFinderTest extends TestCase
     public function itReturnsHotelViewWhenHotelExists(): void
     {
         $hotel = new Hotel(
-            id: 'hotel-1',
+            id: new HotelId('hotel-1'),
             name: 'Test Hotel',
             address: new Address('1 rue Test', '75001', 'Paris', 'FR'),
             createdAt: new \DateTimeImmutable(),

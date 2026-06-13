@@ -6,6 +6,7 @@ namespace App\Hotel\Domain\Model;
 
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Domain\ValueObject\HotelId;
 
 final readonly class Hotel
 {
@@ -13,7 +14,7 @@ final readonly class Hotel
      * @param array<HotelAmenity> $amenities
      */
     public function __construct(
-        public string $id,
+        public HotelId $id,
         public string $name,
         public Address $address,
         public \DateTimeImmutable $createdAt,

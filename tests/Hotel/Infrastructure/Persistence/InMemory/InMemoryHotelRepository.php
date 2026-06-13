@@ -9,6 +9,7 @@ use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
+use App\Shared\Domain\ValueObject\HotelId;
 
 final class InMemoryHotelRepository implements HotelRepositoryInterface
 {
@@ -17,17 +18,17 @@ final class InMemoryHotelRepository implements HotelRepositoryInterface
 
     public function add(Hotel $hotel): void
     {
-        $this->hotels[$hotel->id] = $hotel;
+        $this->hotels[$hotel->id->value] = $hotel;
     }
 
     public function save(Hotel $hotel): void
     {
-        $this->hotels[$hotel->id] = $hotel;
+        $this->hotels[$hotel->id->value] = $hotel;
     }
 
-    public function get(string $id): ?Hotel
+    public function get(HotelId $id): ?Hotel
     {
-        return $this->hotels[$id] ?? null;
+        return $this->hotels[$id->value] ?? null;
     }
 
     public function existsByNameAndAddress(string $name, Address $address): bool

@@ -8,6 +8,7 @@ use App\Hotel\Application\UseCase\ListHotels\ListHotelsQuery;
 use App\Hotel\Application\UseCase\ListHotels\ListHotelsQueryHandler;
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -112,7 +113,7 @@ final class ListHotelsQueryHandlerTest extends TestCase
     private function makeHotel(string $id, string $name, string $city, string $country): Hotel
     {
         return new Hotel(
-            $id,
+            new HotelId($id),
             $name,
             new Address('1 rue Test', '75000', $city, $country),
             new \DateTimeImmutable('2024-01-01'),

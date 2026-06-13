@@ -104,7 +104,7 @@ final readonly class RegisterHotelController
         return new JsonResponse(
             $this->hotelSerializer->serialize($hotel),
             Response::HTTP_CREATED,
-            ['Location' => $this->urlGenerator->generate('hotel_get_hotel', ['id' => $command->id])],
+            ['Location' => $this->urlGenerator->generate('hotel_get_hotel', ['id' => $command->id->value])],
         );
     }
 }

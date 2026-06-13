@@ -6,7 +6,6 @@ namespace App\Hotel\Application\UseCase\ClassifyHotel;
 
 use App\Hotel\Domain\Exception\HotelNotFoundException;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
-use App\Hotel\Domain\ValueObject\StarRating;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 use App\Shared\Domain\Event\StarRatingClassified;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -24,18 +23,14 @@ final readonly class ClassifyHotelCommandHandler implements SyncCommandHandlerIn
         $hotel = $this->hotelRepository->get($command->hotelId);
 
         if (null === $hotel) {
-            throw new HotelNotFoundException($command->hotelId);
+            throw new HotelNotFoundException($command->hotelId->value);
         }
 
-        $starRating = null !== $command->stars
-            ? new StarRating($command->stars, $command->superior)
-            : null;
-
-        $this->hotelRepository->save($hotel->withStarRating($starRating));
+        $this->hotelRepository->save($hotel->withStarRating($command->starRating));
 
         $this->eventDispatcher->dispatch(new StarRatingClassified(
-            hotelId: $command->hotelId,
-            starRating: $command->stars,
+            hotelId: $command->hotelId->value,
+            starRating: $command->starRating?->stars,
         ));
     }
 }

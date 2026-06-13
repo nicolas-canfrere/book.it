@@ -10,6 +10,7 @@ use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Domain\ValueObject\HotelId;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\String\Slugger\SluggerInterface;
@@ -25,7 +26,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
     public function add(Hotel $hotel): void
     {
         $this->hotelConnection->insert('hotel', [
-            'id' => $hotel->id,
+            'id' => $hotel->id->value,
             'name' => $hotel->name,
             'street_address' => $hotel->address->streetAddress,
             'postal_code' => $hotel->address->postalCode,
@@ -47,17 +48,17 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
             'amenities' => $this->serializeAmenities($hotel->amenities),
-        ], ['id' => $hotel->id], [
+        ], ['id' => $hotel->id->value], [
             'superior' => Types::BOOLEAN,
         ]);
     }
 
-    public function get(string $id): ?Hotel
+    public function get(HotelId $id): ?Hotel
     {
         /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
         $row = $this->hotelConnection->fetchAssociative(
             'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior, amenities FROM hotel WHERE id = :id',
-            ['id' => $id],
+            ['id' => $id->value],
         );
 
         if (false === $row) {
@@ -136,7 +137,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             : null;
 
         return new Hotel(
-            $row['id'],
+            new HotelId($row['id']),
             $row['name'],
             new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
             new \DateTimeImmutable($row['created_at']),

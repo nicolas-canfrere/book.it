@@ -11,6 +11,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\ValueObject\StarRating;
 use App\Shared\Domain\Event\StarRatingClassified;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -36,9 +37,9 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     {
         $this->repository->add($this->aHotel('hotel-1'));
 
-        ($this->handler)(new ClassifyHotelCommand('hotel-1', 4, false));
+        ($this->handler)(new ClassifyHotelCommand(new HotelId('hotel-1'), new StarRating(4, false)));
 
-        $saved = $this->repository->get('hotel-1');
+        $saved = $this->repository->get(new HotelId('hotel-1'));
         self::assertNotNull($saved);
         self::assertNotNull($saved->starRating);
         self::assertSame(4, $saved->starRating->stars);
@@ -55,9 +56,9 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     {
         $this->repository->add($this->aHotel('hotel-1'));
 
-        ($this->handler)(new ClassifyHotelCommand('hotel-1', 5, true));
+        ($this->handler)(new ClassifyHotelCommand(new HotelId('hotel-1'), new StarRating(5, true)));
 
-        $saved = $this->repository->get('hotel-1');
+        $saved = $this->repository->get(new HotelId('hotel-1'));
         self::assertNotNull($saved);
         self::assertNotNull($saved->starRating);
         self::assertSame(5, $saved->starRating->stars);
@@ -75,9 +76,9 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
         $hotel = $this->aHotel('hotel-1')->withStarRating(new StarRating(3, false));
         $this->repository->add($hotel);
 
-        ($this->handler)(new ClassifyHotelCommand('hotel-1', null, false));
+        ($this->handler)(new ClassifyHotelCommand(new HotelId('hotel-1'), null));
 
-        $saved = $this->repository->get('hotel-1');
+        $saved = $this->repository->get(new HotelId('hotel-1'));
         self::assertNotNull($saved);
         self::assertNull($saved->starRating);
 
@@ -91,7 +92,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     public function itItThrowsWhenHotelNotFound(): void
     {
         try {
-            ($this->handler)(new ClassifyHotelCommand('unknown-id', 3, false));
+            ($this->handler)(new ClassifyHotelCommand(new HotelId('unknown-id'), new StarRating(3, false)));
             self::fail('Expected HotelNotFoundException was not thrown');
         } catch (HotelNotFoundException) {
             // expected
@@ -103,7 +104,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
     private function aHotel(string $id = 'e4e1c9b0-1234-4a2b-9c3f-aabbccddeeff'): Hotel
     {
         return new Hotel(
-            $id,
+            new HotelId($id),
             'Hotel Test',
             new Address('1 rue Test', '75001', 'Paris', 'FR'),
             new \DateTimeImmutable('2025-01-01'),

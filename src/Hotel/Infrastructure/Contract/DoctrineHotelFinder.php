@@ -7,6 +7,7 @@ namespace App\Hotel\Infrastructure\Contract;
 use App\Hotel\Application\Contract\HotelFinderInterface;
 use App\Hotel\Application\Contract\HotelView;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 
 final readonly class DoctrineHotelFinder implements HotelFinderInterface
 {
@@ -16,12 +17,12 @@ final readonly class DoctrineHotelFinder implements HotelFinderInterface
 
     public function find(string $hotelId): ?HotelView
     {
-        $hotel = $this->hotelRepository->get($hotelId);
+        $hotel = $this->hotelRepository->get(new HotelId($hotelId));
 
         if (null === $hotel) {
             return null;
         }
 
-        return new HotelView(id: $hotel->id);
+        return new HotelView(id: $hotel->id->value);
     }
 }

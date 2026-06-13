@@ -6,6 +6,7 @@ namespace App\Tests\Hotel\Application\Service;
 
 use App\Hotel\Application\Service\RegisterHotelCommandFactory;
 use App\Hotel\Domain\Port\HotelIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,7 +21,7 @@ final class RegisterHotelCommandFactoryTest extends TestCase
     protected function setUp(): void
     {
         $idGenerator = $this->createStub(HotelIdGeneratorInterface::class);
-        $idGenerator->method('generate')->willReturn(Uuid::v7()->toRfc4122());
+        $idGenerator->method('generate')->willReturn(new HotelId(Uuid::v7()->toRfc4122()));
 
         $clock = $this->createStub(ClockInterface::class);
         $clock->method('now')->willReturn(new \DateTimeImmutable());

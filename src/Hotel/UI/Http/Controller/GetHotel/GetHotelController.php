@@ -7,6 +7,7 @@ namespace App\Hotel\UI\Http\Controller\GetHotel;
 use App\Hotel\Application\UseCase\GetHotel\GetHotelQuery;
 use App\Hotel\UI\Http\Controller\HotelSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -71,7 +72,7 @@ final readonly class GetHotelController
     )]
     public function __invoke(string $id): Response
     {
-        $hotel = $this->queryBus->ask(new GetHotelQuery($id));
+        $hotel = $this->queryBus->ask(new GetHotelQuery(new HotelId($id)));
 
         if (null === $hotel) {
             throw new NotFoundHttpException();

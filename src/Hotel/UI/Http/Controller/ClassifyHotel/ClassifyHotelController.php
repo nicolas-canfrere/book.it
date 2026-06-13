@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Hotel\UI\Http\Controller\ClassifyHotel;
 
 use App\Hotel\Application\UseCase\ClassifyHotel\ClassifyHotelCommand;
+use App\Hotel\Domain\ValueObject\StarRating;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,9 +65,8 @@ final readonly class ClassifyHotelController
         ClassifyHotelRequest $request,
     ): Response {
         $this->commandBus->execute(new ClassifyHotelCommand(
-            hotelId: $id,
-            stars: $request->stars,
-            superior: $request->superior,
+            hotelId: new HotelId($id),
+            starRating: null !== $request->stars ? new StarRating($request->stars, $request->superior) : null,
         ));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
