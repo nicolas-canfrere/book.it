@@ -8,6 +8,7 @@ use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommand;
 use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommandHandler;
 use App\Availability\Application\UseCase\GetAvailabilityCalendar\GetAvailabilityCalendarQuery;
 use App\Availability\Application\UseCase\GetAvailabilityCalendar\GetAvailabilityCalendarQueryHandler;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -30,14 +31,14 @@ final class GetAvailabilityCalendarQueryHandlerTest extends TestCase
 
         $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             roomId: self::ROOM_ID,
             checkIn: new \DateTimeImmutable('2025-06-15'),
             checkOut: new \DateTimeImmutable('2025-06-18'),
             createdAt: new \DateTimeImmutable(),
         ));
         ($blockHandler)(new BlockPeriodCommand(
-            id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
+            id: new BlockedPeriodId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
             roomId: self::ROOM_ID,
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),

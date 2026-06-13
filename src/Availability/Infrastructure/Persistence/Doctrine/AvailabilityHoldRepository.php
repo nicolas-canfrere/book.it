@@ -17,7 +17,7 @@ final readonly class AvailabilityHoldRepository implements AvailabilityHoldRepos
     public function add(AvailabilityHold $hold): void
     {
         $this->availabilityConnection->insert('hold', [
-            'id' => $hold->id,
+            'id' => $hold->id->value,
             'room_id' => $hold->roomId,
             'reservation_id' => $hold->reservationId,
             'check_in' => $hold->period->checkIn->format('Y-m-d'),

@@ -6,6 +6,7 @@ namespace App\Tests\Availability\Infrastructure\Persistence\InMemory;
 
 use App\Availability\Domain\Model\BlockedPeriod;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
 
 final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryInterface
 {
@@ -14,17 +15,17 @@ final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryIn
 
     public function add(BlockedPeriod $period): void
     {
-        $this->periods[$period->id] = $period;
+        $this->periods[$period->id->value] = $period;
     }
 
-    public function get(string $id): ?BlockedPeriod
+    public function get(BlockedPeriodId $id): ?BlockedPeriod
     {
-        return $this->periods[$id] ?? null;
+        return $this->periods[$id->value] ?? null;
     }
 
-    public function remove(string $id): void
+    public function remove(BlockedPeriodId $id): void
     {
-        unset($this->periods[$id]);
+        unset($this->periods[$id->value]);
     }
 
     public function hasOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool

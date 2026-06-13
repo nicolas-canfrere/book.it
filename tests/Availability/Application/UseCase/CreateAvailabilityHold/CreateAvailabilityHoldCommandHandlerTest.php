@@ -10,6 +10,7 @@ use App\Availability\Domain\Exception\AvailabilityHoldOverlapException;
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
 use App\Shared\Domain\Event\AvailabilityHoldCreated;
+use App\Shared\Domain\ValueObject\AvailabilityHoldId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -31,7 +32,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
         $handler = new CreateAvailabilityHoldCommandHandler($repository, $this->createStub(EventDispatcherInterface::class));
 
         ($handler)(new CreateAvailabilityHoldCommand(
-            id: 'hold-uuid',
+            id: new AvailabilityHoldId('hold-uuid'),
             roomId: 'room-uuid',
             reservationId: 'res-uuid',
             checkIn: new \DateTimeImmutable('2030-06-01'),
@@ -54,7 +55,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
         $this->expectException(AvailabilityHoldOverlapException::class);
 
         ($handler)(new CreateAvailabilityHoldCommand(
-            id: 'hold-uuid',
+            id: new AvailabilityHoldId('hold-uuid'),
             roomId: 'room-uuid',
             reservationId: 'res-uuid',
             checkIn: new \DateTimeImmutable('2030-06-01'),
@@ -91,7 +92,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
         $handler = new CreateAvailabilityHoldCommandHandler($repository, $dispatcher);
 
         ($handler)(new CreateAvailabilityHoldCommand(
-            id: 'hold-id-1',
+            id: new AvailabilityHoldId('hold-id-1'),
             roomId: 'room-id-1',
             reservationId: 'res-id-1',
             checkIn: $checkIn,

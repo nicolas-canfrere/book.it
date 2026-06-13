@@ -14,7 +14,7 @@ final class InMemoryAvailabilityHoldRepository implements AvailabilityHoldReposi
 
     public function add(AvailabilityHold $hold): void
     {
-        $this->holds[$hold->id] = $hold;
+        $this->holds[$hold->id->value] = $hold;
     }
 
     public function deleteByReservationId(string $reservationId): void

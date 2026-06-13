@@ -10,6 +10,8 @@ use App\Availability\Application\UseCase\CheckAvailability\CheckAvailabilityQuer
 use App\Availability\Application\UseCase\CheckAvailability\CheckAvailabilityQueryHandler;
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\AvailabilityHoldId;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryAvailabilityHoldRepository;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
@@ -35,7 +37,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
 
         $blockHandler = new BlockPeriodCommandHandler($this->blockedPeriodRepository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             roomId: self::ROOM_ID,
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
@@ -83,7 +85,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsFalseWhenActiveHoldOverlaps(): void
     {
         $this->holdRepository->add(new AvailabilityHold(
-            id: 'hold-1',
+            id: new AvailabilityHoldId('hold-1'),
             roomId: self::ROOM_ID,
             reservationId: 'res-1',
             period: new DatePeriod(
@@ -107,7 +109,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsTrueWhenHoldIsExpired(): void
     {
         $this->holdRepository->add(new AvailabilityHold(
-            id: 'hold-2',
+            id: new AvailabilityHoldId('hold-2'),
             roomId: self::ROOM_ID,
             reservationId: 'res-2',
             period: new DatePeriod(

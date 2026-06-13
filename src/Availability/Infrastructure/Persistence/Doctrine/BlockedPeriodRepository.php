@@ -7,6 +7,7 @@ namespace App\Availability\Infrastructure\Persistence\Doctrine;
 use App\Availability\Domain\Model\BlockedPeriod;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
 use Doctrine\DBAL\Connection;
 
 final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryInterface
@@ -18,7 +19,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     public function add(BlockedPeriod $period): void
     {
         $this->availabilityConnection->insert('blocked_period', [
-            'id' => $period->id,
+            'id' => $period->id->value,
             'room_id' => $period->roomId,
             'check_in' => $period->period->checkIn->format('Y-m-d'),
             'check_out' => $period->period->checkOut->format('Y-m-d'),
@@ -26,12 +27,12 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
         ]);
     }
 
-    public function get(string $id): ?BlockedPeriod
+    public function get(BlockedPeriodId $id): ?BlockedPeriod
     {
         /** @var array{id: string, room_id: string, check_in: string, check_out: string, created_at: string}|false $row */
         $row = $this->availabilityConnection->fetchAssociative(
             'SELECT id, room_id, check_in, check_out, created_at FROM blocked_period WHERE id = :id',
-            ['id' => $id],
+            ['id' => $id->value],
         );
 
         if (false === $row) {
@@ -41,9 +42,9 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
         return $this->hydrate($row);
     }
 
-    public function remove(string $id): void
+    public function remove(BlockedPeriodId $id): void
     {
-        $this->availabilityConnection->delete('blocked_period', ['id' => $id]);
+        $this->availabilityConnection->delete('blocked_period', ['id' => $id->value]);
     }
 
     public function hasOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
@@ -98,7 +99,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     private function hydrate(array $row): BlockedPeriod
     {
         return new BlockedPeriod(
-            $row['id'],
+            new BlockedPeriodId($row['id']),
             $row['room_id'],
             new DatePeriod(
                 new \DateTimeImmutable($row['check_in']),

@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Availability\Application\UseCase\CreateAvailabilityHold;
 
 use App\Shared\Application\Bus\SyncCommandInterface;
+use App\Shared\Domain\ValueObject\AvailabilityHoldId;
 
 final readonly class CreateAvailabilityHoldCommand implements SyncCommandInterface
 {
     public function __construct(
-        public string $id,
+        public AvailabilityHoldId $id,
         public string $roomId,
         public string $reservationId,
         public \DateTimeImmutable $checkIn,

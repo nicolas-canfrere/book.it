@@ -23,7 +23,7 @@ final readonly class DeleteBlockedPeriodCommandHandler implements SyncCommandHan
         $blockedPeriod = $this->repository->get($command->id);
 
         if (null === $blockedPeriod) {
-            throw new BlockedPeriodNotFoundException($command->id);
+            throw new BlockedPeriodNotFoundException($command->id->value);
         }
 
         $this->repository->remove($command->id);

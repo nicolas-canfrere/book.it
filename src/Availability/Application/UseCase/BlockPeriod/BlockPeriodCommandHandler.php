@@ -41,7 +41,7 @@ final readonly class BlockPeriodCommandHandler implements SyncCommandHandlerInte
         ));
 
         $this->eventDispatcher->dispatch(new BlockedPeriodCreated(
-            blockedPeriodId: $command->id,
+            blockedPeriodId: $command->id->value,
             roomId: $command->roomId,
             checkIn: $command->checkIn,
             checkOut: $command->checkOut,
