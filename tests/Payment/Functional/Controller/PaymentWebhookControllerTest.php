@@ -149,7 +149,7 @@ final class PaymentWebhookControllerTest extends WebTestCase
     private function countWebhookEvent(KernelBrowser $client, string $eventId): int
     {
         /** @var Connection $connection */
-        $connection = $client->getContainer()->get('doctrine.dbal.bookit_connection');
+        $connection = $client->getContainer()->get('doctrine.dbal.payment_connection');
 
         /** @var string|int $count */
         $count = $connection->fetchOne(
