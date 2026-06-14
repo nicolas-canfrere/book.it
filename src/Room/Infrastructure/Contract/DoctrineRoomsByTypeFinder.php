@@ -17,6 +17,7 @@ final readonly class DoctrineRoomsByTypeFinder implements RoomsByTypeFinderInter
 
     public function findByType(RoomTypeId $roomTypeId): array
     {
+        /** @var list<array{id: string}> $rows */
         $rows = $this->roomConnection->fetchAllAssociative(
             'SELECT id FROM rooms WHERE room_type_id = :roomTypeId',
             ['roomTypeId' => $roomTypeId->value],
