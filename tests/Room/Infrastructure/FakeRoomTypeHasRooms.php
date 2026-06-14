@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Room\Infrastructure;
 
 use App\Room\Domain\Port\RoomTypeHasRoomsInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final class FakeRoomTypeHasRooms implements RoomTypeHasRoomsInterface
 {
@@ -15,7 +16,7 @@ final class FakeRoomTypeHasRooms implements RoomTypeHasRoomsInterface
         $this->hasRooms = $hasRooms;
     }
 
-    public function hasRooms(string $roomTypeId): bool
+    public function hasRooms(RoomTypeId $roomTypeId): bool
     {
         return $this->hasRooms;
     }

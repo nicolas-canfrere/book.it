@@ -24,7 +24,7 @@ final readonly class DeclareRoomTypeAmenitiesCommandHandler implements SyncComma
         $roomType = $this->roomTypeRepository->get($command->roomTypeId);
 
         if (null === $roomType) {
-            throw new RoomTypeNotFoundException($command->roomTypeId);
+            throw new RoomTypeNotFoundException($command->roomTypeId->value);
         }
 
         $amenities = array_map(RoomAmenity::from(...), $command->amenities);
@@ -32,7 +32,7 @@ final readonly class DeclareRoomTypeAmenitiesCommandHandler implements SyncComma
         $this->roomTypeRepository->save($roomType->withAmenities($amenities));
 
         $this->eventDispatcher->dispatch(new RoomTypeAmenityDeclared(
-            roomTypeId: $command->roomTypeId,
+            roomTypeId: $command->roomTypeId->value,
             hotelId: $roomType->hotelId,
             amenities: $command->amenities,
         ));

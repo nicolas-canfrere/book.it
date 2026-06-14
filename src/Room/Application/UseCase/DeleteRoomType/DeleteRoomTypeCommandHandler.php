@@ -25,17 +25,17 @@ final readonly class DeleteRoomTypeCommandHandler implements SyncCommandHandlerI
     {
         $roomType = $this->roomTypeRepository->get($command->id);
         if (null === $roomType) {
-            throw new RoomTypeNotFoundException($command->id);
+            throw new RoomTypeNotFoundException($command->id->value);
         }
 
         if ($this->roomTypeHasRooms->hasRooms($command->id)) {
-            throw new RoomTypeHasRoomsException($command->id);
+            throw new RoomTypeHasRoomsException($command->id->value);
         }
 
         $this->roomTypeRepository->delete($command->id);
 
         $this->eventDispatcher->dispatch(new RoomTypeDeleted(
-            roomTypeId: $roomType->id,
+            roomTypeId: $roomType->id->value,
             hotelId: $roomType->hotelId,
         ));
     }

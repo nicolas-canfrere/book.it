@@ -9,6 +9,8 @@ use App\Room\Domain\Model\RoomPage;
 use App\Room\Domain\Port\RoomRepositoryInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 
 final readonly class RoomRepository implements RoomRepositoryInterface
@@ -20,11 +22,11 @@ final readonly class RoomRepository implements RoomRepositoryInterface
     public function add(Room $room): void
     {
         $this->roomConnection->insert('room', [
-            'id' => $room->id,
+            'id' => $room->id->value,
             'hotel_id' => $room->hotelId,
             'room_number' => $room->number->value,
             'room_floor' => $room->floor->value,
-            'room_type_id' => $room->roomTypeId,
+            'room_type_id' => $room->roomTypeId->value,
             'created_at' => $room->createdAt->format('Y-m-d H:i:s'),
         ]);
     }
@@ -35,23 +37,23 @@ final readonly class RoomRepository implements RoomRepositoryInterface
         $this->roomConnection->transactional(static function () use ($rooms, $connection): void {
             foreach ($rooms as $room) {
                 $connection->insert('room', [
-                    'id' => $room->id,
+                    'id' => $room->id->value,
                     'hotel_id' => $room->hotelId,
                     'room_number' => $room->number->value,
                     'room_floor' => $room->floor->value,
-                    'room_type_id' => $room->roomTypeId,
+                    'room_type_id' => $room->roomTypeId->value,
                     'created_at' => $room->createdAt->format('Y-m-d H:i:s'),
                 ]);
             }
         });
     }
 
-    public function get(string $id): ?Room
+    public function get(RoomId $id): ?Room
     {
         /** @var array{id: string, hotel_id: string, room_number: string, room_floor: int|string, room_type_id: string, created_at: string}|false $row */
         $row = $this->roomConnection->fetchAssociative(
             'SELECT id, hotel_id, room_number, room_floor, room_type_id, created_at FROM room WHERE id = :id',
-            ['id' => $id],
+            ['id' => $id->value],
         );
 
         if (false === $row) {
@@ -59,11 +61,11 @@ final readonly class RoomRepository implements RoomRepositoryInterface
         }
 
         return new Room(
-            $row['id'],
+            new RoomId($row['id']),
             $row['hotel_id'],
             new RoomNumber($row['room_number']),
             new RoomFloor((int) $row['room_floor']),
-            $row['room_type_id'],
+            new RoomTypeId($row['room_type_id']),
             new \DateTimeImmutable($row['created_at']),
         );
     }
@@ -95,11 +97,11 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 
         $rooms = array_map(
             fn(array $row) => new Room(
-                $row['id'],
+                new RoomId($row['id']),
                 $row['hotel_id'],
                 new RoomNumber($row['room_number']),
                 new RoomFloor((int) $row['room_floor']),
-                $row['room_type_id'],
+                new RoomTypeId($row['room_type_id']),
                 new \DateTimeImmutable($row['created_at']),
             ),
             $rows,

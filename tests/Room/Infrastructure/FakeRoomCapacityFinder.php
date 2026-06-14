@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Room\Infrastructure;
 
 use App\Room\Domain\Port\RoomCapacityFinderInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class FakeRoomCapacityFinder implements RoomCapacityFinderInterface
 {
@@ -16,8 +17,8 @@ final class FakeRoomCapacityFinder implements RoomCapacityFinderInterface
         $this->capacities[$roomId] = $capacity;
     }
 
-    public function findCapacity(string $roomId): int
+    public function findCapacity(RoomId $roomId): int
     {
-        return $this->capacities[$roomId] ?? 0;
+        return $this->capacities[$roomId->value] ?? 0;
     }
 }

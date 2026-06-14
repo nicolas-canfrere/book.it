@@ -9,6 +9,8 @@ use App\Shared\Domain\ValueObject\BlockedPeriodId;
 use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\OperatorId;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -54,6 +56,22 @@ final class IdValueObjectsTest extends TestCase
     public function itExposesOperatorIdValueAndCastsToString(): void
     {
         $id = new OperatorId(self::UUID);
+        self::assertSame(self::UUID, $id->value);
+        self::assertSame(self::UUID, (string) $id);
+    }
+
+    #[Test]
+    public function itExposesRoomIdValueAndCastsToString(): void
+    {
+        $id = new RoomId(self::UUID);
+        self::assertSame(self::UUID, $id->value);
+        self::assertSame(self::UUID, (string) $id);
+    }
+
+    #[Test]
+    public function itExposesRoomTypeIdValueAndCastsToString(): void
+    {
+        $id = new RoomTypeId(self::UUID);
         self::assertSame(self::UUID, $id->value);
         self::assertSame(self::UUID, (string) $id);
     }

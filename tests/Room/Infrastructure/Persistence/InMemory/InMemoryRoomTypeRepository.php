@@ -7,6 +7,7 @@ namespace App\Tests\Room\Infrastructure\Persistence\InMemory;
 use App\Room\Domain\Model\RoomType;
 use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
 {
@@ -15,12 +16,12 @@ final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
 
     public function add(RoomType $roomType): void
     {
-        $this->roomTypes[$roomType->id] = $roomType;
+        $this->roomTypes[$roomType->id->value] = $roomType;
     }
 
-    public function get(string $id): ?RoomType
+    public function get(RoomTypeId $id): ?RoomType
     {
-        return $this->roomTypes[$id] ?? null;
+        return $this->roomTypes[$id->value] ?? null;
     }
 
     public function existsByHotelIdAndName(string $hotelId, string $name): bool
@@ -36,17 +37,17 @@ final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
 
     public function update(RoomType $roomType): void
     {
-        $this->roomTypes[$roomType->id] = $roomType;
+        $this->roomTypes[$roomType->id->value] = $roomType;
     }
 
     public function save(RoomType $roomType): void
     {
-        $this->roomTypes[$roomType->id] = $roomType;
+        $this->roomTypes[$roomType->id->value] = $roomType;
     }
 
-    public function delete(string $id): void
+    public function delete(RoomTypeId $id): void
     {
-        unset($this->roomTypes[$id]);
+        unset($this->roomTypes[$id->value]);
     }
 
     public function list(string $hotelId, int $page, int $limit): RoomTypePage

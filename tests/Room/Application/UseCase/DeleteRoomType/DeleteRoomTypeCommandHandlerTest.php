@@ -11,6 +11,7 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler
 use App\Room\Domain\Exception\RoomTypeHasRoomsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Shared\Domain\Event\RoomTypeDeleted;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\FakeRoomTypeHasRooms;
@@ -38,7 +39,7 @@ final class DeleteRoomTypeCommandHandlerTest extends TestCase
 
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: self::ROOM_TYPE_ID,
+            id: new RoomTypeId(self::ROOM_TYPE_ID),
             hotelId: self::HOTEL_ID,
             name: 'Single',
             livingSpaceCount: 1,
@@ -53,15 +54,15 @@ final class DeleteRoomTypeCommandHandlerTest extends TestCase
     #[Test]
     public function itDeletesTheRoomType(): void
     {
-        ($this->handler)(new DeleteRoomTypeCommand(self::ROOM_TYPE_ID));
+        ($this->handler)(new DeleteRoomTypeCommand(new RoomTypeId(self::ROOM_TYPE_ID)));
 
-        self::assertNull($this->repository->get(self::ROOM_TYPE_ID));
+        self::assertNull($this->repository->get(new RoomTypeId(self::ROOM_TYPE_ID)));
     }
 
     #[Test]
     public function itDispatchesRoomTypeDeleted(): void
     {
-        ($this->handler)(new DeleteRoomTypeCommand(self::ROOM_TYPE_ID));
+        ($this->handler)(new DeleteRoomTypeCommand(new RoomTypeId(self::ROOM_TYPE_ID)));
 
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(RoomTypeDeleted::class, $event);
@@ -74,14 +75,14 @@ final class DeleteRoomTypeCommandHandlerTest extends TestCase
     {
         $this->expectException(RoomTypeNotFoundException::class);
 
-        ($this->handler)(new DeleteRoomTypeCommand('00000000-0000-4000-8000-000000000000'));
+        ($this->handler)(new DeleteRoomTypeCommand(new RoomTypeId('00000000-0000-4000-8000-000000000000')));
     }
 
     #[Test]
     public function itDoesNotDispatchWhenRoomTypeNotFound(): void
     {
         try {
-            ($this->handler)(new DeleteRoomTypeCommand('00000000-0000-4000-8000-000000000000'));
+            ($this->handler)(new DeleteRoomTypeCommand(new RoomTypeId('00000000-0000-4000-8000-000000000000')));
         } catch (RoomTypeNotFoundException) {
             // Expected
         }
@@ -95,7 +96,7 @@ final class DeleteRoomTypeCommandHandlerTest extends TestCase
         $this->hasRooms->setHasRooms(true);
         $this->expectException(RoomTypeHasRoomsException::class);
 
-        ($this->handler)(new DeleteRoomTypeCommand(self::ROOM_TYPE_ID));
+        ($this->handler)(new DeleteRoomTypeCommand(new RoomTypeId(self::ROOM_TYPE_ID)));
     }
 
     #[Test]
@@ -104,7 +105,7 @@ final class DeleteRoomTypeCommandHandlerTest extends TestCase
         $this->hasRooms->setHasRooms(true);
 
         try {
-            ($this->handler)(new DeleteRoomTypeCommand(self::ROOM_TYPE_ID));
+            ($this->handler)(new DeleteRoomTypeCommand(new RoomTypeId(self::ROOM_TYPE_ID)));
         } catch (RoomTypeHasRoomsException) {
             // Expected
         }

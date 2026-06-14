@@ -34,7 +34,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
         }
 
         if (!$this->roomTypeExists->exists($command->roomTypeId)) {
-            throw new RoomTypeNotFoundException($command->roomTypeId);
+            throw new RoomTypeNotFoundException($command->roomTypeId->value);
         }
 
         if ($this->roomRepository->existsByHotelIdAndNumber($command->hotelId, $command->number)) {
@@ -51,9 +51,9 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
         ));
 
         $this->eventDispatcher->dispatch(new RoomRegistered(
-            roomId: $command->id,
+            roomId: $command->id->value,
             hotelId: $command->hotelId,
-            roomTypeId: $command->roomTypeId,
+            roomTypeId: $command->roomTypeId->value,
         ));
     }
 }

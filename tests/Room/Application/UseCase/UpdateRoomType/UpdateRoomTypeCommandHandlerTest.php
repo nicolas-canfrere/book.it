@@ -11,6 +11,7 @@ use App\Room\Application\UseCase\UpdateRoomType\UpdateRoomTypeCommandHandler;
 use App\Room\Domain\Exception\RoomTypeAlreadyExistsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Shared\Domain\Event\RoomTypeUpdated;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -35,7 +36,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
 
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: self::ROOM_TYPE_ID,
+            id: new RoomTypeId(self::ROOM_TYPE_ID),
             hotelId: self::HOTEL_ID,
             name: 'Single',
             livingSpaceCount: 1,
@@ -51,7 +52,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
     public function itUpdatesTheRoomType(): void
     {
         ($this->handler)(new UpdateRoomTypeCommand(
-            id: self::ROOM_TYPE_ID,
+            id: new RoomTypeId(self::ROOM_TYPE_ID),
             name: 'Double',
             livingSpaceCount: 1,
             surfaceM2: 25,
@@ -60,7 +61,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
             bedEntries: [['type' => 'double', 'count' => 1]],
         ));
 
-        $updated = $this->repository->get(self::ROOM_TYPE_ID);
+        $updated = $this->repository->get(new RoomTypeId(self::ROOM_TYPE_ID));
         self::assertNotNull($updated);
         self::assertSame('Double', $updated->name);
         self::assertSame(25, $updated->surfaceM2);
@@ -83,7 +84,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
     {
         try {
             ($this->handler)(new UpdateRoomTypeCommand(
-                id: '00000000-0000-4000-8000-000000000000',
+                id: new RoomTypeId('00000000-0000-4000-8000-000000000000'),
                 name: 'X',
                 livingSpaceCount: 1,
                 surfaceM2: null,
@@ -104,7 +105,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
     {
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
+            id: new RoomTypeId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
             hotelId: self::HOTEL_ID,
             name: 'Double',
             livingSpaceCount: 1,
@@ -117,7 +118,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
 
         try {
             ($this->handler)(new UpdateRoomTypeCommand(
-                id: self::ROOM_TYPE_ID,
+                id: new RoomTypeId(self::ROOM_TYPE_ID),
                 name: 'Double',
                 livingSpaceCount: 1,
                 surfaceM2: null,
@@ -137,7 +138,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
     public function itAllowsKeepingTheSameName(): void
     {
         ($this->handler)(new UpdateRoomTypeCommand(
-            id: self::ROOM_TYPE_ID,
+            id: new RoomTypeId(self::ROOM_TYPE_ID),
             name: 'Single',
             livingSpaceCount: 1,
             surfaceM2: 20,
@@ -146,7 +147,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
             bedEntries: [['type' => 'single', 'count' => 1]],
         ));
 
-        $updated = $this->repository->get(self::ROOM_TYPE_ID);
+        $updated = $this->repository->get(new RoomTypeId(self::ROOM_TYPE_ID));
         self::assertNotNull($updated);
         self::assertSame(20, $updated->surfaceM2);
 

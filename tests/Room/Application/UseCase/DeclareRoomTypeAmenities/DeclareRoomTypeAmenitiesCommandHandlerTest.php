@@ -11,6 +11,7 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Room\Domain\ValueObject\RoomAmenity;
 use App\Shared\Domain\Event\RoomTypeAmenityDeclared;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -40,7 +41,7 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
             new FakeEventDispatcher(),
         );
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: self::ROOM_TYPE_ID,
+            id: new RoomTypeId(self::ROOM_TYPE_ID),
             hotelId: self::HOTEL_ID,
             name: 'Standard',
             livingSpaceCount: 1,
@@ -56,11 +57,11 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
     public function itDeclaresSetsAmenities(): void
     {
         ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             amenities: ['wifi', 'tv', 'minibar'],
         ));
 
-        $updated = $this->repository->get(self::ROOM_TYPE_ID);
+        $updated = $this->repository->get(new RoomTypeId(self::ROOM_TYPE_ID));
         self::assertNotNull($updated);
         self::assertCount(3, $updated->amenities);
         self::assertSame(RoomAmenity::Wifi, $updated->amenities[0]);
@@ -72,7 +73,7 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
     public function itDispatchesRoomTypeAmenityDeclared(): void
     {
         ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             amenities: ['wifi', 'tv'],
         ));
 
@@ -87,11 +88,11 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
     public function itDeclaresEmptyList(): void
     {
         ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             amenities: [],
         ));
 
-        $updated = $this->repository->get(self::ROOM_TYPE_ID);
+        $updated = $this->repository->get(new RoomTypeId(self::ROOM_TYPE_ID));
         self::assertNotNull($updated);
         self::assertSame([], $updated->amenities);
     }
@@ -102,7 +103,7 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
         $this->expectException(RoomTypeNotFoundException::class);
 
         ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
-            roomTypeId: '00000000-0000-4000-8000-000000000000',
+            roomTypeId: new RoomTypeId('00000000-0000-4000-8000-000000000000'),
             amenities: ['wifi'],
         ));
     }
@@ -112,7 +113,7 @@ final class DeclareRoomTypeAmenitiesCommandHandlerTest extends TestCase
     {
         try {
             ($this->handler)(new DeclareRoomTypeAmenitiesCommand(
-                roomTypeId: '00000000-0000-4000-8000-000000000000',
+                roomTypeId: new RoomTypeId('00000000-0000-4000-8000-000000000000'),
                 amenities: ['wifi'],
             ));
         } catch (RoomTypeNotFoundException) {

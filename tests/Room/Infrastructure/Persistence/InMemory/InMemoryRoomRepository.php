@@ -7,6 +7,7 @@ namespace App\Tests\Room\Infrastructure\Persistence\InMemory;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Model\RoomPage;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryRoomRepository implements RoomRepositoryInterface
 {
@@ -15,7 +16,7 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
 
     public function add(Room $room): void
     {
-        $this->rooms[$room->id] = $room;
+        $this->rooms[$room->id->value] = $room;
     }
 
     public function addAll(array $rooms): void
@@ -25,9 +26,9 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
         }
     }
 
-    public function get(string $id): ?Room
+    public function get(RoomId $id): ?Room
     {
-        return $this->rooms[$id] ?? null;
+        return $this->rooms[$id->value] ?? null;
     }
 
     public function existsByHotelIdAndNumber(string $hotelId, string $number): bool

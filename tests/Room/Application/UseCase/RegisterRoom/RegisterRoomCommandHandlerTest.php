@@ -10,6 +10,8 @@ use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomAlreadyExistsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Shared\Domain\Event\RoomRegistered;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\FakeRoomTypeExistenceChecker;
@@ -47,11 +49,11 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     public function itPersistsTheRoom(): void
     {
         $command = new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable('2024-01-01 10:00:00'),
         );
 
@@ -63,7 +65,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         self::assertSame($command->hotelId, $room->hotelId);
         self::assertSame('101', $room->number->value);
         self::assertSame(1, $room->floor->value);
-        self::assertSame(self::ROOM_TYPE_ID, $room->roomTypeId);
+        self::assertSame(self::ROOM_TYPE_ID, $room->roomTypeId->value);
         self::assertEquals($command->createdAt, $room->createdAt);
     }
 
@@ -74,11 +76,11 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         $this->expectException(HotelNotFoundException::class);
 
         ($this->handler)(new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -87,11 +89,11 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     public function itThrowsWhenRoomNumberAlreadyExistsInHotel(): void
     {
         $command = new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         );
         ($this->handler)($command);
@@ -99,11 +101,11 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         $this->expectException(RoomAlreadyExistsException::class);
 
         ($this->handler)(new RegisterRoomCommand(
-            id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
+            id: new RoomId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 2,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -115,11 +117,11 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         $this->expectException(RoomTypeNotFoundException::class);
 
         ($this->handler)(new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         ));
     }
@@ -128,19 +130,19 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     public function itAllowsSameNumberInDifferentHotels(): void
     {
         $command1 = new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440001',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         );
         $command2 = new RegisterRoomCommand(
-            id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
+            id: new RoomId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
             hotelId: '550e8400-e29b-41d4-a716-446655440002',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         );
 
@@ -155,11 +157,11 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     public function itDispatchesRoomRegistered(): void
     {
         $command = new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable('2026-01-01T00:00:00Z'),
         );
 
@@ -167,7 +169,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
 
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(RoomRegistered::class, $event);
-        self::assertSame($command->id, $event->roomId);
+        self::assertSame($command->id->value, $event->roomId);
         self::assertSame($command->hotelId, $event->hotelId);
         self::assertSame(self::ROOM_TYPE_ID, $event->roomTypeId);
     }
@@ -176,22 +178,22 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     public function itDoesNotDispatchWhenRoomAlreadyExists(): void
     {
         $command = new RegisterRoomCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
+            id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             hotelId: '550e8400-e29b-41d4-a716-446655440000',
             number: '101',
             floor: 1,
-            roomTypeId: self::ROOM_TYPE_ID,
+            roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
             createdAt: new \DateTimeImmutable(),
         );
         ($this->handler)($command);
 
         try {
             ($this->handler)(new RegisterRoomCommand(
-                id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
+                id: new RoomId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
                 hotelId: '550e8400-e29b-41d4-a716-446655440000',
                 number: '101',
                 floor: 2,
-                roomTypeId: self::ROOM_TYPE_ID,
+                roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
                 createdAt: new \DateTimeImmutable(),
             ));
             self::fail('Expected RoomAlreadyExistsException was not thrown');

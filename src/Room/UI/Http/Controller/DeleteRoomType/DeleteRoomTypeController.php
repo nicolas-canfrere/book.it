@@ -6,6 +6,7 @@ namespace App\Room\UI\Http\Controller\DeleteRoomType;
 
 use App\Room\Application\UseCase\DeleteRoomType\DeleteRoomTypeCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -33,7 +34,7 @@ final readonly class DeleteRoomTypeController
     )]
     public function __invoke(string $hotelId, string $roomTypeId): Response
     {
-        $this->commandBus->execute(new DeleteRoomTypeCommand($roomTypeId));
+        $this->commandBus->execute(new DeleteRoomTypeCommand(new RoomTypeId($roomTypeId)));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

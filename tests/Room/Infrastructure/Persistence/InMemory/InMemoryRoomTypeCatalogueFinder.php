@@ -15,7 +15,7 @@ final class InMemoryRoomTypeCatalogueFinder implements RoomTypeCatalogueFinderIn
 
     public function add(RoomType $roomType): void
     {
-        $this->roomTypes[$roomType->id] = $roomType;
+        $this->roomTypes[$roomType->id->value] = $roomType;
     }
 
     /** @param string[] $amenities */

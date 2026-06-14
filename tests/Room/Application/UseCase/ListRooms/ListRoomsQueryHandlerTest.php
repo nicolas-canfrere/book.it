@@ -9,6 +9,8 @@ use App\Room\Application\UseCase\ListRooms\ListRoomsQueryHandler;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -89,6 +91,6 @@ final class ListRoomsQueryHandlerTest extends TestCase
 
     private function makeRoom(string $id, string $hotelId, string $number): Room
     {
-        return new Room($id, $hotelId, new RoomNumber($number), new RoomFloor(1), 'cccccccc-0000-4000-8000-000000000001', new \DateTimeImmutable('2024-01-01'));
+        return new Room(new RoomId($id), $hotelId, new RoomNumber($number), new RoomFloor(1), new RoomTypeId('cccccccc-0000-4000-8000-000000000001'), new \DateTimeImmutable('2024-01-01'));
     }
 }

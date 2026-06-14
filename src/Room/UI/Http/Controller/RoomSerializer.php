@@ -14,11 +14,11 @@ final class RoomSerializer
     public function serialize(Room $room): array
     {
         return [
-            'id' => $room->id,
+            'id' => $room->id->value,
             'hotelId' => $room->hotelId,
             'number' => $room->number->value,
             'floor' => $room->floor->value,
-            'roomTypeId' => $room->roomTypeId,
+            'roomTypeId' => $room->roomTypeId->value,
             'createdAt' => $room->createdAt->format(\DateTimeInterface::ATOM),
         ];
     }

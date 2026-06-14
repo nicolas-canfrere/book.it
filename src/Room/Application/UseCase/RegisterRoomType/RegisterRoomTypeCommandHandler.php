@@ -48,7 +48,7 @@ final readonly class RegisterRoomTypeCommandHandler implements SyncCommandHandle
         $this->roomTypeRepository->add($roomType);
 
         $this->eventDispatcher->dispatch(new RoomTypeRegistered(
-            roomTypeId: $roomType->id,
+            roomTypeId: $roomType->id->value,
             hotelId: $roomType->hotelId,
             name: $roomType->name,
             guestCapacity: $roomType->guestCapacity,

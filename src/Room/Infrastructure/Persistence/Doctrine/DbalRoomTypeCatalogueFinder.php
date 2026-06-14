@@ -9,6 +9,7 @@ use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeCatalogueFinderInterface;
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 
 final readonly class DbalRoomTypeCatalogueFinder implements RoomTypeCatalogueFinderInterface
@@ -53,7 +54,7 @@ final readonly class DbalRoomTypeCatalogueFinder implements RoomTypeCatalogueFin
         $bedData = json_decode($row['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
 
         return new RoomType(
-            $row['id'],
+            new RoomTypeId($row['id']),
             $row['hotel_id'],
             $row['name'],
             (int) $row['living_space_count'],

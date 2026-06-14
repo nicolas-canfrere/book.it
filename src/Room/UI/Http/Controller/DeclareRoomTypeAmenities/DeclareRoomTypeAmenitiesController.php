@@ -6,6 +6,7 @@ namespace App\Room\UI\Http\Controller\DeclareRoomTypeAmenities;
 
 use App\Room\Application\UseCase\DeclareRoomTypeAmenities\DeclareRoomTypeAmenitiesCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
@@ -65,7 +66,7 @@ final readonly class DeclareRoomTypeAmenitiesController
         DeclareRoomTypeAmenitiesRequest $request,
     ): Response {
         $this->commandBus->execute(new DeclareRoomTypeAmenitiesCommand(
-            roomTypeId: $roomTypeId,
+            roomTypeId: new RoomTypeId($roomTypeId),
             amenities: $request->amenities,
         ));
 

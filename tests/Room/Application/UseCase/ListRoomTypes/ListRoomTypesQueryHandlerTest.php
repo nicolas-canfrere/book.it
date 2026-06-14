@@ -8,6 +8,7 @@ use App\Room\Application\UseCase\ListRoomTypes\ListRoomTypesQuery;
 use App\Room\Application\UseCase\ListRoomTypes\ListRoomTypesQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -29,7 +30,7 @@ final class ListRoomTypesQueryHandlerTest extends TestCase
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         foreach (['Suite', 'Double', 'Single'] as $i => $name) {
             ($registerHandler)(new RegisterRoomTypeCommand(
-                id: sprintf('a0eebc99-9c0b-4ef8-bb6d-6bb9bd38%04d', $i),
+                id: new RoomTypeId(sprintf('a0eebc99-9c0b-4ef8-bb6d-6bb9bd38%04d', $i)),
                 hotelId: '550e8400-e29b-41d4-a716-446655440000',
                 name: $name,
                 livingSpaceCount: 1,

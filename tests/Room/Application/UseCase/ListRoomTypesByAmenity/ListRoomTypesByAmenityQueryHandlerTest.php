@@ -10,6 +10,7 @@ use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQu
 use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeCatalogueFinder;
@@ -45,7 +46,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
         );
 
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: self::RT_WIFI_BALCONY,
+            id: new RoomTypeId(self::RT_WIFI_BALCONY),
             hotelId: self::HOTEL_ID,
             name: 'Suite Balcony',
             livingSpaceCount: 2,
@@ -55,10 +56,10 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
             bedEntries: [['type' => 'double', 'count' => 1]],
             createdAt: new \DateTimeImmutable(),
         ));
-        ($amenitiesHandler)(new DeclareRoomTypeAmenitiesCommand(self::RT_WIFI_BALCONY, ['wifi', 'balcony']));
+        ($amenitiesHandler)(new DeclareRoomTypeAmenitiesCommand(new RoomTypeId(self::RT_WIFI_BALCONY), ['wifi', 'balcony']));
 
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: self::RT_WIFI_ONLY,
+            id: new RoomTypeId(self::RT_WIFI_ONLY),
             hotelId: self::HOTEL_ID,
             name: 'Standard',
             livingSpaceCount: 1,
@@ -68,10 +69,10 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
             bedEntries: [['type' => 'single', 'count' => 1]],
             createdAt: new \DateTimeImmutable(),
         ));
-        ($amenitiesHandler)(new DeclareRoomTypeAmenitiesCommand(self::RT_WIFI_ONLY, ['wifi']));
+        ($amenitiesHandler)(new DeclareRoomTypeAmenitiesCommand(new RoomTypeId(self::RT_WIFI_ONLY), ['wifi']));
 
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: self::RT_NO_AMENITIES,
+            id: new RoomTypeId(self::RT_NO_AMENITIES),
             hotelId: self::HOTEL_ID,
             name: 'Basic',
             livingSpaceCount: 1,
@@ -83,7 +84,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
         ));
 
         // Sync registered room types into the finder
-        foreach ([$repository->get(self::RT_WIFI_BALCONY), $repository->get(self::RT_WIFI_ONLY), $repository->get(self::RT_NO_AMENITIES)] as $rt) {
+        foreach ([$repository->get(new RoomTypeId(self::RT_WIFI_BALCONY)), $repository->get(new RoomTypeId(self::RT_WIFI_ONLY)), $repository->get(new RoomTypeId(self::RT_NO_AMENITIES))] as $rt) {
             if (null !== $rt) {
                 $this->finder->add($rt);
             }

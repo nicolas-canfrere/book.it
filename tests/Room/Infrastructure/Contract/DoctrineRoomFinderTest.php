@@ -12,6 +12,8 @@ use App\Room\Domain\Port\RoomRepositoryInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
 use App\Room\Infrastructure\Contract\DoctrineRoomFinder;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -35,11 +37,11 @@ final class DoctrineRoomFinderTest extends TestCase
     public function itReturnsViewWithCapacityWhenRoomExists(): void
     {
         $room = new Room(
-            id: 'room-1',
+            id: new RoomId('room-1'),
             hotelId: 'hotel-1',
             number: new RoomNumber('101'),
             floor: new RoomFloor(1),
-            roomTypeId: 'type-1',
+            roomTypeId: new RoomTypeId('type-1'),
             createdAt: new \DateTimeImmutable(),
         );
         $this->roomRepository->method('get')->willReturn($room);

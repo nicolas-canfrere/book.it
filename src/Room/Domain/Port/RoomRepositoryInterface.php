@@ -6,6 +6,7 @@ namespace App\Room\Domain\Port;
 
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Model\RoomPage;
+use App\Shared\Domain\ValueObject\RoomId;
 
 interface RoomRepositoryInterface
 {
@@ -14,7 +15,7 @@ interface RoomRepositoryInterface
     /** @param list<Room> $rooms */
     public function addAll(array $rooms): void;
 
-    public function get(string $id): ?Room;
+    public function get(RoomId $id): ?Room;
 
     public function existsByHotelIdAndNumber(string $hotelId, string $number): bool;
 

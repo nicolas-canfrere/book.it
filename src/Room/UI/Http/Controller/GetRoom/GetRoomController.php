@@ -7,6 +7,7 @@ namespace App\Room\UI\Http\Controller\GetRoom;
 use App\Room\Application\UseCase\GetRoom\GetRoomQuery;
 use App\Room\UI\Http\Controller\RoomSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +55,7 @@ final readonly class GetRoomController
     )]
     public function __invoke(string $id): Response
     {
-        $room = $this->queryBus->ask(new GetRoomQuery($id));
+        $room = $this->queryBus->ask(new GetRoomQuery(new RoomId($id)));
 
         if (null === $room) {
             throw new NotFoundHttpException();

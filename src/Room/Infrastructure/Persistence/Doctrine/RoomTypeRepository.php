@@ -9,6 +9,7 @@ use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 
@@ -21,7 +22,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
     public function add(RoomType $roomType): void
     {
         $this->roomConnection->insert('room_type', [
-            'id' => $roomType->id,
+            'id' => $roomType->id->value,
             'hotel_id' => $roomType->hotelId,
             'name' => $roomType->name,
             'living_space_count' => $roomType->livingSpaceCount,
@@ -36,12 +37,12 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
         ]);
     }
 
-    public function get(string $id): ?RoomType
+    public function get(RoomTypeId $id): ?RoomType
     {
         /** @var array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, amenities: string, created_at: string}|false $row */
         $row = $this->roomConnection->fetchAssociative(
             'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, amenities, created_at FROM room_type WHERE id = :id',
-            ['id' => $id],
+            ['id' => $id->value],
         );
 
         if (false === $row) {
@@ -71,7 +72,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
             'is_accessible' => $roomType->isAccessible,
             'bed_composition' => json_encode($roomType->bedComposition->toArray(), \JSON_THROW_ON_ERROR),
             'amenities' => $this->serializeAmenities($roomType->amenities),
-        ], ['id' => $roomType->id], [
+        ], ['id' => $roomType->id->value], [
             'is_accessible' => Types::BOOLEAN,
         ]);
     }
@@ -80,12 +81,12 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
     {
         $this->roomConnection->update('room_type', [
             'amenities' => $this->serializeAmenities($roomType->amenities),
-        ], ['id' => $roomType->id]);
+        ], ['id' => $roomType->id->value]);
     }
 
-    public function delete(string $id): void
+    public function delete(RoomTypeId $id): void
     {
-        $this->roomConnection->delete('room_type', ['id' => $id]);
+        $this->roomConnection->delete('room_type', ['id' => $id->value]);
     }
 
     public function list(string $hotelId, int $page, int $limit): RoomTypePage
@@ -115,7 +116,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
         $bedData = json_decode($row['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
 
         return new RoomType(
-            $row['id'],
+            new RoomTypeId($row['id']),
             $row['hotel_id'],
             $row['name'],
             (int) $row['living_space_count'],
