@@ -7,6 +7,7 @@ namespace App\Tests\Search\Infrastructure\Persistence;
 use App\Search\Infrastructure\Persistence\HotelRoomTypeWriter;
 use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -92,7 +93,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($searchConnection, $hotelConnection))
-            ->upsertRoomType('rt-id-1', new HotelId('hotel-id-1'), 'Standard', 2, [['type' => 'double', 'count' => 1]]);
+            ->upsertRoomType(new RoomTypeId('rt-id-1'), new HotelId('hotel-id-1'), 'Standard', 2, [['type' => 'double', 'count' => 1]]);
     }
 
     #[Test]
@@ -105,7 +106,7 @@ final class HotelRoomTypeWriterTest extends TestCase
         $searchConnection->expects($this->never())->method('executeStatement');
 
         (new HotelRoomTypeWriter($searchConnection, $hotelConnection))
-            ->upsertRoomType('rt-id-1', new HotelId('missing-hotel'), 'Standard', 2, []);
+            ->upsertRoomType(new RoomTypeId('rt-id-1'), new HotelId('missing-hotel'), 'Standard', 2, []);
     }
 
     #[Test]
@@ -124,7 +125,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateRoomType('rt-id-1', 'Standard Plus', 3, [['type' => 'king', 'count' => 1]]);
+            ->updateRoomType(new RoomTypeId('rt-id-1'), 'Standard Plus', 3, [['type' => 'king', 'count' => 1]]);
     }
 
     #[Test]
@@ -139,7 +140,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateRoomAmenities('rt-id-1', ['wifi', 'tv']);
+            ->updateRoomAmenities(new RoomTypeId('rt-id-1'), ['wifi', 'tv']);
     }
 
     #[Test]
@@ -154,7 +155,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->deleteRoomType('rt-id-1');
+            ->deleteRoomType(new RoomTypeId('rt-id-1'));
     }
 
     #[Test]

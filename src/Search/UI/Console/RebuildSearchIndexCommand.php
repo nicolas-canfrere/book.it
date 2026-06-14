@@ -9,6 +9,7 @@ use App\Search\Domain\Port\RoomIndexWriterInterface;
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -48,7 +49,7 @@ final class RebuildSearchIndexCommand extends Command
             /** @var list<array{type: string, count: int}> $beds */
             $beds = json_decode($rt['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
             $this->hotelRoomTypeWriter->upsertRoomType(
-                roomTypeId: $rt['id'],
+                roomTypeId: new RoomTypeId($rt['id']),
                 hotelId: new HotelId($rt['hotel_id']),
                 name: $rt['name'],
                 guestCapacity: (int) $rt['guest_capacity'],
@@ -65,7 +66,7 @@ final class RebuildSearchIndexCommand extends Command
         foreach ($rooms as $room) {
             $this->roomIndexWriter->upsert(
                 roomId: new RoomId($room['id']),
-                roomTypeId: $room['room_type_id'],
+                roomTypeId: new RoomTypeId($room['room_type_id']),
                 hotelId: new HotelId($room['hotel_id']),
             );
         }

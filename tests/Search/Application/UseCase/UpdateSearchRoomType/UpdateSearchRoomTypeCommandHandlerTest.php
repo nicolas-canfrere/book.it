@@ -7,6 +7,7 @@ namespace App\Tests\Search\Application\UseCase\UpdateSearchRoomType;
 use App\Search\Application\UseCase\UpdateSearchRoomType\UpdateSearchRoomTypeCommand;
 use App\Search\Application\UseCase\UpdateSearchRoomType\UpdateSearchRoomTypeCommandHandler;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,11 +21,11 @@ final class UpdateSearchRoomTypeCommandHandlerTest extends TestCase
         $writer = $this->createMock(HotelRoomTypeWriterInterface::class);
         $writer->expects($this->once())
             ->method('updateRoomType')
-            ->with('rt-id-1', 'Standard Plus', 3, [['type' => 'king', 'count' => 1]]);
+            ->with(new RoomTypeId('rt-id-1'), 'Standard Plus', 3, [['type' => 'king', 'count' => 1]]);
 
         $handler = new UpdateSearchRoomTypeCommandHandler($writer);
         ($handler)(new UpdateSearchRoomTypeCommand(
-            roomTypeId: 'rt-id-1',
+            roomTypeId: new RoomTypeId('rt-id-1'),
             name: 'Standard Plus',
             guestCapacity: 3,
             bedComposition: [['type' => 'king', 'count' => 1]],

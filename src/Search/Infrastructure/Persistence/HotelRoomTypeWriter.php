@@ -7,6 +7,7 @@ namespace App\Search\Infrastructure\Persistence;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 
 final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
@@ -34,7 +35,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
     }
 
     public function upsertRoomType(
-        string $roomTypeId,
+        RoomTypeId $roomTypeId,
         HotelId $hotelId,
         string $name,
         int $guestCapacity,
@@ -68,7 +69,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
                 bed_composition = EXCLUDED.bed_composition
             SQL,
             [
-                'roomTypeId' => $roomTypeId,
+                'roomTypeId' => $roomTypeId->value,
                 'hotelId' => $hotelId->value,
                 'hotelName' => $hotel['name'],
                 'city' => $hotel['city'],
@@ -83,7 +84,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
     }
 
     public function updateRoomType(
-        string $roomTypeId,
+        RoomTypeId $roomTypeId,
         string $name,
         int $guestCapacity,
         array $bedComposition,
@@ -100,24 +101,24 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
                 'name' => $name,
                 'guestCapacity' => $guestCapacity,
                 'bedComposition' => json_encode($bedComposition, \JSON_THROW_ON_ERROR),
-                'roomTypeId' => $roomTypeId,
+                'roomTypeId' => $roomTypeId->value,
             ],
         );
     }
 
-    public function updateRoomAmenities(string $roomTypeId, array $amenities): void
+    public function updateRoomAmenities(RoomTypeId $roomTypeId, array $amenities): void
     {
         $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET room_amenities = :amenities WHERE room_type_id = :roomTypeId',
-            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'roomTypeId' => $roomTypeId],
+            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'roomTypeId' => $roomTypeId->value],
         );
     }
 
-    public function deleteRoomType(string $roomTypeId): void
+    public function deleteRoomType(RoomTypeId $roomTypeId): void
     {
         $this->searchConnection->executeStatement(
             'DELETE FROM hotel_room_types WHERE room_type_id = :roomTypeId',
-            ['roomTypeId' => $roomTypeId],
+            ['roomTypeId' => $roomTypeId->value],
         );
     }
 

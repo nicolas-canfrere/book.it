@@ -9,6 +9,7 @@ use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Domain\Event\RoomRegistered;
 use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: RoomRegistered::class)]
@@ -23,7 +24,7 @@ final readonly class RoomRegisteredListener
         $this->commandDispatcher->dispatch(new RegisterSearchRoomCommand(
             roomId: new RoomId($event->roomId),
             hotelId: new HotelId($event->hotelId),
-            roomTypeId: $event->roomTypeId,
+            roomTypeId: new RoomTypeId($event->roomTypeId),
         ));
     }
 }

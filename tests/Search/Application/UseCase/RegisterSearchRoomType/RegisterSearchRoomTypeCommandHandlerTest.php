@@ -8,6 +8,7 @@ use App\Search\Application\UseCase\RegisterSearchRoomType\RegisterSearchRoomType
 use App\Search\Application\UseCase\RegisterSearchRoomType\RegisterSearchRoomTypeCommandHandler;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -21,11 +22,11 @@ final class RegisterSearchRoomTypeCommandHandlerTest extends TestCase
         $writer = $this->createMock(HotelRoomTypeWriterInterface::class);
         $writer->expects($this->once())
             ->method('upsertRoomType')
-            ->with('rt-id-1', new HotelId('hotel-id-1'), 'Standard', 2, [['type' => 'double', 'count' => 1]]);
+            ->with(new RoomTypeId('rt-id-1'), new HotelId('hotel-id-1'), 'Standard', 2, [['type' => 'double', 'count' => 1]]);
 
         $handler = new RegisterSearchRoomTypeCommandHandler($writer);
         ($handler)(new RegisterSearchRoomTypeCommand(
-            roomTypeId: 'rt-id-1',
+            roomTypeId: new RoomTypeId('rt-id-1'),
             hotelId: new HotelId('hotel-id-1'),
             name: 'Standard',
             guestCapacity: 2,

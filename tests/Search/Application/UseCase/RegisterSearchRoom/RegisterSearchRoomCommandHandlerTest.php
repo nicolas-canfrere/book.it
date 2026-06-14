@@ -9,6 +9,7 @@ use App\Search\Application\UseCase\RegisterSearchRoom\RegisterSearchRoomCommandH
 use App\Search\Domain\Port\RoomIndexWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -22,9 +23,9 @@ final class RegisterSearchRoomCommandHandlerTest extends TestCase
         $writer = $this->createMock(RoomIndexWriterInterface::class);
         $writer->expects($this->once())
             ->method('upsert')
-            ->with(new RoomId('room-id-1'), 'rt-id-1', new HotelId('hotel-id-1'));
+            ->with(new RoomId('room-id-1'), new RoomTypeId('rt-id-1'), new HotelId('hotel-id-1'));
 
         $handler = new RegisterSearchRoomCommandHandler($writer);
-        ($handler)(new RegisterSearchRoomCommand(roomId: new RoomId('room-id-1'), hotelId: new HotelId('hotel-id-1'), roomTypeId: 'rt-id-1'));
+        ($handler)(new RegisterSearchRoomCommand(roomId: new RoomId('room-id-1'), hotelId: new HotelId('hotel-id-1'), roomTypeId: new RoomTypeId('rt-id-1')));
     }
 }
