@@ -6,6 +6,7 @@ namespace App\Search\Infrastructure\Persistence;
 
 use App\Search\Domain\Port\RoomIndexWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class RoomIndexWriter implements RoomIndexWriterInterface
@@ -14,7 +15,7 @@ final readonly class RoomIndexWriter implements RoomIndexWriterInterface
     {
     }
 
-    public function upsert(string $roomId, string $roomTypeId, HotelId $hotelId): void
+    public function upsert(RoomId $roomId, string $roomTypeId, HotelId $hotelId): void
     {
         $this->searchConnection->executeStatement(
             <<<'SQL'
@@ -24,7 +25,7 @@ final readonly class RoomIndexWriter implements RoomIndexWriterInterface
                 room_type_id = EXCLUDED.room_type_id,
                 hotel_id     = EXCLUDED.hotel_id
             SQL,
-            ['roomId' => $roomId, 'roomTypeId' => $roomTypeId, 'hotelId' => $hotelId->value],
+            ['roomId' => $roomId->value, 'roomTypeId' => $roomTypeId, 'hotelId' => $hotelId->value],
         );
     }
 }

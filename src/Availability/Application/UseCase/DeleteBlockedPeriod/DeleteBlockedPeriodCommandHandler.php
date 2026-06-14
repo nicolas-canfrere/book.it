@@ -29,7 +29,7 @@ final readonly class DeleteBlockedPeriodCommandHandler implements SyncCommandHan
         $this->repository->remove($command->id);
 
         $this->eventDispatcher->dispatch(new BlockedPeriodDeleted(
-            roomId: $blockedPeriod->roomId,
+            roomId: $blockedPeriod->roomId->value,
             checkIn: $blockedPeriod->period->checkIn,
             checkOut: $blockedPeriod->period->checkOut,
         ));

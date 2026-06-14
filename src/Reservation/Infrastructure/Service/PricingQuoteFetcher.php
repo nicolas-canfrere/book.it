@@ -9,6 +9,7 @@ use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Domain\ValueObject\PricingQuoteSnapshot;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class PricingQuoteFetcher implements PricingQuoteFetcherInterface
 {
@@ -16,10 +17,10 @@ final readonly class PricingQuoteFetcher implements PricingQuoteFetcherInterface
     {
     }
 
-    public function fetch(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteSnapshot
+    public function fetch(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteSnapshot
     {
         try {
-            $view = $this->pricingFinder->fetch($roomId, $checkIn, $checkOut);
+            $view = $this->pricingFinder->fetch($roomId->value, $checkIn, $checkOut);
 
             return new PricingQuoteSnapshot(
                 $view->totalAmountCents,

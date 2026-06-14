@@ -15,7 +15,7 @@ final class RatePeriodSerializer
     {
         return [
             'id' => $ratePeriod->id,
-            'roomId' => $ratePeriod->roomId,
+            'roomId' => $ratePeriod->roomId->value,
             'checkIn' => $ratePeriod->checkIn->format('Y-m-d'),
             'checkOut' => $ratePeriod->checkOut->format('Y-m-d'),
             'amountCents' => $ratePeriod->amountCents,

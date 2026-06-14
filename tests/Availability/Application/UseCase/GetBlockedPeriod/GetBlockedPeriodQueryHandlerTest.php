@@ -9,6 +9,7 @@ use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommandHandler;
 use App\Availability\Application\UseCase\GetBlockedPeriod\GetBlockedPeriodQuery;
 use App\Availability\Application\UseCase\GetBlockedPeriod\GetBlockedPeriodQueryHandler;
 use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -30,7 +31,7 @@ final class GetBlockedPeriodQueryHandlerTest extends TestCase
         $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable('2025-01-01 10:00:00'),

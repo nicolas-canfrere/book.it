@@ -9,6 +9,7 @@ use App\Pricing\Application\Contract\CancellationPolicyView;
 use App\Pricing\Domain\Model\CancellationPolicy;
 use App\Pricing\Domain\Port\CancellationPolicyRepositoryInterface;
 use App\Pricing\Infrastructure\Contract\DoctrineCancellationPolicyFinder;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -29,7 +30,7 @@ final class DoctrineCancellationPolicyFinderTest extends TestCase
     #[Test]
     public function itReturnsViewWhenPolicyExists(): void
     {
-        $policy = new CancellationPolicy('room-1', 7, new \DateTimeImmutable());
+        $policy = new CancellationPolicy(new RoomId('room-1'), 7, new \DateTimeImmutable());
         $this->repository->method('findByRoomId')->willReturn($policy);
 
         $view = $this->finder->find('room-1');

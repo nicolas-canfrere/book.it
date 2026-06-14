@@ -12,6 +12,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -95,7 +96,7 @@ final class ReservationCancelByBookerTest extends TestCase
     {
         return new Reservation(
             id: self::ID,
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod($checkIn, $checkIn->modify('+3 days')),
             totalPrice: 30000,

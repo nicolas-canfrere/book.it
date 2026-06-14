@@ -8,6 +8,7 @@ use App\Availability\Domain\Model\BlockedPeriod;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryInterface
@@ -20,7 +21,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     {
         $this->availabilityConnection->insert('blocked_period', [
             'id' => $period->id->value,
-            'room_id' => $period->roomId,
+            'room_id' => $period->roomId->value,
             'check_in' => $period->period->checkIn->format('Y-m-d'),
             'check_out' => $period->period->checkOut->format('Y-m-d'),
             'created_at' => $period->createdAt->format('Y-m-d H:i:s'),
@@ -47,7 +48,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
         $this->availabilityConnection->delete('blocked_period', ['id' => $id->value]);
     }
 
-    public function hasOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
+    public function hasOverlap(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
     {
         $count = $this->availabilityConnection->fetchOne(
             'SELECT COUNT(*) FROM blocked_period
@@ -55,7 +56,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
                AND check_in < :checkOut
                AND check_out > :checkIn',
             [
-                'roomId' => $roomId,
+                'roomId' => $roomId->value,
                 'checkIn' => $checkIn->format('Y-m-d'),
                 'checkOut' => $checkOut->format('Y-m-d'),
             ],
@@ -65,28 +66,28 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     }
 
     /** @return list<BlockedPeriod> */
-    public function listByRoomId(string $roomId): array
+    public function listByRoomId(RoomId $roomId): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, created_at: string}> $rows */
         $rows = $this->availabilityConnection->fetchAllAssociative(
             'SELECT id, room_id, check_in, check_out, created_at FROM blocked_period
              WHERE room_id = :roomId
              ORDER BY check_in ASC',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         return array_map($this->hydrate(...), $rows);
     }
 
     public function removeByRoomAndPeriod(
-        string $roomId,
+        RoomId $roomId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void {
         $this->availabilityConnection->executeStatement(
             'DELETE FROM blocked_period WHERE room_id = :roomId AND check_in = :checkIn AND check_out = :checkOut',
             [
-                'roomId' => $roomId,
+                'roomId' => $roomId->value,
                 'checkIn' => $checkIn->format('Y-m-d'),
                 'checkOut' => $checkOut->format('Y-m-d'),
             ],
@@ -100,7 +101,7 @@ final readonly class BlockedPeriodRepository implements BlockedPeriodRepositoryI
     {
         return new BlockedPeriod(
             new BlockedPeriodId($row['id']),
-            $row['room_id'],
+            new RoomId($row['room_id']),
             new DatePeriod(
                 new \DateTimeImmutable($row['check_in']),
                 new \DateTimeImmutable($row['check_out']),

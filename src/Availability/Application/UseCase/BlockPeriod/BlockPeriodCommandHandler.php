@@ -26,7 +26,7 @@ final readonly class BlockPeriodCommandHandler implements SyncCommandHandlerInte
     public function __invoke(BlockPeriodCommand $command): void
     {
         if (!$this->roomExists->exists($command->roomId)) {
-            throw new RoomNotFoundException($command->roomId);
+            throw new RoomNotFoundException($command->roomId->value);
         }
 
         if ($this->repository->hasOverlap($command->roomId, $command->checkIn, $command->checkOut)) {
@@ -42,7 +42,7 @@ final readonly class BlockPeriodCommandHandler implements SyncCommandHandlerInte
 
         $this->eventDispatcher->dispatch(new BlockedPeriodCreated(
             blockedPeriodId: $command->id->value,
-            roomId: $command->roomId,
+            roomId: $command->roomId->value,
             checkIn: $command->checkIn,
             checkOut: $command->checkOut,
         ));

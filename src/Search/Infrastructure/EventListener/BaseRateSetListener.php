@@ -7,6 +7,7 @@ namespace App\Search\Infrastructure\EventListener;
 use App\Search\Application\UseCase\UpdateSearchBaseRate\UpdateSearchBaseRateCommand;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Domain\Event\BaseRateSet;
+use App\Shared\Domain\ValueObject\RoomId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: BaseRateSet::class)]
@@ -19,7 +20,7 @@ final readonly class BaseRateSetListener
     public function __invoke(BaseRateSet $event): void
     {
         $this->commandDispatcher->dispatch(new UpdateSearchBaseRateCommand(
-            roomId: $event->roomId,
+            roomId: new RoomId($event->roomId),
             amountCents: $event->amountCents,
         ));
     }

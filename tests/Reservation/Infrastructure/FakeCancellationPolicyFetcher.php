@@ -6,6 +6,7 @@ namespace App\Tests\Reservation\Infrastructure;
 
 use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class FakeCancellationPolicyFetcher implements CancellationPolicyFetcherInterface
 {
@@ -21,7 +22,7 @@ final class FakeCancellationPolicyFetcher implements CancellationPolicyFetcherIn
         $this->terms = $terms;
     }
 
-    public function fetch(string $roomId): CancellationTerms
+    public function fetch(RoomId $roomId): CancellationTerms
     {
         return $this->terms;
     }

@@ -6,6 +6,7 @@ namespace App\Pricing\Domain\Port;
 
 use App\Pricing\Domain\Model\RatePeriod;
 use App\Pricing\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 
 interface RatePeriodRepositoryInterface
 {
@@ -14,12 +15,12 @@ interface RatePeriodRepositoryInterface
     public function findById(string $id): ?RatePeriod;
 
     /** @return list<RatePeriod> */
-    public function findByRoomId(string $roomId): array;
+    public function findByRoomId(RoomId $roomId): array;
 
     /** @return list<RatePeriod> */
-    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array;
+    public function findOverlappingByRoomId(RoomId $roomId, DatePeriod $period): array;
 
-    public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool;
+    public function hasOverlap(RoomId $roomId, DatePeriod $period, ?string $excludeId = null): bool;
 
     public function delete(RatePeriod $ratePeriod): void;
 }

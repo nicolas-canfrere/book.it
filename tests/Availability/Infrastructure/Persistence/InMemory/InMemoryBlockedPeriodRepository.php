@@ -7,6 +7,7 @@ namespace App\Tests\Availability\Infrastructure\Persistence\InMemory;
 use App\Availability\Domain\Model\BlockedPeriod;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryInterface
 {
@@ -28,10 +29,10 @@ final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryIn
         unset($this->periods[$id->value]);
     }
 
-    public function hasOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
+    public function hasOverlap(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
     {
         foreach ($this->periods as $period) {
-            if ($period->roomId !== $roomId) {
+            if ($period->roomId->value !== $roomId->value) {
                 continue;
             }
             if ($checkIn < $period->period->checkOut && $checkOut > $period->period->checkIn) {
@@ -43,12 +44,12 @@ final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryIn
     }
 
     public function removeByRoomAndPeriod(
-        string $roomId,
+        RoomId $roomId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void {
         foreach ($this->periods as $key => $period) {
-            if ($period->roomId === $roomId
+            if ($period->roomId->value === $roomId->value
                 && $period->period->checkIn == $checkIn
                 && $period->period->checkOut == $checkOut
             ) {
@@ -60,11 +61,11 @@ final class InMemoryBlockedPeriodRepository implements BlockedPeriodRepositoryIn
     }
 
     /** @return list<BlockedPeriod> */
-    public function listByRoomId(string $roomId): array
+    public function listByRoomId(RoomId $roomId): array
     {
         $filtered = array_values(array_filter(
             $this->periods,
-            static fn(BlockedPeriod $p) => $p->roomId === $roomId,
+            static fn(BlockedPeriod $p) => $p->roomId->value === $roomId->value,
         ));
 
         usort($filtered, static fn(BlockedPeriod $a, BlockedPeriod $b) => $a->period->checkIn <=> $b->period->checkIn);

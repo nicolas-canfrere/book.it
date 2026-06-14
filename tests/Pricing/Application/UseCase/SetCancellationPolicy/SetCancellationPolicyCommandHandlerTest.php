@@ -8,6 +8,7 @@ use App\Pricing\Application\UseCase\SetCancellationPolicy\SetCancellationPolicyC
 use App\Pricing\Application\UseCase\SetCancellationPolicy\SetCancellationPolicyCommandHandler;
 use App\Pricing\Domain\Exception\RoomNotFoundException;
 use App\Pricing\Domain\Port\RoomExistsInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryCancellationPolicyRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,20 +29,20 @@ final class SetCancellationPolicyCommandHandlerTest extends TestCase
     #[Test]
     public function itCreatesCancellationPolicy(): void
     {
-        $roomId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+        $roomId = new RoomId('f47ac10b-58cc-4372-a567-0e02b2c3d479');
 
         ($this->handler)(new SetCancellationPolicyCommand($roomId, 14));
 
         $policy = $this->repository->findByRoomId($roomId);
         self::assertNotNull($policy);
-        self::assertSame($roomId, $policy->roomId);
+        self::assertSame('f47ac10b-58cc-4372-a567-0e02b2c3d479', $policy->roomId->value);
         self::assertSame(14, $policy->daysThreshold);
     }
 
     #[Test]
     public function itUpsetsExistingPolicy(): void
     {
-        $roomId = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+        $roomId = new RoomId('f47ac10b-58cc-4372-a567-0e02b2c3d479');
 
         ($this->handler)(new SetCancellationPolicyCommand($roomId, 7));
         ($this->handler)(new SetCancellationPolicyCommand($roomId, 30));
@@ -57,7 +58,7 @@ final class SetCancellationPolicyCommandHandlerTest extends TestCase
         $handler = $this->makeHandler(false);
 
         $this->expectException(RoomNotFoundException::class);
-        ($handler)(new SetCancellationPolicyCommand('f47ac10b-58cc-4372-a567-0e02b2c3d479', 14));
+        ($handler)(new SetCancellationPolicyCommand(new RoomId('f47ac10b-58cc-4372-a567-0e02b2c3d479'), 14));
     }
 
     private function makeHandler(bool $roomExists): SetCancellationPolicyCommandHandler

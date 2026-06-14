@@ -7,6 +7,7 @@ namespace App\Tests\Search\Application\UseCase\AddSearchUnavailablePeriod;
 use App\Search\Application\UseCase\AddSearchUnavailablePeriod\AddSearchUnavailablePeriodCommand;
 use App\Search\Application\UseCase\AddSearchUnavailablePeriod\AddSearchUnavailablePeriodCommandHandler;
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -23,12 +24,12 @@ final class AddSearchUnavailablePeriodCommandHandlerTest extends TestCase
 
         $writer->expects($this->once())
             ->method('add')
-            ->with('source-id-1', 'room-id-1', $checkIn, $checkOut);
+            ->with('source-id-1', new RoomId('room-id-1'), $checkIn, $checkOut);
 
         $handler = new AddSearchUnavailablePeriodCommandHandler($writer);
         ($handler)(new AddSearchUnavailablePeriodCommand(
             sourceId: 'source-id-1',
-            roomId: 'room-id-1',
+            roomId: new RoomId('room-id-1'),
             checkIn: $checkIn,
             checkOut: $checkOut,
         ));

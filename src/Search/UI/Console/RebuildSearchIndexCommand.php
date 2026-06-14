@@ -8,6 +8,7 @@ use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
 use App\Search\Domain\Port\RoomIndexWriterInterface;
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -63,7 +64,7 @@ final class RebuildSearchIndexCommand extends Command
         );
         foreach ($rooms as $room) {
             $this->roomIndexWriter->upsert(
-                roomId: $room['id'],
+                roomId: new RoomId($room['id']),
                 roomTypeId: $room['room_type_id'],
                 hotelId: new HotelId($room['hotel_id']),
             );
@@ -77,7 +78,7 @@ final class RebuildSearchIndexCommand extends Command
         );
         foreach ($baseRates as $rate) {
             $this->hotelRoomTypeWriter->updateBaseRateByRoom(
-                roomId: $rate['room_id'],
+                roomId: new RoomId($rate['room_id']),
                 amountCents: (int) $rate['amount_cents'],
             );
         }
@@ -91,7 +92,7 @@ final class RebuildSearchIndexCommand extends Command
         foreach ($holds as $hold) {
             $this->unavailablePeriodWriter->add(
                 sourceId: $hold['id'],
-                roomId: $hold['room_id'],
+                roomId: new RoomId($hold['room_id']),
                 checkIn: new \DateTimeImmutable($hold['check_in']),
                 checkOut: new \DateTimeImmutable($hold['check_out']),
             );
@@ -106,7 +107,7 @@ final class RebuildSearchIndexCommand extends Command
         foreach ($blockedPeriods as $bp) {
             $this->unavailablePeriodWriter->add(
                 sourceId: $bp['id'],
-                roomId: $bp['room_id'],
+                roomId: new RoomId($bp['room_id']),
                 checkIn: new \DateTimeImmutable($bp['check_in']),
                 checkOut: new \DateTimeImmutable($bp['check_out']),
             );

@@ -4,17 +4,19 @@ declare(strict_types=1);
 
 namespace App\Search\Domain\Port;
 
+use App\Shared\Domain\ValueObject\RoomId;
+
 interface UnavailablePeriodWriterInterface
 {
     public function add(
         string $sourceId,
-        string $roomId,
+        RoomId $roomId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void;
 
     public function removeByPeriod(
-        string $roomId,
+        RoomId $roomId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void;

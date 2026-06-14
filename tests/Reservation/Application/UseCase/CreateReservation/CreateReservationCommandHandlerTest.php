@@ -18,6 +18,7 @@ use App\Reservation\Domain\ValueObject\NightPrice;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Domain\ValueObject\PricingQuoteSnapshot;
 use App\Shared\Domain\Event\ReservationCreated;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Fake\FakeAsyncCommandDispatcher;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Fake\FakeTransactionManager;
@@ -86,7 +87,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         $reservation = $this->repository->get(self::RESERVATION_ID);
         self::assertNotNull($reservation);
         self::assertSame(self::RESERVATION_ID, $reservation->id);
-        self::assertSame(self::ROOM_ID, $reservation->roomId);
+        self::assertSame(self::ROOM_ID, $reservation->roomId->value);
         self::assertSame(self::BOOKER_ID, $reservation->bookerId);
         self::assertSame('2026-06-01', $reservation->period->checkIn->format('Y-m-d'));
         self::assertSame('2026-06-05', $reservation->period->checkOut->format('Y-m-d'));
@@ -223,7 +224,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     {
         return new CreateReservationCommand(
             id: $id,
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             checkIn: new \DateTimeImmutable('2026-06-01'),
             checkOut: new \DateTimeImmutable('2026-06-05'),

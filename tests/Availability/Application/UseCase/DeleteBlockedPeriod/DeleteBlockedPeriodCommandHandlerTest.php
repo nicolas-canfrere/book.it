@@ -14,6 +14,7 @@ use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use App\Shared\Domain\Event\BlockedPeriodDeleted;
 use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -35,7 +36,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
         $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable(),
@@ -69,7 +70,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
 
         $blockedPeriod = new BlockedPeriod(
             id: new BlockedPeriodId('bp-id-1'),
-            roomId: 'room-id-1',
+            roomId: new RoomId('room-id-1'),
             period: new DatePeriod($checkIn, $checkOut),
             createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),
         );

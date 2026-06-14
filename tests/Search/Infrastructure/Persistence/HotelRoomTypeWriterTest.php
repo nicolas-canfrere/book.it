@@ -6,6 +6,7 @@ namespace App\Tests\Search\Infrastructure\Persistence;
 
 use App\Search\Infrastructure\Persistence\HotelRoomTypeWriter;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -177,7 +178,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateBaseRateByRoom('room-id-1', 15000);
+            ->updateBaseRateByRoom(new RoomId('room-id-1'), 15000);
     }
 
     #[Test]
@@ -188,6 +189,6 @@ final class HotelRoomTypeWriterTest extends TestCase
         $connection->expects($this->never())->method('executeStatement');
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateBaseRateByRoom('unknown-room', 15000);
+            ->updateBaseRateByRoom(new RoomId('unknown-room'), 15000);
     }
 }

@@ -8,6 +8,7 @@ use App\Pricing\Application\UseCase\DeleteRatePeriod\DeleteRatePeriodCommand;
 use App\Pricing\Application\UseCase\DeleteRatePeriod\DeleteRatePeriodCommandHandler;
 use App\Pricing\Domain\Exception\RatePeriodNotFoundException;
 use App\Pricing\Domain\Model\RatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryRatePeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -30,7 +31,7 @@ final class DeleteRatePeriodCommandHandlerTest extends TestCase
     {
         $this->repository->save(new RatePeriod(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,

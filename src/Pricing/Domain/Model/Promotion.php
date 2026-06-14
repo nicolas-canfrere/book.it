@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Model;
 
+use App\Shared\Domain\ValueObject\RoomId;
+
 final class Promotion
 {
     public function __construct(
         public readonly string $id,
-        public readonly string $roomId,
+        public readonly RoomId $roomId,
         private \DateTimeImmutable $checkIn,
         private \DateTimeImmutable $checkOut,
         private int $discountPercent,

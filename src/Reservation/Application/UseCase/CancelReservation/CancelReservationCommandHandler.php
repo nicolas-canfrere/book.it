@@ -36,7 +36,7 @@ final readonly class CancelReservationCommandHandler implements SyncCommandHandl
 
         $this->eventDispatcher->dispatch(new ReservationCancelled(
             reservationId: $reservation->id,
-            roomId: $reservation->roomId,
+            roomId: $reservation->roomId->value,
             bookerId: $reservation->bookerId,
             refundAmountCents: $refundAmountCents,
             checkIn: $reservation->period->checkIn,

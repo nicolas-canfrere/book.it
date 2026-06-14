@@ -14,7 +14,7 @@ final readonly class CancellationPolicySerializer
     public function serialize(CancellationPolicy $policy): array
     {
         return [
-            'room_id' => $policy->roomId,
+            'room_id' => $policy->roomId->value,
             'days_threshold' => $policy->daysThreshold,
             'updated_at' => $policy->updatedAt->format(\DateTimeInterface::ATOM),
         ];

@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
 
@@ -26,7 +27,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     {
         $this->reservationConnection->insert('reservation', [
             'id' => $reservation->id,
-            'room_id' => $reservation->roomId,
+            'room_id' => $reservation->roomId->value,
             'booker_id' => $reservation->bookerId,
             'check_in' => $reservation->period->checkIn->format('Y-m-d'),
             'check_out' => $reservation->period->checkOut->format('Y-m-d'),
@@ -184,7 +185,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
         $reservation = new Reservation(
             id: $row['id'],
-            roomId: $row['room_id'],
+            roomId: new RoomId($row['room_id']),
             bookerId: $row['booker_id'],
             period: new DatePeriod(
                 new \DateTimeImmutable($row['check_in']),

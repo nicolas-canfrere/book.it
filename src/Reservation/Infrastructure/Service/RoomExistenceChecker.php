@@ -6,6 +6,7 @@ namespace App\Reservation\Infrastructure\Service;
 
 use App\Reservation\Domain\Port\RoomExistsInterface;
 use App\Room\Application\Contract\RoomFinderInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class RoomExistenceChecker implements RoomExistsInterface
 {
@@ -13,8 +14,8 @@ final readonly class RoomExistenceChecker implements RoomExistsInterface
     {
     }
 
-    public function exists(string $roomId): bool
+    public function exists(RoomId $roomId): bool
     {
-        return null !== $this->rooms->find($roomId);
+        return null !== $this->rooms->find($roomId->value);
     }
 }

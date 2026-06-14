@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pricing\Application\Service;
 
 use App\Pricing\Application\UseCase\UpdatePromotion\UpdatePromotionCommand;
+use App\Shared\Domain\ValueObject\RoomId;
 use Psr\Clock\ClockInterface;
 
 final readonly class UpdatePromotionCommandFactory
@@ -18,7 +19,7 @@ final readonly class UpdatePromotionCommandFactory
     {
         return new UpdatePromotionCommand(
             promotionId: $promotionId,
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
             discountPercent: $discountPercent,

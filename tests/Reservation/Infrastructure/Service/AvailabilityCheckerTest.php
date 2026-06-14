@@ -7,6 +7,7 @@ namespace Tests\Reservation\Infrastructure\Service;
 use App\Availability\Application\Contract\AvailabilityCheckerInterface;
 use App\Reservation\Domain\Port\RoomAvailabilityCheckerInterface;
 use App\Reservation\Infrastructure\Service\AvailabilityChecker;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -31,7 +32,7 @@ final class AvailabilityCheckerTest extends TestCase
         $checkIn = new \DateTimeImmutable('2026-07-01');
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
-        self::assertTrue($this->checker->isAvailable('room-1', $checkIn, $checkOut));
+        self::assertTrue($this->checker->isAvailable(new RoomId('room-1'), $checkIn, $checkOut));
     }
 
     #[Test]
@@ -41,6 +42,6 @@ final class AvailabilityCheckerTest extends TestCase
         $checkIn = new \DateTimeImmutable('2026-07-01');
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
-        self::assertFalse($this->checker->isAvailable('room-1', $checkIn, $checkOut));
+        self::assertFalse($this->checker->isAvailable(new RoomId('room-1'), $checkIn, $checkOut));
     }
 }

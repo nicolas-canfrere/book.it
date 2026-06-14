@@ -6,6 +6,7 @@ namespace App\Availability\UI\Http\Controller\CheckAvailability;
 
 use App\Availability\Application\UseCase\CheckAvailability\CheckAvailabilityQuery;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -42,7 +43,7 @@ final readonly class CheckAvailabilityController
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] CheckAvailabilityRequest $request,
     ): Response {
         $available = $this->queryBus->ask(new CheckAvailabilityQuery(
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable((string) $request->checkIn),
             checkOut: new \DateTimeImmutable((string) $request->checkOut),
         ));

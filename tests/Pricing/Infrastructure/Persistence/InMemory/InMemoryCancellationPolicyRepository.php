@@ -6,6 +6,7 @@ namespace App\Tests\Pricing\Infrastructure\Persistence\InMemory;
 
 use App\Pricing\Domain\Model\CancellationPolicy;
 use App\Pricing\Domain\Port\CancellationPolicyRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryCancellationPolicyRepository implements CancellationPolicyRepositoryInterface
 {
@@ -14,16 +15,16 @@ final class InMemoryCancellationPolicyRepository implements CancellationPolicyRe
 
     public function save(CancellationPolicy $policy): void
     {
-        $this->policies[$policy->roomId] = $policy;
+        $this->policies[$policy->roomId->value] = $policy;
     }
 
-    public function findByRoomId(string $roomId): ?CancellationPolicy
+    public function findByRoomId(RoomId $roomId): ?CancellationPolicy
     {
-        return $this->policies[$roomId] ?? null;
+        return $this->policies[$roomId->value] ?? null;
     }
 
-    public function deleteByRoomId(string $roomId): void
+    public function deleteByRoomId(RoomId $roomId): void
     {
-        unset($this->policies[$roomId]);
+        unset($this->policies[$roomId->value]);
     }
 }

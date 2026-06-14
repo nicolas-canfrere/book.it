@@ -34,7 +34,7 @@ final readonly class SetBaseRateCommandHandler implements SyncCommandHandlerInte
         ));
 
         $this->eventDispatcher->dispatch(new BaseRateSet(
-            roomId: $command->roomId,
+            roomId: $command->roomId->value,
             amountCents: $command->amountCents,
         ));
     }

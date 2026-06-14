@@ -22,7 +22,7 @@ final readonly class DeleteBlockedPeriodByRoomAndPeriodCommandHandler implements
         $this->blockedPeriods->removeByRoomAndPeriod($command->roomId, $command->checkIn, $command->checkOut);
 
         $this->eventDispatcher->dispatch(new BlockedPeriodDeleted(
-            roomId: $command->roomId,
+            roomId: $command->roomId->value,
             checkIn: $command->checkIn,
             checkOut: $command->checkOut,
         ));

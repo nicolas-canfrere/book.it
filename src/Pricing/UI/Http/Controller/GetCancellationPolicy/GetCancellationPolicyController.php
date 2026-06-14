@@ -8,6 +8,7 @@ use App\Pricing\Application\UseCase\GetCancellationPolicy\GetCancellationPolicyQ
 use App\Pricing\Domain\Model\CancellationPolicy;
 use App\Pricing\UI\Http\Controller\CancellationPolicySerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -52,7 +53,7 @@ final readonly class GetCancellationPolicyController
     public function __invoke(string $roomId): JsonResponse
     {
         /** @var CancellationPolicy $policy */
-        $policy = $this->queryBus->ask(new GetCancellationPolicyQuery($roomId));
+        $policy = $this->queryBus->ask(new GetCancellationPolicyQuery(new RoomId($roomId)));
 
         return new JsonResponse($this->serializer->serialize($policy));
     }

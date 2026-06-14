@@ -13,7 +13,6 @@ use App\Room\Domain\Port\RoomTypeExistsInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
-use App\Shared\Domain\ValueObject\HotelId;
 
 final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHandlerInterface
 {

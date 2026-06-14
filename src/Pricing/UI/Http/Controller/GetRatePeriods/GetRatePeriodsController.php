@@ -7,6 +7,7 @@ namespace App\Pricing\UI\Http\Controller\GetRatePeriods;
 use App\Pricing\Application\UseCase\GetRatePeriods\GetRatePeriodsQuery;
 use App\Pricing\UI\Http\Controller\RatePeriodSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,7 +56,7 @@ final readonly class GetRatePeriodsController
     )]
     public function __invoke(string $roomId): Response
     {
-        $ratePeriods = $this->queryBus->ask(new GetRatePeriodsQuery($roomId));
+        $ratePeriods = $this->queryBus->ask(new GetRatePeriodsQuery(new RoomId($roomId)));
 
         return new JsonResponse([
             'ratePeriods' => array_map($this->serializer->serialize(...), $ratePeriods),

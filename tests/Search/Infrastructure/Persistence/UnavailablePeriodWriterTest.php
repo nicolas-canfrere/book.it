@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Search\Infrastructure\Persistence;
 
 use App\Search\Infrastructure\Persistence\UnavailablePeriodWriter;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -43,7 +44,7 @@ final class UnavailablePeriodWriterTest extends TestCase
 
         (new UnavailablePeriodWriter($connection))->add(
             'source-id-1',
-            'room-id-1',
+            new RoomId('room-id-1'),
             new \DateTimeImmutable('2026-07-01'),
             new \DateTimeImmutable('2026-07-05'),
         );
@@ -58,7 +59,7 @@ final class UnavailablePeriodWriterTest extends TestCase
 
         (new UnavailablePeriodWriter($connection))->add(
             'source-id-1',
-            'unknown-room',
+            new RoomId('unknown-room'),
             new \DateTimeImmutable('2026-07-01'),
             new \DateTimeImmutable('2026-07-05'),
         );
@@ -76,7 +77,7 @@ final class UnavailablePeriodWriterTest extends TestCase
             );
 
         (new UnavailablePeriodWriter($connection))->removeByPeriod(
-            'room-id-1',
+            new RoomId('room-id-1'),
             new \DateTimeImmutable('2026-07-01'),
             new \DateTimeImmutable('2026-07-05'),
         );

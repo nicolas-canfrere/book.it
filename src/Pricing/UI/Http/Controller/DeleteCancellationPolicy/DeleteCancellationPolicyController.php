@@ -6,6 +6,7 @@ namespace App\Pricing\UI\Http\Controller\DeleteCancellationPolicy;
 
 use App\Pricing\Application\UseCase\DeleteCancellationPolicy\DeleteCancellationPolicyCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -36,7 +37,7 @@ final readonly class DeleteCancellationPolicyController
     )]
     public function __invoke(string $roomId): Response
     {
-        $this->commandBus->execute(new DeleteCancellationPolicyCommand($roomId));
+        $this->commandBus->execute(new DeleteCancellationPolicyCommand(new RoomId($roomId)));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

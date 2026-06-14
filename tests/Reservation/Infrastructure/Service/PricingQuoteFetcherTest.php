@@ -9,6 +9,7 @@ use App\Pricing\Application\Contract\PricingQuoteView;
 use App\Reservation\Domain\Exception\RoomNotBookableException;
 use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Infrastructure\Service\PricingQuoteFetcher;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -37,7 +38,7 @@ final class PricingQuoteFetcherTest extends TestCase
         $checkIn = new \DateTimeImmutable('2026-07-01');
         $checkOut = new \DateTimeImmutable('2026-07-02');
 
-        $snapshot = $this->fetcher->fetch('room-1', $checkIn, $checkOut);
+        $snapshot = $this->fetcher->fetch(new RoomId('room-1'), $checkIn, $checkOut);
 
         self::assertSame(10000, $snapshot->totalAmountCents);
     }
@@ -49,6 +50,6 @@ final class PricingQuoteFetcherTest extends TestCase
 
         $this->expectException(RoomNotBookableException::class);
 
-        $this->fetcher->fetch('room-1', new \DateTimeImmutable('2026-07-01'), new \DateTimeImmutable('2026-07-02'));
+        $this->fetcher->fetch(new RoomId('room-1'), new \DateTimeImmutable('2026-07-01'), new \DateTimeImmutable('2026-07-02'));
     }
 }

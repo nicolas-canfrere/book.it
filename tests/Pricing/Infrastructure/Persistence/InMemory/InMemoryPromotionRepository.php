@@ -7,6 +7,7 @@ namespace App\Tests\Pricing\Infrastructure\Persistence\InMemory;
 use App\Pricing\Domain\Model\Promotion;
 use App\Pricing\Domain\Port\PromotionRepositoryInterface;
 use App\Pricing\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryPromotionRepository implements PromotionRepositoryInterface
 {
@@ -24,11 +25,11 @@ final class InMemoryPromotionRepository implements PromotionRepositoryInterface
     }
 
     /** @return list<Promotion> */
-    public function findByRoomId(string $roomId): array
+    public function findByRoomId(RoomId $roomId): array
     {
         $results = array_values(array_filter(
             $this->promotions,
-            static fn(Promotion $p) => $p->roomId === $roomId,
+            static fn(Promotion $p) => $p->roomId->value === $roomId->value,
         ));
 
         usort($results, static fn(Promotion $a, Promotion $b) => $a->getCheckIn() <=> $b->getCheckIn());
@@ -37,11 +38,11 @@ final class InMemoryPromotionRepository implements PromotionRepositoryInterface
     }
 
     /** @return list<Promotion> */
-    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    public function findOverlappingByRoomId(RoomId $roomId, DatePeriod $period): array
     {
         $filtered = array_values(array_filter(
             $this->promotions,
-            static fn(Promotion $p) => $p->roomId === $roomId
+            static fn(Promotion $p) => $p->roomId->value === $roomId->value
                 && $period->overlaps(new DatePeriod($p->getCheckIn(), $p->getCheckOut())),
         ));
 
@@ -50,10 +51,10 @@ final class InMemoryPromotionRepository implements PromotionRepositoryInterface
         return $filtered;
     }
 
-    public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
+    public function hasOverlap(RoomId $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         foreach ($this->promotions as $promotion) {
-            if ($promotion->roomId !== $roomId) {
+            if ($promotion->roomId->value !== $roomId->value) {
                 continue;
             }
             if (null !== $excludeId && $promotion->id === $excludeId) {

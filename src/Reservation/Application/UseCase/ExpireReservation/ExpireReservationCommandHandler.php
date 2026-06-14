@@ -31,7 +31,7 @@ final readonly class ExpireReservationCommandHandler implements AsyncCommandHand
 
         $this->eventDispatcher->dispatch(new ReservationExpired(
             reservationId: $reservation->id,
-            roomId: $reservation->roomId,
+            roomId: $reservation->roomId->value,
             checkIn: $reservation->period->checkIn,
             checkOut: $reservation->period->checkOut,
         ));

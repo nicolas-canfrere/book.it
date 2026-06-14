@@ -6,6 +6,7 @@ namespace App\Search\Infrastructure\Persistence;
 
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
@@ -120,11 +121,11 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
         );
     }
 
-    public function updateBaseRateByRoom(string $roomId, int $amountCents): void
+    public function updateBaseRateByRoom(RoomId $roomId, int $amountCents): void
     {
         $roomRow = $this->searchConnection->fetchAssociative(
             'SELECT room_type_id FROM room_index WHERE room_id = :roomId',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         if (false === $roomRow) {

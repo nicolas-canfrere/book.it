@@ -11,6 +11,7 @@ use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
 use App\Shared\Domain\Event\AvailabilityHoldCreated;
 use App\Shared\Domain\ValueObject\AvailabilityHoldId;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -33,7 +34,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
 
         ($handler)(new CreateAvailabilityHoldCommand(
             id: new AvailabilityHoldId('hold-uuid'),
-            roomId: 'room-uuid',
+            roomId: new RoomId('room-uuid'),
             reservationId: 'res-uuid',
             checkIn: new \DateTimeImmutable('2030-06-01'),
             checkOut: new \DateTimeImmutable('2030-06-05'),
@@ -56,7 +57,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
 
         ($handler)(new CreateAvailabilityHoldCommand(
             id: new AvailabilityHoldId('hold-uuid'),
-            roomId: 'room-uuid',
+            roomId: new RoomId('room-uuid'),
             reservationId: 'res-uuid',
             checkIn: new \DateTimeImmutable('2030-06-01'),
             checkOut: new \DateTimeImmutable('2030-06-05'),
@@ -93,7 +94,7 @@ final class CreateAvailabilityHoldCommandHandlerTest extends TestCase
 
         ($handler)(new CreateAvailabilityHoldCommand(
             id: new AvailabilityHoldId('hold-id-1'),
-            roomId: 'room-id-1',
+            roomId: new RoomId('room-id-1'),
             reservationId: 'res-id-1',
             checkIn: $checkIn,
             checkOut: $checkOut,

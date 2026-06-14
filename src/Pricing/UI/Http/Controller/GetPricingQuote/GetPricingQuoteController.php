@@ -6,6 +6,7 @@ namespace App\Pricing\UI\Http\Controller\GetPricingQuote;
 
 use App\Pricing\Application\UseCase\GetPricingQuote\GetPricingQuoteQuery;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -62,7 +63,7 @@ final readonly class GetPricingQuoteController
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] GetPricingQuoteRequest $request,
     ): Response {
         $query = new GetPricingQuoteQuery(
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable((string) $request->checkIn),
             checkOut: new \DateTimeImmutable((string) $request->checkOut),
         );

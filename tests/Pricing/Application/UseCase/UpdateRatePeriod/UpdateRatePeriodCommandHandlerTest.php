@@ -9,6 +9,7 @@ use App\Pricing\Application\UseCase\UpdateRatePeriod\UpdateRatePeriodCommandHand
 use App\Pricing\Domain\Exception\RatePeriodNotFoundException;
 use App\Pricing\Domain\Exception\RatePeriodOverlapException;
 use App\Pricing\Domain\Model\RatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryRatePeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -31,7 +32,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
     {
         $this->repository->save(new RatePeriod(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -41,7 +42,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new UpdateRatePeriodCommand(
             ratePeriodId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-07-01'),
             checkOut: new \DateTimeImmutable('2025-07-10'),
             amountCents: 25000,
@@ -62,7 +63,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         $this->repository->save(new RatePeriod(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -72,7 +73,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new UpdateRatePeriodCommand(
             ratePeriodId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-07-01'),
             checkOut: new \DateTimeImmutable('2025-07-10'),
             amountCents: 25000,
@@ -91,7 +92,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new UpdateRatePeriodCommand(
             ratePeriodId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-07-01'),
             checkOut: new \DateTimeImmutable('2025-07-10'),
             amountCents: 25000,
@@ -104,7 +105,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
     {
         $this->repository->save(new RatePeriod(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -114,7 +115,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         $this->repository->save(new RatePeriod(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-07-01'),
             checkOut: new \DateTimeImmutable('2025-07-10'),
             amountCents: 20000,
@@ -126,7 +127,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new UpdateRatePeriodCommand(
             ratePeriodId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-07-05'),
             checkOut: new \DateTimeImmutable('2025-07-15'),
             amountCents: 12000,
@@ -139,7 +140,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
     {
         $this->repository->save(new RatePeriod(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -149,7 +150,7 @@ final class UpdateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new UpdateRatePeriodCommand(
             ratePeriodId: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 15000,

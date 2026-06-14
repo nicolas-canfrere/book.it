@@ -6,6 +6,7 @@ namespace App\Availability\Application\Service;
 
 use App\Availability\Application\UseCase\BlockPeriod\BlockPeriodCommand;
 use App\Availability\Domain\Port\BlockedPeriodIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use Psr\Clock\ClockInterface;
 
 final readonly class BlockPeriodCommandFactory
@@ -20,7 +21,7 @@ final readonly class BlockPeriodCommandFactory
     {
         return new BlockPeriodCommand(
             id: $this->idGenerator->generate(),
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
             createdAt: $this->clock->now(),

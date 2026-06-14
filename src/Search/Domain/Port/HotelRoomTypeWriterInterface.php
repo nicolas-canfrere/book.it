@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Search\Domain\Port;
 
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
 
 interface HotelRoomTypeWriterInterface
 {
@@ -35,5 +36,5 @@ interface HotelRoomTypeWriterInterface
 
     public function deleteRoomType(string $roomTypeId): void;
 
-    public function updateBaseRateByRoom(string $roomId, int $amountCents): void;
+    public function updateBaseRateByRoom(RoomId $roomId, int $amountCents): void;
 }

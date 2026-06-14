@@ -6,6 +6,7 @@ namespace App\Reservation\Infrastructure\Service;
 
 use App\Reservation\Domain\Port\RoomCapacityFetcherInterface;
 use App\Room\Application\Contract\RoomFinderInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class RoomCapacityFetcher implements RoomCapacityFetcherInterface
 {
@@ -13,9 +14,9 @@ final readonly class RoomCapacityFetcher implements RoomCapacityFetcherInterface
     {
     }
 
-    public function fetchCapacity(string $roomId): int
+    public function fetchCapacity(RoomId $roomId): int
     {
-        $view = $this->rooms->find($roomId);
+        $view = $this->rooms->find($roomId->value);
 
         if (null === $view) {
             return 0;

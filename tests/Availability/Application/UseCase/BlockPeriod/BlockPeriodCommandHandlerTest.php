@@ -12,6 +12,7 @@ use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Domain\Port\RoomExistsInterface;
 use App\Shared\Domain\Event\BlockedPeriodCreated;
 use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -39,7 +40,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     {
         $command = new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable('2025-01-01 10:00:00'),
@@ -50,7 +51,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
         $period = $this->repository->get($command->id);
         self::assertNotNull($period);
         self::assertSame($command->id->value, $period->id->value);
-        self::assertSame($command->roomId, $period->roomId);
+        self::assertSame($command->roomId->value, $period->roomId->value);
         self::assertSame('2025-06-10', $period->period->checkIn->format('Y-m-d'));
         self::assertSame('2025-06-13', $period->period->checkOut->format('Y-m-d'));
     }
@@ -63,7 +64,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable(),
@@ -75,7 +76,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     {
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             createdAt: new \DateTimeImmutable(),
@@ -85,7 +86,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-12'),
             checkOut: new \DateTimeImmutable('2025-06-17'),
             createdAt: new \DateTimeImmutable(),
@@ -97,7 +98,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     {
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable(),
@@ -105,7 +106,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-13'),
             checkOut: new \DateTimeImmutable('2025-06-16'),
             createdAt: new \DateTimeImmutable(),
@@ -120,7 +121,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
     {
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            roomId: '550e8400-e29b-41d4-a716-446655440001',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440001'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable(),
@@ -128,7 +129,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-            roomId: '550e8400-e29b-41d4-a716-446655440002',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440002'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable(),
@@ -165,7 +166,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         ($handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('bp-id-1'),
-            roomId: 'room-id-1',
+            roomId: new RoomId('room-id-1'),
             checkIn: $checkIn,
             checkOut: $checkOut,
             createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),
@@ -188,7 +189,7 @@ final class BlockPeriodCommandHandlerTest extends TestCase
 
         ($handler)(new BlockPeriodCommand(
             id: new BlockedPeriodId('bp-id-2'),
-            roomId: 'missing-room',
+            roomId: new RoomId('missing-room'),
             checkIn: new \DateTimeImmutable('2026-07-01'),
             checkOut: new \DateTimeImmutable('2026-07-05'),
             createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),

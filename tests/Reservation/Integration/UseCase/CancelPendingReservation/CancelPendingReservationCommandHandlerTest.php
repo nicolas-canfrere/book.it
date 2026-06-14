@@ -15,6 +15,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationPaymentCancelled;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use Symfony\Bundle\FrameworkBundle\Test\KernelTestCase;
@@ -28,7 +29,7 @@ final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
     {
         $reservation = new Reservation(
             id: 'res-001',
-            roomId: 'room-001',
+            roomId: new RoomId('room-001'),
             bookerId: 'booker-001',
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-07-01'),

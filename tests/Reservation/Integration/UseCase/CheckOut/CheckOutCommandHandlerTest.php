@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationCheckedOut;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -83,7 +84,7 @@ final class CheckOutCommandHandlerTest extends KernelTestCase
     ): Reservation {
         $reservation = new Reservation(
             id: $id,
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             bookerId: $bookerId,
             period: new DatePeriod($checkIn, $checkOut),
             totalPrice: 50000,

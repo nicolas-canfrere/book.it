@@ -9,6 +9,7 @@ use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabili
 use App\Availability\Domain\Port\BlockedPeriodIdGeneratorInterface;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Domain\Event\ReservationConfirmed;
+use App\Shared\Domain\ValueObject\RoomId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: ReservationConfirmed::class)]
@@ -28,7 +29,7 @@ final readonly class ReservationConfirmedListener
 
         $this->commandBus->execute(new BlockPeriodCommand(
             id: $this->idGenerator->generate(),
-            roomId: $event->roomId,
+            roomId: new RoomId($event->roomId),
             checkIn: $event->checkIn,
             checkOut: $event->checkOut,
             createdAt: new \DateTimeImmutable(),
