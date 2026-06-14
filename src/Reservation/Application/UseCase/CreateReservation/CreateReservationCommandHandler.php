@@ -8,15 +8,13 @@ use App\Reservation\Application\UseCase\ExpireReservation\ExpireReservationComma
 use App\Reservation\Domain\Exception\BookerNotFoundException;
 use App\Reservation\Domain\Exception\GuestCapacityExceededException;
 use App\Reservation\Domain\Exception\RoomNotAvailableException;
-use App\Reservation\Domain\Exception\RoomNotFoundException;
 use App\Reservation\Domain\Model\Reservation;
+use App\Reservation\Domain\Port\AvailableRoomPickerInterface;
 use App\Reservation\Domain\Port\BookerExistsInterface;
 use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
 use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
-use App\Reservation\Domain\Port\RoomAvailabilityCheckerInterface;
 use App\Reservation\Domain\Port\RoomCapacityFetcherInterface;
-use App\Reservation\Domain\Port\RoomExistsInterface;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
@@ -29,9 +27,8 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
 {
     public function __construct(
         private ReservationRepositoryInterface $repository,
-        private RoomExistsInterface $roomExists,
+        private AvailableRoomPickerInterface $roomPicker,
         private BookerExistsInterface $bookerExists,
-        private RoomAvailabilityCheckerInterface $availabilityChecker,
         private RoomCapacityFetcherInterface $roomCapacityFetcher,
         private PricingQuoteFetcherInterface $pricingQuoteFetcher,
         private CancellationPolicyFetcherInterface $cancellationPolicyFetcher,
@@ -43,29 +40,27 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
 
     public function __invoke(CreateReservationCommand $command): void
     {
-        if (!$this->roomExists->exists($command->roomId)) {
-            throw new RoomNotFoundException($command->roomId);
+        $roomId = $this->roomPicker->pick($command->roomTypeId, $command->checkIn, $command->checkOut);
+
+        if (null === $roomId) {
+            throw new RoomNotAvailableException($command->roomTypeId);
         }
 
         if (!$this->bookerExists->exists($command->bookerId)) {
             throw new BookerNotFoundException($command->bookerId);
         }
 
-        if (!$this->availabilityChecker->isAvailable($command->roomId, $command->checkIn, $command->checkOut)) {
-            throw new RoomNotAvailableException($command->roomId);
-        }
-
-        $capacity = $this->roomCapacityFetcher->fetchCapacity($command->roomId);
+        $capacity = $this->roomCapacityFetcher->fetchCapacity($roomId);
         if ($command->guestCount > $capacity) {
             throw new GuestCapacityExceededException($command->guestCount, $capacity);
         }
 
-        $pricingQuote = $this->pricingQuoteFetcher->fetch($command->roomId, $command->checkIn, $command->checkOut);
-        $cancellationTerms = $this->cancellationPolicyFetcher->fetch($command->roomId);
+        $pricingQuote = $this->pricingQuoteFetcher->fetch($roomId, $command->checkIn, $command->checkOut);
+        $cancellationTerms = $this->cancellationPolicyFetcher->fetch($roomId);
 
         $reservation = new Reservation(
             id: $command->id,
-            roomId: $command->roomId,
+            roomId: $roomId,
             bookerId: $command->bookerId,
             period: new DatePeriod($command->checkIn, $command->checkOut),
             totalPrice: $pricingQuote->totalAmountCents,

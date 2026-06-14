@@ -275,7 +275,8 @@ deptrac:
         OperatorContract: ~
         PricingContract: ~
         ReservationContract: ~
-        RoomContract: ~
+        RoomContract:
+            - Shared
         SecurityContract: ~
         Shared:
             - Vendor

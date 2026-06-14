@@ -5,13 +5,13 @@ declare(strict_types=1);
 namespace App\Reservation\Application\UseCase\CreateReservation;
 
 use App\Shared\Application\Bus\SyncCommandInterface;
-use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final readonly class CreateReservationCommand implements SyncCommandInterface
 {
     public function __construct(
         public string $id,
-        public RoomId $roomId,
+        public RoomTypeId $roomTypeId,
         public string $bookerId,
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,

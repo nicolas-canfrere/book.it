@@ -17,7 +17,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
     public function itCreatesAReservationAndReturns201(): void
     {
         $client = static::createAuthenticatedClient();
-        [$roomId, $bookerId] = $this->setupRoomAndBooker($client, guestCapacity: 3);
+        [$roomTypeId, $bookerId, $roomId] = $this->setupRoomAndBooker($client, guestCapacity: 3);
         $this->setBaseRate($client, $roomId, 10000);
 
         $client->request(
@@ -25,7 +25,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => $roomId,
+                'roomTypeId' => $roomTypeId,
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
@@ -61,7 +61,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
     public function itReturns422WhenGuestCountExceedsRoomCapacity(): void
     {
         $client = static::createAuthenticatedClient();
-        [$roomId, $bookerId] = $this->setupRoomAndBooker($client, guestCapacity: 1);
+        [$roomTypeId, $bookerId, $roomId] = $this->setupRoomAndBooker($client, guestCapacity: 1);
         $this->setBaseRate($client, $roomId, 10000);
 
         $client->request(
@@ -69,7 +69,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => $roomId,
+                'roomTypeId' => $roomTypeId,
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
@@ -87,7 +87,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
     }
 
     #[Test]
-    public function itReturns404WhenRoomDoesNotExist(): void
+    public function itReturns409WhenRoomTypeDoesNotExist(): void
     {
         $client = static::createAuthenticatedClient();
         [, $bookerId] = $this->setupRoomAndBooker($client);
@@ -97,7 +97,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => '00000000-0000-4000-8000-000000000001',
+                'roomTypeId' => '00000000-0000-4000-8000-000000000001',
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
@@ -106,27 +106,26 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
         );
 
         $response = $client->getResponse();
-        self::assertSame(Response::HTTP_NOT_FOUND, $response->getStatusCode());
+        self::assertSame(Response::HTTP_CONFLICT, $response->getStatusCode());
         self::assertStringContainsString('application/problem+json', (string) $response->headers->get('Content-Type'));
 
-        /** @var array{type: string, title: string, status: int} $body */
+        /** @var array{type: string} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-        self::assertSame('https://book.it/problems/room-not-found', $body['type']);
-        self::assertSame(Response::HTTP_NOT_FOUND, $body['status']);
+        self::assertSame('https://book.it/problems/room-not-available', $body['type']);
     }
 
     #[Test]
     public function itReturns404WhenBookerDoesNotExist(): void
     {
         $client = static::createAuthenticatedClient();
-        [$roomId] = $this->setupRoomAndBooker($client);
+        [$roomTypeId] = $this->setupRoomAndBooker($client);
 
         $client->request(
             method: 'POST',
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => $roomId,
+                'roomTypeId' => $roomTypeId,
                 'bookerId' => '00000000-0000-4000-8000-000000000002',
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
@@ -146,7 +145,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
     public function itReturns409WhenRoomIsNotAvailable(): void
     {
         $client = static::createAuthenticatedClient();
-        [$roomId, $bookerId] = $this->setupRoomAndBooker($client);
+        [$roomTypeId, $bookerId, $roomId] = $this->setupRoomAndBooker($client);
         $this->setBaseRate($client, $roomId, 10000);
         $this->blockPeriod($client, $roomId, '2030-06-01', '2030-06-10');
 
@@ -155,7 +154,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => $roomId,
+                'roomTypeId' => $roomTypeId,
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-03',
                 'checkOut' => '2030-06-07',
@@ -175,7 +174,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
     public function itReturns422WhenRoomHasNoPricing(): void
     {
         $client = static::createAuthenticatedClient();
-        [$roomId, $bookerId] = $this->setupRoomAndBooker($client);
+        [$roomTypeId, $bookerId] = $this->setupRoomAndBooker($client);
         // Intentionally NOT setting a base rate
 
         $client->request(
@@ -183,7 +182,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => $roomId,
+                'roomTypeId' => $roomTypeId,
                 'bookerId' => $bookerId,
                 'checkIn' => '2030-06-01',
                 'checkOut' => '2030-06-05',
@@ -208,13 +207,13 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
             method: 'POST',
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['roomId' => 'not-a-uuid', 'checkIn' => '2030-06-01'], \JSON_THROW_ON_ERROR),
+            content: json_encode(['roomTypeId' => 'not-a-uuid', 'checkIn' => '2030-06-01'], \JSON_THROW_ON_ERROR),
         );
 
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
     }
 
-    /** @return array{string, string} [roomId, bookerId] */
+    /** @return array{string, string, string} [roomTypeId, bookerId, roomId] */
     private function setupRoomAndBooker(KernelBrowser $client, int $guestCapacity = 2): array
     {
         $client->request(
@@ -272,7 +271,7 @@ final class CreateReservationControllerTest extends AuthenticatedWebTestCase
         /** @var array{id: string} $bookerBody */
         $bookerBody = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
-        return [$roomBody['id'], $bookerBody['id']];
+        return [$roomTypeBody['id'], $bookerBody['id'], $roomBody['id']];
     }
 
     private function setBaseRate(KernelBrowser $client, string $roomId, int $amountCents): void

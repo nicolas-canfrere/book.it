@@ -36,6 +36,8 @@ services:
         exclude:
             - '../../src/Reservation/UI/**/*Request.php'
 
+    App\Reservation\Domain\Port\AvailableRoomPickerInterface: '@App\Reservation\Infrastructure\Service\AvailableRoomPicker'
+
     bookit.doctrine.middleware.search_path.reservation:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

@@ -4,12 +4,12 @@ declare(strict_types=1);
 
 namespace App\Reservation\Domain\Exception;
 
-use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final class RoomNotAvailableException extends \DomainException
 {
-    public function __construct(RoomId $roomId)
+    public function __construct(RoomTypeId $roomTypeId)
     {
-        parent::__construct(sprintf('Room "%s" is not available for the requested period.', $roomId->value));
+        parent::__construct(sprintf('No room available for type "%s" on the requested period.', $roomTypeId->value));
     }
 }

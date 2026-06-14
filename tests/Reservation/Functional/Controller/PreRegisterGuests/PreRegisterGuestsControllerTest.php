@@ -140,7 +140,7 @@ final class PreRegisterGuestsControllerTest extends AuthenticatedWebTestCase
         string $checkIn = '2099-07-01',
         string $checkOut = '2099-07-03',
     ): string {
-        [$roomId, $bookerId] = $this->setupRoomAndBooker($client);
+        [$roomTypeId, $bookerId, $roomId] = $this->setupRoomAndBooker($client);
         $this->setBaseRate($client, $roomId, 10000);
 
         $client->request(
@@ -148,7 +148,7 @@ final class PreRegisterGuestsControllerTest extends AuthenticatedWebTestCase
             uri: '/api/v1/reservations',
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode([
-                'roomId' => $roomId,
+                'roomTypeId' => $roomTypeId,
                 'bookerId' => $bookerId,
                 'checkIn' => $checkIn,
                 'checkOut' => $checkOut,
@@ -173,7 +173,7 @@ final class PreRegisterGuestsControllerTest extends AuthenticatedWebTestCase
         self::assertResponseStatusCodeSame(Response::HTTP_NO_CONTENT);
     }
 
-    /** @return array{string, string} [roomId, bookerId] */
+    /** @return array{string, string, string} [roomTypeId, bookerId, roomId] */
     private function setupRoomAndBooker(KernelBrowser $client): array
     {
         $client->request(
@@ -231,7 +231,7 @@ final class PreRegisterGuestsControllerTest extends AuthenticatedWebTestCase
         /** @var array{id: string} $bookerBody */
         $bookerBody = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
-        return [$roomBody['id'], $bookerBody['id']];
+        return [$roomTypeBody['id'], $bookerBody['id'], $roomBody['id']];
     }
 
     private function setBaseRate(KernelBrowser $client, string $roomId, int $amountCents): void

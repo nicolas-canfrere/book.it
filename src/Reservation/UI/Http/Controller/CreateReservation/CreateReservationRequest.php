@@ -14,7 +14,7 @@ final readonly class CreateReservationRequest
         #[Assert\NotBlank]
         #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
         #[OA\Property(type: 'string', format: 'uuid')]
-        public ?string $roomId = null,
+        public ?string $roomTypeId = null,
         #[Assert\NotBlank]
         #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
         #[OA\Property(type: 'string', format: 'uuid')]
