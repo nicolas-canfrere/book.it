@@ -5,11 +5,12 @@ declare(strict_types=1);
 namespace App\Operator\Application\UseCase\RegisterOperator;
 
 use App\Shared\Application\Bus\SyncCommandInterface;
+use App\Shared\Domain\ValueObject\OperatorId;
 
 final readonly class RegisterOperatorCommand implements SyncCommandInterface
 {
     public function __construct(
-        public string $id,
+        public OperatorId $id,
         public string $firstName,
         public string $lastName,
         public string $email,

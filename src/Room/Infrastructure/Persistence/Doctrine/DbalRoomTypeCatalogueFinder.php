@@ -9,6 +9,8 @@ use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeCatalogueFinderInterface;
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 
 final readonly class DbalRoomTypeCatalogueFinder implements RoomTypeCatalogueFinderInterface
@@ -18,10 +20,10 @@ final readonly class DbalRoomTypeCatalogueFinder implements RoomTypeCatalogueFin
     }
 
     /** @param string[] $amenities */
-    public function find(string $hotelId, array $amenities, int $page, int $limit): RoomTypePage
+    public function find(HotelId $hotelId, array $amenities, int $page, int $limit): RoomTypePage
     {
         $whereClause = 'WHERE hotel_id = :hotelId';
-        $params = ['hotelId' => $hotelId];
+        $params = ['hotelId' => $hotelId->value];
 
         if ([] !== $amenities) {
             $whereClause .= ' AND amenities @> :filter::text[]';
@@ -53,8 +55,8 @@ final readonly class DbalRoomTypeCatalogueFinder implements RoomTypeCatalogueFin
         $bedData = json_decode($row['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
 
         return new RoomType(
-            $row['id'],
-            $row['hotel_id'],
+            new RoomTypeId($row['id']),
+            new HotelId($row['hotel_id']),
             $row['name'],
             (int) $row['living_space_count'],
             null !== $row['surface_m2'] ? (int) $row['surface_m2'] : null,

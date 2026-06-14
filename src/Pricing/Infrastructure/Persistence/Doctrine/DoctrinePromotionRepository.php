@@ -7,6 +7,7 @@ namespace App\Pricing\Infrastructure\Persistence\Doctrine;
 use App\Pricing\Domain\Model\Promotion;
 use App\Pricing\Domain\Port\PromotionRepositoryInterface;
 use App\Pricing\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class DoctrinePromotionRepository implements PromotionRepositoryInterface
@@ -23,7 +24,7 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
              ON CONFLICT (id) DO UPDATE SET check_in = :checkIn, check_out = :checkOut, discount_percent = :discountPercent, updated_at = :updatedAt',
             [
                 'id' => $promotion->id,
-                'roomId' => $promotion->roomId,
+                'roomId' => $promotion->roomId->value,
                 'checkIn' => $promotion->getCheckIn()->format('Y-m-d'),
                 'checkOut' => $promotion->getCheckOut()->format('Y-m-d'),
                 'discountPercent' => $promotion->getDiscountPercent(),
@@ -49,21 +50,21 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
     }
 
     /** @return list<Promotion> */
-    public function findByRoomId(string $roomId): array
+    public function findByRoomId(RoomId $roomId): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, discount_percent: int, created_at: string, updated_at: string}> $rows */
         $rows = $this->pricingConnection->fetchAllAssociative(
             'SELECT id, room_id, check_in, check_out, discount_percent, created_at, updated_at FROM promotion
              WHERE room_id = :roomId
              ORDER BY check_in ASC',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         return array_map($this->hydrate(...), $rows);
     }
 
     /** @return list<Promotion> */
-    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    public function findOverlappingByRoomId(RoomId $roomId, DatePeriod $period): array
     {
         /** @var list<array{id: string, room_id: string, check_in: string, check_out: string, discount_percent: int, created_at: string, updated_at: string}> $rows */
         $rows = $this->pricingConnection->fetchAllAssociative(
@@ -73,7 +74,7 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
                AND check_out > :checkIn
              ORDER BY check_in ASC',
             [
-                'roomId' => $roomId,
+                'roomId' => $roomId->value,
                 'checkIn' => $period->checkIn->format('Y-m-d'),
                 'checkOut' => $period->checkOut->format('Y-m-d'),
             ],
@@ -82,7 +83,7 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
         return array_map($this->hydrate(...), $rows);
     }
 
-    public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
+    public function hasOverlap(RoomId $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         $sql = 'SELECT COUNT(*) FROM promotion
                 WHERE room_id = :roomId
@@ -90,7 +91,7 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
                   AND check_out > :checkIn';
 
         $params = [
-            'roomId' => $roomId,
+            'roomId' => $roomId->value,
             'checkIn' => $period->checkIn->format('Y-m-d'),
             'checkOut' => $period->checkOut->format('Y-m-d'),
         ];
@@ -117,7 +118,7 @@ final readonly class DoctrinePromotionRepository implements PromotionRepositoryI
     {
         return new Promotion(
             id: $row['id'],
-            roomId: $row['room_id'],
+            roomId: new RoomId($row['room_id']),
             checkIn: new \DateTimeImmutable($row['check_in']),
             checkOut: new \DateTimeImmutable($row['check_out']),
             discountPercent: (int) $row['discount_percent'],

@@ -8,6 +8,7 @@ use App\Availability\Application\Contract\AvailabilityCheckerInterface;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Infrastructure\Contract\DoctrineAvailabilityChecker;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -37,7 +38,7 @@ final class DoctrineAvailabilityCheckerTest extends TestCase
     {
         $this->blockedPeriods->method('hasOverlap')->willReturn(true);
 
-        self::assertFalse($this->checker->isAvailable('room-1', $this->checkIn, $this->checkOut));
+        self::assertFalse($this->checker->isAvailable(new RoomId('room-1'), $this->checkIn, $this->checkOut));
     }
 
     #[Test]
@@ -46,7 +47,7 @@ final class DoctrineAvailabilityCheckerTest extends TestCase
         $this->blockedPeriods->method('hasOverlap')->willReturn(false);
         $this->holds->method('hasActiveOverlap')->willReturn(true);
 
-        self::assertFalse($this->checker->isAvailable('room-1', $this->checkIn, $this->checkOut));
+        self::assertFalse($this->checker->isAvailable(new RoomId('room-1'), $this->checkIn, $this->checkOut));
     }
 
     #[Test]
@@ -55,6 +56,6 @@ final class DoctrineAvailabilityCheckerTest extends TestCase
         $this->blockedPeriods->method('hasOverlap')->willReturn(false);
         $this->holds->method('hasActiveOverlap')->willReturn(false);
 
-        self::assertTrue($this->checker->isAvailable('room-1', $this->checkIn, $this->checkOut));
+        self::assertTrue($this->checker->isAvailable(new RoomId('room-1'), $this->checkIn, $this->checkOut));
     }
 }

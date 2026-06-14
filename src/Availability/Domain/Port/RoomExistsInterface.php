@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Availability\Domain\Port;
 
+use App\Shared\Domain\ValueObject\RoomId;
+
 interface RoomExistsInterface
 {
-    public function exists(string $roomId): bool;
+    public function exists(RoomId $roomId): bool;
 }

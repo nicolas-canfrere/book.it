@@ -9,6 +9,7 @@ use App\Reservation\Domain\Port\PricingQuoteFetcherInterface;
 use App\Reservation\Domain\ValueObject\NightPrice;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Domain\ValueObject\PricingQuoteSnapshot;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class FakePricingQuoteFetcher implements PricingQuoteFetcherInterface
 {
@@ -32,7 +33,7 @@ final class FakePricingQuoteFetcher implements PricingQuoteFetcherInterface
         $this->snapshot = $snapshot;
     }
 
-    public function fetch(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteSnapshot
+    public function fetch(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteSnapshot
     {
         if (null === $this->snapshot) {
             throw new RoomNotBookableException($roomId);

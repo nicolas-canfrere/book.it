@@ -6,6 +6,8 @@ namespace App\Room\Application\Service;
 
 use App\Room\Application\UseCase\RegisterRoom\RegisterRoomCommand;
 use App\Room\Domain\Port\RoomIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Psr\Clock\ClockInterface;
 
 final readonly class RegisterRoomCommandFactory
@@ -30,10 +32,10 @@ final readonly class RegisterRoomCommandFactory
 
         return new RegisterRoomCommand(
             $this->roomIdGenerator->generate(),
-            $hotelId,
+            new HotelId($hotelId),
             $number,
             $floor,
-            $roomTypeId,
+            new RoomTypeId($roomTypeId),
             $this->clock->now(),
         );
     }

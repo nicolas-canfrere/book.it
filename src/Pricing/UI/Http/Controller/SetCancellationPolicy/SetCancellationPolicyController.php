@@ -6,6 +6,7 @@ namespace App\Pricing\UI\Http\Controller\SetCancellationPolicy;
 
 use App\Pricing\Application\UseCase\SetCancellationPolicy\SetCancellationPolicyCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
@@ -47,7 +48,7 @@ final readonly class SetCancellationPolicyController
         #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         SetCancellationPolicyRequest $request,
     ): Response {
-        $this->commandBus->execute(new SetCancellationPolicyCommand($roomId, $request->daysThreshold));
+        $this->commandBus->execute(new SetCancellationPolicyCommand(new RoomId($roomId), $request->daysThreshold));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

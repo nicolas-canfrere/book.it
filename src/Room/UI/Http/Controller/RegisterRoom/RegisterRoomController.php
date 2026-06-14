@@ -96,6 +96,6 @@ final readonly class RegisterRoomController
             throw new NotFoundHttpException();
         }
 
-        return new JsonResponse($this->roomSerializer->serialize($room), Response::HTTP_CREATED, ['Location' => $this->urlGenerator->generate('room_get_room', ['id' => $command->id])]);
+        return new JsonResponse($this->roomSerializer->serialize($room), Response::HTTP_CREATED, ['Location' => $this->urlGenerator->generate('room_get_room', ['id' => $command->id->value])]);
     }
 }

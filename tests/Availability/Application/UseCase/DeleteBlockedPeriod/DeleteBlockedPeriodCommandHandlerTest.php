@@ -13,6 +13,8 @@ use App\Availability\Domain\Model\BlockedPeriod;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use App\Shared\Domain\Event\BlockedPeriodDeleted;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -33,8 +35,8 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
 
         $blockHandler = new BlockPeriodCommandHandler($this->repository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-13'),
             createdAt: new \DateTimeImmutable(),
@@ -44,9 +46,9 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
     #[Test]
     public function itRemovesTheBlockedPeriod(): void
     {
-        ($this->handler)(new DeleteBlockedPeriodCommand('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
+        ($this->handler)(new DeleteBlockedPeriodCommand(new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
 
-        self::assertNull($this->repository->get('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
+        self::assertNull($this->repository->get(new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
     }
 
     #[Test]
@@ -54,7 +56,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
     {
         $this->expectException(BlockedPeriodNotFoundException::class);
 
-        ($this->handler)(new DeleteBlockedPeriodCommand('00000000-0000-4000-8000-000000000000'));
+        ($this->handler)(new DeleteBlockedPeriodCommand(new BlockedPeriodId('00000000-0000-4000-8000-000000000000')));
     }
 
     #[Test]
@@ -67,8 +69,8 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
         $blockedPeriod = new BlockedPeriod(
-            id: 'bp-id-1',
-            roomId: 'room-id-1',
+            id: new BlockedPeriodId('bp-id-1'),
+            roomId: new RoomId('room-id-1'),
             period: new DatePeriod($checkIn, $checkOut),
             createdAt: new \DateTimeImmutable('2026-05-31T00:00:00Z'),
         );
@@ -86,7 +88,7 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
 
         $handler = new DeleteBlockedPeriodCommandHandler($repository, $dispatcher);
 
-        ($handler)(new DeleteBlockedPeriodCommand(id: 'bp-id-1'));
+        ($handler)(new DeleteBlockedPeriodCommand(id: new BlockedPeriodId('bp-id-1')));
     }
 
     #[Test]
@@ -102,6 +104,6 @@ final class DeleteBlockedPeriodCommandHandlerTest extends TestCase
 
         $this->expectException(BlockedPeriodNotFoundException::class);
 
-        ($handler)(new DeleteBlockedPeriodCommand(id: 'missing-id'));
+        ($handler)(new DeleteBlockedPeriodCommand(id: new BlockedPeriodId('missing-id')));
     }
 }

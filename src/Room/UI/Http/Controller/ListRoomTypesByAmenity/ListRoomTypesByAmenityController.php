@@ -7,6 +7,7 @@ namespace App\Room\UI\Http\Controller\ListRoomTypesByAmenity;
 use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQuery;
 use App\Room\UI\Http\Controller\ListRoomTypes\RoomTypeCatalogueSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -93,7 +94,7 @@ final readonly class ListRoomTypesByAmenityController
         string $hotelId,
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] ListRoomTypesByAmenityRequest $request = new ListRoomTypesByAmenityRequest(),
     ): Response {
-        $page = $this->queryBus->ask(new ListRoomTypesByAmenityQuery($hotelId, $request->amenities, $request->page, $request->limit));
+        $page = $this->queryBus->ask(new ListRoomTypesByAmenityQuery(new HotelId($hotelId), $request->amenities, $request->page, $request->limit));
 
         return new JsonResponse($this->serializer->serialize($page, $request->page, $request->limit));
     }

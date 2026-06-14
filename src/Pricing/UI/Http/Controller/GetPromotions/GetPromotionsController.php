@@ -7,6 +7,7 @@ namespace App\Pricing\UI\Http\Controller\GetPromotions;
 use App\Pricing\Application\UseCase\GetPromotions\GetPromotionsQuery;
 use App\Pricing\UI\Http\Controller\PromotionSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -55,7 +56,7 @@ final readonly class GetPromotionsController
     )]
     public function __invoke(string $roomId): Response
     {
-        $promotions = $this->queryBus->ask(new GetPromotionsQuery($roomId));
+        $promotions = $this->queryBus->ask(new GetPromotionsQuery(new RoomId($roomId)));
 
         return new JsonResponse([
             'promotions' => array_map($this->serializer->serialize(...), $promotions),

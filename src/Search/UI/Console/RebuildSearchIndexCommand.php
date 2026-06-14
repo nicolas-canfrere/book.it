@@ -7,6 +7,9 @@ namespace App\Search\UI\Console;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
 use App\Search\Domain\Port\RoomIndexWriterInterface;
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -46,8 +49,8 @@ final class RebuildSearchIndexCommand extends Command
             /** @var list<array{type: string, count: int}> $beds */
             $beds = json_decode($rt['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
             $this->hotelRoomTypeWriter->upsertRoomType(
-                roomTypeId: $rt['id'],
-                hotelId: $rt['hotel_id'],
+                roomTypeId: new RoomTypeId($rt['id']),
+                hotelId: new HotelId($rt['hotel_id']),
                 name: $rt['name'],
                 guestCapacity: (int) $rt['guest_capacity'],
                 bedComposition: $beds,
@@ -62,9 +65,9 @@ final class RebuildSearchIndexCommand extends Command
         );
         foreach ($rooms as $room) {
             $this->roomIndexWriter->upsert(
-                roomId: $room['id'],
-                roomTypeId: $room['room_type_id'],
-                hotelId: $room['hotel_id'],
+                roomId: new RoomId($room['id']),
+                roomTypeId: new RoomTypeId($room['room_type_id']),
+                hotelId: new HotelId($room['hotel_id']),
             );
         }
         $output->writeln(sprintf('%d rooms inserted', count($rooms)));
@@ -76,7 +79,7 @@ final class RebuildSearchIndexCommand extends Command
         );
         foreach ($baseRates as $rate) {
             $this->hotelRoomTypeWriter->updateBaseRateByRoom(
-                roomId: $rate['room_id'],
+                roomId: new RoomId($rate['room_id']),
                 amountCents: (int) $rate['amount_cents'],
             );
         }
@@ -90,7 +93,7 @@ final class RebuildSearchIndexCommand extends Command
         foreach ($holds as $hold) {
             $this->unavailablePeriodWriter->add(
                 sourceId: $hold['id'],
-                roomId: $hold['room_id'],
+                roomId: new RoomId($hold['room_id']),
                 checkIn: new \DateTimeImmutable($hold['check_in']),
                 checkOut: new \DateTimeImmutable($hold['check_out']),
             );
@@ -105,7 +108,7 @@ final class RebuildSearchIndexCommand extends Command
         foreach ($blockedPeriods as $bp) {
             $this->unavailablePeriodWriter->add(
                 sourceId: $bp['id'],
-                roomId: $bp['room_id'],
+                roomId: new RoomId($bp['room_id']),
                 checkIn: new \DateTimeImmutable($bp['check_in']),
                 checkOut: new \DateTimeImmutable($bp['check_out']),
             );

@@ -7,6 +7,7 @@ namespace App\Pricing\Application\Service;
 use App\Pricing\Application\UseCase\CreateRatePeriod\CreateRatePeriodCommand;
 use App\Pricing\Domain\Port\RatePeriodIdGeneratorInterface;
 use App\Pricing\Domain\ValueObject\Money;
+use App\Shared\Domain\ValueObject\RoomId;
 use Psr\Clock\ClockInterface;
 
 final readonly class CreateRatePeriodCommandFactory
@@ -23,7 +24,7 @@ final readonly class CreateRatePeriodCommandFactory
 
         return new CreateRatePeriodCommand(
             id: $this->idGenerator->generate(),
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
             amountCents: Money::fromEuros($amount)->amountCents,

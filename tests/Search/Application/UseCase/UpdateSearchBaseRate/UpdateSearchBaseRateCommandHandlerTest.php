@@ -7,6 +7,7 @@ namespace App\Tests\Search\Application\UseCase\UpdateSearchBaseRate;
 use App\Search\Application\UseCase\UpdateSearchBaseRate\UpdateSearchBaseRateCommand;
 use App\Search\Application\UseCase\UpdateSearchBaseRate\UpdateSearchBaseRateCommandHandler;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,9 +21,9 @@ final class UpdateSearchBaseRateCommandHandlerTest extends TestCase
         $writer = $this->createMock(HotelRoomTypeWriterInterface::class);
         $writer->expects($this->once())
             ->method('updateBaseRateByRoom')
-            ->with('room-id-1', 15000);
+            ->with(new RoomId('room-id-1'), 15000);
 
         $handler = new UpdateSearchBaseRateCommandHandler($writer);
-        ($handler)(new UpdateSearchBaseRateCommand(roomId: 'room-id-1', amountCents: 15000));
+        ($handler)(new UpdateSearchBaseRateCommand(roomId: new RoomId('room-id-1'), amountCents: 15000));
     }
 }

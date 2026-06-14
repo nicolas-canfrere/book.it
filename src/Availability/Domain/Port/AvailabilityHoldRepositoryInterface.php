@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Availability\Domain\Port;
 
 use App\Availability\Domain\Model\AvailabilityHold;
+use App\Shared\Domain\ValueObject\RoomId;
 
 interface AvailabilityHoldRepositoryInterface
 {
@@ -12,5 +13,5 @@ interface AvailabilityHoldRepositoryInterface
 
     public function deleteByReservationId(string $reservationId): void;
 
-    public function hasActiveOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool;
+    public function hasActiveOverlap(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool;
 }

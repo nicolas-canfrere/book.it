@@ -7,6 +7,7 @@ namespace App\Tests\Room\Infrastructure\Persistence\InMemory;
 use App\Room\Domain\Model\RoomType;
 use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeCatalogueFinderInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 
 final class InMemoryRoomTypeCatalogueFinder implements RoomTypeCatalogueFinderInterface
 {
@@ -15,16 +16,16 @@ final class InMemoryRoomTypeCatalogueFinder implements RoomTypeCatalogueFinderIn
 
     public function add(RoomType $roomType): void
     {
-        $this->roomTypes[$roomType->id] = $roomType;
+        $this->roomTypes[$roomType->id->value] = $roomType;
     }
 
     /** @param string[] $amenities */
-    public function find(string $hotelId, array $amenities, int $page, int $limit): RoomTypePage
+    public function find(HotelId $hotelId, array $amenities, int $page, int $limit): RoomTypePage
     {
         $filtered = array_values(array_filter(
             $this->roomTypes,
             static function (RoomType $rt) use ($hotelId, $amenities): bool {
-                if ($rt->hotelId !== $hotelId) {
+                if (false === $rt->hotelId->equals($hotelId)) {
                     return false;
                 }
                 $declared = array_map(static fn($a) => $a->value, $rt->amenities);

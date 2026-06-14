@@ -14,7 +14,7 @@ final class BaseRateSerializer
     public function serialize(BaseRate $baseRate): array
     {
         return [
-            'roomId' => $baseRate->roomId,
+            'roomId' => $baseRate->roomId->value,
             'amountCents' => $baseRate->amountCents,
             'updatedAt' => $baseRate->updatedAt->format(\DateTimeInterface::ATOM),
         ];

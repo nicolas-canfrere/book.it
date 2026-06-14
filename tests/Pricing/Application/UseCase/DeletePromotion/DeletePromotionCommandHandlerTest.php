@@ -8,6 +8,7 @@ use App\Pricing\Application\UseCase\DeletePromotion\DeletePromotionCommand;
 use App\Pricing\Application\UseCase\DeletePromotion\DeletePromotionCommandHandler;
 use App\Pricing\Domain\Exception\PromotionNotFoundException;
 use App\Pricing\Domain\Model\Promotion;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryPromotionRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -30,7 +31,7 @@ final class DeletePromotionCommandHandlerTest extends TestCase
     {
         $this->repository->save(new Promotion(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             discountPercent: 20,

@@ -63,7 +63,7 @@ final class RegisterAdminOperatorCommand extends Command
         $output->writeln(sprintf(
             '<info>Admin operator "%s" registered with id %s</info>',
             $registerCommand->email,
-            $registerCommand->id,
+            $registerCommand->id->value,
         ));
 
         return Command::SUCCESS;

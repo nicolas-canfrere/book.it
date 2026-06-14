@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Reservation\Infrastructure;
 
 use App\Reservation\Domain\Port\RoomExistsInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class FakeRoomExistenceChecker implements RoomExistsInterface
 {
@@ -15,7 +16,7 @@ final class FakeRoomExistenceChecker implements RoomExistsInterface
         $this->exists = $exists;
     }
 
-    public function exists(string $roomId): bool
+    public function exists(RoomId $roomId): bool
     {
         return $this->exists;
     }

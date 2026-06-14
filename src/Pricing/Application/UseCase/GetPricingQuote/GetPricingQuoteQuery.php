@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Pricing\Application\UseCase\GetPricingQuote;
 
 use App\Shared\Application\Bus\SyncQueryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 /**
  * @implements SyncQueryInterface<array{
@@ -18,7 +19,7 @@ use App\Shared\Application\Bus\SyncQueryInterface;
 final readonly class GetPricingQuoteQuery implements SyncQueryInterface
 {
     public function __construct(
-        public string $roomId,
+        public RoomId $roomId,
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
     ) {

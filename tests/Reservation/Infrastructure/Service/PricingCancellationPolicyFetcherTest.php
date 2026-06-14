@@ -8,6 +8,7 @@ use App\Pricing\Application\Contract\CancellationPolicyFinderInterface;
 use App\Pricing\Application\Contract\CancellationPolicyView;
 use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
 use App\Reservation\Infrastructure\Service\PricingCancellationPolicyFetcher;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -30,7 +31,7 @@ final class PricingCancellationPolicyFetcherTest extends TestCase
     {
         $this->policyFinder->method('find')->willReturn(new CancellationPolicyView(7));
 
-        $terms = $this->fetcher->fetch('room-1');
+        $terms = $this->fetcher->fetch(new RoomId('room-1'));
 
         self::assertSame(7, $terms->daysThreshold);
     }
@@ -40,7 +41,7 @@ final class PricingCancellationPolicyFetcherTest extends TestCase
     {
         $this->policyFinder->method('find')->willReturn(null);
 
-        $terms = $this->fetcher->fetch('room-1');
+        $terms = $this->fetcher->fetch(new RoomId('room-1'));
 
         self::assertNull($terms->daysThreshold);
     }

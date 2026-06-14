@@ -9,6 +9,7 @@ use App\Pricing\Application\UseCase\SetBaseRate\SetBaseRateCommandHandler;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
 use App\Pricing\Domain\Port\RoomExistsInterface;
 use App\Shared\Domain\Event\BaseRateSet;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -38,7 +39,7 @@ final class SetBaseRateCommandHandlerTest extends TestCase
         $handler = new SetBaseRateCommandHandler($repository, $roomExists, $dispatcher);
 
         ($handler)(new SetBaseRateCommand(
-            roomId: 'room-id-1',
+            roomId: new RoomId('room-id-1'),
             amountCents: 15000,
             updatedAt: new \DateTimeImmutable('2026-06-01T00:00:00Z'),
         ));
@@ -59,7 +60,7 @@ final class SetBaseRateCommandHandlerTest extends TestCase
         $this->expectException(\App\Pricing\Domain\Exception\RoomNotFoundException::class);
 
         ($handler)(new SetBaseRateCommand(
-            roomId: 'missing-room',
+            roomId: new RoomId('missing-room'),
             amountCents: 15000,
             updatedAt: new \DateTimeImmutable('2026-06-01T00:00:00Z'),
         ));

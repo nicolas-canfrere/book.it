@@ -13,6 +13,7 @@ use App\Pricing\Domain\Port\RatePeriodRepositoryInterface;
 use App\Pricing\Domain\Port\RoomExistsInterface;
 use App\Pricing\Domain\ValueObject\DatePeriod;
 use App\Shared\Application\Bus\SyncQueryHandlerInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInterface, PricingQuoteCalculatorInterface
 {
@@ -84,7 +85,7 @@ final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInte
         }
 
         return [
-            'roomId' => $query->roomId,
+            'roomId' => $query->roomId->value,
             'checkIn' => $query->checkIn->format('Y-m-d'),
             'checkOut' => $query->checkOut->format('Y-m-d'),
             'totalAmountCents' => $total,
@@ -94,6 +95,6 @@ final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInte
 
     public function calculate(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): array
     {
-        return ($this)(new GetPricingQuoteQuery($roomId, $checkIn, $checkOut));
+        return ($this)(new GetPricingQuoteQuery(new RoomId($roomId), $checkIn, $checkOut));
     }
 }

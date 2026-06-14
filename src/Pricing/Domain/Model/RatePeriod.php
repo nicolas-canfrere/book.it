@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Model;
 
+use App\Shared\Domain\ValueObject\RoomId;
+
 final readonly class RatePeriod
 {
     public function __construct(
         public string $id,
-        public string $roomId,
+        public RoomId $roomId,
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
         public int $amountCents,

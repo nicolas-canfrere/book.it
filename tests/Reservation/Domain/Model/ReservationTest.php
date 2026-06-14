@@ -11,6 +11,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -27,7 +28,7 @@ final class ReservationTest extends TestCase
     {
         $reservation = new Reservation(
             id: self::ID,
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-06-01'),
@@ -41,7 +42,7 @@ final class ReservationTest extends TestCase
         );
 
         self::assertSame(self::ID, $reservation->id);
-        self::assertSame(self::ROOM_ID, $reservation->roomId);
+        self::assertSame(self::ROOM_ID, $reservation->roomId->value);
         self::assertSame(self::BOOKER_ID, $reservation->bookerId);
         self::assertSame('2026-06-01', $reservation->period->checkIn->format('Y-m-d'));
         self::assertSame('2026-06-05', $reservation->period->checkOut->format('Y-m-d'));
@@ -121,7 +122,7 @@ final class ReservationTest extends TestCase
     {
         $reservation = new Reservation(
             id: self::ID,
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-06-01'),
@@ -142,7 +143,7 @@ final class ReservationTest extends TestCase
     {
         return new Reservation(
             id: self::ID,
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod(
                 new \DateTimeImmutable('2030-06-01'),

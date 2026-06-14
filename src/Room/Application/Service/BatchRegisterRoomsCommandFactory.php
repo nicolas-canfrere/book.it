@@ -6,6 +6,8 @@ namespace App\Room\Application\Service;
 
 use App\Room\Application\UseCase\BatchRegisterRooms\BatchRegisterRoomsCommand;
 use App\Room\Domain\Port\RoomIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Psr\Clock\ClockInterface;
 
 final readonly class BatchRegisterRoomsCommandFactory
@@ -24,11 +26,11 @@ final readonly class BatchRegisterRoomsCommandFactory
                 'id' => $this->roomIdGenerator->generate(),
                 'number' => trim($row->number),
                 'floor' => $row->floor,
-                'roomTypeId' => $row->roomTypeId,
+                'roomTypeId' => new RoomTypeId($row->roomTypeId),
             ],
             $rows,
         );
 
-        return new BatchRegisterRoomsCommand($hotelId, $entries, $this->clock->now());
+        return new BatchRegisterRoomsCommand(new HotelId($hotelId), $entries, $this->clock->now());
     }
 }

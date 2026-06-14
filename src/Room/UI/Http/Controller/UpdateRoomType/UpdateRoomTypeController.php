@@ -9,6 +9,7 @@ use App\Room\Application\UseCase\UpdateRoomType\UpdateRoomTypeCommand;
 use App\Room\UI\Http\Controller\RoomTypeSerializer;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -79,8 +80,9 @@ final readonly class UpdateRoomTypeController
         string $roomTypeId,
         #[MapRequestPayload(acceptFormat: 'json')] UpdateRoomTypeRequest $request,
     ): Response {
+        $id = new RoomTypeId($roomTypeId);
         $this->commandBus->execute(new UpdateRoomTypeCommand(
-            id: $roomTypeId,
+            id: $id,
             name: $request->name ?? throw new \LogicException('name is required'),
             livingSpaceCount: $request->livingSpaceCount ?? throw new \LogicException('livingSpaceCount is required'),
             surfaceM2: $request->surfaceM2,
@@ -89,7 +91,7 @@ final readonly class UpdateRoomTypeController
             bedEntries: $request->bedComposition ?? throw new \LogicException('bedComposition is required'),
         ));
 
-        $roomType = $this->queryBus->ask(new GetRoomTypeQuery($roomTypeId));
+        $roomType = $this->queryBus->ask(new GetRoomTypeQuery($id));
         if (null === $roomType) {
             throw new NotFoundHttpException();
         }

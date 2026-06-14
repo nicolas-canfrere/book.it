@@ -4,10 +4,12 @@ declare(strict_types=1);
 
 namespace App\Pricing\Domain\Model;
 
+use App\Shared\Domain\ValueObject\RoomId;
+
 final readonly class CancellationPolicy
 {
     public function __construct(
-        public string $roomId,
+        public RoomId $roomId,
         public int $daysThreshold,
         public \DateTimeImmutable $updatedAt,
     ) {

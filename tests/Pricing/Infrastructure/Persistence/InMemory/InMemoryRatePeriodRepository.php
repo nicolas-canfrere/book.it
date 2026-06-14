@@ -7,6 +7,7 @@ namespace App\Tests\Pricing\Infrastructure\Persistence\InMemory;
 use App\Pricing\Domain\Model\RatePeriod;
 use App\Pricing\Domain\Port\RatePeriodRepositoryInterface;
 use App\Pricing\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryRatePeriodRepository implements RatePeriodRepositoryInterface
 {
@@ -24,11 +25,11 @@ final class InMemoryRatePeriodRepository implements RatePeriodRepositoryInterfac
     }
 
     /** @return list<RatePeriod> */
-    public function findByRoomId(string $roomId): array
+    public function findByRoomId(RoomId $roomId): array
     {
         $filtered = array_values(array_filter(
             $this->periods,
-            static fn(RatePeriod $rp) => $rp->roomId === $roomId,
+            static fn(RatePeriod $rp) => $rp->roomId->value === $roomId->value,
         ));
 
         usort($filtered, static fn(RatePeriod $a, RatePeriod $b) => $a->checkIn <=> $b->checkIn);
@@ -37,11 +38,11 @@ final class InMemoryRatePeriodRepository implements RatePeriodRepositoryInterfac
     }
 
     /** @return list<RatePeriod> */
-    public function findOverlappingByRoomId(string $roomId, DatePeriod $period): array
+    public function findOverlappingByRoomId(RoomId $roomId, DatePeriod $period): array
     {
         $filtered = array_values(array_filter(
             $this->periods,
-            static fn(RatePeriod $rp) => $rp->roomId === $roomId
+            static fn(RatePeriod $rp) => $rp->roomId->value === $roomId->value
                 && $period->overlaps(new DatePeriod($rp->checkIn, $rp->checkOut)),
         ));
 
@@ -50,10 +51,10 @@ final class InMemoryRatePeriodRepository implements RatePeriodRepositoryInterfac
         return $filtered;
     }
 
-    public function hasOverlap(string $roomId, DatePeriod $period, ?string $excludeId = null): bool
+    public function hasOverlap(RoomId $roomId, DatePeriod $period, ?string $excludeId = null): bool
     {
         foreach ($this->periods as $rp) {
-            if ($rp->roomId !== $roomId) {
+            if ($rp->roomId->value !== $roomId->value) {
                 continue;
             }
             if (null !== $excludeId && $rp->id === $excludeId) {

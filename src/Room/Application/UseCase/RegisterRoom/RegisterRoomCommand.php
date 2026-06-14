@@ -5,15 +5,18 @@ declare(strict_types=1);
 namespace App\Room\Application\UseCase\RegisterRoom;
 
 use App\Shared\Application\Bus\SyncCommandInterface;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final readonly class RegisterRoomCommand implements SyncCommandInterface
 {
     public function __construct(
-        public string $id,
-        public string $hotelId,
+        public RoomId $id,
+        public HotelId $hotelId,
         public string $number,
         public int $floor,
-        public string $roomTypeId,
+        public RoomTypeId $roomTypeId,
         public \DateTimeImmutable $createdAt,
     ) {
     }

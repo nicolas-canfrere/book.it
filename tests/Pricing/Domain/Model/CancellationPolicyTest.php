@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Pricing\Domain\Model;
 
 use App\Pricing\Domain\Model\CancellationPolicy;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -16,12 +17,12 @@ final class CancellationPolicyTest extends TestCase
     public function itConstructsWithValidData(): void
     {
         $policy = new CancellationPolicy(
-            roomId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+            roomId: new RoomId('f47ac10b-58cc-4372-a567-0e02b2c3d479'),
             daysThreshold: 14,
             updatedAt: new \DateTimeImmutable('2026-05-19 00:00:00'),
         );
 
-        self::assertSame('f47ac10b-58cc-4372-a567-0e02b2c3d479', $policy->roomId);
+        self::assertSame('f47ac10b-58cc-4372-a567-0e02b2c3d479', $policy->roomId->value);
         self::assertSame(14, $policy->daysThreshold);
         self::assertSame('2026-05-19T00:00:00+00:00', $policy->updatedAt->format(\DateTimeInterface::ATOM));
     }
@@ -33,7 +34,7 @@ final class CancellationPolicyTest extends TestCase
         $this->expectExceptionMessage('Days threshold must be greater than zero.');
 
         new CancellationPolicy(
-            roomId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+            roomId: new RoomId('f47ac10b-58cc-4372-a567-0e02b2c3d479'),
             daysThreshold: 0,
             updatedAt: new \DateTimeImmutable(),
         );
@@ -46,7 +47,7 @@ final class CancellationPolicyTest extends TestCase
         $this->expectExceptionMessage('Days threshold must be greater than zero.');
 
         new CancellationPolicy(
-            roomId: 'f47ac10b-58cc-4372-a567-0e02b2c3d479',
+            roomId: new RoomId('f47ac10b-58cc-4372-a567-0e02b2c3d479'),
             daysThreshold: -5,
             updatedAt: new \DateTimeImmutable(),
         );

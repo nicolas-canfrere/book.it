@@ -14,8 +14,8 @@ final class RoomTypeSerializer
     public function serialize(RoomType $roomType): array
     {
         return [
-            'id' => $roomType->id,
-            'hotelId' => $roomType->hotelId,
+            'id' => $roomType->id->value,
+            'hotelId' => $roomType->hotelId->value,
             'name' => $roomType->name,
             'livingSpaceCount' => $roomType->livingSpaceCount,
             'surfaceM2' => $roomType->surfaceM2,

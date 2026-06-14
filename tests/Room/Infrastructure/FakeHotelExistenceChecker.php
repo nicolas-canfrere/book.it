@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Room\Infrastructure;
 
 use App\Room\Domain\Port\HotelExistsInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 
 final class FakeHotelExistenceChecker implements HotelExistsInterface
 {
@@ -15,7 +16,7 @@ final class FakeHotelExistenceChecker implements HotelExistsInterface
         $this->hotelExists = $exists;
     }
 
-    public function exists(string $hotelId): bool
+    public function exists(HotelId $hotelId): bool
     {
         return $this->hotelExists;
     }

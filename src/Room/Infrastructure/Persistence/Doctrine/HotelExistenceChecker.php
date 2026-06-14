@@ -6,6 +6,7 @@ namespace App\Room\Infrastructure\Persistence\Doctrine;
 
 use App\Hotel\Application\Contract\HotelFinderInterface;
 use App\Room\Domain\Port\HotelExistsInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 
 final readonly class HotelExistenceChecker implements HotelExistsInterface
 {
@@ -13,7 +14,7 @@ final readonly class HotelExistenceChecker implements HotelExistsInterface
     {
     }
 
-    public function exists(string $hotelId): bool
+    public function exists(HotelId $hotelId): bool
     {
         return null !== $this->hotels->find($hotelId);
     }

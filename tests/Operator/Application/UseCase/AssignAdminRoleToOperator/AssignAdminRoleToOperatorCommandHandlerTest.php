@@ -7,6 +7,7 @@ namespace App\Tests\Operator\Application\UseCase\AssignAdminRoleToOperator;
 use App\Operator\Application\UseCase\AssignAdminRoleToOperator\AssignAdminRoleToOperatorCommand;
 use App\Operator\Application\UseCase\AssignAdminRoleToOperator\AssignAdminRoleToOperatorCommandHandler;
 use App\Operator\Domain\Port\ExternalAccountRegistrarInterface;
+use App\Shared\Domain\ValueObject\OperatorId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,8 +30,8 @@ final class AssignAdminRoleToOperatorCommandHandlerTest extends TestCase
     {
         $this->accountRegistrar->expects(self::once())
             ->method('assignAdminRole')
-            ->with('operator-uuid');
+            ->with(new OperatorId('operator-uuid'));
 
-        ($this->handler)(new AssignAdminRoleToOperatorCommand('operator-uuid'));
+        ($this->handler)(new AssignAdminRoleToOperatorCommand(new OperatorId('operator-uuid')));
     }
 }

@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Search\Infrastructure\Persistence;
 
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class UnavailablePeriodWriter implements UnavailablePeriodWriterInterface
@@ -15,13 +16,13 @@ final readonly class UnavailablePeriodWriter implements UnavailablePeriodWriterI
 
     public function add(
         string $sourceId,
-        string $roomId,
+        RoomId $roomId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void {
         $roomRow = $this->searchConnection->fetchAssociative(
             'SELECT room_type_id, hotel_id FROM room_index WHERE room_id = :roomId',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         if (false === $roomRow) {
@@ -36,7 +37,7 @@ final readonly class UnavailablePeriodWriter implements UnavailablePeriodWriterI
             SQL,
             [
                 'id' => $sourceId,
-                'roomId' => $roomId,
+                'roomId' => $roomId->value,
                 'roomTypeId' => $roomRow['room_type_id'],
                 'hotelId' => $roomRow['hotel_id'],
                 'checkIn' => $checkIn->format('Y-m-d'),
@@ -47,7 +48,7 @@ final readonly class UnavailablePeriodWriter implements UnavailablePeriodWriterI
     }
 
     public function removeByPeriod(
-        string $roomId,
+        RoomId $roomId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
     ): void {
@@ -57,7 +58,7 @@ final readonly class UnavailablePeriodWriter implements UnavailablePeriodWriterI
             WHERE room_id = :roomId
               AND period = daterange(:checkIn, :checkOut)
             SQL,
-            ['roomId' => $roomId, 'checkIn' => $checkIn->format('Y-m-d'), 'checkOut' => $checkOut->format('Y-m-d')],
+            ['roomId' => $roomId->value, 'checkIn' => $checkIn->format('Y-m-d'), 'checkOut' => $checkOut->format('Y-m-d')],
         );
     }
 

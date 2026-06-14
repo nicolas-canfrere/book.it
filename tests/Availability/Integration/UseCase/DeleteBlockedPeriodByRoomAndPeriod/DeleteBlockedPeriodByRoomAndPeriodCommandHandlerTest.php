@@ -7,6 +7,7 @@ namespace App\Tests\Availability\Integration\UseCase\DeleteBlockedPeriodByRoomAn
 use App\Availability\Application\UseCase\DeleteBlockedPeriodByRoomAndPeriod\DeleteBlockedPeriodByRoomAndPeriodCommand;
 use App\Availability\Application\UseCase\DeleteBlockedPeriodByRoomAndPeriod\DeleteBlockedPeriodByRoomAndPeriodCommandHandler;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -24,10 +25,10 @@ final class DeleteBlockedPeriodByRoomAndPeriodCommandHandlerTest extends TestCas
 
         $repo->expects(self::once())
             ->method('removeByRoomAndPeriod')
-            ->with('room-1', $checkIn, $checkOut);
+            ->with(new RoomId('room-1'), $checkIn, $checkOut);
 
         $handler = new DeleteBlockedPeriodByRoomAndPeriodCommandHandler($repo, $this->createStub(EventDispatcherInterface::class));
 
-        ($handler)(new DeleteBlockedPeriodByRoomAndPeriodCommand('room-1', $checkIn, $checkOut));
+        ($handler)(new DeleteBlockedPeriodByRoomAndPeriodCommand(new RoomId('room-1'), $checkIn, $checkOut));
     }
 }

@@ -6,6 +6,7 @@ namespace App\Tests\Room\Application\UseCase\GetRoomCapacity;
 
 use App\Room\Application\UseCase\GetRoomCapacity\GetRoomCapacityQuery;
 use App\Room\Application\UseCase\GetRoomCapacity\GetRoomCapacityQueryHandler;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Room\Infrastructure\FakeRoomCapacityFinder;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -30,7 +31,7 @@ final class GetRoomCapacityQueryHandlerTest extends TestCase
     {
         $this->finder->withCapacity(self::ROOM_ID, 2);
 
-        $result = ($this->handler)(new GetRoomCapacityQuery(self::ROOM_ID));
+        $result = ($this->handler)(new GetRoomCapacityQuery(new RoomId(self::ROOM_ID)));
 
         self::assertSame(2, $result);
     }
@@ -38,7 +39,7 @@ final class GetRoomCapacityQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsZeroWhenRoomNotFound(): void
     {
-        $result = ($this->handler)(new GetRoomCapacityQuery('00000000-0000-4000-8000-000000000000'));
+        $result = ($this->handler)(new GetRoomCapacityQuery(new RoomId('00000000-0000-4000-8000-000000000000')));
 
         self::assertSame(0, $result);
     }

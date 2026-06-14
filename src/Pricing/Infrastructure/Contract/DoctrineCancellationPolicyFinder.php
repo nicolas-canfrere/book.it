@@ -7,6 +7,7 @@ namespace App\Pricing\Infrastructure\Contract;
 use App\Pricing\Application\Contract\CancellationPolicyFinderInterface;
 use App\Pricing\Application\Contract\CancellationPolicyView;
 use App\Pricing\Domain\Port\CancellationPolicyRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class DoctrineCancellationPolicyFinder implements CancellationPolicyFinderInterface
 {
@@ -16,7 +17,7 @@ final readonly class DoctrineCancellationPolicyFinder implements CancellationPol
 
     public function find(string $roomId): ?CancellationPolicyView
     {
-        $policy = $this->cancellationPolicies->findByRoomId($roomId);
+        $policy = $this->cancellationPolicies->findByRoomId(new RoomId($roomId));
 
         if (null === $policy) {
             return null;

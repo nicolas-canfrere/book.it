@@ -7,6 +7,8 @@ namespace App\Tests\Room\Infrastructure\Persistence\InMemory;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Model\RoomPage;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryRoomRepository implements RoomRepositoryInterface
 {
@@ -15,7 +17,7 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
 
     public function add(Room $room): void
     {
-        $this->rooms[$room->id] = $room;
+        $this->rooms[$room->id->value] = $room;
     }
 
     public function addAll(array $rooms): void
@@ -25,15 +27,15 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
         }
     }
 
-    public function get(string $id): ?Room
+    public function get(RoomId $id): ?Room
     {
-        return $this->rooms[$id] ?? null;
+        return $this->rooms[$id->value] ?? null;
     }
 
-    public function existsByHotelIdAndNumber(string $hotelId, string $number): bool
+    public function existsByHotelIdAndNumber(HotelId $hotelId, string $number): bool
     {
         foreach ($this->rooms as $room) {
-            if ($room->hotelId === $hotelId && $room->number->value === $number) {
+            if ($room->hotelId->equals($hotelId) && $room->number->value === $number) {
                 return true;
             }
         }
@@ -41,11 +43,11 @@ final class InMemoryRoomRepository implements RoomRepositoryInterface
         return false;
     }
 
-    public function list(string $hotelId, int $page, int $limit): RoomPage
+    public function list(HotelId $hotelId, int $page, int $limit): RoomPage
     {
         $filtered = array_values(array_filter(
             $this->rooms,
-            static fn(Room $r) => $r->hotelId === $hotelId,
+            static fn(Room $r) => $r->hotelId->equals($hotelId),
         ));
 
         usort($filtered, static fn(Room $a, Room $b) => strcmp($a->number->value, $b->number->value));

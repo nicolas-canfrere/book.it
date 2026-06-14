@@ -7,6 +7,7 @@ namespace App\Availability\UI\Http\Controller\GetAvailabilityCalendar;
 use App\Availability\Application\UseCase\GetAvailabilityCalendar\GetAvailabilityCalendarQuery;
 use App\Availability\UI\Http\Controller\BlockedPeriodSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -54,7 +55,7 @@ final readonly class GetAvailabilityCalendarController
     )]
     public function __invoke(string $roomId): Response
     {
-        $periods = $this->queryBus->ask(new GetAvailabilityCalendarQuery($roomId));
+        $periods = $this->queryBus->ask(new GetAvailabilityCalendarQuery(new RoomId($roomId)));
 
         return new JsonResponse([
             'blockedPeriods' => array_map($this->serializer->serialize(...), $periods),

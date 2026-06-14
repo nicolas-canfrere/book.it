@@ -6,6 +6,7 @@ namespace App\Pricing\Infrastructure\Persistence\Doctrine;
 
 use App\Pricing\Domain\Model\CancellationPolicy;
 use App\Pricing\Domain\Port\CancellationPolicyRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class DoctrineCancellationPolicyRepository implements CancellationPolicyRepositoryInterface
@@ -14,14 +15,14 @@ final readonly class DoctrineCancellationPolicyRepository implements Cancellatio
     {
     }
 
-    public function findByRoomId(string $roomId): ?CancellationPolicy
+    public function findByRoomId(RoomId $roomId): ?CancellationPolicy
     {
         /** @var array{room_id: string, days_threshold: int, updated_at: string}|false $row */
         $row = $this->pricingConnection->fetchAssociative(
             'SELECT room_id, days_threshold, updated_at
                FROM cancellation_policy
               WHERE room_id = :roomId',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         if (false === $row) {
@@ -40,16 +41,16 @@ final readonly class DoctrineCancellationPolicyRepository implements Cancellatio
                SET days_threshold = :daysThreshold,
                    updated_at = :updatedAt',
             [
-                'roomId' => $policy->roomId,
+                'roomId' => $policy->roomId->value,
                 'daysThreshold' => $policy->daysThreshold,
                 'updatedAt' => $policy->updatedAt->format('Y-m-d H:i:s'),
             ],
         );
     }
 
-    public function deleteByRoomId(string $roomId): void
+    public function deleteByRoomId(RoomId $roomId): void
     {
-        $this->pricingConnection->delete('cancellation_policy', ['room_id' => $roomId]);
+        $this->pricingConnection->delete('cancellation_policy', ['room_id' => $roomId->value]);
     }
 
     /**
@@ -58,7 +59,7 @@ final readonly class DoctrineCancellationPolicyRepository implements Cancellatio
     private function hydrate(array $row): CancellationPolicy
     {
         return new CancellationPolicy(
-            $row['room_id'],
+            new RoomId($row['room_id']),
             $row['days_threshold'],
             new \DateTimeImmutable($row['updated_at']),
         );

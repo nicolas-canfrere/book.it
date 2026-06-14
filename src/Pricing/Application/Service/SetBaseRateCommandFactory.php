@@ -6,6 +6,7 @@ namespace App\Pricing\Application\Service;
 
 use App\Pricing\Application\UseCase\SetBaseRate\SetBaseRateCommand;
 use App\Pricing\Domain\ValueObject\Money;
+use App\Shared\Domain\ValueObject\RoomId;
 use Psr\Clock\ClockInterface;
 
 final readonly class SetBaseRateCommandFactory
@@ -18,7 +19,7 @@ final readonly class SetBaseRateCommandFactory
     public function create(string $roomId, float $amount): SetBaseRateCommand
     {
         return new SetBaseRateCommand(
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             amountCents: Money::fromEuros($amount)->amountCents,
             updatedAt: $this->clock->now(),
         );

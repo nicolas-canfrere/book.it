@@ -26,7 +26,7 @@ final readonly class BatchRegisterRoomsCommandHandler implements SyncCommandHand
     public function __invoke(BatchRegisterRoomsCommand $command): void
     {
         if (!$this->hotelExists->exists($command->hotelId)) {
-            throw new HotelNotFoundException($command->hotelId);
+            throw new HotelNotFoundException($command->hotelId->value);
         }
 
         $violations = [];

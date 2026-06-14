@@ -7,6 +7,7 @@ namespace App\Reservation\Infrastructure\Service;
 use App\Pricing\Application\Contract\CancellationPolicyFinderInterface;
 use App\Reservation\Domain\Port\CancellationPolicyFetcherInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class PricingCancellationPolicyFetcher implements CancellationPolicyFetcherInterface
 {
@@ -14,9 +15,9 @@ final readonly class PricingCancellationPolicyFetcher implements CancellationPol
     {
     }
 
-    public function fetch(string $roomId): CancellationTerms
+    public function fetch(RoomId $roomId): CancellationTerms
     {
-        $view = $this->cancellationPolicies->find($roomId);
+        $view = $this->cancellationPolicies->find($roomId->value);
 
         if (null === $view) {
             return CancellationTerms::alwaysRefundable();

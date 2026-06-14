@@ -10,6 +10,9 @@ use App\Availability\Application\UseCase\CheckAvailability\CheckAvailabilityQuer
 use App\Availability\Application\UseCase\CheckAvailability\CheckAvailabilityQueryHandler;
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\AvailabilityHoldId;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryAvailabilityHoldRepository;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryBlockedPeriodRepository;
@@ -35,8 +38,8 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
 
         $blockHandler = new BlockPeriodCommandHandler($this->blockedPeriodRepository, new FakeRoomExistenceChecker(), $this->createStub(EventDispatcherInterface::class));
         ($blockHandler)(new BlockPeriodCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: self::ROOM_ID,
+            id: new BlockedPeriodId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             createdAt: new \DateTimeImmutable(),
@@ -47,7 +50,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsTrueWhenNoOverlap(): void
     {
         $result = ($this->handler)(new CheckAvailabilityQuery(
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-06-15'),
             checkOut: new \DateTimeImmutable('2025-06-18'),
         ));
@@ -59,7 +62,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsFalseWhenOverlap(): void
     {
         $result = ($this->handler)(new CheckAvailabilityQuery(
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-06-12'),
             checkOut: new \DateTimeImmutable('2025-06-17'),
         ));
@@ -71,7 +74,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsTrueForDifferentRoom(): void
     {
         $result = ($this->handler)(new CheckAvailabilityQuery(
-            roomId: '550e8400-e29b-41d4-a716-446655440099',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440099'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
         ));
@@ -83,8 +86,8 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsFalseWhenActiveHoldOverlaps(): void
     {
         $this->holdRepository->add(new AvailabilityHold(
-            id: 'hold-1',
-            roomId: self::ROOM_ID,
+            id: new AvailabilityHoldId('hold-1'),
+            roomId: new RoomId(self::ROOM_ID),
             reservationId: 'res-1',
             period: new DatePeriod(
                 new \DateTimeImmutable('2025-07-01'),
@@ -95,7 +98,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
         ));
 
         $result = ($this->handler)(new CheckAvailabilityQuery(
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-07-03'),
             checkOut: new \DateTimeImmutable('2025-07-08'),
         ));
@@ -107,8 +110,8 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
     public function itReturnsTrueWhenHoldIsExpired(): void
     {
         $this->holdRepository->add(new AvailabilityHold(
-            id: 'hold-2',
-            roomId: self::ROOM_ID,
+            id: new AvailabilityHoldId('hold-2'),
+            roomId: new RoomId(self::ROOM_ID),
             reservationId: 'res-2',
             period: new DatePeriod(
                 new \DateTimeImmutable('2025-08-01'),
@@ -119,7 +122,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
         ));
 
         $result = ($this->handler)(new CheckAvailabilityQuery(
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-08-01'),
             checkOut: new \DateTimeImmutable('2025-08-05'),
         ));

@@ -5,6 +5,9 @@ declare(strict_types=1);
 namespace App\Search\Infrastructure\Persistence;
 
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 
 final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
@@ -15,32 +18,32 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
     ) {
     }
 
-    public function updateStarRating(string $hotelId, ?int $starRating): void
+    public function updateStarRating(HotelId $hotelId, ?int $starRating): void
     {
         $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET star_rating = :starRating WHERE hotel_id = :hotelId',
-            ['starRating' => $starRating, 'hotelId' => $hotelId],
+            ['starRating' => $starRating, 'hotelId' => $hotelId->value],
         );
     }
 
-    public function updateHotelAmenities(string $hotelId, array $amenities): void
+    public function updateHotelAmenities(HotelId $hotelId, array $amenities): void
     {
         $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET hotel_amenities = :amenities WHERE hotel_id = :hotelId',
-            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'hotelId' => $hotelId],
+            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'hotelId' => $hotelId->value],
         );
     }
 
     public function upsertRoomType(
-        string $roomTypeId,
-        string $hotelId,
+        RoomTypeId $roomTypeId,
+        HotelId $hotelId,
         string $name,
         int $guestCapacity,
         array $bedComposition,
     ): void {
         $hotel = $this->hotelConnection->fetchAssociative(
             'SELECT name, city, country, stars, amenities FROM hotel WHERE id = :id',
-            ['id' => $hotelId],
+            ['id' => $hotelId->value],
         );
 
         if (false === $hotel) {
@@ -66,8 +69,8 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
                 bed_composition = EXCLUDED.bed_composition
             SQL,
             [
-                'roomTypeId' => $roomTypeId,
-                'hotelId' => $hotelId,
+                'roomTypeId' => $roomTypeId->value,
+                'hotelId' => $hotelId->value,
                 'hotelName' => $hotel['name'],
                 'city' => $hotel['city'],
                 'country' => $hotel['country'],
@@ -81,7 +84,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
     }
 
     public function updateRoomType(
-        string $roomTypeId,
+        RoomTypeId $roomTypeId,
         string $name,
         int $guestCapacity,
         array $bedComposition,
@@ -98,32 +101,32 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
                 'name' => $name,
                 'guestCapacity' => $guestCapacity,
                 'bedComposition' => json_encode($bedComposition, \JSON_THROW_ON_ERROR),
-                'roomTypeId' => $roomTypeId,
+                'roomTypeId' => $roomTypeId->value,
             ],
         );
     }
 
-    public function updateRoomAmenities(string $roomTypeId, array $amenities): void
+    public function updateRoomAmenities(RoomTypeId $roomTypeId, array $amenities): void
     {
         $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET room_amenities = :amenities WHERE room_type_id = :roomTypeId',
-            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'roomTypeId' => $roomTypeId],
+            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'roomTypeId' => $roomTypeId->value],
         );
     }
 
-    public function deleteRoomType(string $roomTypeId): void
+    public function deleteRoomType(RoomTypeId $roomTypeId): void
     {
         $this->searchConnection->executeStatement(
             'DELETE FROM hotel_room_types WHERE room_type_id = :roomTypeId',
-            ['roomTypeId' => $roomTypeId],
+            ['roomTypeId' => $roomTypeId->value],
         );
     }
 
-    public function updateBaseRateByRoom(string $roomId, int $amountCents): void
+    public function updateBaseRateByRoom(RoomId $roomId, int $amountCents): void
     {
         $roomRow = $this->searchConnection->fetchAssociative(
             'SELECT room_type_id FROM room_index WHERE room_id = :roomId',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         if (false === $roomRow) {

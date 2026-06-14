@@ -7,6 +7,7 @@ namespace App\Tests\Search\Application\UseCase\RemoveSearchUnavailablePeriodByPe
 use App\Search\Application\UseCase\RemoveSearchUnavailablePeriodByPeriod\RemoveSearchUnavailablePeriodByPeriodCommand;
 use App\Search\Application\UseCase\RemoveSearchUnavailablePeriodByPeriod\RemoveSearchUnavailablePeriodByPeriodCommandHandler;
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -23,11 +24,11 @@ final class RemoveSearchUnavailablePeriodByPeriodCommandHandlerTest extends Test
 
         $writer->expects($this->once())
             ->method('removeByPeriod')
-            ->with('room-id-1', $checkIn, $checkOut);
+            ->with(new RoomId('room-id-1'), $checkIn, $checkOut);
 
         $handler = new RemoveSearchUnavailablePeriodByPeriodCommandHandler($writer);
         ($handler)(new RemoveSearchUnavailablePeriodByPeriodCommand(
-            roomId: 'room-id-1',
+            roomId: new RoomId('room-id-1'),
             checkIn: $checkIn,
             checkOut: $checkOut,
         ));

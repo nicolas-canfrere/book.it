@@ -8,6 +8,8 @@ use App\Room\Application\UseCase\ListRoomTypes\ListRoomTypesQuery;
 use App\Room\Application\UseCase\ListRoomTypes\ListRoomTypesQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -29,8 +31,8 @@ final class ListRoomTypesQueryHandlerTest extends TestCase
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         foreach (['Suite', 'Double', 'Single'] as $i => $name) {
             ($registerHandler)(new RegisterRoomTypeCommand(
-                id: sprintf('a0eebc99-9c0b-4ef8-bb6d-6bb9bd38%04d', $i),
-                hotelId: '550e8400-e29b-41d4-a716-446655440000',
+                id: new RoomTypeId(sprintf('a0eebc99-9c0b-4ef8-bb6d-6bb9bd38%04d', $i)),
+                hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
                 name: $name,
                 livingSpaceCount: 1,
                 surfaceM2: null,
@@ -45,7 +47,7 @@ final class ListRoomTypesQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsRoomTypesSortedByName(): void
     {
-        $page = ($this->handler)(new ListRoomTypesQuery('550e8400-e29b-41d4-a716-446655440000', 1, 20));
+        $page = ($this->handler)(new ListRoomTypesQuery(new HotelId('550e8400-e29b-41d4-a716-446655440000'), 1, 20));
         self::assertSame(3, $page->total);
         self::assertSame('Double', $page->roomTypes[0]->name);
         self::assertSame('Single', $page->roomTypes[1]->name);
@@ -55,7 +57,7 @@ final class ListRoomTypesQueryHandlerTest extends TestCase
     #[Test]
     public function itPaginates(): void
     {
-        $page = ($this->handler)(new ListRoomTypesQuery('550e8400-e29b-41d4-a716-446655440000', 1, 2));
+        $page = ($this->handler)(new ListRoomTypesQuery(new HotelId('550e8400-e29b-41d4-a716-446655440000'), 1, 2));
         self::assertSame(3, $page->total);
         self::assertCount(2, $page->roomTypes);
     }

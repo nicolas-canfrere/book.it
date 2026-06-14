@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Infrastructure\Contract\DoctrineReservationFinder;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -38,7 +39,7 @@ final class DoctrineReservationFinderTest extends TestCase
 
         $reservation = new Reservation(
             id: 'res-1',
-            roomId: 'room-1',
+            roomId: new RoomId('room-1'),
             bookerId: 'booker-1',
             period: new DatePeriod($checkIn, $checkOut),
             totalPrice: 40000,

@@ -8,6 +8,7 @@ use App\Operator\Domain\Exception\ExternalAccountCreationException;
 use App\Operator\Infrastructure\Contract\SecurityAccountRegistrarAdapter;
 use App\Security\Application\Contract\AccountRegistrarInterface;
 use App\Security\Application\Contract\AccountRegistrationFailedException;
+use App\Shared\Domain\ValueObject\OperatorId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -32,7 +33,7 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->method('register')
             ->with('operator-id', 'operator', 'email@example.com', 'password');
 
-        $this->adapter->register('operator-id', 'email@example.com', 'password');
+        $this->adapter->register(new OperatorId('operator-id'), 'email@example.com', 'password');
     }
 
     #[Test]
@@ -42,7 +43,7 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->method('unregister')
             ->with('operator-id', 'operator');
 
-        $this->adapter->unregister('operator-id');
+        $this->adapter->unregister(new OperatorId('operator-id'));
     }
 
     #[Test]
@@ -52,7 +53,7 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->willThrowException(new AccountRegistrationFailedException('email@example.com'));
 
         $this->expectException(ExternalAccountCreationException::class);
-        $this->adapter->register('operator-id', 'email@example.com', 'password');
+        $this->adapter->register(new OperatorId('operator-id'), 'email@example.com', 'password');
     }
 
     #[Test]
@@ -62,6 +63,6 @@ final class SecurityAccountRegistrarAdapterTest extends TestCase
             ->method('assignRole')
             ->with('operator-id', 'operator', 'ROLE_ADMIN');
 
-        $this->adapter->assignAdminRole('operator-id');
+        $this->adapter->assignAdminRole(new OperatorId('operator-id'));
     }
 }

@@ -7,6 +7,7 @@ namespace App\Availability\Infrastructure\Contract;
 use App\Availability\Application\Contract\AvailabilityCheckerInterface;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
 use App\Availability\Domain\Port\BlockedPeriodRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class DoctrineAvailabilityChecker implements AvailabilityCheckerInterface
 {
@@ -16,7 +17,7 @@ final readonly class DoctrineAvailabilityChecker implements AvailabilityCheckerI
     ) {
     }
 
-    public function isAvailable(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
+    public function isAvailable(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
     {
         if ($this->blockedPeriods->hasOverlap($roomId, $checkIn, $checkOut)) {
             return false;

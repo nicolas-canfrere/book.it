@@ -8,6 +8,8 @@ use App\Room\Application\UseCase\GetRoomType\GetRoomTypeQuery;
 use App\Room\Application\UseCase\GetRoomType\GetRoomTypeQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -28,8 +30,8 @@ final class GetRoomTypeQueryHandlerTest extends TestCase
 
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
-            id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            id: new RoomTypeId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             name: 'Single',
             livingSpaceCount: 1,
             surfaceM2: null,
@@ -43,7 +45,7 @@ final class GetRoomTypeQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsTheRoomType(): void
     {
-        $result = ($this->handler)(new GetRoomTypeQuery('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
+        $result = ($this->handler)(new GetRoomTypeQuery(new RoomTypeId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11')));
         self::assertNotNull($result);
         self::assertSame('Single', $result->name);
     }
@@ -51,7 +53,7 @@ final class GetRoomTypeQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsNullWhenNotFound(): void
     {
-        $result = ($this->handler)(new GetRoomTypeQuery('00000000-0000-4000-8000-000000000000'));
+        $result = ($this->handler)(new GetRoomTypeQuery(new RoomTypeId('00000000-0000-4000-8000-000000000000')));
         self::assertNull($result);
     }
 }

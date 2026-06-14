@@ -25,13 +25,13 @@ final readonly class UpdateRoomTypeCommandHandler implements SyncCommandHandlerI
     {
         $roomType = $this->roomTypeRepository->get($command->id);
         if (null === $roomType) {
-            throw new RoomTypeNotFoundException($command->id);
+            throw new RoomTypeNotFoundException($command->id->value);
         }
 
         if ($roomType->name !== $command->name
             && $this->roomTypeRepository->existsByHotelIdAndName($roomType->hotelId, $command->name)
         ) {
-            throw new RoomTypeAlreadyExistsException($command->name, $roomType->hotelId);
+            throw new RoomTypeAlreadyExistsException($command->name, $roomType->hotelId->value);
         }
 
         $this->roomTypeRepository->update(new RoomType(
@@ -47,8 +47,8 @@ final readonly class UpdateRoomTypeCommandHandler implements SyncCommandHandlerI
         ));
 
         $this->eventDispatcher->dispatch(new RoomTypeUpdated(
-            roomTypeId: $roomType->id,
-            hotelId: $roomType->hotelId,
+            roomTypeId: $roomType->id->value,
+            hotelId: $roomType->hotelId->value,
             name: $command->name,
             guestCapacity: $command->guestCapacity,
             bedComposition: $command->bedEntries,

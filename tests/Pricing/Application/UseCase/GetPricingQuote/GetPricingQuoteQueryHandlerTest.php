@@ -11,6 +11,7 @@ use App\Pricing\Domain\Exception\RoomNotFoundException;
 use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Model\Promotion;
 use App\Pricing\Domain\Model\RatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryBaseRateRepository;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryPromotionRepository;
@@ -47,10 +48,10 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
     #[Test]
     public function itComputesQuoteUsingBaseRateOnly(): void
     {
-        $this->baseRates->save(new BaseRate(self::ROOM_ID, 10000, new \DateTimeImmutable('2025-01-01')));
+        $this->baseRates->save(new BaseRate(new RoomId(self::ROOM_ID), 10000, new \DateTimeImmutable('2025-01-01')));
 
         $result = ($this->handler)(new GetPricingQuoteQuery(
-            self::ROOM_ID,
+            new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
         ));
@@ -77,10 +78,10 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
     #[Test]
     public function itAppliesRatePeriodOverrideForCoveredNights(): void
     {
-        $this->baseRates->save(new BaseRate(self::ROOM_ID, 10000, new \DateTimeImmutable('2025-01-01')));
+        $this->baseRates->save(new BaseRate(new RoomId(self::ROOM_ID), 10000, new \DateTimeImmutable('2025-01-01')));
         $this->ratePeriods->save(new RatePeriod(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-07-11'),
             checkOut: new \DateTimeImmutable('2025-07-13'),
             amountCents: 20000,
@@ -89,7 +90,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         ));
 
         $result = ($this->handler)(new GetPricingQuoteQuery(
-            self::ROOM_ID,
+            new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
         ));
@@ -104,10 +105,10 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
     #[Test]
     public function itAppliesPromotionDiscountOnCoveredNights(): void
     {
-        $this->baseRates->save(new BaseRate(self::ROOM_ID, 10000, new \DateTimeImmutable('2025-01-01')));
+        $this->baseRates->save(new BaseRate(new RoomId(self::ROOM_ID), 10000, new \DateTimeImmutable('2025-01-01')));
         $this->promotions->save(new Promotion(
             id: 'c2ffcd00-ad1c-4ef9-cc7e-7cc0ce491b33',
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-07-11'),
             checkOut: new \DateTimeImmutable('2025-07-13'),
             discountPercent: 20,
@@ -116,7 +117,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         ));
 
         $result = ($this->handler)(new GetPricingQuoteQuery(
-            self::ROOM_ID,
+            new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
         ));
@@ -134,10 +135,10 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
     #[Test]
     public function itCombinesRatePeriodAndPromotionOnSameNight(): void
     {
-        $this->baseRates->save(new BaseRate(self::ROOM_ID, 10000, new \DateTimeImmutable('2025-01-01')));
+        $this->baseRates->save(new BaseRate(new RoomId(self::ROOM_ID), 10000, new \DateTimeImmutable('2025-01-01')));
         $this->ratePeriods->save(new RatePeriod(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-07-10'),
             checkOut: new \DateTimeImmutable('2025-07-13'),
             amountCents: 20000,
@@ -146,7 +147,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         ));
         $this->promotions->save(new Promotion(
             id: 'c2ffcd00-ad1c-4ef9-cc7e-7cc0ce491b33',
-            roomId: self::ROOM_ID,
+            roomId: new RoomId(self::ROOM_ID),
             checkIn: new \DateTimeImmutable('2025-07-11'),
             checkOut: new \DateTimeImmutable('2025-07-12'),
             discountPercent: 25,
@@ -155,7 +156,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         ));
 
         $result = ($this->handler)(new GetPricingQuoteQuery(
-            self::ROOM_ID,
+            new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
         ));
@@ -181,7 +182,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         $this->expectException(RoomNotFoundException::class);
 
         ($this->handler)(new GetPricingQuoteQuery(
-            self::ROOM_ID,
+            new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
         ));
@@ -193,7 +194,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         $this->expectException(RoomHasNoBaseRateException::class);
 
         ($this->handler)(new GetPricingQuoteQuery(
-            self::ROOM_ID,
+            new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
         ));

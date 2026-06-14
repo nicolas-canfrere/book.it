@@ -266,9 +266,11 @@ deptrac:
             - Vendor
         # Les contrats publiés sont des DTO/interfaces purs : aucune dépendance
         # (Shared toléré si un jour nécessaire — à ajouter explicitement).
-        AvailabilityContract: ~
+        AvailabilityContract:
+            - Shared
         BookerContract: ~
-        HotelContract: ~
+        HotelContract:
+            - Shared
         NotificationContract: ~
         OperatorContract: ~
         PricingContract: ~

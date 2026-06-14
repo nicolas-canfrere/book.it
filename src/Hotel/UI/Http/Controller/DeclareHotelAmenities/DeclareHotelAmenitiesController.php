@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Hotel\UI\Http\Controller\DeclareHotelAmenities;
 
 use App\Hotel\Application\UseCase\DeclareHotelAmenities\DeclareHotelAmenitiesCommand;
+use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
@@ -63,8 +65,9 @@ final readonly class DeclareHotelAmenitiesController
         DeclareHotelAmenitiesRequest $request,
     ): Response {
         $this->commandBus->execute(new DeclareHotelAmenitiesCommand(
-            hotelId: $id,
-            amenities: $request->amenities,
+            hotelId: new HotelId($id),
+            amenities: array_values(array_map(HotelAmenity::from(...), $request->amenities)),
+            createdAt: new \DateTimeImmutable(),
         ));
 
         return new Response(null, Response::HTTP_NO_CONTENT);

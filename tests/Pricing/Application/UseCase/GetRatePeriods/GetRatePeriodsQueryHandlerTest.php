@@ -7,6 +7,7 @@ namespace App\Tests\Pricing\Application\UseCase\GetRatePeriods;
 use App\Pricing\Application\UseCase\GetRatePeriods\GetRatePeriodsQuery;
 use App\Pricing\Application\UseCase\GetRatePeriods\GetRatePeriodsQueryHandler;
 use App\Pricing\Domain\Model\RatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryRatePeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -27,7 +28,7 @@ final class GetRatePeriodsQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsEmptyArrayWhenNoPeriods(): void
     {
-        $result = ($this->handler)(new GetRatePeriodsQuery('550e8400-e29b-41d4-a716-446655440000'));
+        $result = ($this->handler)(new GetRatePeriodsQuery(new RoomId('550e8400-e29b-41d4-a716-446655440000')));
 
         self::assertSame([], $result);
     }
@@ -37,7 +38,7 @@ final class GetRatePeriodsQueryHandlerTest extends TestCase
     {
         $this->repository->save(new RatePeriod(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-07-01'),
             checkOut: new \DateTimeImmutable('2025-07-05'),
             amountCents: 20000,
@@ -47,7 +48,7 @@ final class GetRatePeriodsQueryHandlerTest extends TestCase
 
         $this->repository->save(new RatePeriod(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -55,7 +56,7 @@ final class GetRatePeriodsQueryHandlerTest extends TestCase
             updatedAt: new \DateTimeImmutable('2025-01-01 10:00:00'),
         ));
 
-        $result = ($this->handler)(new GetRatePeriodsQuery('550e8400-e29b-41d4-a716-446655440000'));
+        $result = ($this->handler)(new GetRatePeriodsQuery(new RoomId('550e8400-e29b-41d4-a716-446655440000')));
 
         self::assertCount(2, $result);
         self::assertSame('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', $result[0]->id);

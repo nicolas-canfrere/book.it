@@ -7,6 +7,7 @@ namespace App\Pricing\UI\Http\Controller\GetBaseRate;
 use App\Pricing\Application\UseCase\GetBaseRate\GetBaseRateQuery;
 use App\Pricing\UI\Http\Controller\BaseRateSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -45,7 +46,7 @@ final readonly class GetBaseRateController
     )]
     public function __invoke(string $roomId): Response
     {
-        $baseRate = $this->queryBus->ask(new GetBaseRateQuery($roomId));
+        $baseRate = $this->queryBus->ask(new GetBaseRateQuery(new RoomId($roomId)));
 
         return new JsonResponse($this->serializer->serialize($baseRate));
     }

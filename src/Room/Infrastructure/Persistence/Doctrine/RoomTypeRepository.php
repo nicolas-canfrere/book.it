@@ -9,6 +9,8 @@ use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
 
@@ -21,8 +23,8 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
     public function add(RoomType $roomType): void
     {
         $this->roomConnection->insert('room_type', [
-            'id' => $roomType->id,
-            'hotel_id' => $roomType->hotelId,
+            'id' => $roomType->id->value,
+            'hotel_id' => $roomType->hotelId->value,
             'name' => $roomType->name,
             'living_space_count' => $roomType->livingSpaceCount,
             'surface_m2' => $roomType->surfaceM2,
@@ -36,12 +38,12 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
         ]);
     }
 
-    public function get(string $id): ?RoomType
+    public function get(RoomTypeId $id): ?RoomType
     {
         /** @var array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, amenities: string, created_at: string}|false $row */
         $row = $this->roomConnection->fetchAssociative(
             'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, amenities, created_at FROM room_type WHERE id = :id',
-            ['id' => $id],
+            ['id' => $id->value],
         );
 
         if (false === $row) {
@@ -51,11 +53,11 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
         return $this->hydrate($row);
     }
 
-    public function existsByHotelIdAndName(string $hotelId, string $name): bool
+    public function existsByHotelIdAndName(HotelId $hotelId, string $name): bool
     {
         $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room_type WHERE hotel_id = :hotelId AND name = :name',
-            ['hotelId' => $hotelId, 'name' => $name],
+            ['hotelId' => $hotelId->value, 'name' => $name],
         );
 
         return $count > 0;
@@ -71,7 +73,7 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
             'is_accessible' => $roomType->isAccessible,
             'bed_composition' => json_encode($roomType->bedComposition->toArray(), \JSON_THROW_ON_ERROR),
             'amenities' => $this->serializeAmenities($roomType->amenities),
-        ], ['id' => $roomType->id], [
+        ], ['id' => $roomType->id->value], [
             'is_accessible' => Types::BOOLEAN,
         ]);
     }
@@ -80,27 +82,27 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
     {
         $this->roomConnection->update('room_type', [
             'amenities' => $this->serializeAmenities($roomType->amenities),
-        ], ['id' => $roomType->id]);
+        ], ['id' => $roomType->id->value]);
     }
 
-    public function delete(string $id): void
+    public function delete(RoomTypeId $id): void
     {
-        $this->roomConnection->delete('room_type', ['id' => $id]);
+        $this->roomConnection->delete('room_type', ['id' => $id->value]);
     }
 
-    public function list(string $hotelId, int $page, int $limit): RoomTypePage
+    public function list(HotelId $hotelId, int $page, int $limit): RoomTypePage
     {
         /** @var int|string $count */
         $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room_type WHERE hotel_id = :hotelId',
-            ['hotelId' => $hotelId],
+            ['hotelId' => $hotelId->value],
         );
         $total = (int) $count;
 
         /** @var list<array{id: string, hotel_id: string, name: string, living_space_count: int|string, surface_m2: int|string|null, guest_capacity: int|string, is_accessible: string|bool, bed_composition: string, amenities: string, created_at: string}> $rows */
         $rows = $this->roomConnection->fetchAllAssociative(
             'SELECT id, hotel_id, name, living_space_count, surface_m2, guest_capacity, is_accessible, bed_composition, amenities, created_at FROM room_type WHERE hotel_id = :hotelId ORDER BY name ASC LIMIT :limit OFFSET :offset',
-            ['hotelId' => $hotelId, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
+            ['hotelId' => $hotelId->value, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
         );
 
         return new RoomTypePage(array_map($this->hydrate(...), $rows), $total);
@@ -115,8 +117,8 @@ final readonly class RoomTypeRepository implements RoomTypeRepositoryInterface
         $bedData = json_decode($row['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
 
         return new RoomType(
-            $row['id'],
-            $row['hotel_id'],
+            new RoomTypeId($row['id']),
+            new HotelId($row['hotel_id']),
             $row['name'],
             (int) $row['living_space_count'],
             null !== $row['surface_m2'] ? (int) $row['surface_m2'] : null,

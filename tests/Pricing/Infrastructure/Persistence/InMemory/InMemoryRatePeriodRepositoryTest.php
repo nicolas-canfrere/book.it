@@ -6,6 +6,7 @@ namespace App\Tests\Pricing\Infrastructure\Persistence\InMemory;
 
 use App\Pricing\Domain\Model\RatePeriod;
 use App\Pricing\Domain\ValueObject\DatePeriod;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -32,7 +33,7 @@ final class InMemoryRatePeriodRepositoryTest extends TestCase
         $this->repository->save($this->makePeriod('rp-5', '2025-07-14', '2025-07-16')); // after — excluded
 
         $stay = new DatePeriod(new \DateTimeImmutable('2025-07-10'), new \DateTimeImmutable('2025-07-13'));
-        $result = $this->repository->findOverlappingByRoomId(self::ROOM_ID, $stay);
+        $result = $this->repository->findOverlappingByRoomId(new RoomId(self::ROOM_ID), $stay);
 
         self::assertCount(3, $result);
         $ids = array_map(static fn(RatePeriod $rp) => $rp->id, $result);
@@ -48,7 +49,7 @@ final class InMemoryRatePeriodRepositoryTest extends TestCase
         $this->repository->save($this->makePeriod('rp-adj-after', '2025-07-13', '2025-07-15'));  // check_in == stay check_out
 
         $stay = new DatePeriod(new \DateTimeImmutable('2025-07-10'), new \DateTimeImmutable('2025-07-13'));
-        $result = $this->repository->findOverlappingByRoomId(self::ROOM_ID, $stay);
+        $result = $this->repository->findOverlappingByRoomId(new RoomId(self::ROOM_ID), $stay);
 
         self::assertCount(0, $result);
     }
@@ -60,7 +61,7 @@ final class InMemoryRatePeriodRepositoryTest extends TestCase
         $this->repository->save($this->makePeriod('rp-other-room', '2025-07-10', '2025-07-13', 'other-room-id'));
 
         $stay = new DatePeriod(new \DateTimeImmutable('2025-07-10'), new \DateTimeImmutable('2025-07-13'));
-        $result = $this->repository->findOverlappingByRoomId(self::ROOM_ID, $stay);
+        $result = $this->repository->findOverlappingByRoomId(new RoomId(self::ROOM_ID), $stay);
 
         self::assertCount(1, $result);
         self::assertSame('rp-same-room', $result[0]->id);
@@ -70,7 +71,7 @@ final class InMemoryRatePeriodRepositoryTest extends TestCase
     {
         return new RatePeriod(
             id: $id,
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
             amountCents: 10000,

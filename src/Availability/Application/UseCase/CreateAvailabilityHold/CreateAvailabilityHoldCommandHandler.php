@@ -36,8 +36,8 @@ final readonly class CreateAvailabilityHoldCommandHandler implements SyncCommand
         ));
 
         $this->eventDispatcher->dispatch(new AvailabilityHoldCreated(
-            holdId: $command->id,
-            roomId: $command->roomId,
+            holdId: $command->id->value,
+            roomId: $command->roomId->value,
             reservationId: $command->reservationId,
             checkIn: $command->checkIn,
             checkOut: $command->checkOut,

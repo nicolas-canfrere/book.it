@@ -7,6 +7,7 @@ namespace App\Room\UI\Http\Controller\GetRoomType;
 use App\Room\Application\UseCase\GetRoomType\GetRoomTypeQuery;
 use App\Room\UI\Http\Controller\RoomTypeSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -64,7 +65,7 @@ final readonly class GetRoomTypeController
     )]
     public function __invoke(string $hotelId, string $roomTypeId): Response
     {
-        $roomType = $this->queryBus->ask(new GetRoomTypeQuery($roomTypeId));
+        $roomType = $this->queryBus->ask(new GetRoomTypeQuery(new RoomTypeId($roomTypeId)));
         if (null === $roomType) {
             throw new NotFoundHttpException();
         }

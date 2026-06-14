@@ -15,7 +15,7 @@ final class PromotionSerializer
     {
         return [
             'id' => $promotion->id,
-            'roomId' => $promotion->roomId,
+            'roomId' => $promotion->roomId->value,
             'checkIn' => $promotion->getCheckIn()->format('Y-m-d'),
             'checkOut' => $promotion->getCheckOut()->format('Y-m-d'),
             'discountPercent' => $promotion->getDiscountPercent(),

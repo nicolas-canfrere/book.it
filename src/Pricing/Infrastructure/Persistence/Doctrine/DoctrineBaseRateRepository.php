@@ -6,6 +6,7 @@ namespace App\Pricing\Infrastructure\Persistence\Doctrine;
 
 use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
 final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInterface
@@ -21,19 +22,19 @@ final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInt
              VALUES (:roomId, :amountCents, :updatedAt)
              ON CONFLICT (room_id) DO UPDATE SET amount_cents = :amountCents, updated_at = :updatedAt',
             [
-                'roomId' => $baseRate->roomId,
+                'roomId' => $baseRate->roomId->value,
                 'amountCents' => $baseRate->amountCents,
                 'updatedAt' => $baseRate->updatedAt->format('Y-m-d H:i:s'),
             ],
         );
     }
 
-    public function findByRoomId(string $roomId): ?BaseRate
+    public function findByRoomId(RoomId $roomId): ?BaseRate
     {
         /** @var array{room_id: string, amount_cents: int, updated_at: string}|false $row */
         $row = $this->pricingConnection->fetchAssociative(
             'SELECT room_id, amount_cents, updated_at FROM base_rate WHERE room_id = :roomId',
-            ['roomId' => $roomId],
+            ['roomId' => $roomId->value],
         );
 
         if (false === $row) {
@@ -49,7 +50,7 @@ final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInt
     private function hydrate(array $row): BaseRate
     {
         return new BaseRate(
-            $row['room_id'],
+            new RoomId($row['room_id']),
             $row['amount_cents'],
             new \DateTimeImmutable($row['updated_at']),
         );

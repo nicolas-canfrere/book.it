@@ -8,6 +8,7 @@ use App\Pricing\Application\UseCase\CreateRatePeriod\CreateRatePeriodCommand;
 use App\Pricing\Application\UseCase\CreateRatePeriod\CreateRatePeriodCommandHandler;
 use App\Pricing\Domain\Exception\RatePeriodOverlapException;
 use App\Pricing\Domain\Exception\RoomNotFoundException;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryRatePeriodRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -33,7 +34,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
     {
         $command = new CreateRatePeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -46,7 +47,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
         $period = $this->repository->findById($command->id);
         self::assertNotNull($period);
         self::assertSame($command->id, $period->id);
-        self::assertSame($command->roomId, $period->roomId);
+        self::assertSame($command->roomId->value, $period->roomId->value);
         self::assertSame('2025-06-10', $period->checkIn->format('Y-m-d'));
         self::assertSame('2025-06-15', $period->checkOut->format('Y-m-d'));
         self::assertSame(12000, $period->amountCents);
@@ -60,7 +61,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new CreateRatePeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -74,7 +75,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
     {
         ($this->handler)(new CreateRatePeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -86,7 +87,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new CreateRatePeriodCommand(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-12'),
             checkOut: new \DateTimeImmutable('2025-06-17'),
             amountCents: 13000,
@@ -100,7 +101,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
     {
         ($this->handler)(new CreateRatePeriodCommand(
             id: 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-10'),
             checkOut: new \DateTimeImmutable('2025-06-15'),
             amountCents: 12000,
@@ -110,7 +111,7 @@ final class CreateRatePeriodCommandHandlerTest extends TestCase
 
         ($this->handler)(new CreateRatePeriodCommand(
             id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
             checkIn: new \DateTimeImmutable('2025-06-15'),
             checkOut: new \DateTimeImmutable('2025-06-20'),
             amountCents: 13000,

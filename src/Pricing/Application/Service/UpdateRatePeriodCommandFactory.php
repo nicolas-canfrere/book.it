@@ -6,6 +6,7 @@ namespace App\Pricing\Application\Service;
 
 use App\Pricing\Application\UseCase\UpdateRatePeriod\UpdateRatePeriodCommand;
 use App\Pricing\Domain\ValueObject\Money;
+use App\Shared\Domain\ValueObject\RoomId;
 use Psr\Clock\ClockInterface;
 
 final readonly class UpdateRatePeriodCommandFactory
@@ -19,7 +20,7 @@ final readonly class UpdateRatePeriodCommandFactory
     {
         return new UpdateRatePeriodCommand(
             ratePeriodId: $ratePeriodId,
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
             amountCents: Money::fromEuros($amount)->amountCents,

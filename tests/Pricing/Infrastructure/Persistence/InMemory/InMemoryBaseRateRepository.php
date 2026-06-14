@@ -6,6 +6,7 @@ namespace App\Tests\Pricing\Infrastructure\Persistence\InMemory;
 
 use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryBaseRateRepository implements BaseRateRepositoryInterface
 {
@@ -14,11 +15,11 @@ final class InMemoryBaseRateRepository implements BaseRateRepositoryInterface
 
     public function save(BaseRate $baseRate): void
     {
-        $this->rates[$baseRate->roomId] = $baseRate;
+        $this->rates[$baseRate->roomId->value] = $baseRate;
     }
 
-    public function findByRoomId(string $roomId): ?BaseRate
+    public function findByRoomId(RoomId $roomId): ?BaseRate
     {
-        return $this->rates[$roomId] ?? null;
+        return $this->rates[$roomId->value] ?? null;
     }
 }

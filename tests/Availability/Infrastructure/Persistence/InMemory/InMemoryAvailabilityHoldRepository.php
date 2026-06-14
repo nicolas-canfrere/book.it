@@ -6,6 +6,7 @@ namespace App\Tests\Availability\Infrastructure\Persistence\InMemory;
 
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryAvailabilityHoldRepository implements AvailabilityHoldRepositoryInterface
 {
@@ -14,7 +15,7 @@ final class InMemoryAvailabilityHoldRepository implements AvailabilityHoldReposi
 
     public function add(AvailabilityHold $hold): void
     {
-        $this->holds[$hold->id] = $hold;
+        $this->holds[$hold->id->value] = $hold;
     }
 
     public function deleteByReservationId(string $reservationId): void
@@ -26,12 +27,12 @@ final class InMemoryAvailabilityHoldRepository implements AvailabilityHoldReposi
         }
     }
 
-    public function hasActiveOverlap(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
+    public function hasActiveOverlap(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool
     {
         $now = new \DateTimeImmutable();
 
         foreach ($this->holds as $hold) {
-            if ($hold->roomId !== $roomId) {
+            if ($hold->roomId->value !== $roomId->value) {
                 continue;
             }
             if ($hold->expiresAt <= $now) {

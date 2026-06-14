@@ -5,12 +5,13 @@ declare(strict_types=1);
 namespace App\Hotel\Infrastructure\Service;
 
 use App\Hotel\Domain\Port\HotelIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use Symfony\Component\Uid\Uuid;
 
 final class HotelIdGenerator implements HotelIdGeneratorInterface
 {
-    public function generate(): string
+    public function generate(): HotelId
     {
-        return Uuid::v4()->toString();
+        return new HotelId(Uuid::v4()->toString());
     }
 }

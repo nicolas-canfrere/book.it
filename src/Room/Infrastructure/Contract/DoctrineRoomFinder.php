@@ -8,6 +8,7 @@ use App\Room\Application\Contract\RoomFinderInterface;
 use App\Room\Application\Contract\RoomView;
 use App\Room\Domain\Port\RoomCapacityFinderInterface;
 use App\Room\Domain\Port\RoomRepositoryInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class DoctrineRoomFinder implements RoomFinderInterface
 {
@@ -19,15 +20,16 @@ final readonly class DoctrineRoomFinder implements RoomFinderInterface
 
     public function find(string $roomId): ?RoomView
     {
-        $room = $this->roomRepository->get($roomId);
+        $id = new RoomId($roomId);
+        $room = $this->roomRepository->get($id);
 
         if (null === $room) {
             return null;
         }
 
         return new RoomView(
-            id: $room->id,
-            capacity: $this->capacityFinder->findCapacity($roomId),
+            id: $room->id->value,
+            capacity: $this->capacityFinder->findCapacity($id),
         );
     }
 }

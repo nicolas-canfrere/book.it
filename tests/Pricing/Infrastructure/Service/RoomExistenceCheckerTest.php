@@ -8,6 +8,7 @@ use App\Pricing\Domain\Port\RoomExistsInterface;
 use App\Pricing\Infrastructure\Service\RoomExistenceChecker;
 use App\Room\Application\Contract\RoomFinderInterface;
 use App\Room\Application\Contract\RoomView;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -29,13 +30,13 @@ final class RoomExistenceCheckerTest extends TestCase
     public function itReturnsTrueWhenRoomFound(): void
     {
         $this->roomFinder->method('find')->willReturn(new RoomView('room-1', 2));
-        self::assertTrue($this->checker->exists('room-1'));
+        self::assertTrue($this->checker->exists(new RoomId('room-1')));
     }
 
     #[Test]
     public function itReturnsFalseWhenRoomNotFound(): void
     {
         $this->roomFinder->method('find')->willReturn(null);
-        self::assertFalse($this->checker->exists('unknown'));
+        self::assertFalse($this->checker->exists(new RoomId('unknown')));
     }
 }

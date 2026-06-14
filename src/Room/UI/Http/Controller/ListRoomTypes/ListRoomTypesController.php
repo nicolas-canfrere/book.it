@@ -6,6 +6,7 @@ namespace App\Room\UI\Http\Controller\ListRoomTypes;
 
 use App\Room\Application\UseCase\ListRoomTypes\ListRoomTypesQuery;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -83,7 +84,7 @@ final readonly class ListRoomTypesController
         string $hotelId,
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] ListRoomTypesRequest $request = new ListRoomTypesRequest(),
     ): Response {
-        $page = $this->queryBus->ask(new ListRoomTypesQuery($hotelId, $request->page, $request->limit));
+        $page = $this->queryBus->ask(new ListRoomTypesQuery(new HotelId($hotelId), $request->page, $request->limit));
 
         return new JsonResponse($this->serializer->serialize($page, $request->page, $request->limit));
     }

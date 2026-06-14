@@ -9,6 +9,8 @@ use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler
 use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomTypeAlreadyExistsException;
 use App\Shared\Domain\Event\RoomTypeRegistered;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomTypeRepository;
@@ -37,7 +39,7 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
     {
         ($this->handler)($this->makeCommand());
 
-        $roomType = $this->repository->get('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11');
+        $roomType = $this->repository->get(new RoomTypeId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
         self::assertNotNull($roomType);
         self::assertSame('Suite Royale', $roomType->name);
         self::assertSame(2, $roomType->livingSpaceCount);
@@ -100,8 +102,8 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
         ($this->handler)($this->makeCommand('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'));
 
         $cmd2 = new RegisterRoomTypeCommand(
-            id: 'b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22',
-            hotelId: '550e8400-e29b-41d4-a716-000000000001',
+            id: new RoomTypeId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-000000000001'),
             name: 'Suite Royale',
             livingSpaceCount: 2,
             surfaceM2: null,
@@ -112,14 +114,14 @@ final class RegisterRoomTypeCommandHandlerTest extends TestCase
         );
         ($this->handler)($cmd2);
 
-        self::assertNotNull($this->repository->get('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'));
+        self::assertNotNull($this->repository->get(new RoomTypeId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22')));
     }
 
     private function makeCommand(string $id = 'a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', string $name = 'Suite Royale'): RegisterRoomTypeCommand
     {
         return new RegisterRoomTypeCommand(
-            id: $id,
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            id: new RoomTypeId($id),
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             name: $name,
             livingSpaceCount: 2,
             surfaceM2: 80,

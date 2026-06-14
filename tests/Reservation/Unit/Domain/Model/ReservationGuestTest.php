@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -199,7 +200,7 @@ final class ReservationGuestTest extends TestCase
     {
         $reservation = new Reservation(
             id: 'res-uuid-1',
-            roomId: 'room-uuid-1',
+            roomId: new RoomId('room-uuid-1'),
             bookerId: 'booker-uuid-1',
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-07-01'),

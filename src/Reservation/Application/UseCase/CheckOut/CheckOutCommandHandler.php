@@ -32,7 +32,7 @@ final class CheckOutCommandHandler implements SyncCommandHandlerInterface
 
         $this->eventDispatcher->dispatch(new ReservationCheckedOut(
             reservationId: $reservation->id,
-            roomId: $reservation->roomId,
+            roomId: $reservation->roomId->value,
             bookerId: $reservation->bookerId,
             checkIn: $reservation->period->checkIn,
             checkOut: $reservation->period->checkOut,

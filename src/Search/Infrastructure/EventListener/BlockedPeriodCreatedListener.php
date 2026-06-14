@@ -7,6 +7,7 @@ namespace App\Search\Infrastructure\EventListener;
 use App\Search\Application\UseCase\AddSearchUnavailablePeriod\AddSearchUnavailablePeriodCommand;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Domain\Event\BlockedPeriodCreated;
+use App\Shared\Domain\ValueObject\RoomId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: BlockedPeriodCreated::class)]
@@ -20,7 +21,7 @@ final readonly class BlockedPeriodCreatedListener
     {
         $this->commandDispatcher->dispatch(new AddSearchUnavailablePeriodCommand(
             sourceId: $event->blockedPeriodId,
-            roomId: $event->roomId,
+            roomId: new RoomId($event->roomId),
             checkIn: $event->checkIn,
             checkOut: $event->checkOut,
         ));

@@ -6,6 +6,8 @@ namespace App\Room\Domain\Model;
 
 use App\Room\Domain\ValueObject\BedComposition;
 use App\Room\Domain\ValueObject\RoomAmenity;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final readonly class RoomType
 {
@@ -13,8 +15,8 @@ final readonly class RoomType
      * @param array<RoomAmenity> $amenities
      */
     public function __construct(
-        public string $id,
-        public string $hotelId,
+        public RoomTypeId $id,
+        public HotelId $hotelId,
         public string $name,
         public int $livingSpaceCount,
         public ?int $surfaceM2,

@@ -15,7 +15,7 @@ final class HotelSerializer
     public function serialize(Hotel $hotel): array
     {
         return [
-            'id' => $hotel->id,
+            'id' => $hotel->id->value,
             'name' => $hotel->name,
             'streetAddress' => $hotel->address->streetAddress,
             'postalCode' => $hotel->address->postalCode,

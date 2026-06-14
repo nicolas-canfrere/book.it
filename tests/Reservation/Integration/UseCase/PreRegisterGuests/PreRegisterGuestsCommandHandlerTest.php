@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use App\Tests\Reservation\Infrastructure\Service\SequentialGuestIdGenerator;
 use PHPUnit\Framework\Attributes\Group;
@@ -89,7 +90,7 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
     {
         $reservation = new Reservation(
             id: $id,
-            roomId: 'room-1',
+            roomId: new RoomId('room-1'),
             bookerId: 'booker-1',
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-07-01'),

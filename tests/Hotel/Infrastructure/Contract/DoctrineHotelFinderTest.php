@@ -10,6 +10,7 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Infrastructure\Contract\DoctrineHotelFinder;
+use App\Shared\Domain\ValueObject\HotelId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -32,21 +33,21 @@ final class DoctrineHotelFinderTest extends TestCase
     {
         $this->repository->method('get')->willReturn(null);
 
-        self::assertNull($this->finder->find('unknown'));
+        self::assertNull($this->finder->find(new HotelId('unknown')));
     }
 
     #[Test]
     public function itReturnsHotelViewWhenHotelExists(): void
     {
         $hotel = new Hotel(
-            id: 'hotel-1',
+            id: new HotelId('hotel-1'),
             name: 'Test Hotel',
             address: new Address('1 rue Test', '75001', 'Paris', 'FR'),
             createdAt: new \DateTimeImmutable(),
         );
         $this->repository->method('get')->willReturn($hotel);
 
-        $view = $this->finder->find('hotel-1');
+        $view = $this->finder->find(new HotelId('hotel-1'));
 
         self::assertInstanceOf(HotelView::class, $view);
         self::assertSame('hotel-1', $view->id);

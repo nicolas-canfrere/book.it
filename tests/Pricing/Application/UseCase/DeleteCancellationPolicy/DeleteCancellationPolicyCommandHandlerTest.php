@@ -8,6 +8,7 @@ use App\Pricing\Application\UseCase\DeleteCancellationPolicy\DeleteCancellationP
 use App\Pricing\Application\UseCase\DeleteCancellationPolicy\DeleteCancellationPolicyCommandHandler;
 use App\Pricing\Domain\Exception\CancellationPolicyNotFoundException;
 use App\Pricing\Domain\Model\CancellationPolicy;
+use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryCancellationPolicyRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,7 +29,7 @@ final class DeleteCancellationPolicyCommandHandlerTest extends TestCase
     #[Test]
     public function itDeletesExistingPolicy(): void
     {
-        $roomId = '550e8400-e29b-41d4-a716-446655440000';
+        $roomId = new RoomId('550e8400-e29b-41d4-a716-446655440000');
 
         $this->repository->save(new CancellationPolicy(
             roomId: $roomId,
@@ -47,7 +48,7 @@ final class DeleteCancellationPolicyCommandHandlerTest extends TestCase
         $this->expectException(CancellationPolicyNotFoundException::class);
 
         ($this->handler)(new DeleteCancellationPolicyCommand(
-            roomId: '550e8400-e29b-41d4-a716-446655440000',
+            roomId: new RoomId('550e8400-e29b-41d4-a716-446655440000'),
         ));
     }
 }

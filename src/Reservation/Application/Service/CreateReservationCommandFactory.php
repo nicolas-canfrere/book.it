@@ -6,6 +6,7 @@ namespace App\Reservation\Application\Service;
 
 use App\Reservation\Application\UseCase\CreateReservation\CreateReservationCommand;
 use App\Reservation\Domain\Port\ReservationIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class CreateReservationCommandFactory
 {
@@ -22,7 +23,7 @@ final readonly class CreateReservationCommandFactory
     ): CreateReservationCommand {
         return new CreateReservationCommand(
             id: $this->idGenerator->generate(),
-            roomId: $roomId,
+            roomId: new RoomId($roomId),
             bookerId: $bookerId,
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),

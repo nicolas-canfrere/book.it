@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Room\Infrastructure;
 
 use App\Room\Domain\Port\RoomTypeExistsInterface;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final class FakeRoomTypeExistenceChecker implements RoomTypeExistsInterface
 {
@@ -15,7 +16,7 @@ final class FakeRoomTypeExistenceChecker implements RoomTypeExistsInterface
         $this->roomTypeExists = $exists;
     }
 
-    public function exists(string $roomTypeId): bool
+    public function exists(RoomTypeId $roomTypeId): bool
     {
         return $this->roomTypeExists;
     }

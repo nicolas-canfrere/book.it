@@ -24,16 +24,14 @@ final readonly class DeclareHotelAmenitiesCommandHandler implements SyncCommandH
         $hotel = $this->hotelRepository->get($command->hotelId);
 
         if (null === $hotel) {
-            throw new HotelNotFoundException($command->hotelId);
+            throw new HotelNotFoundException($command->hotelId->value);
         }
 
-        $amenities = array_map(HotelAmenity::from(...), $command->amenities);
-
-        $this->hotelRepository->save($hotel->withAmenities($amenities));
+        $this->hotelRepository->save($hotel->withAmenities($command->amenities));
 
         $this->eventDispatcher->dispatch(new HotelAmenityDeclared(
-            hotelId: $command->hotelId,
-            amenities: $command->amenities,
+            hotelId: $command->hotelId->value,
+            amenities: array_map(static fn(HotelAmenity $a) => $a->value, $command->amenities),
         ));
     }
 }

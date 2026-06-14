@@ -14,8 +14,8 @@ final class BlockedPeriodSerializer
     public function serialize(BlockedPeriod $period): array
     {
         return [
-            'id' => $period->id,
-            'roomId' => $period->roomId,
+            'id' => $period->id->value,
+            'roomId' => $period->roomId->value,
             'checkIn' => $period->period->checkIn->format('Y-m-d'),
             'checkOut' => $period->period->checkOut->format('Y-m-d'),
             'createdAt' => $period->createdAt->format(\DateTimeInterface::ATOM),

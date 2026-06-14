@@ -26,7 +26,7 @@ final class ReservationCheckedOutListenerTest extends TestCase
             ->method('execute')
             ->with(self::callback(static function (object $cmd) use ($checkIn, $checkOut): bool {
                 return $cmd instanceof DeleteBlockedPeriodByRoomAndPeriodCommand
-                    && 'room-1' === $cmd->roomId
+                    && 'room-1' === $cmd->roomId->value
                     && $cmd->checkIn == $checkIn
                     && $cmd->checkOut == $checkOut;
             }));

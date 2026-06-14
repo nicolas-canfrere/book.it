@@ -6,6 +6,7 @@ namespace App\Availability\UI\Http\Controller\DeleteBlockedPeriod;
 
 use App\Availability\Application\UseCase\DeleteBlockedPeriod\DeleteBlockedPeriodCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use App\Shared\Domain\ValueObject\BlockedPeriodId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -31,7 +32,7 @@ final readonly class DeleteBlockedPeriodController
     )]
     public function __invoke(string $id): Response
     {
-        $this->commandBus->execute(new DeleteBlockedPeriodCommand($id));
+        $this->commandBus->execute(new DeleteBlockedPeriodCommand(new BlockedPeriodId($id)));
 
         return new Response(null, Response::HTTP_NO_CONTENT);
     }

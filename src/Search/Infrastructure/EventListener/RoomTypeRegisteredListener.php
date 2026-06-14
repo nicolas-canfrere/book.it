@@ -7,6 +7,8 @@ namespace App\Search\Infrastructure\EventListener;
 use App\Search\Application\UseCase\RegisterSearchRoomType\RegisterSearchRoomTypeCommand;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Domain\Event\RoomTypeRegistered;
+use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\RoomTypeId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: RoomTypeRegistered::class)]
@@ -19,8 +21,8 @@ final readonly class RoomTypeRegisteredListener
     public function __invoke(RoomTypeRegistered $event): void
     {
         $this->commandDispatcher->dispatch(new RegisterSearchRoomTypeCommand(
-            roomTypeId: $event->roomTypeId,
-            hotelId: $event->hotelId,
+            roomTypeId: new RoomTypeId($event->roomTypeId),
+            hotelId: new HotelId($event->hotelId),
             name: $event->name,
             guestCapacity: $event->guestCapacity,
             bedComposition: $event->bedComposition,
