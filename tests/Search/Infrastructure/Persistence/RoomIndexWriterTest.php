@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Search\Infrastructure\Persistence;
 
 use App\Search\Infrastructure\Persistence\RoomIndexWriter;
+use App\Shared\Domain\ValueObject\HotelId;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -24,6 +25,6 @@ final class RoomIndexWriterTest extends TestCase
                 ['roomId' => 'room-id-1', 'roomTypeId' => 'rt-id-1', 'hotelId' => 'hotel-id-1'],
             );
 
-        (new RoomIndexWriter($connection))->upsert('room-id-1', 'rt-id-1', 'hotel-id-1');
+        (new RoomIndexWriter($connection))->upsert('room-id-1', 'rt-id-1', new HotelId('hotel-id-1'));
     }
 }

@@ -9,6 +9,7 @@ use App\Room\Domain\Model\RoomPage;
 use App\Room\Domain\Port\RoomRepositoryInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use Doctrine\DBAL\Connection;
@@ -23,7 +24,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
     {
         $this->roomConnection->insert('room', [
             'id' => $room->id->value,
-            'hotel_id' => $room->hotelId,
+            'hotel_id' => $room->hotelId->value,
             'room_number' => $room->number->value,
             'room_floor' => $room->floor->value,
             'room_type_id' => $room->roomTypeId->value,
@@ -38,7 +39,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
             foreach ($rooms as $room) {
                 $connection->insert('room', [
                     'id' => $room->id->value,
-                    'hotel_id' => $room->hotelId,
+                    'hotel_id' => $room->hotelId->value,
                     'room_number' => $room->number->value,
                     'room_floor' => $room->floor->value,
                     'room_type_id' => $room->roomTypeId->value,
@@ -62,7 +63,7 @@ final readonly class RoomRepository implements RoomRepositoryInterface
 
         return new Room(
             new RoomId($row['id']),
-            $row['hotel_id'],
+            new HotelId($row['hotel_id']),
             new RoomNumber($row['room_number']),
             new RoomFloor((int) $row['room_floor']),
             new RoomTypeId($row['room_type_id']),
@@ -70,35 +71,35 @@ final readonly class RoomRepository implements RoomRepositoryInterface
         );
     }
 
-    public function existsByHotelIdAndNumber(string $hotelId, string $number): bool
+    public function existsByHotelIdAndNumber(HotelId $hotelId, string $number): bool
     {
         $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room WHERE hotel_id = :hotelId AND room_number = :number',
-            ['hotelId' => $hotelId, 'number' => $number],
+            ['hotelId' => $hotelId->value, 'number' => $number],
         );
 
         return $count > 0;
     }
 
-    public function list(string $hotelId, int $page, int $limit): RoomPage
+    public function list(HotelId $hotelId, int $page, int $limit): RoomPage
     {
         /** @var int|string $count */
         $count = $this->roomConnection->fetchOne(
             'SELECT COUNT(*) FROM room WHERE hotel_id = :hotelId',
-            ['hotelId' => $hotelId],
+            ['hotelId' => $hotelId->value],
         );
         $total = (int) $count;
 
         /** @var list<array{id: string, hotel_id: string, room_number: string, room_floor: int|string, room_type_id: string, created_at: string}> $rows */
         $rows = $this->roomConnection->fetchAllAssociative(
             'SELECT id, hotel_id, room_number, room_floor, room_type_id, created_at FROM room WHERE hotel_id = :hotelId ORDER BY room_number ASC LIMIT :limit OFFSET :offset',
-            ['hotelId' => $hotelId, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
+            ['hotelId' => $hotelId->value, 'limit' => $limit, 'offset' => ($page - 1) * $limit],
         );
 
         $rooms = array_map(
             fn(array $row) => new Room(
                 new RoomId($row['id']),
-                $row['hotel_id'],
+                new HotelId($row['hotel_id']),
                 new RoomNumber($row['room_number']),
                 new RoomFloor((int) $row['room_floor']),
                 new RoomTypeId($row['room_type_id']),

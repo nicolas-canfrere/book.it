@@ -36,7 +36,7 @@ final readonly class DeleteRoomTypeCommandHandler implements SyncCommandHandlerI
 
         $this->eventDispatcher->dispatch(new RoomTypeDeleted(
             roomTypeId: $roomType->id->value,
-            hotelId: $roomType->hotelId,
+            hotelId: $roomType->hotelId->value,
         ));
     }
 }

@@ -15,9 +15,9 @@ final readonly class DoctrineHotelFinder implements HotelFinderInterface
     {
     }
 
-    public function find(string $hotelId): ?HotelView
+    public function find(HotelId $hotelId): ?HotelView
     {
-        $hotel = $this->hotelRepository->get(new HotelId($hotelId));
+        $hotel = $this->hotelRepository->get($hotelId);
 
         if (null === $hotel) {
             return null;

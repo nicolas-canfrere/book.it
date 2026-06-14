@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Search\Infrastructure\Persistence;
 
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use Doctrine\DBAL\Connection;
 
 final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
@@ -15,32 +16,32 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
     ) {
     }
 
-    public function updateStarRating(string $hotelId, ?int $starRating): void
+    public function updateStarRating(HotelId $hotelId, ?int $starRating): void
     {
         $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET star_rating = :starRating WHERE hotel_id = :hotelId',
-            ['starRating' => $starRating, 'hotelId' => $hotelId],
+            ['starRating' => $starRating, 'hotelId' => $hotelId->value],
         );
     }
 
-    public function updateHotelAmenities(string $hotelId, array $amenities): void
+    public function updateHotelAmenities(HotelId $hotelId, array $amenities): void
     {
         $this->searchConnection->executeStatement(
             'UPDATE hotel_room_types SET hotel_amenities = :amenities WHERE hotel_id = :hotelId',
-            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'hotelId' => $hotelId],
+            ['amenities' => json_encode($amenities, \JSON_THROW_ON_ERROR), 'hotelId' => $hotelId->value],
         );
     }
 
     public function upsertRoomType(
         string $roomTypeId,
-        string $hotelId,
+        HotelId $hotelId,
         string $name,
         int $guestCapacity,
         array $bedComposition,
     ): void {
         $hotel = $this->hotelConnection->fetchAssociative(
             'SELECT name, city, country, stars, amenities FROM hotel WHERE id = :id',
-            ['id' => $hotelId],
+            ['id' => $hotelId->value],
         );
 
         if (false === $hotel) {
@@ -67,7 +68,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
             SQL,
             [
                 'roomTypeId' => $roomTypeId,
-                'hotelId' => $hotelId,
+                'hotelId' => $hotelId->value,
                 'hotelName' => $hotel['name'],
                 'city' => $hotel['city'],
                 'country' => $hotel['country'],

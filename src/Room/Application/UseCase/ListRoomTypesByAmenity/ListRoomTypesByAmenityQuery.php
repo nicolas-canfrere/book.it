@@ -6,6 +6,7 @@ namespace App\Room\Application\UseCase\ListRoomTypesByAmenity;
 
 use App\Room\Domain\Model\RoomTypePage;
 use App\Shared\Application\Bus\SyncQueryInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 
 /**
  * @implements SyncQueryInterface<RoomTypePage>
@@ -14,7 +15,7 @@ final readonly class ListRoomTypesByAmenityQuery implements SyncQueryInterface
 {
     /** @param string[] $amenities */
     public function __construct(
-        public string $hotelId,
+        public HotelId $hotelId,
         public array $amenities,
         public int $page,
         public int $limit,

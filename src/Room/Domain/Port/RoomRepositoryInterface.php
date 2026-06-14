@@ -6,6 +6,7 @@ namespace App\Room\Domain\Port;
 
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\Model\RoomPage;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
 
 interface RoomRepositoryInterface
@@ -17,7 +18,7 @@ interface RoomRepositoryInterface
 
     public function get(RoomId $id): ?Room;
 
-    public function existsByHotelIdAndNumber(string $hotelId, string $number): bool;
+    public function existsByHotelIdAndNumber(HotelId $hotelId, string $number): bool;
 
-    public function list(string $hotelId, int $page, int $limit): RoomPage;
+    public function list(HotelId $hotelId, int $page, int $limit): RoomPage;
 }

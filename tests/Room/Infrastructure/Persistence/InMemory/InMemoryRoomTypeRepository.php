@@ -7,6 +7,7 @@ namespace App\Tests\Room\Infrastructure\Persistence\InMemory;
 use App\Room\Domain\Model\RoomType;
 use App\Room\Domain\Model\RoomTypePage;
 use App\Room\Domain\Port\RoomTypeRepositoryInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
@@ -24,10 +25,10 @@ final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
         return $this->roomTypes[$id->value] ?? null;
     }
 
-    public function existsByHotelIdAndName(string $hotelId, string $name): bool
+    public function existsByHotelIdAndName(HotelId $hotelId, string $name): bool
     {
         foreach ($this->roomTypes as $roomType) {
-            if ($roomType->hotelId === $hotelId && $roomType->name === $name) {
+            if ($roomType->hotelId->equals($hotelId) && $roomType->name === $name) {
                 return true;
             }
         }
@@ -50,11 +51,11 @@ final class InMemoryRoomTypeRepository implements RoomTypeRepositoryInterface
         unset($this->roomTypes[$id->value]);
     }
 
-    public function list(string $hotelId, int $page, int $limit): RoomTypePage
+    public function list(HotelId $hotelId, int $page, int $limit): RoomTypePage
     {
         $filtered = array_values(array_filter(
             $this->roomTypes,
-            static fn(RoomType $rt) => $rt->hotelId === $hotelId,
+            static fn(RoomType $rt) => $rt->hotelId->equals($hotelId),
         ));
 
         usort($filtered, static fn(RoomType $a, RoomType $b) => strcmp($a->name, $b->name));

@@ -9,6 +9,7 @@ use App\Room\Application\UseCase\ListRooms\ListRoomsQueryHandler;
 use App\Room\Domain\Model\Room;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Room\Infrastructure\Persistence\InMemory\InMemoryRoomRepository;
@@ -32,7 +33,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsEmptyPageWhenNoRoomsExist(): void
     {
-        $result = ($this->handler)(new ListRoomsQuery(self::HOTEL_ID));
+        $result = ($this->handler)(new ListRoomsQuery(new HotelId(self::HOTEL_ID)));
 
         self::assertCount(0, $result->rooms);
         self::assertSame(0, $result->total);
@@ -44,7 +45,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
         $this->repository->add($this->makeRoom('1', self::HOTEL_ID, '202'));
         $this->repository->add($this->makeRoom('2', self::HOTEL_ID, '101'));
 
-        $result = ($this->handler)(new ListRoomsQuery(self::HOTEL_ID));
+        $result = ($this->handler)(new ListRoomsQuery(new HotelId(self::HOTEL_ID)));
 
         self::assertCount(2, $result->rooms);
         self::assertSame('101', $result->rooms[0]->number->value);
@@ -58,7 +59,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
         $this->repository->add($this->makeRoom('1', self::HOTEL_ID, '101'));
         $this->repository->add($this->makeRoom('2', $otherHotelId, '201'));
 
-        $result = ($this->handler)(new ListRoomsQuery(self::HOTEL_ID));
+        $result = ($this->handler)(new ListRoomsQuery(new HotelId(self::HOTEL_ID)));
 
         self::assertCount(1, $result->rooms);
         self::assertSame(1, $result->total);
@@ -72,7 +73,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
             $this->repository->add($this->makeRoom((string) $i, self::HOTEL_ID, \sprintf('%03d', $i)));
         }
 
-        $result = ($this->handler)(new ListRoomsQuery(self::HOTEL_ID, page: 2, limit: 2));
+        $result = ($this->handler)(new ListRoomsQuery(new HotelId(self::HOTEL_ID), page: 2, limit: 2));
 
         self::assertCount(2, $result->rooms);
         self::assertSame(5, $result->total);
@@ -83,7 +84,7 @@ final class ListRoomsQueryHandlerTest extends TestCase
     {
         $this->repository->add($this->makeRoom('1', self::HOTEL_ID, '101'));
 
-        $result = ($this->handler)(new ListRoomsQuery(self::HOTEL_ID, page: 99, limit: 20));
+        $result = ($this->handler)(new ListRoomsQuery(new HotelId(self::HOTEL_ID), page: 99, limit: 20));
 
         self::assertCount(0, $result->rooms);
         self::assertSame(1, $result->total);
@@ -91,6 +92,6 @@ final class ListRoomsQueryHandlerTest extends TestCase
 
     private function makeRoom(string $id, string $hotelId, string $number): Room
     {
-        return new Room(new RoomId($id), $hotelId, new RoomNumber($number), new RoomFloor(1), new RoomTypeId('cccccccc-0000-4000-8000-000000000001'), new \DateTimeImmutable('2024-01-01'));
+        return new Room(new RoomId($id), new HotelId($hotelId), new RoomNumber($number), new RoomFloor(1), new RoomTypeId('cccccccc-0000-4000-8000-000000000001'), new \DateTimeImmutable('2024-01-01'));
     }
 }

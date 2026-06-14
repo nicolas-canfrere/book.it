@@ -15,7 +15,7 @@ final class RoomTypeSerializer
     {
         return [
             'id' => $roomType->id->value,
-            'hotelId' => $roomType->hotelId,
+            'hotelId' => $roomType->hotelId->value,
             'name' => $roomType->name,
             'livingSpaceCount' => $roomType->livingSpaceCount,
             'surfaceM2' => $roomType->surfaceM2,

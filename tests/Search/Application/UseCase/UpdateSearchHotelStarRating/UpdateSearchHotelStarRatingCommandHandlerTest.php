@@ -7,6 +7,7 @@ namespace App\Tests\Search\Application\UseCase\UpdateSearchHotelStarRating;
 use App\Search\Application\UseCase\UpdateSearchHotelStarRating\UpdateSearchHotelStarRatingCommand;
 use App\Search\Application\UseCase\UpdateSearchHotelStarRating\UpdateSearchHotelStarRatingCommandHandler;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -20,10 +21,10 @@ final class UpdateSearchHotelStarRatingCommandHandlerTest extends TestCase
         $writer = $this->createMock(HotelRoomTypeWriterInterface::class);
         $writer->expects($this->once())
             ->method('updateStarRating')
-            ->with('hotel-id-1', 4);
+            ->with(new HotelId('hotel-id-1'), 4);
 
         $handler = new UpdateSearchHotelStarRatingCommandHandler($writer);
-        ($handler)(new UpdateSearchHotelStarRatingCommand(hotelId: 'hotel-id-1', starRating: 4));
+        ($handler)(new UpdateSearchHotelStarRatingCommand(hotelId: new HotelId('hotel-id-1'), starRating: 4));
     }
 
     #[Test]
@@ -32,9 +33,9 @@ final class UpdateSearchHotelStarRatingCommandHandlerTest extends TestCase
         $writer = $this->createMock(HotelRoomTypeWriterInterface::class);
         $writer->expects($this->once())
             ->method('updateStarRating')
-            ->with('hotel-id-1', null);
+            ->with(new HotelId('hotel-id-1'), null);
 
         $handler = new UpdateSearchHotelStarRatingCommandHandler($writer);
-        ($handler)(new UpdateSearchHotelStarRatingCommand(hotelId: 'hotel-id-1', starRating: null));
+        ($handler)(new UpdateSearchHotelStarRatingCommand(hotelId: new HotelId('hotel-id-1'), starRating: null));
     }
 }

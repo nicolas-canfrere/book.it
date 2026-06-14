@@ -10,6 +10,7 @@ use App\Room\Domain\Exception\HotelNotFoundException;
 use App\Room\Domain\Exception\RoomAlreadyExistsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Shared\Domain\Event\RoomRegistered;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
@@ -50,7 +51,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     {
         $command = new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -77,7 +78,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
 
         ($this->handler)(new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -90,7 +91,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     {
         $command = new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -102,7 +103,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
 
         ($this->handler)(new RegisterRoomCommand(
             id: new RoomId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 2,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -118,7 +119,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
 
         ($this->handler)(new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -131,7 +132,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     {
         $command1 = new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440001',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -139,7 +140,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         );
         $command2 = new RegisterRoomCommand(
             id: new RoomId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440002',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440002'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -158,7 +159,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     {
         $command = new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -170,7 +171,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         $event = $this->eventDispatcher->getLastDispatched();
         self::assertInstanceOf(RoomRegistered::class, $event);
         self::assertSame($command->id->value, $event->roomId);
-        self::assertSame($command->hotelId, $event->hotelId);
+        self::assertSame($command->hotelId->value, $event->hotelId);
         self::assertSame(self::ROOM_TYPE_ID, $event->roomTypeId);
     }
 
@@ -179,7 +180,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
     {
         $command = new RegisterRoomCommand(
             id: new RoomId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
-            hotelId: '550e8400-e29b-41d4-a716-446655440000',
+            hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
             number: '101',
             floor: 1,
             roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),
@@ -190,7 +191,7 @@ final class RegisterRoomCommandHandlerTest extends TestCase
         try {
             ($this->handler)(new RegisterRoomCommand(
                 id: new RoomId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-                hotelId: '550e8400-e29b-41d4-a716-446655440000',
+                hotelId: new HotelId('550e8400-e29b-41d4-a716-446655440000'),
                 number: '101',
                 floor: 2,
                 roomTypeId: new RoomTypeId(self::ROOM_TYPE_ID),

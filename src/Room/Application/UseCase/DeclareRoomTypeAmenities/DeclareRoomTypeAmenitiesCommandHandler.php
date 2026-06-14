@@ -33,7 +33,7 @@ final readonly class DeclareRoomTypeAmenitiesCommandHandler implements SyncComma
 
         $this->eventDispatcher->dispatch(new RoomTypeAmenityDeclared(
             roomTypeId: $command->roomTypeId->value,
-            hotelId: $roomType->hotelId,
+            hotelId: $roomType->hotelId->value,
             amenities: $command->amenities,
         ));
     }

@@ -33,7 +33,7 @@ final class DoctrineHotelFinderTest extends TestCase
     {
         $this->repository->method('get')->willReturn(null);
 
-        self::assertNull($this->finder->find('unknown'));
+        self::assertNull($this->finder->find(new HotelId('unknown')));
     }
 
     #[Test]
@@ -47,7 +47,7 @@ final class DoctrineHotelFinderTest extends TestCase
         );
         $this->repository->method('get')->willReturn($hotel);
 
-        $view = $this->finder->find('hotel-1');
+        $view = $this->finder->find(new HotelId('hotel-1'));
 
         self::assertInstanceOf(HotelView::class, $view);
         self::assertSame('hotel-1', $view->id);

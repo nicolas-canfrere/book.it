@@ -14,4 +14,9 @@ final readonly class HotelId
     {
         return $this->value;
     }
+
+    public function equals(HotelId $other): bool
+    {
+        return $this->value === $other->value;
+    }
 }

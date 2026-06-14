@@ -10,6 +10,7 @@ use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQu
 use App\Room\Application\UseCase\ListRoomTypesByAmenity\ListRoomTypesByAmenityQueryHandler;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommand;
 use App\Room\Application\UseCase\RegisterRoomType\RegisterRoomTypeCommandHandler;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
@@ -47,7 +48,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
 
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: new RoomTypeId(self::RT_WIFI_BALCONY),
-            hotelId: self::HOTEL_ID,
+            hotelId: new HotelId(self::HOTEL_ID),
             name: 'Suite Balcony',
             livingSpaceCount: 2,
             surfaceM2: null,
@@ -60,7 +61,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
 
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: new RoomTypeId(self::RT_WIFI_ONLY),
-            hotelId: self::HOTEL_ID,
+            hotelId: new HotelId(self::HOTEL_ID),
             name: 'Standard',
             livingSpaceCount: 1,
             surfaceM2: null,
@@ -73,7 +74,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
 
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: new RoomTypeId(self::RT_NO_AMENITIES),
-            hotelId: self::HOTEL_ID,
+            hotelId: new HotelId(self::HOTEL_ID),
             name: 'Basic',
             livingSpaceCount: 1,
             surfaceM2: null,
@@ -96,7 +97,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsAllRoomTypesWhenNoAmenityFilterGiven(): void
     {
-        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(self::HOTEL_ID, [], 1, 20));
+        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(new HotelId(self::HOTEL_ID), [], 1, 20));
 
         self::assertSame(3, $page->total);
     }
@@ -104,7 +105,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
     #[Test]
     public function itFiltersRoomTypesByASingleAmenity(): void
     {
-        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(self::HOTEL_ID, ['wifi'], 1, 20));
+        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(new HotelId(self::HOTEL_ID), ['wifi'], 1, 20));
 
         self::assertSame(2, $page->total);
         self::assertSame('Standard', $page->roomTypes[0]->name);
@@ -114,7 +115,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
     #[Test]
     public function itFiltersRoomTypesByMultipleAmenitiesWithAndLogic(): void
     {
-        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(self::HOTEL_ID, ['wifi', 'balcony'], 1, 20));
+        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(new HotelId(self::HOTEL_ID), ['wifi', 'balcony'], 1, 20));
 
         self::assertSame(1, $page->total);
         self::assertSame('Suite Balcony', $page->roomTypes[0]->name);
@@ -123,7 +124,7 @@ final class ListRoomTypesByAmenityQueryHandlerTest extends TestCase
     #[Test]
     public function itReturnsEmptyPageWhenNoRoomTypeMatchesAllAmenities(): void
     {
-        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(self::HOTEL_ID, ['wifi', 'balcony', 'jacuzzi'], 1, 20));
+        $page = ($this->handler)(new ListRoomTypesByAmenityQuery(new HotelId(self::HOTEL_ID), ['wifi', 'balcony', 'jacuzzi'], 1, 20));
 
         self::assertSame(0, $page->total);
         self::assertCount(0, $page->roomTypes);

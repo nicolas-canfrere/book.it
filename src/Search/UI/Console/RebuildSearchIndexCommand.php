@@ -7,6 +7,7 @@ namespace App\Search\UI\Console;
 use App\Search\Domain\Port\HotelRoomTypeWriterInterface;
 use App\Search\Domain\Port\RoomIndexWriterInterface;
 use App\Search\Domain\Port\UnavailablePeriodWriterInterface;
+use App\Shared\Domain\ValueObject\HotelId;
 use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -47,7 +48,7 @@ final class RebuildSearchIndexCommand extends Command
             $beds = json_decode($rt['bed_composition'], true, 512, \JSON_THROW_ON_ERROR);
             $this->hotelRoomTypeWriter->upsertRoomType(
                 roomTypeId: $rt['id'],
-                hotelId: $rt['hotel_id'],
+                hotelId: new HotelId($rt['hotel_id']),
                 name: $rt['name'],
                 guestCapacity: (int) $rt['guest_capacity'],
                 bedComposition: $beds,
@@ -64,7 +65,7 @@ final class RebuildSearchIndexCommand extends Command
             $this->roomIndexWriter->upsert(
                 roomId: $room['id'],
                 roomTypeId: $room['room_type_id'],
-                hotelId: $room['hotel_id'],
+                hotelId: new HotelId($room['hotel_id']),
             );
         }
         $output->writeln(sprintf('%d rooms inserted', count($rooms)));

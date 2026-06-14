@@ -8,6 +8,7 @@ use App\Hotel\Application\Contract\HotelFinderInterface;
 use App\Hotel\Application\Contract\HotelView;
 use App\Room\Domain\Port\HotelExistsInterface;
 use App\Room\Infrastructure\Persistence\Doctrine\HotelExistenceChecker;
+use App\Shared\Domain\ValueObject\HotelId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -30,7 +31,7 @@ final class HotelExistenceCheckerTest extends TestCase
     {
         $this->hotelFinder->method('find')->willReturn(new HotelView('hotel-1'));
 
-        self::assertTrue($this->checker->exists('hotel-1'));
+        self::assertTrue($this->checker->exists(new HotelId('hotel-1')));
     }
 
     #[Test]
@@ -38,6 +39,6 @@ final class HotelExistenceCheckerTest extends TestCase
     {
         $this->hotelFinder->method('find')->willReturn(null);
 
-        self::assertFalse($this->checker->exists('unknown'));
+        self::assertFalse($this->checker->exists(new HotelId('unknown')));
     }
 }

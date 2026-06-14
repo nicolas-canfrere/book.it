@@ -12,6 +12,7 @@ use App\Room\Domain\Port\RoomRepositoryInterface;
 use App\Room\Domain\ValueObject\RoomFloor;
 use App\Room\Domain\ValueObject\RoomNumber;
 use App\Room\Infrastructure\Contract\DoctrineRoomFinder;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
@@ -38,7 +39,7 @@ final class DoctrineRoomFinderTest extends TestCase
     {
         $room = new Room(
             id: new RoomId('room-1'),
-            hotelId: 'hotel-1',
+            hotelId: new HotelId('hotel-1'),
             number: new RoomNumber('101'),
             floor: new RoomFloor(1),
             roomTypeId: new RoomTypeId('type-1'),

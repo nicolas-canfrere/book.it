@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Search\Infrastructure\Persistence;
 
 use App\Search\Infrastructure\Persistence\HotelRoomTypeWriter;
+use App\Shared\Domain\ValueObject\HotelId;
 use Doctrine\DBAL\Connection;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -25,7 +26,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateStarRating('hotel-id-1', 4);
+            ->updateStarRating(new HotelId('hotel-id-1'), 4);
     }
 
     #[Test]
@@ -40,7 +41,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateStarRating('hotel-id-1', null);
+            ->updateStarRating(new HotelId('hotel-id-1'), null);
     }
 
     #[Test]
@@ -55,7 +56,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($connection, $this->createStub(Connection::class)))
-            ->updateHotelAmenities('hotel-id-1', ['pool', 'gym']);
+            ->updateHotelAmenities(new HotelId('hotel-id-1'), ['pool', 'gym']);
     }
 
     #[Test]
@@ -90,7 +91,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             );
 
         (new HotelRoomTypeWriter($searchConnection, $hotelConnection))
-            ->upsertRoomType('rt-id-1', 'hotel-id-1', 'Standard', 2, [['type' => 'double', 'count' => 1]]);
+            ->upsertRoomType('rt-id-1', new HotelId('hotel-id-1'), 'Standard', 2, [['type' => 'double', 'count' => 1]]);
     }
 
     #[Test]
@@ -103,7 +104,7 @@ final class HotelRoomTypeWriterTest extends TestCase
         $searchConnection->expects($this->never())->method('executeStatement');
 
         (new HotelRoomTypeWriter($searchConnection, $hotelConnection))
-            ->upsertRoomType('rt-id-1', 'missing-hotel', 'Standard', 2, []);
+            ->upsertRoomType('rt-id-1', new HotelId('missing-hotel'), 'Standard', 2, []);
     }
 
     #[Test]

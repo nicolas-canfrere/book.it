@@ -26,11 +26,11 @@ final readonly class RegisterRoomTypeCommandHandler implements SyncCommandHandle
     public function __invoke(RegisterRoomTypeCommand $command): void
     {
         if (!$this->hotelExists->exists($command->hotelId)) {
-            throw new HotelNotFoundException($command->hotelId);
+            throw new HotelNotFoundException($command->hotelId->value);
         }
 
         if ($this->roomTypeRepository->existsByHotelIdAndName($command->hotelId, $command->name)) {
-            throw new RoomTypeAlreadyExistsException($command->name, $command->hotelId);
+            throw new RoomTypeAlreadyExistsException($command->name, $command->hotelId->value);
         }
 
         $roomType = new RoomType(
@@ -49,7 +49,7 @@ final readonly class RegisterRoomTypeCommandHandler implements SyncCommandHandle
 
         $this->eventDispatcher->dispatch(new RoomTypeRegistered(
             roomTypeId: $roomType->id->value,
-            hotelId: $roomType->hotelId,
+            hotelId: $roomType->hotelId->value,
             name: $roomType->name,
             guestCapacity: $roomType->guestCapacity,
             bedComposition: $roomType->bedComposition->toArray(),

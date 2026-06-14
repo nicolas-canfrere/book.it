@@ -30,7 +30,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
     public function __invoke(RegisterRoomCommand $command): void
     {
         if (!$this->hotelExists->exists($command->hotelId)) {
-            throw new HotelNotFoundException($command->hotelId);
+            throw new HotelNotFoundException($command->hotelId->value);
         }
 
         if (!$this->roomTypeExists->exists($command->roomTypeId)) {
@@ -38,7 +38,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
         }
 
         if ($this->roomRepository->existsByHotelIdAndNumber($command->hotelId, $command->number)) {
-            throw new RoomAlreadyExistsException($command->number, $command->hotelId);
+            throw new RoomAlreadyExistsException($command->number, $command->hotelId->value);
         }
 
         $this->roomRepository->add(new Room(
@@ -52,7 +52,7 @@ final readonly class RegisterRoomCommandHandler implements SyncCommandHandlerInt
 
         $this->eventDispatcher->dispatch(new RoomRegistered(
             roomId: $command->id->value,
-            hotelId: $command->hotelId,
+            hotelId: $command->hotelId->value,
             roomTypeId: $command->roomTypeId->value,
         ));
     }

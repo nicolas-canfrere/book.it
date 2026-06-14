@@ -11,6 +11,7 @@ use App\Room\Application\UseCase\UpdateRoomType\UpdateRoomTypeCommandHandler;
 use App\Room\Domain\Exception\RoomTypeAlreadyExistsException;
 use App\Room\Domain\Exception\RoomTypeNotFoundException;
 use App\Shared\Domain\Event\RoomTypeUpdated;
+use App\Shared\Domain\ValueObject\HotelId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Room\Infrastructure\FakeHotelExistenceChecker;
@@ -37,7 +38,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: new RoomTypeId(self::ROOM_TYPE_ID),
-            hotelId: self::HOTEL_ID,
+            hotelId: new HotelId(self::HOTEL_ID),
             name: 'Single',
             livingSpaceCount: 1,
             surfaceM2: null,
@@ -68,7 +69,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
         self::assertSame(2, $updated->guestCapacity);
         self::assertTrue($updated->isAccessible);
         self::assertSame([['type' => 'double', 'count' => 1]], $updated->bedComposition->toArray());
-        self::assertSame(self::HOTEL_ID, $updated->hotelId);
+        self::assertTrue(new HotelId(self::HOTEL_ID)->equals($updated->hotelId));
 
         $event = $this->dispatcher->getLastDispatched();
         self::assertInstanceOf(RoomTypeUpdated::class, $event);
@@ -106,7 +107,7 @@ final class UpdateRoomTypeCommandHandlerTest extends TestCase
         $registerHandler = new RegisterRoomTypeCommandHandler($this->repository, new FakeHotelExistenceChecker(), new FakeEventDispatcher());
         ($registerHandler)(new RegisterRoomTypeCommand(
             id: new RoomTypeId('b1ffcd00-ad1c-4ef9-cc7e-7cc0ce491b22'),
-            hotelId: self::HOTEL_ID,
+            hotelId: new HotelId(self::HOTEL_ID),
             name: 'Double',
             livingSpaceCount: 1,
             surfaceM2: null,
