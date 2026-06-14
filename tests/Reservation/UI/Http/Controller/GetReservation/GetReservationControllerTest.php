@@ -98,7 +98,7 @@ final class GetReservationControllerTest extends AuthenticatedWebTestCase
         $booker = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
         $client->request('POST', '/api/v1/reservations', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode([
-            'roomId' => $room['id'],
+            'roomTypeId' => $roomType['id'],
             'bookerId' => $booker['id'],
             'checkIn' => '2030-06-01',
             'checkOut' => '2030-06-03',

@@ -17,9 +17,9 @@ final class ListBookerReservationsControllerTest extends AuthenticatedWebTestCas
     public function itReturnsPaginatedReservationsForBooker(): void
     {
         $client = static::createAuthenticatedClient();
-        [$bookerId, $roomId] = $this->setupBookerAndRoom($client);
-        $this->createReservation($client, $bookerId, $roomId, '2030-06-01', '2030-06-03');
-        $this->createReservation($client, $bookerId, $roomId, '2030-07-01', '2030-07-03');
+        [$bookerId, $roomTypeId] = $this->setupBookerAndRoom($client);
+        $this->createReservation($client, $bookerId, $roomTypeId, '2030-06-01', '2030-06-03');
+        $this->createReservation($client, $bookerId, $roomTypeId, '2030-07-01', '2030-07-03');
 
         $client->request('GET', "/api/v1/reservations?bookerId={$bookerId}&page=1&limit=10");
 
@@ -39,8 +39,8 @@ final class ListBookerReservationsControllerTest extends AuthenticatedWebTestCas
     public function itReturnsEmptyDataWhenPageExceedsTotal(): void
     {
         $client = static::createAuthenticatedClient();
-        [$bookerId, $roomId] = $this->setupBookerAndRoom($client);
-        $this->createReservation($client, $bookerId, $roomId, '2030-06-01', '2030-06-03');
+        [$bookerId, $roomTypeId] = $this->setupBookerAndRoom($client);
+        $this->createReservation($client, $bookerId, $roomTypeId, '2030-06-01', '2030-06-03');
 
         $client->request('GET', "/api/v1/reservations?bookerId={$bookerId}&page=2&limit=10");
 
@@ -110,7 +110,7 @@ final class ListBookerReservationsControllerTest extends AuthenticatedWebTestCas
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
     }
 
-    /** @return array{string, string} [bookerId, roomId] */
+    /** @return array{string, string, string} [bookerId, roomTypeId, roomId] */
     private function setupBookerAndRoom(KernelBrowser $client): array
     {
         $client->request('POST', '/api/v1/hotels', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode([
@@ -156,13 +156,13 @@ final class ListBookerReservationsControllerTest extends AuthenticatedWebTestCas
         /** @var array{id: string} $booker */
         $booker = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
 
-        return [$booker['id'], $room['id']];
+        return [$booker['id'], $roomType['id'], $room['id']];
     }
 
-    private function createReservation(KernelBrowser $client, string $bookerId, string $roomId, string $checkIn, string $checkOut): void
+    private function createReservation(KernelBrowser $client, string $bookerId, string $roomTypeId, string $checkIn, string $checkOut): void
     {
         $client->request('POST', '/api/v1/reservations', server: ['CONTENT_TYPE' => 'application/json'], content: json_encode([
-            'roomId' => $roomId,
+            'roomTypeId' => $roomTypeId,
             'bookerId' => $bookerId,
             'checkIn' => $checkIn,
             'checkOut' => $checkOut,

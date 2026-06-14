@@ -19,7 +19,7 @@ final readonly class DoctrineRoomsByTypeFinder implements RoomsByTypeFinderInter
     {
         /** @var list<array{id: string}> $rows */
         $rows = $this->roomConnection->fetchAllAssociative(
-            'SELECT id FROM rooms WHERE room_type_id = :roomTypeId',
+            'SELECT id FROM room WHERE room_type_id = :roomTypeId',
             ['roomTypeId' => $roomTypeId->value],
         );
 

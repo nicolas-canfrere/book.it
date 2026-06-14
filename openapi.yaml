@@ -1914,7 +1914,7 @@ paths:
                   createdAt: { type: string, format: date-time }
                 type: object
         '404':
-          description: 'Room or booker not found'
+          description: 'Booker not found'
           content:
             application/problem+json:
               schema:
@@ -2934,7 +2934,7 @@ components:
       type: object
     CreateReservationRequest:
       properties:
-        roomId:
+        roomTypeId:
           type: string
           format: uuid
           nullable: true

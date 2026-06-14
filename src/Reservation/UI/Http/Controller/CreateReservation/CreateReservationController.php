@@ -76,7 +76,7 @@ final readonly class CreateReservationController
                     ],
                 ),
             ),
-            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Room or booker not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
+            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Booker not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
             new OA\Response(response: Response::HTTP_CONFLICT, description: 'Room not available', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
             new OA\Response(response: Response::HTTP_UNPROCESSABLE_ENTITY, description: 'No pricing configured or validation error', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ValidationProblemDetail'))),
             new OA\Response(response: Response::HTTP_UNSUPPORTED_MEDIA_TYPE, description: 'Unsupported media type', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
@@ -86,7 +86,7 @@ final readonly class CreateReservationController
         #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)] CreateReservationRequest $request,
     ): Response {
         $command = $this->commandFactory->create(
-            (string) $request->roomId,
+            (string) $request->roomTypeId,
             (string) $request->bookerId,
             (string) $request->checkIn,
             (string) $request->checkOut,

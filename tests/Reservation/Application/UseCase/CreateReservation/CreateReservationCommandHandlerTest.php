@@ -78,19 +78,6 @@ final class CreateReservationCommandHandlerTest extends TestCase
         );
     }
 
-    private function makeCommand(int $guestCount = 2): CreateReservationCommand
-    {
-        return new CreateReservationCommand(
-            id: 'cccccccc-0000-4000-8000-000000000001',
-            roomTypeId: $this->roomTypeId,
-            bookerId: 'dddddddd-0000-4000-8000-000000000001',
-            checkIn: new \DateTimeImmutable('2026-08-01'),
-            checkOut: new \DateTimeImmutable('2026-08-05'),
-            guestCount: $guestCount,
-            createdAt: new \DateTimeImmutable(),
-        );
-    }
-
     #[Test]
     public function itCreatesReservationSuccessfully(): void
     {
@@ -130,5 +117,18 @@ final class CreateReservationCommandHandlerTest extends TestCase
 
         $this->expectException(GuestCapacityExceededException::class);
         ($this->handler)($this->makeCommand(guestCount: 99));
+    }
+
+    private function makeCommand(int $guestCount = 2): CreateReservationCommand
+    {
+        return new CreateReservationCommand(
+            id: 'cccccccc-0000-4000-8000-000000000001',
+            roomTypeId: $this->roomTypeId,
+            bookerId: 'dddddddd-0000-4000-8000-000000000001',
+            checkIn: new \DateTimeImmutable('2026-08-01'),
+            checkOut: new \DateTimeImmutable('2026-08-05'),
+            guestCount: $guestCount,
+            createdAt: new \DateTimeImmutable(),
+        );
     }
 }

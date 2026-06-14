@@ -50,6 +50,9 @@ services:
     App\Room\Domain\Port\RoomTypeCatalogueFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\DbalRoomTypeCatalogueFinder
 
+    App\Room\Application\Contract\RoomsByTypeFinderInterface:
+        class: App\Room\Infrastructure\Contract\DoctrineRoomsByTypeFinder
+
     bookit.doctrine.middleware.search_path.room:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

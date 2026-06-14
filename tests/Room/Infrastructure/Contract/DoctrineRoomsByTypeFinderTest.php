@@ -27,7 +27,7 @@ final class DoctrineRoomsByTypeFinderTest extends TestCase
             ->expects($this->once())
             ->method('fetchAllAssociative')
             ->with(
-                'SELECT id FROM rooms WHERE room_type_id = :roomTypeId',
+                'SELECT id FROM room WHERE room_type_id = :roomTypeId',
                 ['roomTypeId' => $roomTypeId->value],
             )
             ->willReturn([['id' => $roomId1], ['id' => $roomId2]]);
