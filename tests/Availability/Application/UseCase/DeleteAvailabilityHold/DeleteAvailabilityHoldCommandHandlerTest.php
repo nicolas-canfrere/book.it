@@ -8,6 +8,7 @@ use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabili
 use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabilityHoldCommandHandler;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
 use App\Shared\Domain\Event\AvailabilityHoldDeleted;
+use App\Shared\Domain\ValueObject\ReservationId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -24,11 +25,11 @@ final class DeleteAvailabilityHoldCommandHandlerTest extends TestCase
         $repository = $this->createMock(AvailabilityHoldRepositoryInterface::class);
         $repository->expects(self::once())
             ->method('deleteByReservationId')
-            ->with('res-uuid');
+            ->with(new ReservationId('res-uuid'));
 
         $handler = new DeleteAvailabilityHoldCommandHandler($repository, $this->createStub(EventDispatcherInterface::class));
 
-        ($handler)(new DeleteAvailabilityHoldCommand(reservationId: 'res-uuid'));
+        ($handler)(new DeleteAvailabilityHoldCommand(reservationId: new ReservationId('res-uuid')));
     }
 
     #[Test]
@@ -46,6 +47,6 @@ final class DeleteAvailabilityHoldCommandHandlerTest extends TestCase
 
         $handler = new DeleteAvailabilityHoldCommandHandler($repository, $dispatcher);
 
-        ($handler)(new DeleteAvailabilityHoldCommand(reservationId: 'res-id-1'));
+        ($handler)(new DeleteAvailabilityHoldCommand(reservationId: new ReservationId('res-id-1')));
     }
 }

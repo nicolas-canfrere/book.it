@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
 use App\Tests\Reservation\Infrastructure\Service\SequentialGuestIdGenerator;
@@ -50,7 +51,7 @@ final class CheckInCommandHandlerTest extends KernelTestCase
             today: new \DateTimeImmutable('2026-07-01'),
         ));
 
-        $saved = $this->repository->get('res-1');
+        $saved = $this->repository->get(new ReservationId('res-1'));
         self::assertNotNull($saved);
         self::assertSame(ReservationStatus::CheckedIn, $saved->status);
         self::assertCount(1, $saved->guests);
@@ -86,7 +87,7 @@ final class CheckInCommandHandlerTest extends KernelTestCase
     private function makeConfirmedReservation(string $id = 'res-1'): Reservation
     {
         $reservation = new Reservation(
-            id: $id,
+            id: new ReservationId($id),
             roomId: new RoomId('room-1'),
             bookerId: 'booker-1',
             period: new DatePeriod(

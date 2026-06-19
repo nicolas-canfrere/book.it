@@ -7,6 +7,7 @@ namespace App\Reservation\Infrastructure\Contract;
 use App\Reservation\Application\Contract\ReservationFinderInterface;
 use App\Reservation\Application\Contract\ReservationView;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 
 final readonly class DoctrineReservationFinder implements ReservationFinderInterface
 {
@@ -14,7 +15,7 @@ final readonly class DoctrineReservationFinder implements ReservationFinderInter
     {
     }
 
-    public function find(string $reservationId): ?ReservationView
+    public function find(ReservationId $reservationId): ?ReservationView
     {
         $reservation = $this->reservationRepository->get($reservationId);
 
@@ -23,7 +24,7 @@ final readonly class DoctrineReservationFinder implements ReservationFinderInter
         }
 
         return new ReservationView(
-            id: $reservation->id,
+            id: $reservation->id->value,
             checkIn: $reservation->period->checkIn,
             checkOut: $reservation->period->checkOut,
             totalPriceCents: $reservation->totalPrice,

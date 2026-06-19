@@ -9,6 +9,7 @@ use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Port\GuestIdGeneratorInterface;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 
 final class CheckInCommandHandler implements SyncCommandHandlerInterface
 {
@@ -20,7 +21,7 @@ final class CheckInCommandHandler implements SyncCommandHandlerInterface
 
     public function __invoke(CheckInCommand $command): void
     {
-        $reservation = $this->reservations->get($command->reservationId);
+        $reservation = $this->reservations->get(new ReservationId($command->reservationId));
 
         if (null === $reservation) {
             throw new ReservationNotFoundException($command->reservationId);

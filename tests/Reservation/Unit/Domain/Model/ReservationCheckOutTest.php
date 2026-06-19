@@ -11,6 +11,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -89,7 +90,7 @@ final class ReservationCheckOutTest extends TestCase
         \DateTimeImmutable $checkOut,
     ): Reservation {
         $reservation = new Reservation(
-            id: $id,
+            id: new ReservationId($id),
             roomId: new RoomId($roomId),
             bookerId: $bookerId,
             period: new DatePeriod($checkIn, $checkOut),

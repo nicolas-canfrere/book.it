@@ -12,6 +12,7 @@ use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use App\Shared\Domain\ValueObject\AvailabilityHoldId;
 use App\Shared\Domain\ValueObject\BlockedPeriodId;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Availability\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Availability\Infrastructure\Persistence\InMemory\InMemoryAvailabilityHoldRepository;
@@ -88,7 +89,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
         $this->holdRepository->add(new AvailabilityHold(
             id: new AvailabilityHoldId('hold-1'),
             roomId: new RoomId(self::ROOM_ID),
-            reservationId: 'res-1',
+            reservationId: new ReservationId('res-1'),
             period: new DatePeriod(
                 new \DateTimeImmutable('2025-07-01'),
                 new \DateTimeImmutable('2025-07-05'),
@@ -112,7 +113,7 @@ final class CheckAvailabilityQueryHandlerTest extends TestCase
         $this->holdRepository->add(new AvailabilityHold(
             id: new AvailabilityHoldId('hold-2'),
             roomId: new RoomId(self::ROOM_ID),
-            reservationId: 'res-2',
+            reservationId: new ReservationId('res-2'),
             period: new DatePeriod(
                 new \DateTimeImmutable('2025-08-01'),
                 new \DateTimeImmutable('2025-08-05'),

@@ -13,6 +13,8 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\GuestId;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\ParameterType;
@@ -26,7 +28,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
     public function add(Reservation $reservation): void
     {
         $this->reservationConnection->insert('reservation', [
-            'id' => $reservation->id,
+            'id' => $reservation->id->value,
             'room_id' => $reservation->roomId->value,
             'booker_id' => $reservation->bookerId,
             'check_in' => $reservation->period->checkIn->format('Y-m-d'),
@@ -49,14 +51,14 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                 'actual_departure_date' => $reservation->actualDepartureDate?->format('Y-m-d'),
                 'cancelled_at' => $reservation->cancelledAt?->format('Y-m-d'),
                 'cancelled_by' => $reservation->cancelledBy,
-            ], ['id' => $reservation->id]);
+            ], ['id' => $reservation->id->value]);
 
-            $connection->delete('guest', ['reservation_id' => $reservation->id]);
+            $connection->delete('guest', ['reservation_id' => $reservation->id->value]);
 
             foreach ($reservation->guests as $guest) {
                 $connection->insert('guest', [
-                    'id' => $guest->id,
-                    'reservation_id' => $reservation->id,
+                    'id' => $guest->id->value,
+                    'reservation_id' => $reservation->id->value,
                     'first_name' => $guest->firstName,
                     'last_name' => $guest->lastName,
                     'date_of_birth' => $guest->dateOfBirth->format('Y-m-d'),
@@ -65,7 +67,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         });
     }
 
-    public function get(string $id): ?Reservation
+    public function get(ReservationId $id): ?Reservation
     {
         /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, actual_departure_date: string|null, cancelled_at: string|null, cancelled_by: string|null, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
         $rows = $this->reservationConnection->fetchAllAssociative(
@@ -77,7 +79,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                LEFT JOIN guest rg ON rg.reservation_id = r.id
               WHERE r.id = :id
               ORDER BY rg.id',
-            ['id' => $id],
+            ['id' => $id->value],
         );
 
         if ([] === $rows) {
@@ -93,7 +95,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                 }
 
                 return new Guest(
-                    id: $row['g_id'],
+                    id: new GuestId($row['g_id']),
                     firstName: (string) $row['first_name'],
                     lastName: (string) $row['last_name'],
                     dateOfBirth: new \DateTimeImmutable((string) $row['date_of_birth']),
@@ -156,7 +158,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             $reservation = $this->hydrate($row);
             $reservation->guests = array_map(
                 fn(array $g) => new Guest(
-                    id: $g['g_id'],
+                    id: new GuestId($g['g_id']),
                     firstName: (string) $g['first_name'],
                     lastName: (string) $g['last_name'],
                     dateOfBirth: new \DateTimeImmutable((string) $g['date_of_birth']),
@@ -184,7 +186,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         $priceBreakdown = PriceBreakdown::fromArray($nights);
 
         $reservation = new Reservation(
-            id: $row['id'],
+            id: new ReservationId($row['id']),
             roomId: new RoomId($row['room_id']),
             bookerId: $row['booker_id'],
             period: new DatePeriod(

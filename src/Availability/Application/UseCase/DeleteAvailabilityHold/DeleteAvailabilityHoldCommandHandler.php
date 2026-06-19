@@ -22,7 +22,7 @@ final readonly class DeleteAvailabilityHoldCommandHandler implements SyncCommand
         $this->repository->deleteByReservationId($command->reservationId);
 
         $this->eventDispatcher->dispatch(new AvailabilityHoldDeleted(
-            reservationId: $command->reservationId,
+            reservationId: $command->reservationId->value,
         ));
     }
 }

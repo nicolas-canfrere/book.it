@@ -19,6 +19,7 @@ use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Domain\ValueObject\PricingQuoteSnapshot;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Application\Transaction\TransactionManagerInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 use PHPUnit\Framework\Attributes\Group;
@@ -122,7 +123,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
     private function makeCommand(int $guestCount = 2): CreateReservationCommand
     {
         return new CreateReservationCommand(
-            id: 'cccccccc-0000-4000-8000-000000000001',
+            id: new ReservationId('cccccccc-0000-4000-8000-000000000001'),
             roomTypeId: $this->roomTypeId,
             bookerId: 'dddddddd-0000-4000-8000-000000000001',
             checkIn: new \DateTimeImmutable('2026-08-01'),

@@ -74,7 +74,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
             $this->repository->add($reservation);
 
             $this->eventDispatcher->dispatch(new ReservationCreated(
-                reservationId: $reservation->id,
+                reservationId: $reservation->id->value,
                 roomId: $reservation->roomId->value,
                 bookerId: $reservation->bookerId,
                 checkIn: $reservation->period->checkIn,
@@ -86,7 +86,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
         });
 
         $this->asyncDispatcher->dispatch(
-            new ExpireReservationCommand($reservation->id),
+            new ExpireReservationCommand($reservation->id->value),
             900_000,
         );
     }

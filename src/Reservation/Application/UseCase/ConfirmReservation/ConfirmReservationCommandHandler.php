@@ -8,6 +8,7 @@ use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 use App\Shared\Domain\Event\ReservationConfirmed;
+use App\Shared\Domain\ValueObject\ReservationId;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class ConfirmReservationCommandHandler implements SyncCommandHandlerInterface
@@ -20,7 +21,7 @@ final readonly class ConfirmReservationCommandHandler implements SyncCommandHand
 
     public function __invoke(ConfirmReservationCommand $command): void
     {
-        $reservation = $this->repository->get($command->reservationId);
+        $reservation = $this->repository->get(new ReservationId($command->reservationId));
 
         if (null === $reservation || ReservationStatus::Pending !== $reservation->status) {
             return;
@@ -30,7 +31,7 @@ final readonly class ConfirmReservationCommandHandler implements SyncCommandHand
         $this->repository->save($reservation);
 
         $this->eventDispatcher->dispatch(new ReservationConfirmed(
-            reservationId: $reservation->id,
+            reservationId: $reservation->id->value,
             roomId: $reservation->roomId->value,
             bookerId: $reservation->bookerId,
             checkIn: $reservation->period->checkIn,

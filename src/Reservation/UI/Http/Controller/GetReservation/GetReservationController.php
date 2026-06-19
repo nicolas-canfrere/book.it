@@ -8,6 +8,7 @@ use App\Reservation\Application\UseCase\GetReservation\GetReservationQuery;
 use App\Reservation\Domain\Exception\ReservationNotFoundException;
 use App\Reservation\UI\Http\Controller\ReservationSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -75,7 +76,7 @@ final readonly class GetReservationController
     )]
     public function __invoke(string $id): Response
     {
-        $reservation = $this->queryBus->ask(new GetReservationQuery($id));
+        $reservation = $this->queryBus->ask(new GetReservationQuery(new ReservationId($id)));
 
         if (null === $reservation) {
             throw new ReservationNotFoundException($id);

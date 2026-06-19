@@ -7,6 +7,7 @@ namespace App\Availability\Infrastructure\EventListener;
 use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabilityHoldCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Domain\Event\ReservationPaymentCancelled;
+use App\Shared\Domain\ValueObject\ReservationId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
 #[AsEventListener(event: ReservationPaymentCancelled::class)]
@@ -19,7 +20,7 @@ final readonly class ReservationPaymentCancelledListener
     public function __invoke(ReservationPaymentCancelled $event): void
     {
         $this->commandBus->execute(new DeleteAvailabilityHoldCommand(
-            reservationId: $event->reservationId,
+            reservationId: new ReservationId($event->reservationId),
         ));
     }
 }
