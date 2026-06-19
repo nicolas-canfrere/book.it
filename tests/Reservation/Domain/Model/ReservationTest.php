@@ -11,6 +11,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
@@ -30,7 +31,7 @@ final class ReservationTest extends TestCase
         $reservation = new Reservation(
             id: new ReservationId(self::ID),
             roomId: new RoomId(self::ROOM_ID),
-            bookerId: self::BOOKER_ID,
+            bookerId: new BookerId(self::BOOKER_ID),
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-06-01'),
                 new \DateTimeImmutable('2026-06-05'),
@@ -44,7 +45,7 @@ final class ReservationTest extends TestCase
 
         self::assertSame(self::ID, $reservation->id->value);
         self::assertSame(self::ROOM_ID, $reservation->roomId->value);
-        self::assertSame(self::BOOKER_ID, $reservation->bookerId);
+        self::assertSame(self::BOOKER_ID, $reservation->bookerId->value);
         self::assertSame('2026-06-01', $reservation->period->checkIn->format('Y-m-d'));
         self::assertSame('2026-06-05', $reservation->period->checkOut->format('Y-m-d'));
         self::assertSame(42000, $reservation->totalPrice);
@@ -124,7 +125,7 @@ final class ReservationTest extends TestCase
         $reservation = new Reservation(
             id: new ReservationId(self::ID),
             roomId: new RoomId(self::ROOM_ID),
-            bookerId: self::BOOKER_ID,
+            bookerId: new BookerId(self::BOOKER_ID),
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-06-01'),
                 new \DateTimeImmutable('2026-06-05'),
@@ -145,7 +146,7 @@ final class ReservationTest extends TestCase
         return new Reservation(
             id: new ReservationId(self::ID),
             roomId: new RoomId(self::ROOM_ID),
-            bookerId: self::BOOKER_ID,
+            bookerId: new BookerId(self::BOOKER_ID),
             period: new DatePeriod(
                 new \DateTimeImmutable('2030-06-01'),
                 new \DateTimeImmutable('2030-06-05'),

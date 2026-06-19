@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationCheckedOut;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Fake\FakeEventDispatcher;
@@ -86,7 +87,7 @@ final class CheckOutCommandHandlerTest extends KernelTestCase
         $reservation = new Reservation(
             id: new ReservationId($id),
             roomId: new RoomId($roomId),
-            bookerId: $bookerId,
+            bookerId: new BookerId($bookerId),
             period: new DatePeriod($checkIn, $checkOut),
             totalPrice: 50000,
             cancellationTerms: CancellationTerms::alwaysRefundable(),

@@ -7,6 +7,7 @@ namespace App\Reservation\UI\Http\Controller\ListBookerReservations;
 use App\Reservation\Application\UseCase\ListBookerReservations\ListBookerReservationsQuery;
 use App\Reservation\UI\Http\Controller\ReservationSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
@@ -74,7 +75,7 @@ final readonly class ListBookerReservationsController
         ListBookerReservationsRequest $request = new ListBookerReservationsRequest(),
     ): Response {
         $page = $this->queryBus->ask(new ListBookerReservationsQuery(
-            (string) $request->bookerId,
+            new BookerId((string) $request->bookerId),
             $request->page,
             $request->limit,
         ));

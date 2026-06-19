@@ -15,6 +15,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationPaymentCancelled;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
@@ -31,7 +32,7 @@ final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
         $reservation = new Reservation(
             id: new ReservationId('res-001'),
             roomId: new RoomId('room-001'),
-            bookerId: 'booker-001',
+            bookerId: new BookerId('booker-001'),
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-07-01'),
                 new \DateTimeImmutable('2026-07-05'),
@@ -90,7 +91,7 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
     {
     }
 
-    public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage
+    public function listByBooker(BookerId $bookerId, int $page, int $limit): ReservationPage
     {
         return new ReservationPage([], 0);
     }

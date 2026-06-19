@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Tests\Reservation\Infrastructure;
 
 use App\Reservation\Domain\Port\BookerExistsInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 
 final class FakeBookerExistenceChecker implements BookerExistsInterface
 {
@@ -15,7 +16,7 @@ final class FakeBookerExistenceChecker implements BookerExistsInterface
         $this->exists = $exists;
     }
 
-    public function exists(string $bookerId): bool
+    public function exists(BookerId $bookerId): bool
     {
         return $this->exists;
     }

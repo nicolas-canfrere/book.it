@@ -268,7 +268,8 @@ deptrac:
         # (Shared toléré si un jour nécessaire — à ajouter explicitement).
         AvailabilityContract:
             - Shared
-        BookerContract: ~
+        BookerContract:
+            - Shared
         HotelContract:
             - Shared
         NotificationContract: ~

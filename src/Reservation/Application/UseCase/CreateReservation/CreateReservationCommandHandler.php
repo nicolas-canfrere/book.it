@@ -76,7 +76,7 @@ final readonly class CreateReservationCommandHandler implements SyncCommandHandl
             $this->eventDispatcher->dispatch(new ReservationCreated(
                 reservationId: $reservation->id->value,
                 roomId: $reservation->roomId->value,
-                bookerId: $reservation->bookerId,
+                bookerId: $reservation->bookerId->value,
                 checkIn: $reservation->period->checkIn,
                 checkOut: $reservation->period->checkOut,
                 totalPrice: $reservation->totalPrice,

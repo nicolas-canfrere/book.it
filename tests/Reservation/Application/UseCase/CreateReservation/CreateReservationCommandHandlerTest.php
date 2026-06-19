@@ -19,6 +19,7 @@ use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Domain\ValueObject\PricingQuoteSnapshot;
 use App\Shared\Application\Bus\AsyncCommandDispatcherInterface;
 use App\Shared\Application\Transaction\TransactionManagerInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
@@ -125,7 +126,7 @@ final class CreateReservationCommandHandlerTest extends TestCase
         return new CreateReservationCommand(
             id: new ReservationId('cccccccc-0000-4000-8000-000000000001'),
             roomTypeId: $this->roomTypeId,
-            bookerId: 'dddddddd-0000-4000-8000-000000000001',
+            bookerId: new BookerId('dddddddd-0000-4000-8000-000000000001'),
             checkIn: new \DateTimeImmutable('2026-08-01'),
             checkOut: new \DateTimeImmutable('2026-08-05'),
             guestCount: $guestCount,
