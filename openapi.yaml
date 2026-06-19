@@ -1861,6 +1861,33 @@ paths:
             default: 20
             maximum: 100
             minimum: 1
+        -
+          name: status
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+            enum:
+              - pending
+              - confirmed
+              - cancelled
+              - expired
+              - checked_in
+              - checked_out
+        -
+          name: period
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+            enum:
+              - past
+              - current
+              - upcoming
       responses:
         '200':
           description: 'Paginated reservation list'
@@ -2979,6 +3006,25 @@ components:
           default: 20
           maximum: 100
           minimum: 1
+        status:
+          type: string
+          nullable: true
+          default: null
+          enum:
+            - pending
+            - confirmed
+            - cancelled
+            - expired
+            - checked_in
+            - checked_out
+        period:
+          type: string
+          nullable: true
+          default: null
+          enum:
+            - past
+            - current
+            - upcoming
       type: object
     PreRegisterGuestsRequest:
       properties:

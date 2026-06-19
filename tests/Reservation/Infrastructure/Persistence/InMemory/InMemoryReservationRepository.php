@@ -6,6 +6,8 @@ namespace App\Tests\Reservation\Infrastructure\Persistence\InMemory;
 
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationPage;
+use App\Reservation\Domain\Model\ReservationPeriodFilter;
+use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
@@ -30,11 +32,32 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
         return $this->store[$id->value] ?? null;
     }
 
-    public function listByBooker(BookerId $bookerId, int $page, int $limit): ReservationPage
-    {
+    public function listByBooker(
+        BookerId $bookerId,
+        int $page,
+        int $limit,
+        ?ReservationStatus $status = null,
+        ?ReservationPeriodFilter $period = null,
+    ): ReservationPage {
+        $today = new \DateTimeImmutable('today');
+
         $all = array_values(array_filter(
             $this->store,
-            fn(Reservation $r) => $r->bookerId->value === $bookerId->value,
+            function (Reservation $r) use ($bookerId, $status, $period, $today): bool {
+                if ($r->bookerId->value !== $bookerId->value) {
+                    return false;
+                }
+
+                if (null !== $status && $r->status !== $status) {
+                    return false;
+                }
+
+                if (null !== $period && !$this->matchesPeriod($r, $period, $today)) {
+                    return false;
+                }
+
+                return true;
+            },
         ));
 
         usort($all, fn(Reservation $a, Reservation $b) => $b->createdAt <=> $a->createdAt);
@@ -43,5 +66,17 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
         $items = array_slice($all, ($page - 1) * $limit, $limit);
 
         return new ReservationPage($items, $total);
+    }
+
+    private function matchesPeriod(Reservation $r, ReservationPeriodFilter $period, \DateTimeImmutable $today): bool
+    {
+        $checkIn = $r->period->checkIn->setTime(0, 0);
+        $checkOut = $r->period->checkOut->setTime(0, 0);
+
+        return match ($period) {
+            ReservationPeriodFilter::Upcoming => $checkIn > $today,
+            ReservationPeriodFilter::Current => $checkIn <= $today && $checkOut > $today,
+            ReservationPeriodFilter::Past => $checkOut <= $today,
+        };
     }
 }

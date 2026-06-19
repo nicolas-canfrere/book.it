@@ -16,6 +16,12 @@ final readonly class ListBookerReservationsQueryHandler implements SyncQueryHand
 
     public function __invoke(ListBookerReservationsQuery $query): ReservationPage
     {
-        return $this->repository->listByBooker($query->bookerId, $query->page, $query->limit);
+        return $this->repository->listByBooker(
+            $query->bookerId,
+            $query->page,
+            $query->limit,
+            $query->status,
+            $query->period,
+        );
     }
 }

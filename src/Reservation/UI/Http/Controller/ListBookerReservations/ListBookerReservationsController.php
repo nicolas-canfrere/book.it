@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Reservation\UI\Http\Controller\ListBookerReservations;
 
 use App\Reservation\Application\UseCase\ListBookerReservations\ListBookerReservationsQuery;
+use App\Reservation\Domain\Model\ReservationPeriodFilter;
+use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\UI\Http\Controller\ReservationSerializer;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use App\Shared\Domain\ValueObject\BookerId;
@@ -78,6 +80,8 @@ final readonly class ListBookerReservationsController
             new BookerId((string) $request->bookerId),
             $request->page,
             $request->limit,
+            null !== $request->status ? ReservationStatus::from($request->status) : null,
+            null !== $request->period ? ReservationPeriodFilter::from($request->period) : null,
         ));
 
         return new JsonResponse([
