@@ -274,7 +274,8 @@ deptrac:
         NotificationContract: ~
         OperatorContract: ~
         PricingContract: ~
-        ReservationContract: ~
+        ReservationContract:
+            - Shared
         RoomContract:
             - Shared
         SecurityContract: ~

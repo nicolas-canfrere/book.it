@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationCheckedOut;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Reservation\Infrastructure\Persistence\InMemory\InMemoryReservationRepository;
@@ -48,7 +49,7 @@ final class CheckOutCommandHandlerTest extends KernelTestCase
             actualDepartureDate: new \DateTimeImmutable('2025-06-13'),
         ));
 
-        $saved = $this->repository->get('res-uuid');
+        $saved = $this->repository->get(new ReservationId('res-uuid'));
         self::assertNotNull($saved);
         self::assertSame(ReservationStatus::CheckedOut, $saved->status);
 
@@ -83,7 +84,7 @@ final class CheckOutCommandHandlerTest extends KernelTestCase
         \DateTimeImmutable $checkOut,
     ): Reservation {
         $reservation = new Reservation(
-            id: $id,
+            id: new ReservationId($id),
             roomId: new RoomId($roomId),
             bookerId: $bookerId,
             period: new DatePeriod($checkIn, $checkOut),

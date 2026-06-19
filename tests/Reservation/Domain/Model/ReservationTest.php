@@ -11,6 +11,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -27,7 +28,7 @@ final class ReservationTest extends TestCase
     public function itInitializesWithPendingStatus(): void
     {
         $reservation = new Reservation(
-            id: self::ID,
+            id: new ReservationId(self::ID),
             roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod(
@@ -41,7 +42,7 @@ final class ReservationTest extends TestCase
             createdAt: new \DateTimeImmutable('2026-05-18T10:00:00Z'),
         );
 
-        self::assertSame(self::ID, $reservation->id);
+        self::assertSame(self::ID, $reservation->id->value);
         self::assertSame(self::ROOM_ID, $reservation->roomId->value);
         self::assertSame(self::BOOKER_ID, $reservation->bookerId);
         self::assertSame('2026-06-01', $reservation->period->checkIn->format('Y-m-d'));
@@ -121,7 +122,7 @@ final class ReservationTest extends TestCase
     public function itAllowsZeroPrice(): void
     {
         $reservation = new Reservation(
-            id: self::ID,
+            id: new ReservationId(self::ID),
             roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod(
@@ -142,7 +143,7 @@ final class ReservationTest extends TestCase
     private function makeReservation(): Reservation
     {
         return new Reservation(
-            id: self::ID,
+            id: new ReservationId(self::ID),
             roomId: new RoomId(self::ROOM_ID),
             bookerId: self::BOOKER_ID,
             period: new DatePeriod(

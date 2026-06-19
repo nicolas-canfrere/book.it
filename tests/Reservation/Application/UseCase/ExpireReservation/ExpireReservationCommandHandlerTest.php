@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationExpired;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -86,7 +87,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
     private function makePendingReservation(): Reservation
     {
         return new Reservation(
-            id: 'res-uuid',
+            id: new ReservationId('res-uuid'),
             roomId: new RoomId('room-uuid'),
             bookerId: 'booker-uuid',
             period: new DatePeriod(

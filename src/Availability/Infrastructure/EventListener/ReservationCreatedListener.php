@@ -8,6 +8,7 @@ use App\Availability\Application\UseCase\CreateAvailabilityHold\CreateAvailabili
 use App\Availability\Domain\Port\AvailabilityHoldIdGeneratorInterface;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Domain\Event\ReservationCreated;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
@@ -27,7 +28,7 @@ final readonly class ReservationCreatedListener
         $this->commandBus->execute(new CreateAvailabilityHoldCommand(
             id: $this->idGenerator->generate(),
             roomId: new RoomId($event->roomId),
-            reservationId: $event->reservationId,
+            reservationId: new ReservationId($event->reservationId),
             checkIn: $event->checkIn,
             checkOut: $event->checkOut,
             expiresAt: new \DateTimeImmutable(sprintf('+%d seconds', self::HOLD_TTL_SECONDS)),

@@ -15,6 +15,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationConfirmed;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -28,7 +29,7 @@ final class ConfirmReservationCommandHandlerTest extends KernelTestCase
     public function itConfirmsPendingReservationAndDispatchesEvent(): void
     {
         $reservation = new Reservation(
-            id: 'res-001',
+            id: new ReservationId('res-001'),
             roomId: new RoomId('room-001'),
             bookerId: 'booker-001',
             period: new DatePeriod(
@@ -78,9 +79,9 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
     {
     }
 
-    public function get(string $id): ?Reservation
+    public function get(ReservationId $id): ?Reservation
     {
-        return $this->reservation?->id === $id ? $this->reservation : null;
+        return $this->reservation?->id->value === $id->value ? $this->reservation : null;
     }
 
     public function add(Reservation $reservation): void

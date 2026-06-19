@@ -9,6 +9,7 @@ use App\Availability\Application\UseCase\DeleteAvailabilityHold\DeleteAvailabili
 use App\Availability\Domain\Port\BlockedPeriodIdGeneratorInterface;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Shared\Domain\Event\ReservationConfirmed;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 
@@ -24,7 +25,7 @@ final readonly class ReservationConfirmedListener
     public function __invoke(ReservationConfirmed $event): void
     {
         $this->commandBus->execute(new DeleteAvailabilityHoldCommand(
-            reservationId: $event->reservationId,
+            reservationId: new ReservationId($event->reservationId),
         ));
 
         $this->commandBus->execute(new BlockPeriodCommand(

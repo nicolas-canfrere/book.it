@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Reservation\Infrastructure\Contract\DoctrineReservationFinder;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -38,7 +39,7 @@ final class DoctrineReservationFinderTest extends TestCase
         $checkOut = new \DateTimeImmutable('2026-07-05');
 
         $reservation = new Reservation(
-            id: 'res-1',
+            id: new ReservationId('res-1'),
             roomId: new RoomId('room-1'),
             bookerId: 'booker-1',
             period: new DatePeriod($checkIn, $checkOut),
@@ -50,7 +51,7 @@ final class DoctrineReservationFinderTest extends TestCase
         );
         $this->repository->method('get')->willReturn($reservation);
 
-        $view = $this->finder->find('res-1');
+        $view = $this->finder->find(new ReservationId('res-1'));
 
         self::assertInstanceOf(ReservationView::class, $view);
         self::assertSame('res-1', $view->id);
@@ -63,6 +64,6 @@ final class DoctrineReservationFinderTest extends TestCase
     public function itReturnsNullWhenReservationNotFound(): void
     {
         $this->repository->method('get')->willReturn(null);
-        self::assertNull($this->finder->find('unknown'));
+        self::assertNull($this->finder->find(new ReservationId('unknown')));
     }
 }

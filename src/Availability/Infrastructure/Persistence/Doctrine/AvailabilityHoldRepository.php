@@ -6,6 +6,7 @@ namespace App\Availability\Infrastructure\Persistence\Doctrine;
 
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
 
@@ -20,7 +21,7 @@ final readonly class AvailabilityHoldRepository implements AvailabilityHoldRepos
         $this->availabilityConnection->insert('hold', [
             'id' => $hold->id->value,
             'room_id' => $hold->roomId->value,
-            'reservation_id' => $hold->reservationId,
+            'reservation_id' => $hold->reservationId->value,
             'check_in' => $hold->period->checkIn->format('Y-m-d'),
             'check_out' => $hold->period->checkOut->format('Y-m-d'),
             'expires_at' => $hold->expiresAt->format('Y-m-d H:i:s'),
@@ -28,9 +29,9 @@ final readonly class AvailabilityHoldRepository implements AvailabilityHoldRepos
         ]);
     }
 
-    public function deleteByReservationId(string $reservationId): void
+    public function deleteByReservationId(ReservationId $reservationId): void
     {
-        $this->availabilityConnection->delete('hold', ['reservation_id' => $reservationId]);
+        $this->availabilityConnection->delete('hold', ['reservation_id' => $reservationId->value]);
     }
 
     public function hasActiveOverlap(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): bool

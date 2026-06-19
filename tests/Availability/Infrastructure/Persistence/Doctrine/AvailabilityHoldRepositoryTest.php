@@ -7,6 +7,7 @@ namespace App\Tests\Availability\Infrastructure\Persistence\InMemory;
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\ValueObject\DatePeriod;
 use App\Shared\Domain\ValueObject\AvailabilityHoldId;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -32,7 +33,7 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         $this->repository->add(new AvailabilityHold(
             id: new AvailabilityHoldId('hold-1'),
             roomId: new RoomId($roomId),
-            reservationId: 'res-1',
+            reservationId: new ReservationId('res-1'),
             period: new DatePeriod($checkIn, $checkOut),
             expiresAt: new \DateTimeImmutable('+15 minutes'),
             createdAt: new \DateTimeImmutable(),
@@ -51,7 +52,7 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         $this->repository->add(new AvailabilityHold(
             id: new AvailabilityHoldId('hold-2'),
             roomId: new RoomId($roomId),
-            reservationId: 'res-2',
+            reservationId: new ReservationId('res-2'),
             period: new DatePeriod($checkIn, $checkOut),
             expiresAt: new \DateTimeImmutable('-1 second'),
             createdAt: new \DateTimeImmutable('-20 minutes'),
@@ -70,13 +71,13 @@ final class AvailabilityHoldRepositoryTest extends TestCase
         $this->repository->add(new AvailabilityHold(
             id: new AvailabilityHoldId('hold-3'),
             roomId: new RoomId($roomId),
-            reservationId: 'res-3',
+            reservationId: new ReservationId('res-3'),
             period: new DatePeriod($checkIn, $checkOut),
             expiresAt: new \DateTimeImmutable('+15 minutes'),
             createdAt: new \DateTimeImmutable(),
         ));
 
-        $this->repository->deleteByReservationId('res-3');
+        $this->repository->deleteByReservationId(new ReservationId('res-3'));
 
         self::assertFalse($this->repository->hasActiveOverlap(new RoomId($roomId), $checkIn, $checkOut));
     }

@@ -6,6 +6,7 @@ namespace App\Tests\Availability\Infrastructure\Persistence\InMemory;
 
 use App\Availability\Domain\Model\AvailabilityHold;
 use App\Availability\Domain\Port\AvailabilityHoldRepositoryInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 
 final class InMemoryAvailabilityHoldRepository implements AvailabilityHoldRepositoryInterface
@@ -18,10 +19,10 @@ final class InMemoryAvailabilityHoldRepository implements AvailabilityHoldReposi
         $this->holds[$hold->id->value] = $hold;
     }
 
-    public function deleteByReservationId(string $reservationId): void
+    public function deleteByReservationId(ReservationId $reservationId): void
     {
         foreach ($this->holds as $id => $hold) {
-            if ($hold->reservationId === $reservationId) {
+            if ($hold->reservationId->value === $reservationId->value) {
                 unset($this->holds[$id]);
             }
         }

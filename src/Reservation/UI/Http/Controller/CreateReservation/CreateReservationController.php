@@ -102,7 +102,7 @@ final readonly class CreateReservationController
         return new JsonResponse(
             $this->serializer->serialize($reservation),
             Response::HTTP_CREATED,
-            ['Location' => $this->urlGenerator->generate('reservation_get', ['id' => $command->id])],
+            ['Location' => $this->urlGenerator->generate('reservation_get', ['id' => $command->id->value])],
         );
     }
 }

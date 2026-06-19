@@ -26,7 +26,7 @@ final readonly class ReservationSerializer
     public function serialize(Reservation $reservation): array
     {
         return [
-            'id' => $reservation->id,
+            'id' => $reservation->id->value,
             'roomId' => $reservation->roomId->value,
             'bookerId' => $reservation->bookerId,
             'checkIn' => $reservation->period->checkIn->format('Y-m-d'),

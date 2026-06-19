@@ -7,6 +7,7 @@ namespace App\Tests\Reservation\Infrastructure\Persistence\InMemory;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationPage;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
+use App\Shared\Domain\ValueObject\ReservationId;
 
 final class InMemoryReservationRepository implements ReservationRepositoryInterface
 {
@@ -15,17 +16,17 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
 
     public function add(Reservation $reservation): void
     {
-        $this->store[$reservation->id] = $reservation;
+        $this->store[$reservation->id->value] = $reservation;
     }
 
     public function save(Reservation $reservation): void
     {
-        $this->store[$reservation->id] = $reservation;
+        $this->store[$reservation->id->value] = $reservation;
     }
 
-    public function get(string $id): ?Reservation
+    public function get(ReservationId $id): ?Reservation
     {
-        return $this->store[$id] ?? null;
+        return $this->store[$id->value] ?? null;
     }
 
     public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage

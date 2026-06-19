@@ -8,6 +8,7 @@ use App\Reservation\Domain\Exception\ReservationNotFoundException;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 use App\Shared\Domain\Event\ReservationCheckedOut;
+use App\Shared\Domain\ValueObject\ReservationId;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final class CheckOutCommandHandler implements SyncCommandHandlerInterface
@@ -20,7 +21,7 @@ final class CheckOutCommandHandler implements SyncCommandHandlerInterface
 
     public function __invoke(CheckOutCommand $command): void
     {
-        $reservation = $this->reservations->get($command->reservationId);
+        $reservation = $this->reservations->get(new ReservationId($command->reservationId));
 
         if (null === $reservation) {
             throw new ReservationNotFoundException($command->reservationId);
@@ -31,7 +32,7 @@ final class CheckOutCommandHandler implements SyncCommandHandlerInterface
         $this->reservations->save($reservation);
 
         $this->eventDispatcher->dispatch(new ReservationCheckedOut(
-            reservationId: $reservation->id,
+            reservationId: $reservation->id->value,
             roomId: $reservation->roomId->value,
             bookerId: $reservation->bookerId,
             checkIn: $reservation->period->checkIn,
