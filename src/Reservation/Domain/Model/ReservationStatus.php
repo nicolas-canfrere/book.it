@@ -12,4 +12,10 @@ enum ReservationStatus: string
     case Expired = 'expired';
     case CheckedIn = 'checked_in';
     case CheckedOut = 'checked_out';
+
+    /** @return string[] */
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }
