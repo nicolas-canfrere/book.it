@@ -32,7 +32,7 @@ final class DoctrineBookerFinderTest extends TestCase
     {
         $this->repository->method('get')->willReturn(null);
 
-        self::assertNull($this->finder->find('unknown-id'));
+        self::assertNull($this->finder->find(new BookerId('unknown-id')));
     }
 
     #[Test]
@@ -50,7 +50,7 @@ final class DoctrineBookerFinderTest extends TestCase
         );
         $this->repository->method('get')->willReturn($booker);
 
-        $view = $this->finder->find('b1b2b3b4-0000-0000-0000-000000000001');
+        $view = $this->finder->find($bookerId);
 
         self::assertInstanceOf(BookerView::class, $view);
         self::assertSame('b1b2b3b4-0000-0000-0000-000000000001', $view->id);

@@ -15,9 +15,9 @@ final readonly class DoctrineBookerFinder implements BookerFinderInterface
     {
     }
 
-    public function find(string $bookerId): ?BookerView
+    public function find(BookerId $bookerId): ?BookerView
     {
-        $booker = $this->bookerRepository->get(new BookerId($bookerId));
+        $booker = $this->bookerRepository->get($bookerId);
 
         if (null === $booker) {
             return null;

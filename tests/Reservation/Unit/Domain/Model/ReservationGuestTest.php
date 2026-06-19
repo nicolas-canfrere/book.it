@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\GuestId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
@@ -203,7 +204,7 @@ final class ReservationGuestTest extends TestCase
         $reservation = new Reservation(
             id: new ReservationId('res-uuid-1'),
             roomId: new RoomId('room-uuid-1'),
-            bookerId: 'booker-uuid-1',
+            bookerId: new BookerId('booker-uuid-1'),
             period: new DatePeriod(
                 new \DateTimeImmutable('2026-07-01'),
                 new \DateTimeImmutable('2026-07-03'),

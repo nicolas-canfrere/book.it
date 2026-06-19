@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 
@@ -30,7 +31,7 @@ final class Reservation
     public function __construct(
         public readonly ReservationId $id,
         public readonly RoomId $roomId,
-        public readonly string $bookerId,
+        public readonly BookerId $bookerId,
         public readonly DatePeriod $period,
         public readonly int $totalPrice,
         public readonly CancellationTerms $cancellationTerms,

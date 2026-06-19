@@ -7,6 +7,7 @@ namespace App\Tests\Reservation\Infrastructure\Persistence\InMemory;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationPage;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 
 final class InMemoryReservationRepository implements ReservationRepositoryInterface
@@ -29,11 +30,11 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
         return $this->store[$id->value] ?? null;
     }
 
-    public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage
+    public function listByBooker(BookerId $bookerId, int $page, int $limit): ReservationPage
     {
         $all = array_values(array_filter(
             $this->store,
-            fn(Reservation $r) => $r->bookerId === $bookerId,
+            fn(Reservation $r) => $r->bookerId->value === $bookerId->value,
         ));
 
         usort($all, fn(Reservation $a, Reservation $b) => $b->createdAt <=> $a->createdAt);

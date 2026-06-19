@@ -28,7 +28,7 @@ final readonly class ReservationSerializer
         return [
             'id' => $reservation->id->value,
             'roomId' => $reservation->roomId->value,
-            'bookerId' => $reservation->bookerId,
+            'bookerId' => $reservation->bookerId->value,
             'checkIn' => $reservation->period->checkIn->format('Y-m-d'),
             'checkOut' => $reservation->period->checkOut->format('Y-m-d'),
             'totalPrice' => $reservation->totalPrice,

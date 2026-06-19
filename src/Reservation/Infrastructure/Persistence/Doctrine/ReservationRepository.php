@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\GuestId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
@@ -30,7 +31,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         $this->reservationConnection->insert('reservation', [
             'id' => $reservation->id->value,
             'room_id' => $reservation->roomId->value,
-            'booker_id' => $reservation->bookerId,
+            'booker_id' => $reservation->bookerId->value,
             'check_in' => $reservation->period->checkIn->format('Y-m-d'),
             'check_out' => $reservation->period->checkOut->format('Y-m-d'),
             'total_price' => $reservation->totalPrice,
@@ -107,11 +108,11 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         return $reservation;
     }
 
-    public function listByBooker(string $bookerId, int $page, int $limit): ReservationPage
+    public function listByBooker(BookerId $bookerId, int $page, int $limit): ReservationPage
     {
         $count = $this->reservationConnection->fetchOne(
             'SELECT COUNT(*) FROM reservation WHERE booker_id = :bookerId',
-            ['bookerId' => $bookerId],
+            ['bookerId' => $bookerId->value],
         );
         $total = is_numeric($count) ? (int) $count : 0;
 
@@ -136,7 +137,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                    LIMIT :limit OFFSET :offset
               )
               ORDER BY r.created_at DESC, r.id, rg.id',
-            ['bookerId' => $bookerId, 'limit' => $limit, 'offset' => $offset],
+            ['bookerId' => $bookerId->value, 'limit' => $limit, 'offset' => $offset],
             ['limit' => ParameterType::INTEGER, 'offset' => ParameterType::INTEGER],
         );
 
@@ -188,7 +189,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         $reservation = new Reservation(
             id: new ReservationId($row['id']),
             roomId: new RoomId($row['room_id']),
-            bookerId: $row['booker_id'],
+            bookerId: new BookerId($row['booker_id']),
             period: new DatePeriod(
                 new \DateTimeImmutable($row['check_in']),
                 new \DateTimeImmutable($row['check_out']),

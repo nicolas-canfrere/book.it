@@ -7,6 +7,7 @@ namespace App\Notification\Infrastructure\Service;
 use App\Booker\Application\Contract\BookerFinderInterface;
 use App\Notification\Domain\Port\BookerContactFetcherInterface;
 use App\Notification\Domain\ReadModel\BookerContact;
+use App\Shared\Domain\ValueObject\BookerId;
 
 final readonly class BookerContactFetcher implements BookerContactFetcherInterface
 {
@@ -16,7 +17,7 @@ final readonly class BookerContactFetcher implements BookerContactFetcherInterfa
 
     public function fetch(string $bookerId): ?BookerContact
     {
-        $view = $this->bookers->find($bookerId);
+        $view = $this->bookers->find(new BookerId($bookerId));
 
         if (null === $view) {
             return null;

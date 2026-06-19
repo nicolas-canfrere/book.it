@@ -14,6 +14,7 @@ use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
 use App\Shared\Domain\Event\ReservationExpired;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
@@ -89,7 +90,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
         return new Reservation(
             id: new ReservationId('res-uuid'),
             roomId: new RoomId('room-uuid'),
-            bookerId: 'booker-uuid',
+            bookerId: new BookerId('booker-uuid'),
             period: new DatePeriod(
                 new \DateTimeImmutable('2030-06-01'),
                 new \DateTimeImmutable('2030-06-05'),

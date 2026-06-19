@@ -6,6 +6,7 @@ namespace App\Reservation\Application\Service;
 
 use App\Reservation\Application\UseCase\CreateReservation\CreateReservationCommand;
 use App\Reservation\Domain\Port\ReservationIdGeneratorInterface;
+use App\Shared\Domain\ValueObject\BookerId;
 use App\Shared\Domain\ValueObject\RoomTypeId;
 
 final readonly class CreateReservationCommandFactory
@@ -24,7 +25,7 @@ final readonly class CreateReservationCommandFactory
         return new CreateReservationCommand(
             id: $this->idGenerator->generate(),
             roomTypeId: new RoomTypeId($roomTypeId),
-            bookerId: $bookerId,
+            bookerId: new BookerId($bookerId),
             checkIn: new \DateTimeImmutable($checkIn),
             checkOut: new \DateTimeImmutable($checkOut),
             guestCount: $guestCount,
