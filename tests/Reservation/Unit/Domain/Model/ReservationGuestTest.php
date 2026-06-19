@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\GuestId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
@@ -223,6 +224,6 @@ final class ReservationGuestTest extends TestCase
 
     private function makeGuest(string $id = 'g-uuid-1'): Guest
     {
-        return new Guest($id, 'Alice', 'Smith', new \DateTimeImmutable('1990-01-15'));
+        return new Guest(new GuestId($id), 'Alice', 'Smith', new \DateTimeImmutable('1990-01-15'));
     }
 }

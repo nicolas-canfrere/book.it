@@ -13,6 +13,7 @@ use App\Reservation\Domain\ValueObject\CancellationTerms;
 use App\Reservation\Domain\ValueObject\DatePeriod;
 use App\Reservation\Domain\ValueObject\GuestCount;
 use App\Reservation\Domain\ValueObject\PriceBreakdown;
+use App\Shared\Domain\ValueObject\GuestId;
 use App\Shared\Domain\ValueObject\ReservationId;
 use App\Shared\Domain\ValueObject\RoomId;
 use Doctrine\DBAL\Connection;
@@ -56,7 +57,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
             foreach ($reservation->guests as $guest) {
                 $connection->insert('guest', [
-                    'id' => $guest->id,
+                    'id' => $guest->id->value,
                     'reservation_id' => $reservation->id->value,
                     'first_name' => $guest->firstName,
                     'last_name' => $guest->lastName,
@@ -94,7 +95,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                 }
 
                 return new Guest(
-                    id: $row['g_id'],
+                    id: new GuestId($row['g_id']),
                     firstName: (string) $row['first_name'],
                     lastName: (string) $row['last_name'],
                     dateOfBirth: new \DateTimeImmutable((string) $row['date_of_birth']),
@@ -157,7 +158,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             $reservation = $this->hydrate($row);
             $reservation->guests = array_map(
                 fn(array $g) => new Guest(
-                    id: $g['g_id'],
+                    id: new GuestId($g['g_id']),
                     firstName: (string) $g['first_name'],
                     lastName: (string) $g['last_name'],
                     dateOfBirth: new \DateTimeImmutable((string) $g['date_of_birth']),
