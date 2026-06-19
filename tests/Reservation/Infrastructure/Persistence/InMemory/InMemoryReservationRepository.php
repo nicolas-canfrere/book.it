@@ -70,10 +70,13 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
 
     private function matchesPeriod(Reservation $r, ReservationPeriodFilter $period, \DateTimeImmutable $today): bool
     {
+        $checkIn = $r->period->checkIn->setTime(0, 0);
+        $checkOut = $r->period->checkOut->setTime(0, 0);
+
         return match ($period) {
-            ReservationPeriodFilter::Upcoming => $r->period->checkIn > $today,
-            ReservationPeriodFilter::Current => $r->period->checkIn <= $today && $r->period->checkOut > $today,
-            ReservationPeriodFilter::Past => $r->period->checkOut <= $today,
+            ReservationPeriodFilter::Upcoming => $checkIn > $today,
+            ReservationPeriodFilter::Current => $checkIn <= $today && $checkOut > $today,
+            ReservationPeriodFilter::Past => $checkOut <= $today,
         };
     }
 }
