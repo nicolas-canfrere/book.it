@@ -110,6 +110,70 @@ final class ListBookerReservationsControllerTest extends AuthenticatedWebTestCas
         self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
     }
 
+    #[Test]
+    public function itFiltersByStatus(): void
+    {
+        $client = static::createAuthenticatedClient();
+        [$bookerId, $roomTypeId] = $this->setupBookerAndRoom($client);
+        $this->createReservation($client, $bookerId, $roomTypeId, '2030-06-01', '2030-06-03');
+
+        $client->request('GET', "/api/v1/reservations?bookerId={$bookerId}&status=pending");
+
+        self::assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        /** @var array{data: list<array{status: string}>, meta: array{total: int}} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame(1, $body['meta']['total']);
+
+        $client->request('GET', "/api/v1/reservations?bookerId={$bookerId}&status=cancelled");
+
+        /** @var array{meta: array{total: int}} $emptyBody */
+        $emptyBody = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame(0, $emptyBody['meta']['total']);
+    }
+
+    #[Test]
+    public function itFiltersByUpcomingPeriod(): void
+    {
+        $client = static::createAuthenticatedClient();
+        [$bookerId, $roomTypeId] = $this->setupBookerAndRoom($client);
+        $farFuture = (new \DateTimeImmutable('+30 days'))->format('Y-m-d');
+        $farFutureCheckOut = (new \DateTimeImmutable('+32 days'))->format('Y-m-d');
+        $this->createReservation($client, $bookerId, $roomTypeId, $farFuture, $farFutureCheckOut);
+
+        $client->request('GET', "/api/v1/reservations?bookerId={$bookerId}&period=upcoming");
+
+        self::assertSame(Response::HTTP_OK, $client->getResponse()->getStatusCode());
+        /** @var array{meta: array{total: int}} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame(1, $body['meta']['total']);
+
+        $client->request('GET', "/api/v1/reservations?bookerId={$bookerId}&period=past");
+
+        /** @var array{meta: array{total: int}} $emptyBody */
+        $emptyBody = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame(0, $emptyBody['meta']['total']);
+    }
+
+    #[Test]
+    public function itReturns422WhenStatusIsInvalid(): void
+    {
+        $client = static::createAuthenticatedClient();
+
+        $client->request('GET', '/api/v1/reservations?bookerId=00000000-0000-4000-8000-000000000001&status=not-a-status');
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+    }
+
+    #[Test]
+    public function itReturns422WhenPeriodIsInvalid(): void
+    {
+        $client = static::createAuthenticatedClient();
+
+        $client->request('GET', '/api/v1/reservations?bookerId=00000000-0000-4000-8000-000000000001&period=not-a-period');
+
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $client->getResponse()->getStatusCode());
+    }
+
     /** @return array{string, string, string} [bookerId, roomTypeId, roomId] */
     private function setupBookerAndRoom(KernelBrowser $client): array
     {

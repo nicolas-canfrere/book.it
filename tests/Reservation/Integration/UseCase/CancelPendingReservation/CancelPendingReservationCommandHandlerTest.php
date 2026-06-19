@@ -95,7 +95,7 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
         BookerId $bookerId,
         int $page,
         int $limit,
-        ?\App\Reservation\Domain\Model\ReservationStatus $status = null,
+        ?ReservationStatus $status = null,
         ?\App\Reservation\Domain\Model\ReservationPeriodFilter $period = null,
     ): ReservationPage {
         return new ReservationPage([], 0);
