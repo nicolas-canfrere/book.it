@@ -7,6 +7,7 @@ namespace App\Reservation\Infrastructure\Persistence\Doctrine;
 use App\Reservation\Domain\Model\Guest;
 use App\Reservation\Domain\Model\Reservation;
 use App\Reservation\Domain\Model\ReservationPage;
+use App\Reservation\Domain\Model\ReservationPeriodFilter;
 use App\Reservation\Domain\Model\ReservationStatus;
 use App\Reservation\Domain\Port\ReservationRepositoryInterface;
 use App\Reservation\Domain\ValueObject\CancellationTerms;
@@ -108,11 +109,34 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         return $reservation;
     }
 
-    public function listByBooker(BookerId $bookerId, int $page, int $limit): ReservationPage
-    {
+    public function listByBooker(
+        BookerId $bookerId,
+        int $page,
+        int $limit,
+        ?ReservationStatus $status = null,
+        ?ReservationPeriodFilter $period = null,
+    ): ReservationPage {
+        $conditions = ['booker_id = :bookerId'];
+        $params = ['bookerId' => $bookerId->value];
+
+        if (null !== $status) {
+            $conditions[] = 'status = :status';
+            $params['status'] = $status->value;
+        }
+
+        if (null !== $period) {
+            $conditions[] = match ($period) {
+                ReservationPeriodFilter::Upcoming => 'check_in > CURRENT_DATE',
+                ReservationPeriodFilter::Current => 'check_in <= CURRENT_DATE AND check_out > CURRENT_DATE',
+                ReservationPeriodFilter::Past => 'check_out <= CURRENT_DATE',
+            };
+        }
+
+        $where = implode(' AND ', $conditions);
+
         $count = $this->reservationConnection->fetchOne(
-            'SELECT COUNT(*) FROM reservation WHERE booker_id = :bookerId',
-            ['bookerId' => $bookerId->value],
+            "SELECT COUNT(*) FROM reservation WHERE {$where}",
+            $params,
         );
         $total = is_numeric($count) ? (int) $count : 0;
 
@@ -121,10 +145,11 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         }
 
         $offset = ($page - 1) * $limit;
+        $listParams = $params + ['limit' => $limit, 'offset' => $offset];
 
         /** @var list<array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, actual_departure_date: string|null, cancelled_at: string|null, cancelled_by: string|null, g_id: string|null, first_name: string|null, last_name: string|null, date_of_birth: string|null}> $rows */
         $rows = $this->reservationConnection->fetchAllAssociative(
-            'SELECT r.id, r.room_id, r.booker_id, r.check_in, r.check_out, r.total_price, r.guest_count,
+            "SELECT r.id, r.room_id, r.booker_id, r.check_in, r.check_out, r.total_price, r.guest_count,
                     r.cancellation_terms_days_threshold, r.price_breakdown, r.status, r.created_at,
                     r.actual_departure_date, r.cancelled_at, r.cancelled_by,
                     rg.id AS g_id, rg.first_name, rg.last_name, rg.date_of_birth
@@ -132,12 +157,12 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                LEFT JOIN guest rg ON rg.reservation_id = r.id
               WHERE r.id IN (
                   SELECT id FROM reservation
-                   WHERE booker_id = :bookerId
+                   WHERE {$where}
                    ORDER BY created_at DESC
                    LIMIT :limit OFFSET :offset
               )
-              ORDER BY r.created_at DESC, r.id, rg.id',
-            ['bookerId' => $bookerId->value, 'limit' => $limit, 'offset' => $offset],
+              ORDER BY r.created_at DESC, r.id, rg.id",
+            $listParams,
             ['limit' => ParameterType::INTEGER, 'offset' => ParameterType::INTEGER],
         );
 
