@@ -21,8 +21,8 @@ final class ReservationPeriodFilterTest extends TestCase
     #[Test]
     public function itResolvesFromValue(): void
     {
-        self::assertSame(ReservationPeriodFilter::Past, ReservationPeriodFilter::from('past'));
-        self::assertSame(ReservationPeriodFilter::Current, ReservationPeriodFilter::from('current'));
-        self::assertSame(ReservationPeriodFilter::Upcoming, ReservationPeriodFilter::from('upcoming'));
+        foreach (ReservationPeriodFilter::cases() as $case) {
+            self::assertSame($case, ReservationPeriodFilter::from($case->value));
+        }
     }
 }
