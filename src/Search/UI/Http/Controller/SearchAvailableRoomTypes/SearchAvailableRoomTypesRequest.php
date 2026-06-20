@@ -12,7 +12,23 @@ final readonly class SearchAvailableRoomTypesRequest
     public function __construct(
         #[Assert\NotBlank]
         #[Assert\Length(max: 255)]
-        #[OA\Parameter(name: 'city', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: 'Paris'))]
+        #[OA\Parameter(
+            name: 'geoPlaceId',
+            in: 'query',
+            required: true,
+            description: 'GeoNames id of the place selected via Geo Place Search autocomplete — sole filtering criterion',
+            schema: new OA\Schema(type: 'string', example: '2988507'),
+        )]
+        public ?string $geoPlaceId = null,
+        #[Assert\NotBlank]
+        #[Assert\Length(max: 255)]
+        #[OA\Parameter(
+            name: 'city',
+            in: 'query',
+            required: true,
+            description: 'Free-text city name typed by the visitor — informational only, not used for filtering',
+            schema: new OA\Schema(type: 'string', example: 'Paris'),
+        )]
         public ?string $city = null,
         #[Assert\NotBlank]
         #[Assert\Date]

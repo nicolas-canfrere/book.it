@@ -69,7 +69,7 @@ final readonly class SearchAvailableRoomTypesController
     ): JsonResponse {
         /** @var list<AvailableRoomType> $results */
         $results = $this->queryBus->ask(new SearchAvailableRoomTypesQuery(
-            city: (string) $request->city,
+            geoPlaceId: (string) $request->geoPlaceId,
             checkIn: new \DateTimeImmutable((string) $request->checkIn),
             checkOut: new \DateTimeImmutable((string) $request->checkOut),
             guests: (int) $request->guests,
