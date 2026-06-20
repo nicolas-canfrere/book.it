@@ -656,7 +656,7 @@ git commit -m "feat(hotel): validate geoPlaceId against the Geo referential at r
 
 **Interfaces:**
 - Consumes: `Address::$geoPlaceId` (Task 3)
-- Produces: `hotel.hotel.geo_place_id` column (nullable `BIGINT`)
+- Produces: `hotel.hotel.geo_place_id` column (nullable `VARCHAR(255)`)
 
 - [ ] **Step 1: Write the failing integration test**
 
@@ -750,7 +750,7 @@ final class Version20260620090000 extends AbstractMigration
 
     public function up(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE hotel.hotel ADD COLUMN geo_place_id BIGINT DEFAULT NULL');
+        $this->addSql('ALTER TABLE hotel.hotel ADD COLUMN geo_place_id VARCHAR(255) DEFAULT NULL');
         $this->addSql("COMMENT ON COLUMN hotel.hotel.geo_place_id IS 'GeoNames id disambiguating the free-text city — validated against geo.geo_place at registration, not a foreign key (contexts stay decoupled at the DB level)'");
     }
 
@@ -800,7 +800,7 @@ $this->hotelConnection->insert('hotel', [
 In `get()`, change the SQL and the `@var` annotation:
 
 ```php
-/** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|int|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
+/** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
 $row = $this->hotelConnection->fetchAssociative(
     'SELECT id, name, street_address, postal_code, city, country, geo_place_id, created_at, stars, superior, amenities FROM hotel WHERE id = :id',
     ['id' => $id->value],
@@ -810,7 +810,7 @@ $row = $this->hotelConnection->fetchAssociative(
 In `list()`, change the SQL and the `@var` annotation:
 
 ```php
-/** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|int|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}> $rows */
+/** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}> $rows */
 $rows = $this->hotelConnection->fetchAllAssociative(
     "SELECT id, name, street_address, postal_code, city, country, geo_place_id, created_at, stars, superior, amenities FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
     $params,
@@ -821,7 +821,7 @@ In `hydrate()`, change the signature's `@param` annotation to match the new row 
 
 ```php
 /**
- * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|int|null, created_at: string, stars: int|null, superior: string|bool, amenities: string} $row
+ * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string} $row
  */
 private function hydrate(array $row): Hotel
 {
@@ -873,7 +873,7 @@ git commit -m "feat(hotel): persist geoPlaceId on the hotel.hotel table"
 
 **Interfaces:**
 - Consumes: `Address::$geoPlaceId` (Task 3), `InvalidGeoPlaceException` (Task 3)
-- Produces: `RegisterHotelCommandFactory::create(..., ?int $geoPlaceId = null)`; JSON key `geoPlaceId` (nullable int) on all Hotel-serializing endpoints
+- Produces: `RegisterHotelCommandFactory::create(..., ?string $geoPlaceId = null)`; JSON key `geoPlaceId` (nullable string) on all Hotel-serializing endpoints
 
 - [ ] **Step 1: Add a failing factory test**
 
@@ -889,7 +889,7 @@ In `tests/Hotel/Application/Service/RegisterHotelCommandFactoryTest.php`, add (i
             postalCode: '75001',
             city: 'Paris',
             country: 'FR',
-            geoPlaceId: 2988507,
+            geoPlaceId: '2988507',
         );
 
         self::assertNotNull($command->address->geoPlaceId);
@@ -950,7 +950,7 @@ final readonly class RegisterHotelCommandFactory
         ?string $country,
         ?int $stars = null,
         bool $superior = false,
-        ?int $geoPlaceId = null,
+        ?string $geoPlaceId = null,
     ): RegisterHotelCommand {
         if (null === $name || null === $streetAddress || null === $postalCode || null === $city || null === $country) {
             throw new \InvalidArgumentException('All hotel fields are required.');
@@ -966,7 +966,7 @@ final readonly class RegisterHotelCommandFactory
                 $postalCode,
                 $city,
                 $country,
-                null !== $geoPlaceId ? new GeoPlaceId((string) $geoPlaceId) : null,
+                null !== $geoPlaceId ? new GeoPlaceId($geoPlaceId) : null,
             ),
             $this->clock->now(),
             $starRating,
@@ -985,9 +985,9 @@ Expected: PASS
 In `src/Hotel/UI/Http/Controller/RegisterHotel/RegisterHotelRequest.php`, add after the `superior` property:
 
 ```php
-        #[Assert\Positive]
-        #[OA\Property(type: 'integer', example: 2988507, nullable: true, description: 'GeoNames id selected via the Geo Place Search autocomplete (GET /geo/places)')]
-        public ?int $geoPlaceId = null,
+        #[Assert\Regex(pattern: '/^\d+$/', message: 'geoPlaceId must be a numeric string.')]
+        #[OA\Property(type: 'string', example: '2988507', nullable: true, description: 'GeoNames id selected via the Geo Place Search autocomplete (GET /geo/places)')]
+        public ?string $geoPlaceId = null,
 ```
 
 - [ ] **Step 6: Pass `geoPlaceId` through the controller, document the field, and map the new exception**
@@ -1010,7 +1010,7 @@ In `src/Hotel/UI/Http/Controller/RegisterHotel/RegisterHotelController.php`, in 
 In the same file's `#[OA\Post]` success response `OA\JsonContent` properties list, add after the `country` property:
 
 ```php
-                        new OA\Property(property: 'geoPlaceId', type: 'integer', nullable: true, example: 2988507),
+                        new OA\Property(property: 'geoPlaceId', type: 'string', nullable: true, example: '2988507'),
 ```
 
 In `config/services/exceptions.yaml`, add after the `App\Hotel\Domain\Exception\HotelNotFoundException` entry:
@@ -1039,7 +1039,7 @@ use App\Hotel\Domain\ValueObject\HotelAmenity;
 final class HotelSerializer
 {
     /**
-     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, geoPlaceId: int|null, createdAt: string, starRating: array{stars: int, superior: bool}|null, amenities: string[]}
+     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, geoPlaceId: string|null, createdAt: string, starRating: array{stars: int, superior: bool}|null, amenities: string[]}
      */
     public function serialize(Hotel $hotel): array
     {
@@ -1050,7 +1050,7 @@ final class HotelSerializer
             'postalCode' => $hotel->address->postalCode,
             'city' => $hotel->address->city,
             'country' => $hotel->address->country,
-            'geoPlaceId' => null !== $hotel->address->geoPlaceId ? (int) $hotel->address->geoPlaceId->value : null,
+            'geoPlaceId' => $hotel->address->geoPlaceId?->value,
             'createdAt' => $hotel->createdAt->format(\DateTimeInterface::ATOM),
             'starRating' => null !== $hotel->starRating
                 ? ['stars' => $hotel->starRating->stars, 'superior' => $hotel->starRating->superior]
@@ -1084,7 +1084,7 @@ In `tests/Hotel/UI/Http/Controller/RegisterHotel/RegisterHotelControllerTest.php
 
         $client = static::createAuthenticatedClient();
 
-        $payload = array_merge(self::VALID_PAYLOAD, ['geoPlaceId' => 2988507]);
+        $payload = array_merge(self::VALID_PAYLOAD, ['geoPlaceId' => '2988507']);
 
         $client->request(
             method: 'POST',
@@ -1096,9 +1096,9 @@ In `tests/Hotel/UI/Http/Controller/RegisterHotel/RegisterHotelControllerTest.php
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{geoPlaceId: int|null} $body */
+        /** @var array{geoPlaceId: string|null} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
-        self::assertSame(2988507, $body['geoPlaceId']);
+        self::assertSame('2988507', $body['geoPlaceId']);
     }
 
     #[Test]
@@ -1106,7 +1106,7 @@ In `tests/Hotel/UI/Http/Controller/RegisterHotel/RegisterHotelControllerTest.php
     {
         $client = static::createAuthenticatedClient();
 
-        $payload = array_merge(self::VALID_PAYLOAD, ['geoPlaceId' => 9999999]);
+        $payload = array_merge(self::VALID_PAYLOAD, ['geoPlaceId' => '9999999']);
 
         $client->request(
             method: 'POST',
@@ -1139,7 +1139,7 @@ In `tests/Hotel/UI/Http/Controller/RegisterHotel/RegisterHotelControllerTest.php
         $response = $client->getResponse();
         self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
 
-        /** @var array{geoPlaceId: int|null} $body */
+        /** @var array{geoPlaceId: string|null} $body */
         $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
         self::assertNull($body['geoPlaceId']);
     }
