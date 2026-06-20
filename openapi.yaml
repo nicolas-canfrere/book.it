@@ -120,6 +120,7 @@ paths:
                   postalCode: { type: string, example: '75001' }
                   city: { type: string, example: Paris }
                   country: { type: string, example: FR }
+                  geoPlaceId: { type: string, example: '2988507', nullable: true }
                   createdAt: { type: string, format: date-time }
                   starRating: { properties: { stars: { type: integer, maximum: 5, minimum: 1 }, superior: { type: boolean } }, type: object, nullable: true }
                   amenities: { type: array, items: { type: string, example: wifi } }
@@ -214,7 +215,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, name: { type: string }, streetAddress: { type: string }, postalCode: { type: string }, city: { type: string }, country: { type: string }, createdAt: { type: integer }, starRating: { properties: { stars: { type: integer, maximum: 5, minimum: 1 }, superior: { type: boolean } }, type: object, nullable: true }, amenities: { type: array, items: { type: string, example: wifi } } }, type: object } }
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, name: { type: string }, streetAddress: { type: string }, postalCode: { type: string }, city: { type: string }, country: { type: string }, geoPlaceId: { type: string, example: '2988507', nullable: true }, createdAt: { type: integer }, starRating: { properties: { stars: { type: integer, maximum: 5, minimum: 1 }, superior: { type: boolean } }, type: object, nullable: true }, amenities: { type: array, items: { type: string, example: wifi } } }, type: object } }
                   meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 143 }, totalPages: { type: integer, example: 8 } }, type: object }
                 type: object
         '422':
