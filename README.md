@@ -40,6 +40,24 @@ The API is then available at `http://localhost` and the OpenAPI documentation at
 
 The mail catcher (Mailpit) is available at `http://localhost:8025`.
 
+## Importing Geo Places
+
+The `Geo` context can be populated from a [GeoNames](https://download.geonames.org/export/dump/) cities dump (e.g. `cities500.txt`, `cities1000.txt`) via the `geo:import-places` console command:
+
+```bash
+make exec CMD="bin/console geo:import-places /app/var/cities1000.txt"
+```
+
+(adjust the path to wherever the dump file is mounted/copied inside the `php` container).
+
+The dump is a large tab-separated file (hundreds of thousands of lines), inserted one row at a time via `ON CONFLICT ... DO UPDATE`. In the `dev` environment, Symfony's debug mode (`APP_DEBUG=1`) keeps every executed query plus its backtrace in memory for the whole process (`profiling_collect_backtrace: '%kernel.debug%'` in `config/packages/doctrine.yaml`), which exhausts the container's memory limit on a dump this size. Run the import with debug mode off to avoid this:
+
+```bash
+docker compose run --rm -e APP_DEBUG=0 php sh -c "bin/console cache:clear && bin/console geo:import-places /app/var/cities1000.txt"
+```
+
+`cache:clear` is required because the container cache is normally compiled with debug mode on; building a debug-off container needs its own compile pass first.
+
 ## Commands
 
 All development tasks run via `make`. Run `make help` for the full list.
