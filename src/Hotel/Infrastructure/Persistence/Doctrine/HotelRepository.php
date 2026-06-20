@@ -10,6 +10,7 @@ use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Domain\ValueObject\GeoPlaceId;
 use App\Shared\Domain\ValueObject\HotelId;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Types\Types;
@@ -32,6 +33,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'postal_code' => $hotel->address->postalCode,
             'city' => $hotel->address->city,
             'country' => $hotel->address->country,
+            'geo_place_id' => $hotel->address->geoPlaceId?->value,
             'search_key' => $this->buildSearchKey($hotel->name, $hotel->address),
             'created_at' => $hotel->createdAt->format('Y-m-d H:i:s'),
             'stars' => $hotel->starRating?->stars,
@@ -55,9 +57,9 @@ final readonly class HotelRepository implements HotelRepositoryInterface
 
     public function get(HotelId $id): ?Hotel
     {
-        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
+        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
         $row = $this->hotelConnection->fetchAssociative(
-            'SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior, amenities FROM hotel WHERE id = :id',
+            'SELECT id, name, street_address, postal_code, city, country, geo_place_id, created_at, stars, superior, amenities FROM hotel WHERE id = :id',
             ['id' => $id->value],
         );
 
@@ -118,9 +120,9 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         $params['limit'] = $limit;
         $params['offset'] = ($page - 1) * $limit;
 
-        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string}> $rows */
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}> $rows */
         $rows = $this->hotelConnection->fetchAllAssociative(
-            "SELECT id, name, street_address, postal_code, city, country, created_at, stars, superior, amenities FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
+            "SELECT id, name, street_address, postal_code, city, country, geo_place_id, created_at, stars, superior, amenities FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
             $params,
         );
 
@@ -128,7 +130,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
     }
 
     /**
-     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, created_at: string, stars: int|null, superior: string|bool, amenities: string} $row
+     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string} $row
      */
     private function hydrate(array $row): Hotel
     {
@@ -139,7 +141,13 @@ final readonly class HotelRepository implements HotelRepositoryInterface
         return new Hotel(
             new HotelId($row['id']),
             $row['name'],
-            new Address($row['street_address'], $row['postal_code'], $row['city'], $row['country']),
+            new Address(
+                $row['street_address'],
+                $row['postal_code'],
+                $row['city'],
+                $row['country'],
+                null !== $row['geo_place_id'] ? new GeoPlaceId((string) $row['geo_place_id']) : null,
+            ),
             new \DateTimeImmutable($row['created_at']),
             $starRating,
             $this->parseAmenities($row['amenities']),

@@ -9,7 +9,7 @@ A registered hospitality establishment, uniquely identified by its name and phys
 _Avoid_: property, accommodation, establishment
 
 **Address**:
-The physical location of a Hotel, composed of street address, postal code, city, and country (ISO 3166-1 alpha-2). Two hotels with the same name are distinct if their addresses differ.
+The physical location of a Hotel, composed of street address, postal code, city, and country (ISO 3166-1 alpha-2). May optionally reference a **Geo Place** by its GeoNames id, captured via Geo Place Search, to disambiguate the free-text city. Two hotels with the same name are distinct if their addresses differ.
 _Avoid_: location, place
 
 **Hotel Registration**:
@@ -27,6 +27,7 @@ _Avoid_: star update, rating update
 ## Relationships
 
 - A **Hotel** has exactly one **Address**
+- An **Address** may reference at most one **Geo Place** (optional, via its GeoNames id)
 - A **Hotel** has at most one **Star Rating** (optional)
 - A **Hotel** has zero or more **Hotel Amenities** (optional at registration)
 - A **Hotel Registration** produces exactly one **Hotel**, or raises a conflict if the **Hotel** already exists

@@ -42,4 +42,34 @@ final class RegisterHotelCommandFactoryTest extends TestCase
             country: 'FR',
         );
     }
+
+    #[Test]
+    public function itBuildsAddressWithGeoPlaceIdWhenProvided(): void
+    {
+        $command = $this->factory->create(
+            name: 'Hotel Ibis Paris',
+            streetAddress: '15 rue de Rivoli',
+            postalCode: '75001',
+            city: 'Paris',
+            country: 'FR',
+            geoPlaceId: '2988507',
+        );
+
+        self::assertNotNull($command->address->geoPlaceId);
+        self::assertSame('2988507', $command->address->geoPlaceId->value);
+    }
+
+    #[Test]
+    public function itBuildsAddressWithoutGeoPlaceIdWhenNull(): void
+    {
+        $command = $this->factory->create(
+            name: 'Hotel Ibis Paris',
+            streetAddress: '15 rue de Rivoli',
+            postalCode: '75001',
+            city: 'Paris',
+            country: 'FR',
+        );
+
+        self::assertNull($command->address->geoPlaceId);
+    }
 }

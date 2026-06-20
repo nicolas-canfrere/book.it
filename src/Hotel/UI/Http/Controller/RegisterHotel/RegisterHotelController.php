@@ -50,6 +50,7 @@ final readonly class RegisterHotelController
                         new OA\Property(property: 'postalCode', type: 'string', example: '75001'),
                         new OA\Property(property: 'city', type: 'string', example: 'Paris'),
                         new OA\Property(property: 'country', type: 'string', example: 'FR'),
+                        new OA\Property(property: 'geoPlaceId', type: 'string', nullable: true, example: '2988507'),
                         new OA\Property(property: 'createdAt', type: 'string', format: 'date-time'),
                     ],
                 ),
@@ -93,6 +94,7 @@ final readonly class RegisterHotelController
             $request->country,
             $request->stars,
             $request->superior,
+            $request->geoPlaceId,
         );
         $this->commandBus->execute($command);
 

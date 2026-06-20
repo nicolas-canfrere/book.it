@@ -51,8 +51,21 @@ deptrac:
             name: Geo
             collectors:
                 -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Geo\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Geo\\Application\\Contract\\.*'
+        -
+            name: GeoContract
+            collectors:
+                -
                     type: classLike
-                    value: 'App\\Geo\\.*'
+                    value: 'App\\Geo\\Application\\Contract\\.*'
         -
             name: Hotel
             collectors:
@@ -225,10 +238,12 @@ deptrac:
             - Shared
             - Vendor
         Geo:
+            - GeoContract
             - Shared
             - Vendor
         Hotel:
             - HotelContract
+            - GeoContract
             - Shared
             - Vendor
         Notification:
@@ -278,6 +293,8 @@ deptrac:
         AvailabilityContract:
             - Shared
         BookerContract:
+            - Shared
+        GeoContract:
             - Shared
         HotelContract:
             - Shared

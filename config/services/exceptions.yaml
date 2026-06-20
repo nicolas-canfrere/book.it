@@ -12,6 +12,10 @@ services:
                     type: 'https://book.it/problems/hotel-not-found'
                     title: 'Hotel Not Found'
                     status: 404
+                App\Hotel\Domain\Exception\InvalidGeoPlaceException:
+                    type: 'https://book.it/problems/invalid-geo-place'
+                    title: 'Invalid Geo Place'
+                    status: 422
                 App\Room\Domain\Exception\RoomAlreadyExistsException:
                     type: 'https://book.it/problems/room-already-exists'
                     title: 'Room Already Exists'

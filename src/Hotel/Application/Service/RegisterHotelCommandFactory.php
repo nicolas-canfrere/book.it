@@ -8,6 +8,7 @@ use App\Hotel\Application\UseCase\RegisterHotel\RegisterHotelCommand;
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Port\HotelIdGeneratorInterface;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Domain\ValueObject\GeoPlaceId;
 use Psr\Clock\ClockInterface;
 
 final readonly class RegisterHotelCommandFactory
@@ -26,6 +27,7 @@ final readonly class RegisterHotelCommandFactory
         ?string $country,
         ?int $stars = null,
         bool $superior = false,
+        ?string $geoPlaceId = null,
     ): RegisterHotelCommand {
         if (null === $name || null === $streetAddress || null === $postalCode || null === $city || null === $country) {
             throw new \InvalidArgumentException('All hotel fields are required.');
@@ -36,7 +38,13 @@ final readonly class RegisterHotelCommandFactory
         return new RegisterHotelCommand(
             $this->hotelIdGenerator->generate(),
             $name,
-            new Address($streetAddress, $postalCode, $city, $country),
+            new Address(
+                $streetAddress,
+                $postalCode,
+                $city,
+                $country,
+                null !== $geoPlaceId ? new GeoPlaceId($geoPlaceId) : null,
+            ),
             $this->clock->now(),
             $starRating,
         );

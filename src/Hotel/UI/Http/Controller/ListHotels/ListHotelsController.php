@@ -42,6 +42,7 @@ final readonly class ListHotelsController
                                     new OA\Property(property: 'postalCode', type: 'string'),
                                     new OA\Property(property: 'city', type: 'string'),
                                     new OA\Property(property: 'country', type: 'string'),
+                                    new OA\Property(property: 'geoPlaceId', type: 'string', nullable: true, example: '2988507'),
                                     new OA\Property(property: 'createdAt', type: 'integer'),
                                     new OA\Property(
                                         property: 'starRating',

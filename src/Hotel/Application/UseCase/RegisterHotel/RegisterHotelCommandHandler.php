@@ -5,7 +5,9 @@ declare(strict_types=1);
 namespace App\Hotel\Application\UseCase\RegisterHotel;
 
 use App\Hotel\Domain\Exception\HotelAlreadyExistsException;
+use App\Hotel\Domain\Exception\InvalidGeoPlaceException;
 use App\Hotel\Domain\Model\Hotel;
+use App\Hotel\Domain\Port\GeoPlaceCheckerInterface;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
 use App\Shared\Domain\Event\HotelRegistered;
@@ -16,6 +18,7 @@ final readonly class RegisterHotelCommandHandler implements SyncCommandHandlerIn
     public function __construct(
         private HotelRepositoryInterface $hotelRepository,
         private EventDispatcherInterface $eventDispatcher,
+        private GeoPlaceCheckerInterface $geoPlaceChecker,
     ) {
     }
 
@@ -23,6 +26,11 @@ final readonly class RegisterHotelCommandHandler implements SyncCommandHandlerIn
     {
         if ($this->hotelRepository->existsByNameAndAddress($command->name, $command->address)) {
             throw new HotelAlreadyExistsException($command->name, $command->address->city);
+        }
+
+        $geoPlaceId = $command->address->geoPlaceId;
+        if (null !== $geoPlaceId && !$this->geoPlaceChecker->exists($geoPlaceId)) {
+            throw new InvalidGeoPlaceException($geoPlaceId->value);
         }
 
         $hotel = new Hotel($command->id, $command->name, $command->address, $command->createdAt, $command->starRating);
