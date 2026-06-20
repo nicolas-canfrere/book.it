@@ -22,8 +22,8 @@ final readonly class DbalGeoPlaceFinder implements GeoPlaceFinderInterface
             <<<'SQL'
             SELECT geoname_id, name, country_code, admin1_code
             FROM geo_place
-            WHERE name % :query OR ascii_name % :query
-            ORDER BY GREATEST(similarity(name, :query), similarity(ascii_name, :query)) DESC
+            WHERE name OPERATOR(public.%) :query OR ascii_name OPERATOR(public.%) :query
+            ORDER BY GREATEST(public.similarity(name, :query), public.similarity(ascii_name, :query)) DESC
             LIMIT :limit
             SQL,
             ['query' => $query, 'limit' => $limit],

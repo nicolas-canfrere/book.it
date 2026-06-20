@@ -24,6 +24,11 @@ services:
             - '../../src/Geo/Application/**/*Query.php'
             - '../../src/Geo/Application/**/*Command.php'
 
+    App\Geo\UI\:
+        resource: '../../src/Geo/UI/'
+        exclude:
+            - '../../src/Geo/UI/**/*Request.php'
+
     bookit.doctrine.middleware.search_path.geo:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

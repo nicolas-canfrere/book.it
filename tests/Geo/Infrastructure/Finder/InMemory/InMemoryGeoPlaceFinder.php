@@ -9,11 +9,10 @@ use App\Geo\Domain\Port\GeoPlaceFinderInterface;
 
 final class InMemoryGeoPlaceFinder implements GeoPlaceFinderInterface
 {
-    /** @var list<GeoPlace> */
-    private array $places = [];
-
     /** @var array{query: string, limit: int}|null */
     public ?array $lastCall = null;
+    /** @var list<GeoPlace> */
+    private array $places = [];
 
     public function addPlace(GeoPlace $place): void
     {
