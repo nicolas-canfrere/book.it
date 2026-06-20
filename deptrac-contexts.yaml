@@ -243,6 +243,7 @@ deptrac:
             - Vendor
         Hotel:
             - HotelContract
+            - GeoContract
             - Shared
             - Vendor
         Notification:
