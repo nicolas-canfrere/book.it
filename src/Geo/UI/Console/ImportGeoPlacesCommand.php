@@ -44,13 +44,21 @@ final class ImportGeoPlacesCommand extends Command
         }
 
         $count = 0;
+        $lineNumber = 0;
         while (false !== ($line = fgets($handle))) {
+            ++$lineNumber;
             $line = rtrim($line, "\n");
             if ('' === $line) {
                 continue;
             }
 
             $columns = explode("\t", $line);
+
+            if (\count($columns) < 11) {
+                $output->writeln("<comment>Skipping malformed line {$lineNumber}: expected at least 11 columns, got " . \count($columns) . '.</comment>');
+
+                continue;
+            }
 
             $this->writer->upsert(
                 id: new GeoPlaceId($columns[0]),
