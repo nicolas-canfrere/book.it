@@ -18,7 +18,7 @@ final readonly class SearchAvailableRoomTypesQueryHandler implements SyncQueryHa
     public function __invoke(SearchAvailableRoomTypesQuery $query): array
     {
         return $this->finder->find(
-            city: $query->city,
+            geoPlaceId: $query->geoPlaceId,
             checkIn: $query->checkIn,
             checkOut: $query->checkOut,
             guests: $query->guests,

@@ -11,7 +11,7 @@ use App\Shared\Application\Bus\SyncQueryInterface;
 final readonly class SearchAvailableRoomTypesQuery implements SyncQueryInterface
 {
     public function __construct(
-        public string $city,
+        public string $geoPlaceId,
         public \DateTimeImmutable $checkIn,
         public \DateTimeImmutable $checkOut,
         public int $guests,
