@@ -11,9 +11,14 @@ The platform is organized around the following bounded contexts:
 - **Availability** — Blocked periods, availability holds, availability checks and calendar
 - **Pricing** — Base rates, rate periods, promotions, pricing quotes, cancellation policies
 - **Booker** — Booker self-registration (natural persons, 18+)
+- **Operator** — Operator account registration (administrator-created, manages one or more hotels)
 - **Reservation** — Reservation lifecycle (pending → confirmed / cancelled / expired), price snapshot, cancellation terms, expiration and revocation
 - **Payment** — Payment processing webhooks, confirmation and cancellation handling
 - **Notification** — Transactional emails (booking confirmation) dispatched asynchronously via Messenger
+- **Geo** — GeoNames-backed geographic places and typeahead place search
+- **Search** — Read-optimized room/availability search index, built from cross-context domain events
+- **Security** — Keycloak-backed authentication, account registration, and identity mapping
+- **Translation** — Per-locale translations for translatable subjects (e.g. amenities)
 
 See [CONTEXT.md](CONTEXT.md) for the full ubiquitous language and domain model.
 
@@ -97,7 +102,7 @@ The REST API follows [RFC 7807](https://www.rfc-editor.org/rfc/rfc7807) (`applic
 
 ## Architecture
 
-The codebase follows **Domain-Driven Design** with a hexagonal architecture per bounded context. Each context (`Hotel`, `Room`, `Availability`, `Pricing`, `Booker`) is structured into four layers:
+The codebase follows **Domain-Driven Design** with a hexagonal architecture per bounded context. Each context (e.g. `Hotel`, `Room`, `Availability`, `Pricing`, `Booker`, `Search`) is structured into up to four layers:
 
 | Layer            | Role                                               |
 |------------------|----------------------------------------------------|

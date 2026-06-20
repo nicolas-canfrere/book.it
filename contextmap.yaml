@@ -1,6 +1,6 @@
 # Generated — do not edit manually. Run: make contextmap
 version: '1.0'
-generated_at: '2026-06-13T04:28:54+00:00'
+generated_at: '2026-06-20T15:22:07+00:00'
 contexts:
   Availability:
     open_host_services:
@@ -24,6 +24,14 @@ contexts:
     consumes:
       -
         context: Security
+  Geo:
+    open_host_services:
+      interfaces:
+        - App\Geo\Application\Contract\GeoPlaceCheckerInterface
+      published_language: {  }
+    consumed_by:
+      - Hotel
+    consumes: {  }
   Hotel:
     open_host_services:
       interfaces:
@@ -32,7 +40,9 @@ contexts:
         - App\Hotel\Application\Contract\HotelView
     consumed_by:
       - Room
-    consumes: {  }
+    consumes:
+      -
+        context: Geo
   Notification:
     open_host_services:
       interfaces: {  }
@@ -89,6 +99,7 @@ contexts:
     open_host_services:
       interfaces:
         - App\Room\Application\Contract\RoomFinderInterface
+        - App\Room\Application\Contract\RoomsByTypeFinderInterface
       published_language:
         - App\Room\Application\Contract\RoomView
     consumed_by:
