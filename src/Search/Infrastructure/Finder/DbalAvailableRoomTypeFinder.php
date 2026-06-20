@@ -16,7 +16,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
 
     /** @return list<AvailableRoomType> */
     public function find(
-        string $city,
+        string $geoPlaceId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
         int $guests,
@@ -38,7 +38,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
                 s.room_amenities,
                 s.base_price_cents
             FROM hotel_room_types s
-            WHERE s.city = :city
+            WHERE s.geo_place_id = :geoPlaceId
               AND s.guest_capacity >= :guests
               AND (
                 SELECT COUNT(*)
@@ -54,7 +54,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
             ORDER BY s.hotel_name, s.room_type_name
             SQL,
             [
-                'city' => $city,
+                'geoPlaceId' => $geoPlaceId,
                 'guests' => $guests,
                 'checkIn' => $checkIn->format('Y-m-d'),
                 'checkOut' => $checkOut->format('Y-m-d'),
