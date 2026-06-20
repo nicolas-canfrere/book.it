@@ -16,6 +16,7 @@ final readonly class AvailableRoomType
         public string $hotelName,
         public string $city,
         public string $country,
+        public ?string $geoPlaceId,
         public ?int $starRating,
         public array $hotelAmenities,
         public string $roomTypeId,

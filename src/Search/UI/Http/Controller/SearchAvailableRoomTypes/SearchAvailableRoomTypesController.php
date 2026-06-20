@@ -33,6 +33,7 @@ use Symfony\Component\Routing\Attribute\Route;
                         new OA\Property(property: 'hotelName', type: 'string', example: 'Grand Hôtel du Louvre'),
                         new OA\Property(property: 'city', type: 'string', example: 'Paris'),
                         new OA\Property(property: 'country', type: 'string', example: 'France'),
+                        new OA\Property(property: 'geoPlaceId', type: 'string', nullable: true, example: '2988507'),
                         new OA\Property(property: 'starRating', type: 'integer', nullable: true, minimum: 1, maximum: 5, example: 4),
                         new OA\Property(property: 'hotelAmenities', type: 'array', items: new OA\Items(type: 'string'), example: ['pool', 'spa']),
                         new OA\Property(property: 'roomTypeId', type: 'string', format: 'uuid'),

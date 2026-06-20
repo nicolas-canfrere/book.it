@@ -71,6 +71,7 @@ final class HotelRoomTypeWriterTest extends TestCase
             'name' => 'Le Grand Hôtel',
             'city' => 'Paris',
             'country' => 'FR',
+            'geo_place_id' => '2988507',
             'stars' => 4,
             'amenities' => '{pool}',
         ]);
@@ -85,6 +86,7 @@ final class HotelRoomTypeWriterTest extends TestCase
                         && 'Le Grand Hôtel' === $p['hotelName']
                         && 'Paris' === $p['city']
                         && 'FR' === $p['country']
+                        && '2988507' === $p['geoPlaceId']
                         && 4 === $p['starRating']
                         && '["pool"]' === $p['hotelAmenities']
                         && 'Standard' === $p['roomTypeName']
