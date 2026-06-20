@@ -356,3 +356,18 @@ _Avoid_: message, alert, communication
 - A **Booking Confirmation Notification** is triggered by exactly one `ReservationConfirmed` event
 - A **Booking Confirmation Notification** is addressed to the **Booker** referenced by the confirmed **Reservation**
 - A **Notification** carries no persistent state — delivery outcome is observable only via logs
+
+---
+
+**Geo Place**:
+A geographic reference record imported from the GeoNames open dataset, identifying a real-world city or town by its GeoNames id, name, country (ISO 3166-1 alpha-2), and administrative subdivision code (state/region, raw GeoNames `admin1code` — not the resolved name). Distinct from the `city` field on a Hotel's **Address**, which remains free text.
+_Avoid_: location, place, city (when referring to the referential entity)
+
+**Geo Place Search**:
+A fuzzy, typeahead-style lookup of **Geo Places** by free-text input (e.g. "pari" matching "Paris"), used to power autocomplete in search and registration forms. Requires at least 2 characters of input; returns at most 10 candidates ranked by text similarity. Public — no authentication required.
+_Avoid_: geo search, place autocomplete, city search
+
+## Relationships (Geo)
+
+- A **Geo Place** is uniquely identified by its GeoNames id
+- A **Geo Place Search** returns zero or more **Geo Places** ranked by similarity to the input text

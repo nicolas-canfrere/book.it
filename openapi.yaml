@@ -2396,6 +2396,38 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+  /api/v1/geo/places:
+    get:
+      tags:
+        - Geo
+      summary: 'Search Geo Places by fuzzy name match'
+      operationId: get_search_geo_places
+      parameters:
+        -
+          name: query
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+            maxLength: 255
+            minLength: 2
+      responses:
+        '200':
+          description: 'Geo Places matching the query, ranked by similarity'
+          content:
+            application/json:
+              schema:
+                properties:
+                  data: { type: array, items: { properties: { id: { type: integer, example: 2988507 }, name: { type: string, example: Paris }, countryCode: { type: string, example: FR }, admin1Code: { type: string, example: '11', nullable: true } }, type: object } }
+                type: object
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -3150,6 +3182,15 @@ components:
         text:
           type: string
       type: object
+    SearchGeoPlacesRequest:
+      properties:
+        query:
+          type: string
+          nullable: true
+          default: null
+          maxLength: 255
+          minLength: 2
+      type: object
 tags:
   -
     name: Hotels
@@ -3184,4 +3225,7 @@ tags:
   -
     name: Translation
     description: Translation
+  -
+    name: Geo
+    description: Geo
 

@@ -48,6 +48,12 @@ deptrac:
                     type: classLike
                     value: 'App\\Booker\\Application\\Contract\\.*'
         -
+            name: Geo
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Geo\\.*'
+        -
             name: Hotel
             collectors:
                 -
@@ -216,6 +222,9 @@ deptrac:
         Booker:
             - BookerContract
             - SecurityContract
+            - Shared
+            - Vendor
+        Geo:
             - Shared
             - Vendor
         Hotel:
