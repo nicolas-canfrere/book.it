@@ -40,6 +40,9 @@ final readonly class RegisterHotelRequest
         public ?int $stars = null,
         #[OA\Property(type: 'boolean', example: false)]
         public bool $superior = false,
+        #[Assert\Regex(pattern: '/^\d+$/', message: 'geoPlaceId must be a numeric string.')]
+        #[OA\Property(type: 'string', example: '2988507', nullable: true, description: 'GeoNames id selected via the Geo Place Search autocomplete (GET /geo/places)')]
+        public ?string $geoPlaceId = null,
     ) {
     }
 }

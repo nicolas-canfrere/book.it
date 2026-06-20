@@ -253,6 +253,7 @@ paths:
                   postalCode: { type: string, example: '75001' }
                   city: { type: string, example: Paris }
                   country: { type: string, example: FR }
+                  geoPlaceId: { type: string, example: '2988507', nullable: true }
                   createdAt: { type: string, format: date-time }
                 type: object
         '404':
@@ -2578,6 +2579,13 @@ components:
           type: boolean
           example: false
           default: false
+        geoPlaceId:
+          description: 'GeoNames id selected via the Geo Place Search autocomplete (GET /geo/places)'
+          type: string
+          pattern: \d+
+          example: '2988507'
+          nullable: true
+          default: null
       type: object
     DeclareRoomTypeAmenitiesRequest:
       properties:

@@ -10,7 +10,7 @@ use App\Hotel\Domain\ValueObject\HotelAmenity;
 final class HotelSerializer
 {
     /**
-     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, createdAt: string, starRating: array{stars: int, superior: bool}|null, amenities: string[]}
+     * @return array{id: string, name: string, streetAddress: string, postalCode: string, city: string, country: string, geoPlaceId: string|null, createdAt: string, starRating: array{stars: int, superior: bool}|null, amenities: string[]}
      */
     public function serialize(Hotel $hotel): array
     {
@@ -21,6 +21,7 @@ final class HotelSerializer
             'postalCode' => $hotel->address->postalCode,
             'city' => $hotel->address->city,
             'country' => $hotel->address->country,
+            'geoPlaceId' => $hotel->address->geoPlaceId?->value,
             'createdAt' => $hotel->createdAt->format(\DateTimeInterface::ATOM),
             'starRating' => null !== $hotel->starRating
                 ? ['stars' => $hotel->starRating->stars, 'superior' => $hotel->starRating->superior]

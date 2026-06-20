@@ -47,6 +47,79 @@ final class RegisterHotelControllerTest extends AuthenticatedWebTestCase
     }
 
     #[Test]
+    public function itRegistersAHotelWithAValidGeoPlaceIdAndReturns201(): void
+    {
+        $client = static::createAuthenticatedClient();
+
+        $client->getContainer()->get('doctrine.dbal.geo_connection')->insert('geo_place', [
+            'geoname_id' => 2988507,
+            'name' => 'Paris',
+            'ascii_name' => 'Paris',
+            'country_code' => 'FR',
+            'admin1_code' => '11',
+        ]);
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['geoPlaceId' => '2988507']);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+
+        /** @var array{geoPlaceId: string|null} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('2988507', $body['geoPlaceId']);
+    }
+
+    #[Test]
+    public function itReturns422WhenGeoPlaceIdDoesNotExist(): void
+    {
+        $client = static::createAuthenticatedClient();
+
+        $payload = array_merge(self::VALID_PAYLOAD, ['geoPlaceId' => '9999999']);
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode($payload, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+
+        /** @var array{type: string, title: string, status: int} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame('https://book.it/problems/invalid-geo-place', $body['type']);
+        self::assertSame('Invalid Geo Place', $body['title']);
+    }
+
+    #[Test]
+    public function itRegistersAHotelWithoutAGeoPlaceIdAndReturns201(): void
+    {
+        $client = static::createAuthenticatedClient();
+
+        $client->request(
+            method: 'POST',
+            uri: '/api/v1/hotels',
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(self::VALID_PAYLOAD, \JSON_THROW_ON_ERROR),
+        );
+
+        $response = $client->getResponse();
+        self::assertSame(Response::HTTP_CREATED, $response->getStatusCode());
+
+        /** @var array{geoPlaceId: string|null} $body */
+        $body = json_decode((string) $response->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertNull($body['geoPlaceId']);
+    }
+
+    #[Test]
     public function itReturns409WhenHotelAlreadyExists(): void
     {
         $client = static::createAuthenticatedClient();
