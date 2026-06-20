@@ -4,16 +4,17 @@
 
 ```mermaid
 graph LR
-  Availability -->|RoomFinderInterface| Room
+  Availability -->|RoomFinderInterface, RoomsByTypeFinderInterface| Room
   Booker -->|AccountRegistrarInterface| Security
+  Hotel -->|GeoPlaceCheckerInterface| Geo
   Notification -->|BookerFinderInterface| Booker
   Notification -->|ReservationFinderInterface| Reservation
   Operator -->|AccountRegistrarInterface| Security
-  Pricing -->|RoomFinderInterface| Room
+  Pricing -->|RoomFinderInterface, RoomsByTypeFinderInterface| Room
   Reservation -->|AvailabilityCheckerInterface| Availability
   Reservation -->|BookerFinderInterface| Booker
   Reservation -->|CancellationPolicyFinderInterface, PricingQuoteCalculatorInterface, PricingQuoteFinderInterface| Pricing
-  Reservation -->|RoomFinderInterface| Room
+  Reservation -->|RoomFinderInterface, RoomsByTypeFinderInterface| Room
   Room -->|HotelFinderInterface| Hotel
   Security -->|OperatorFinderInterface| Operator
 ```
