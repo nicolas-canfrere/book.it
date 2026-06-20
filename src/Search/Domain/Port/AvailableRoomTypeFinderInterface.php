@@ -10,7 +10,7 @@ interface AvailableRoomTypeFinderInterface
 {
     /** @return list<AvailableRoomType> */
     public function find(
-        string $city,
+        string $geoPlaceId,
         \DateTimeImmutable $checkIn,
         \DateTimeImmutable $checkOut,
         int $guests,

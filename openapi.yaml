@@ -2223,6 +2223,15 @@ paths:
       operationId: get_search_available_room_types
       parameters:
         -
+          name: geoPlaceId
+          in: query
+          required: false
+          schema:
+            type: string
+            nullable: true
+            default: null
+            maxLength: 255
+        -
           name: city
           in: query
           required: false
@@ -3152,6 +3161,11 @@ components:
       type: object
     SearchAvailableRoomTypesRequest:
       properties:
+        geoPlaceId:
+          type: string
+          nullable: true
+          default: null
+          maxLength: 255
         city:
           type: string
           nullable: true
