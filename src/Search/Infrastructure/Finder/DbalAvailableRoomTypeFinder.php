@@ -28,6 +28,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
                 s.hotel_name,
                 s.city,
                 s.country,
+                s.geo_place_id,
                 s.star_rating,
                 s.hotel_amenities,
                 s.room_type_id,
@@ -71,7 +72,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
     /** @param array<string, mixed> $row */
     private function hydrate(array $row): AvailableRoomType
     {
-        /** @var array{hotel_id:string,hotel_name:string,city:string,country:string,star_rating:string|null,hotel_amenities:string,room_type_id:string,room_type_name:string,guest_capacity:string,bed_composition:string,room_amenities:string,base_price_cents:string|null} $row */
+        /** @var array{hotel_id:string,hotel_name:string,city:string,country:string,geo_place_id:string|null,star_rating:string|null,hotel_amenities:string,room_type_id:string,room_type_name:string,guest_capacity:string,bed_composition:string,room_amenities:string,base_price_cents:string|null} $row */
         /** @var list<string> $hotelAmenities */
         $hotelAmenities = json_decode((string) $row['hotel_amenities'], true, flags: \JSON_THROW_ON_ERROR);
         /** @var array<string, mixed> $bedComposition */
@@ -84,6 +85,7 @@ final readonly class DbalAvailableRoomTypeFinder implements AvailableRoomTypeFin
             hotelName: (string) $row['hotel_name'],
             city: (string) $row['city'],
             country: (string) $row['country'],
+            geoPlaceId: $row['geo_place_id'],
             starRating: null !== $row['star_rating'] ? (int) $row['star_rating'] : null,
             hotelAmenities: $hotelAmenities,
             roomTypeId: (string) $row['room_type_id'],

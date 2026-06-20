@@ -42,7 +42,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
         array $bedComposition,
     ): void {
         $hotel = $this->hotelConnection->fetchAssociative(
-            'SELECT name, city, country, stars, amenities FROM hotel WHERE id = :id',
+            'SELECT name, city, country, geo_place_id, stars, amenities FROM hotel WHERE id = :id',
             ['id' => $hotelId->value],
         );
 
@@ -53,15 +53,16 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
         $this->searchConnection->executeStatement(
             <<<'SQL'
             INSERT INTO hotel_room_types
-                (room_type_id, hotel_id, hotel_name, city, country, star_rating, hotel_amenities,
+                (room_type_id, hotel_id, hotel_name, city, country, geo_place_id, star_rating, hotel_amenities,
                  room_type_name, guest_capacity, bed_composition, room_amenities)
             VALUES
-                (:roomTypeId, :hotelId, :hotelName, :city, :country, :starRating, :hotelAmenities,
+                (:roomTypeId, :hotelId, :hotelName, :city, :country, :geoPlaceId, :starRating, :hotelAmenities,
                  :roomTypeName, :guestCapacity, :bedComposition, '[]')
             ON CONFLICT (room_type_id) DO UPDATE SET
                 hotel_name      = EXCLUDED.hotel_name,
                 city            = EXCLUDED.city,
                 country         = EXCLUDED.country,
+                geo_place_id    = EXCLUDED.geo_place_id,
                 star_rating     = EXCLUDED.star_rating,
                 hotel_amenities = EXCLUDED.hotel_amenities,
                 room_type_name  = EXCLUDED.room_type_name,
@@ -74,6 +75,7 @@ final readonly class HotelRoomTypeWriter implements HotelRoomTypeWriterInterface
                 'hotelName' => $hotel['name'],
                 'city' => $hotel['city'],
                 'country' => $hotel['country'],
+                'geoPlaceId' => $hotel['geo_place_id'],
                 'starRating' => is_numeric($hotel['stars']) ? (int) $hotel['stars'] : null,
                 'hotelAmenities' => $this->parsePostgresAmenities(is_string($hotel['amenities']) ? $hotel['amenities'] : '{}'),
                 'roomTypeName' => $name,
