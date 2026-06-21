@@ -73,6 +73,22 @@ final class SearchAvailableRoomTypesTest extends AuthenticatedWebTestCase
     }
 
     #[Test]
+    public function itReturns422WhenCheckOutIsBeforeCheckIn(): void
+    {
+        $this->client->request('GET', '/api/v1/search?geoPlaceId=2988507&city=Paris&checkIn=2026-07-05&checkOut=2026-07-01&guests=2');
+
+        self::assertResponseStatusCodeSame(422);
+    }
+
+    #[Test]
+    public function itReturns422WhenCheckOutEqualsCheckIn(): void
+    {
+        $this->client->request('GET', '/api/v1/search?geoPlaceId=2988507&city=Paris&checkIn=2026-07-01&checkOut=2026-07-01&guests=2');
+
+        self::assertResponseStatusCodeSame(422);
+    }
+
+    #[Test]
     public function itReturnsResultsFilteredByGeoPlaceIdRegardlessOfCityText(): void
     {
         $this->insertFixtures();
