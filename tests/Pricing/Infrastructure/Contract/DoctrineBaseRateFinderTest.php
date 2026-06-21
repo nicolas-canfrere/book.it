@@ -33,7 +33,7 @@ final class DoctrineBaseRateFinderTest extends TestCase
         $baseRate = new BaseRate(new RoomId('room-1'), 12000, new \DateTimeImmutable());
         $this->repository->method('findByRoomId')->willReturn($baseRate);
 
-        $view = $this->finder->find('room-1');
+        $view = $this->finder->find(new RoomId('room-1'));
 
         self::assertInstanceOf(BaseRateView::class, $view);
         self::assertSame(12000, $view->amountCents);
@@ -44,6 +44,6 @@ final class DoctrineBaseRateFinderTest extends TestCase
     {
         $this->repository->method('findByRoomId')->willReturn(null);
 
-        self::assertNull($this->finder->find('room-1'));
+        self::assertNull($this->finder->find(new RoomId('room-1')));
     }
 }

@@ -16,6 +16,6 @@ final readonly class BaseRateFinder implements RoomBaseRateFinderInterface
 
     public function find(RoomId $roomId): ?int
     {
-        return $this->baseRateFinder->find($roomId->value)?->amountCents;
+        return $this->baseRateFinder->find($roomId)?->amountCents;
     }
 }

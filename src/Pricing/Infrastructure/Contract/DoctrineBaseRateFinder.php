@@ -15,9 +15,9 @@ final readonly class DoctrineBaseRateFinder implements BaseRateFinderInterface
     {
     }
 
-    public function find(string $roomId): ?BaseRateView
+    public function find(RoomId $roomId): ?BaseRateView
     {
-        $baseRate = $this->baseRates->findByRoomId(new RoomId($roomId));
+        $baseRate = $this->baseRates->findByRoomId($roomId);
 
         if (null === $baseRate) {
             return null;
