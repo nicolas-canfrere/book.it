@@ -18,6 +18,8 @@ security:
         - { path: ^/api/v1/payment/webhooks, roles: ROLE_WEBHOOK }
         - { path: ^/api/v1/search$, roles: PUBLIC_ACCESS, methods: [ GET ] }
         - { path: ^/api/v1/geo/places$, roles: PUBLIC_ACCESS, methods: [ GET ] }
+        # Hotel detail is non-sensitive public-facing data (name, address, amenities, rating) — intentionally public
+        - { path: ^/api/v1/hotels/[0-9a-f-]+$, roles: PUBLIC_ACCESS, methods: [ GET ] }
         - { path: ^/api/v1/operators$, roles: ROLE_ADMIN, methods: [POST] }
         - { path: ^/, roles: ROLE_OPERATOR }
 
