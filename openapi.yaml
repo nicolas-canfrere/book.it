@@ -2225,45 +2225,44 @@ paths:
         -
           name: geoPlaceId
           in: query
-          required: false
+          description: 'GeoNames id of the place selected via Geo Place Search autocomplete — sole filtering criterion'
+          required: true
           schema:
             type: string
-            nullable: true
-            default: null
+            example: '2988507'
             maxLength: 255
         -
           name: city
           in: query
-          required: false
+          description: 'Free-text city name typed by the visitor — informational only, not used for filtering'
+          required: true
           schema:
             type: string
-            nullable: true
-            default: null
+            example: Paris
             maxLength: 255
         -
           name: checkIn
           in: query
-          required: false
+          required: true
           schema:
             type: string
-            nullable: true
-            default: null
+            format: date
+            example: '2026-07-01'
         -
           name: checkOut
           in: query
-          required: false
+          required: true
           schema:
             type: string
-            nullable: true
-            default: null
+            format: date
+            example: '2026-07-05'
         -
           name: guests
           in: query
-          required: false
+          required: true
           schema:
             type: integer
-            nullable: true
-            default: null
+            example: 2
             maximum: 20
             minimum: 1
       responses:
@@ -3158,33 +3157,6 @@ components:
         event_id:
           type: string
           default: ''
-      type: object
-    SearchAvailableRoomTypesRequest:
-      properties:
-        geoPlaceId:
-          type: string
-          nullable: true
-          default: null
-          maxLength: 255
-        city:
-          type: string
-          nullable: true
-          default: null
-          maxLength: 255
-        checkIn:
-          type: string
-          nullable: true
-          default: null
-        checkOut:
-          type: string
-          nullable: true
-          default: null
-        guests:
-          type: integer
-          nullable: true
-          default: null
-          maximum: 20
-          minimum: 1
       type: object
     GetTranslationRequest:
       properties:
