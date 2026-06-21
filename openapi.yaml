@@ -801,7 +801,7 @@ paths:
             application/json:
               schema:
                 properties:
-                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string }, createdAt: { type: integer } }, type: object } }
+                  data: { type: array, items: { properties: { id: { type: string, format: uuid }, hotelId: { type: string, format: uuid }, number: { type: string }, createdAt: { type: integer }, baseRateAmountCents: { type: integer, example: 12000, nullable: true } }, type: object } }
                   meta: { properties: { page: { type: integer, example: 1 }, limit: { type: integer, example: 20 }, total: { type: integer, example: 10 }, totalPages: { type: integer, example: 1 } }, type: object }
                 type: object
         '422':
