@@ -6,7 +6,9 @@ namespace App\Search\UI\Http\Controller\SearchAvailableRoomTypes;
 
 use OpenApi\Attributes as OA;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
+#[Assert\Callback([SearchAvailableRoomTypesRequest::class, 'validateDateRange'])]
 final readonly class SearchAvailableRoomTypesRequest
 {
     public function __construct(
@@ -44,5 +46,18 @@ final readonly class SearchAvailableRoomTypesRequest
         #[OA\Parameter(name: 'guests', in: 'query', required: true, schema: new OA\Schema(type: 'integer', minimum: 1, maximum: 20, example: 2))]
         public ?int $guests = null,
     ) {
+    }
+
+    public static function validateDateRange(self $request, ExecutionContextInterface $context): void
+    {
+        if (null === $request->checkIn || null === $request->checkOut) {
+            return;
+        }
+
+        if (new \DateTimeImmutable($request->checkOut) <= new \DateTimeImmutable($request->checkIn)) {
+            $context->buildViolation('checkOut must be after checkIn.')
+                ->atPath('checkOut')
+                ->addViolation();
+        }
     }
 }
