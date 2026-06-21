@@ -47,6 +47,9 @@ services:
     App\Room\Domain\Port\RoomCapacityFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\RoomCapacityFinder
 
+    App\Room\Domain\Port\RoomBaseRateFinderInterface:
+        class: App\Room\Infrastructure\Service\BaseRateFinder
+
     App\Room\Domain\Port\RoomTypeCatalogueFinderInterface:
         class: App\Room\Infrastructure\Persistence\Doctrine\DbalRoomTypeCatalogueFinder
 
