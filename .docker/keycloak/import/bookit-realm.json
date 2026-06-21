@@ -45,6 +45,14 @@
   "quickLoginCheckMilliSeconds" : 1000,
   "maxDeltaTimeSeconds" : 43200,
   "failureFactor" : 30,
+  "users" : [ {
+    "username" : "service-account-bookit_api",
+    "enabled" : true,
+    "serviceAccountClientId" : "bookit_api",
+    "clientRoles" : {
+      "realm-management" : [ "manage-users", "view-realm" ]
+    }
+  } ],
   "roles" : {
     "realm" : [ {
       "id" : "eb153fc5-98d6-4211-ba42-d78886cb1083",
