@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Room\UI\Http\Controller\ListRooms;
 
 use App\Room\Application\UseCase\ListRooms\ListRoomsQuery;
+use App\Room\Domain\Model\Room;
+use App\Room\Domain\Port\RoomBaseRateFinderInterface;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use App\Shared\Domain\ValueObject\HotelId;
 use OpenApi\Attributes as OA;
@@ -18,6 +20,7 @@ final readonly class ListRoomsController
 {
     public function __construct(
         private SyncQueryBusInterface $queryBus,
+        private RoomBaseRateFinderInterface $baseRateFinder,
         private RoomCatalogueSerializer $serializer,
     ) {
     }
@@ -44,6 +47,7 @@ final readonly class ListRoomsController
                                     new OA\Property(property: 'hotelId', type: 'string', format: 'uuid'),
                                     new OA\Property(property: 'number', type: 'string'),
                                     new OA\Property(property: 'createdAt', type: 'integer'),
+                                    new OA\Property(property: 'baseRateAmountCents', type: 'integer', nullable: true, example: 12000),
                                 ],
                                 type: 'object',
                             ),
@@ -81,8 +85,11 @@ final readonly class ListRoomsController
             $request->limit,
         ));
 
+        $roomIds = array_map(static fn(Room $room) => $room->id, $roomPage->rooms);
+        $baseRateAmountCentsByRoomId = $this->baseRateFinder->findByRoomIds($roomIds);
+
         return new JsonResponse(
-            $this->serializer->serialize($roomPage, $request->page, $request->limit),
+            $this->serializer->serialize($roomPage, $baseRateAmountCentsByRoomId, $request->page, $request->limit),
         );
     }
 }

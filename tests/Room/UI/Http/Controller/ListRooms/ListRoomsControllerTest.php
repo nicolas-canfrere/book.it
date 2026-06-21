@@ -59,6 +59,43 @@ final class ListRoomsControllerTest extends AuthenticatedWebTestCase
     }
 
     #[Test]
+    public function itIncludesBaseRateAmountCentsWhenSet(): void
+    {
+        $client = static::createAuthenticatedClient();
+        $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
+        $roomId = $this->registerRoomAndGetId($client, $hotelId, $roomTypeId, '101');
+
+        $client->request(
+            method: 'PUT',
+            uri: "/api/v1/rooms/{$roomId}/base-rate",
+            server: ['CONTENT_TYPE' => 'application/json'],
+            content: json_encode(['amount' => 120.00], \JSON_THROW_ON_ERROR),
+        );
+
+        $client->request('GET', "/api/v1/hotels/{$hotelId}/rooms");
+
+        /** @var array{data: list<array{baseRateAmountCents: ?int}>} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertSame(12000, $body['data'][0]['baseRateAmountCents']);
+    }
+
+    #[Test]
+    public function itReturnsNullBaseRateAmountCentsWhenNotSet(): void
+    {
+        $client = static::createAuthenticatedClient();
+        $hotelId = $this->registerHotelAndGetId($client);
+        $roomTypeId = $this->registerRoomTypeAndGetId($client, $hotelId);
+        $this->registerRoom($client, $hotelId, $roomTypeId, '101');
+
+        $client->request('GET', "/api/v1/hotels/{$hotelId}/rooms");
+
+        /** @var array{data: list<array{baseRateAmountCents: ?int}>} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+        self::assertNull($body['data'][0]['baseRateAmountCents']);
+    }
+
+    #[Test]
     public function itReturnsPaginatedResults(): void
     {
         $client = static::createAuthenticatedClient();
@@ -143,5 +180,15 @@ final class ListRoomsControllerTest extends AuthenticatedWebTestCase
             server: ['CONTENT_TYPE' => 'application/json'],
             content: json_encode(['number' => $number, 'floor' => 1, 'roomTypeId' => $roomTypeId], \JSON_THROW_ON_ERROR),
         );
+    }
+
+    private function registerRoomAndGetId(KernelBrowser $client, string $hotelId, string $roomTypeId, string $number): string
+    {
+        $this->registerRoom($client, $hotelId, $roomTypeId, $number);
+
+        /** @var array{id: string} $body */
+        $body = json_decode((string) $client->getResponse()->getContent(), true, 512, \JSON_THROW_ON_ERROR);
+
+        return $body['id'];
     }
 }

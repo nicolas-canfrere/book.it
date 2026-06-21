@@ -12,4 +12,11 @@ interface BaseRateRepositoryInterface
     public function save(BaseRate $baseRate): void;
 
     public function findByRoomId(RoomId $roomId): ?BaseRate;
+
+    /**
+     * @param list<RoomId> $roomIds
+     *
+     * @return array<string, BaseRate>
+     */
+    public function findByRoomIds(array $roomIds): array;
 }

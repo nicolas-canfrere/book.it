@@ -275,6 +275,7 @@ deptrac:
         Room:
             - RoomContract
             - HotelContract
+            - PricingContract
             - Shared
             - Vendor
         Search:
@@ -300,7 +301,8 @@ deptrac:
             - Shared
         NotificationContract: ~
         OperatorContract: ~
-        PricingContract: ~
+        PricingContract:
+            - Shared
         ReservationContract:
             - Shared
         RoomContract:

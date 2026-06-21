@@ -22,4 +22,16 @@ final class InMemoryBaseRateRepository implements BaseRateRepositoryInterface
     {
         return $this->rates[$roomId->value] ?? null;
     }
+
+    public function findByRoomIds(array $roomIds): array
+    {
+        $result = [];
+        foreach ($roomIds as $roomId) {
+            if (isset($this->rates[$roomId->value])) {
+                $result[$roomId->value] = $this->rates[$roomId->value];
+            }
+        }
+
+        return $result;
+    }
 }
