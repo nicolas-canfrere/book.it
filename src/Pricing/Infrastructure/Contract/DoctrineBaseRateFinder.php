@@ -7,7 +7,6 @@ namespace App\Pricing\Infrastructure\Contract;
 use App\Pricing\Application\Contract\BaseRateFinderInterface;
 use App\Pricing\Application\Contract\BaseRateView;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
-use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class DoctrineBaseRateFinder implements BaseRateFinderInterface
 {
@@ -15,14 +14,13 @@ final readonly class DoctrineBaseRateFinder implements BaseRateFinderInterface
     {
     }
 
-    public function find(RoomId $roomId): ?BaseRateView
+    public function findByRoomIds(array $roomIds): array
     {
-        $baseRate = $this->baseRates->findByRoomId($roomId);
-
-        if (null === $baseRate) {
-            return null;
+        $views = [];
+        foreach ($this->baseRates->findByRoomIds($roomIds) as $roomId => $baseRate) {
+            $views[$roomId] = new BaseRateView(amountCents: $baseRate->amountCents);
         }
 
-        return new BaseRateView(amountCents: $baseRate->amountCents);
+        return $views;
     }
 }

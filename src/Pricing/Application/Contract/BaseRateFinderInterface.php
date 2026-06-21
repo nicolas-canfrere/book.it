@@ -8,5 +8,10 @@ use App\Shared\Domain\ValueObject\RoomId;
 
 interface BaseRateFinderInterface
 {
-    public function find(RoomId $roomId): ?BaseRateView;
+    /**
+     * @param list<RoomId> $roomIds
+     *
+     * @return array<string, BaseRateView>
+     */
+    public function findByRoomIds(array $roomIds): array;
 }

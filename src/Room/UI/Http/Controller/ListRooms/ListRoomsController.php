@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Room\UI\Http\Controller\ListRooms;
 
 use App\Room\Application\UseCase\ListRooms\ListRoomsQuery;
+use App\Room\Domain\Model\Room;
 use App\Room\Domain\Port\RoomBaseRateFinderInterface;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use App\Shared\Domain\ValueObject\HotelId;
@@ -84,13 +85,8 @@ final readonly class ListRoomsController
             $request->limit,
         ));
 
-        $baseRateAmountCentsByRoomId = [];
-        foreach ($roomPage->rooms as $room) {
-            $amountCents = $this->baseRateFinder->find($room->id);
-            if (null !== $amountCents) {
-                $baseRateAmountCentsByRoomId[$room->id->value] = $amountCents;
-            }
-        }
+        $roomIds = array_map(static fn(Room $room) => $room->id, $roomPage->rooms);
+        $baseRateAmountCentsByRoomId = $this->baseRateFinder->findByRoomIds($roomIds);
 
         return new JsonResponse(
             $this->serializer->serialize($roomPage, $baseRateAmountCentsByRoomId, $request->page, $request->limit),

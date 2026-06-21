@@ -6,7 +6,6 @@ namespace App\Room\Infrastructure\Service;
 
 use App\Pricing\Application\Contract\BaseRateFinderInterface;
 use App\Room\Domain\Port\RoomBaseRateFinderInterface;
-use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class BaseRateFinder implements RoomBaseRateFinderInterface
 {
@@ -14,8 +13,13 @@ final readonly class BaseRateFinder implements RoomBaseRateFinderInterface
     {
     }
 
-    public function find(RoomId $roomId): ?int
+    public function findByRoomIds(array $roomIds): array
     {
-        return $this->baseRateFinder->find($roomId)?->amountCents;
+        $amountCentsByRoomId = [];
+        foreach ($this->baseRateFinder->findByRoomIds($roomIds) as $roomId => $view) {
+            $amountCentsByRoomId[$roomId] = $view->amountCents;
+        }
+
+        return $amountCentsByRoomId;
     }
 }

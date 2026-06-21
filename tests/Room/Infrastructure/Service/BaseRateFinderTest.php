@@ -26,18 +26,18 @@ final class BaseRateFinderTest extends TestCase
     }
 
     #[Test]
-    public function itReturnsAmountCentsWhenBaseRateExists(): void
+    public function itReturnsAmountCentsKeyedByRoomId(): void
     {
-        $this->pricingFinder->method('find')->willReturn(new BaseRateView(12000));
+        $this->pricingFinder->method('findByRoomIds')->willReturn(['room-1' => new BaseRateView(12000)]);
 
-        self::assertSame(12000, $this->finder->find(new RoomId('room-1')));
+        self::assertSame(['room-1' => 12000], $this->finder->findByRoomIds([new RoomId('room-1')]));
     }
 
     #[Test]
-    public function itReturnsNullWhenNoBaseRate(): void
+    public function itReturnsEmptyArrayWhenNoBaseRatesMatch(): void
     {
-        $this->pricingFinder->method('find')->willReturn(null);
+        $this->pricingFinder->method('findByRoomIds')->willReturn([]);
 
-        self::assertNull($this->finder->find(new RoomId('room-1')));
+        self::assertSame([], $this->finder->findByRoomIds([new RoomId('room-1')]));
     }
 }

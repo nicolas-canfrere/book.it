@@ -7,6 +7,7 @@ namespace App\Pricing\Infrastructure\Persistence\Doctrine;
 use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
 use App\Shared\Domain\ValueObject\RoomId;
+use Doctrine\DBAL\ArrayParameterType;
 use Doctrine\DBAL\Connection;
 
 final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInterface
@@ -42,6 +43,28 @@ final readonly class DoctrineBaseRateRepository implements BaseRateRepositoryInt
         }
 
         return $this->hydrate($row);
+    }
+
+    public function findByRoomIds(array $roomIds): array
+    {
+        if ([] === $roomIds) {
+            return [];
+        }
+
+        /** @var list<array{room_id: string, amount_cents: int, updated_at: string}> $rows */
+        $rows = $this->pricingConnection->fetchAllAssociative(
+            'SELECT room_id, amount_cents, updated_at FROM base_rate WHERE room_id IN (:roomIds)',
+            ['roomIds' => array_map(static fn(RoomId $roomId): string => $roomId->value, $roomIds)],
+            ['roomIds' => ArrayParameterType::STRING],
+        );
+
+        $baseRates = [];
+        foreach ($rows as $row) {
+            $baseRate = $this->hydrate($row);
+            $baseRates[$baseRate->roomId->value] = $baseRate;
+        }
+
+        return $baseRates;
     }
 
     /**

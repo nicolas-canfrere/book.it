@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Tests\Pricing\Infrastructure\Contract;
 
 use App\Pricing\Application\Contract\BaseRateFinderInterface;
-use App\Pricing\Application\Contract\BaseRateView;
 use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
 use App\Pricing\Infrastructure\Contract\DoctrineBaseRateFinder;
@@ -28,22 +27,21 @@ final class DoctrineBaseRateFinderTest extends TestCase
     }
 
     #[Test]
-    public function itReturnsViewWhenBaseRateExists(): void
+    public function itReturnsViewsKeyedByRoomIdWhenBaseRatesExist(): void
     {
         $baseRate = new BaseRate(new RoomId('room-1'), 12000, new \DateTimeImmutable());
-        $this->repository->method('findByRoomId')->willReturn($baseRate);
+        $this->repository->method('findByRoomIds')->willReturn(['room-1' => $baseRate]);
 
-        $view = $this->finder->find(new RoomId('room-1'));
+        $views = $this->finder->findByRoomIds([new RoomId('room-1')]);
 
-        self::assertInstanceOf(BaseRateView::class, $view);
-        self::assertSame(12000, $view->amountCents);
+        self::assertSame(12000, $views['room-1']->amountCents);
     }
 
     #[Test]
-    public function itReturnsNullWhenNoBaseRate(): void
+    public function itReturnsEmptyArrayWhenNoBaseRatesMatch(): void
     {
-        $this->repository->method('findByRoomId')->willReturn(null);
+        $this->repository->method('findByRoomIds')->willReturn([]);
 
-        self::assertNull($this->finder->find(new RoomId('room-1')));
+        self::assertSame([], $this->finder->findByRoomIds([new RoomId('room-1')]));
     }
 }
