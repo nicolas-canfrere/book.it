@@ -83,7 +83,7 @@ final readonly class RegisterHotelController
         ],
     )]
     public function __invoke(
-        #[MapRequestPayload(acceptFormat: 'json')]
+        #[MapRequestPayload(acceptFormat: 'json', validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
         RegisterHotelRequest $request,
     ): Response {
         $command = $this->commandFactory->create(

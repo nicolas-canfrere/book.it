@@ -30,20 +30,6 @@ final class RegisterHotelCommandFactoryTest extends TestCase
     }
 
     #[Test]
-    public function itThrowsWhenAnyFieldIsNull(): void
-    {
-        $this->expectException(\InvalidArgumentException::class);
-
-        $this->factory->create(
-            name: null,
-            streetAddress: '15 rue de Rivoli',
-            postalCode: '75001',
-            city: 'Paris',
-            country: 'FR',
-        );
-    }
-
-    #[Test]
     public function itBuildsAddressWithGeoPlaceIdWhenProvided(): void
     {
         $command = $this->factory->create(

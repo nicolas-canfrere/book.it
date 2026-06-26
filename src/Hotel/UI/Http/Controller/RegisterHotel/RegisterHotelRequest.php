@@ -17,24 +17,24 @@ final readonly class RegisterHotelRequest
         #[Assert\NotBlank]
         #[Assert\Length(min: 2, max: 255)]
         #[OA\Property(type: 'string', example: 'Hotel Ibis Paris', maxLength: 255, minLength: 2)]
-        public ?string $name = null,
+        public string $name,
         #[Assert\NotBlank]
         #[Assert\Length(min: 2, max: 255)]
         #[OA\Property(type: 'string', example: '15 rue de Rivoli', maxLength: 255, minLength: 2)]
-        public ?string $streetAddress = null,
+        public string $streetAddress,
         #[Assert\NotBlank]
         #[Assert\Length(min: 1, max: 20)]
         #[OA\Property(type: 'string', example: '75001', maxLength: 20, minLength: 1)]
-        public ?string $postalCode = null,
+        public string $postalCode,
         #[Assert\NotBlank]
         #[Assert\Length(min: 1, max: 255)]
         #[OA\Property(type: 'string', example: 'Paris', maxLength: 255, minLength: 1)]
-        public ?string $city = null,
+        public string $city,
         #[Assert\NotBlank]
         #[Assert\Length(exactly: 2)]
         #[Assert\Country]
         #[OA\Property(type: 'string', example: 'FR', maxLength: 2, minLength: 2)]
-        public ?string $country = null,
+        public string $country,
         #[Assert\Range(min: 1, max: 5)]
         #[OA\Property(type: 'integer', example: 4, minimum: 1, maximum: 5, nullable: true)]
         public ?int $stars = null,

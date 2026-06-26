@@ -2528,40 +2528,36 @@ components:
           default: null
       type: object
     RegisterHotelRequest:
+      required:
+        - name
+        - streetAddress
+        - postalCode
+        - city
+        - country
       properties:
         name:
           type: string
           example: 'Hotel Ibis Paris'
-          nullable: true
-          default: null
           maxLength: 255
           minLength: 2
         streetAddress:
           type: string
           example: '15 rue de Rivoli'
-          nullable: true
-          default: null
           maxLength: 255
           minLength: 2
         postalCode:
           type: string
           example: '75001'
-          nullable: true
-          default: null
           maxLength: 20
           minLength: 1
         city:
           type: string
           example: Paris
-          nullable: true
-          default: null
           maxLength: 255
           minLength: 1
         country:
           type: string
           example: FR
-          nullable: true
-          default: null
           maxLength: 2
           minLength: 2
         stars:
