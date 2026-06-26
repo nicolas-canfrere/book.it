@@ -75,10 +75,13 @@ All development tasks run via `make`. Run `make help` for the full list.
 | `make fixtures`              | Load fixtures (truncates all tables first)                               |
 | `make migrate`               | Run database migrations                                                  |
 | `make generate-migration`    | Generate a new migration from schema diff                                |
-| `make lint`                  | Full analysis: PHP CS Fixer + PHPStan + deptrac                          |
+| `make lint`                  | Full analysis: PHP CS Fixer (fix) + PHPStan + Deptrac + OpenAPI lint     |
+| `make lint-ci`               | Same as `lint` but checks CS without auto-fixing (for CI)                |
 | `make static-code-analysis`  | PHPStan only                                                             |
 | `make deptrac`               | Architecture layer check only (layers + bounded context boundaries)      |
-| `make apply-cs`              | Auto-fix coding style                                                    |
+| `make apply-cs`              | Auto-fix coding style with PHP CS Fixer                                  |
+| `make check-cs`              | Check coding style without auto-fixing (dry-run)                         |
+| `make lint-openapi`          | Lint `openapi.yaml` with Redocly CLI                                     |
 | `make test`                  | Run all tests (unit + functional)                                        |
 | `make unit-test`             | Run unit tests only                                                      |
 | `make functional-test`       | Run functional/integration tests only                                    |
