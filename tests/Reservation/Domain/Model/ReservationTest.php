@@ -49,7 +49,7 @@ final class ReservationTest extends TestCase
         self::assertSame('2026-06-01', $reservation->period->checkIn->format('Y-m-d'));
         self::assertSame('2026-06-05', $reservation->period->checkOut->format('Y-m-d'));
         self::assertSame(42000, $reservation->totalPrice);
-        self::assertSame(ReservationStatus::Pending, $reservation->status);
+        self::assertSame(ReservationStatus::Pending, $reservation->status());
         self::assertSame('2026-05-18T10:00:00+00:00', $reservation->createdAt->format(\DateTimeInterface::ATOM));
     }
 
@@ -60,14 +60,14 @@ final class ReservationTest extends TestCase
 
         $reservation->expire();
 
-        self::assertSame(ReservationStatus::Expired, $reservation->status);
+        self::assertSame(ReservationStatus::Expired, $reservation->status());
     }
 
     #[Test]
     public function itThrowsWhenExpiringConfirmedReservation(): void
     {
         $reservation = $this->makeReservation();
-        $reservation->status = ReservationStatus::Confirmed;
+        $reservation->confirm();
 
         $this->expectException(InvalidReservationTransitionException::class);
 
@@ -78,7 +78,7 @@ final class ReservationTest extends TestCase
     public function itThrowsWhenExpiringCancelledReservation(): void
     {
         $reservation = $this->makeReservation();
-        $reservation->status = ReservationStatus::Cancelled;
+        $reservation->cancelPending();
 
         $this->expectException(InvalidReservationTransitionException::class);
 
@@ -90,7 +90,7 @@ final class ReservationTest extends TestCase
     {
         $reservation = $this->makeReservation();
         $reservation->confirm();
-        self::assertSame(ReservationStatus::Confirmed, $reservation->status);
+        self::assertSame(ReservationStatus::Confirmed, $reservation->status());
     }
 
     #[Test]
@@ -107,7 +107,7 @@ final class ReservationTest extends TestCase
     {
         $reservation = $this->makeReservation();
         $reservation->cancelPending();
-        self::assertSame(ReservationStatus::Cancelled, $reservation->status);
+        self::assertSame(ReservationStatus::Cancelled, $reservation->status());
     }
 
     #[Test]
@@ -138,7 +138,7 @@ final class ReservationTest extends TestCase
         );
 
         self::assertSame(0, $reservation->totalPrice);
-        self::assertSame(ReservationStatus::Pending, $reservation->status);
+        self::assertSame(ReservationStatus::Pending, $reservation->status());
     }
 
     private function makeReservation(): Reservation

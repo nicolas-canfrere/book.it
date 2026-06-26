@@ -23,7 +23,7 @@ final readonly class ConfirmReservationCommandHandler implements SyncCommandHand
     {
         $reservation = $this->repository->get(new ReservationId($command->reservationId));
 
-        if (null === $reservation || ReservationStatus::Pending !== $reservation->status) {
+        if (null === $reservation || ReservationStatus::Pending !== $reservation->status()) {
             return;
         }
 

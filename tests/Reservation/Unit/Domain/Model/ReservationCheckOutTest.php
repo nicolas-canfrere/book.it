@@ -28,8 +28,8 @@ final class ReservationCheckOutTest extends TestCase
         $checkOut = new \DateTimeImmutable('2025-06-15');
         $reservation = $this->makeCheckedInReservation('r1', 'room-1', 'booker-1', $checkIn, $checkOut);
         $reservation->checkOut(new \DateTimeImmutable('2025-06-13'));
-        self::assertSame(ReservationStatus::CheckedOut, $reservation->status);
-        self::assertEquals(new \DateTimeImmutable('2025-06-13'), $reservation->actualDepartureDate);
+        self::assertSame(ReservationStatus::CheckedOut, $reservation->status());
+        self::assertEquals(new \DateTimeImmutable('2025-06-13'), $reservation->actualDepartureDate());
     }
 
     #[Test]
@@ -39,7 +39,7 @@ final class ReservationCheckOutTest extends TestCase
         $checkOut = new \DateTimeImmutable('2025-06-15');
         $reservation = $this->makeCheckedInReservation('r1', 'room-1', 'booker-1', $checkIn, $checkOut);
         $reservation->checkOut($checkIn);
-        self::assertSame(ReservationStatus::CheckedOut, $reservation->status);
+        self::assertSame(ReservationStatus::CheckedOut, $reservation->status());
     }
 
     #[Test]
@@ -49,7 +49,7 @@ final class ReservationCheckOutTest extends TestCase
         $checkOut = new \DateTimeImmutable('2025-06-15');
         $reservation = $this->makeCheckedInReservation('r1', 'room-1', 'booker-1', $checkIn, $checkOut);
         $reservation->checkOut($checkOut);
-        self::assertSame(ReservationStatus::CheckedOut, $reservation->status);
+        self::assertSame(ReservationStatus::CheckedOut, $reservation->status());
     }
 
     #[Test]

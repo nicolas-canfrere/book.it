@@ -48,7 +48,7 @@ final class InMemoryReservationRepository implements ReservationRepositoryInterf
                     return false;
                 }
 
-                if (null !== $status && $r->status !== $status) {
+                if (null !== $status && $r->status() !== $status) {
                     return false;
                 }
 

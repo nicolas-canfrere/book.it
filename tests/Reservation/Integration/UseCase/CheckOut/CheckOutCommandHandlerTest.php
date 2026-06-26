@@ -52,7 +52,7 @@ final class CheckOutCommandHandlerTest extends KernelTestCase
 
         $saved = $this->repository->get(new ReservationId('res-uuid'));
         self::assertNotNull($saved);
-        self::assertSame(ReservationStatus::CheckedOut, $saved->status);
+        self::assertSame(ReservationStatus::CheckedOut, $saved->status());
 
         $dispatched = $this->eventDispatcher->getDispatched();
         self::assertCount(1, $dispatched);

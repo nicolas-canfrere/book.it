@@ -33,7 +33,7 @@ final readonly class ReservationSerializer
             'checkOut' => $reservation->period->checkOut->format('Y-m-d'),
             'totalPrice' => $reservation->totalPrice,
             'guestCount' => $reservation->guestCount->value,
-            'status' => $reservation->status->value,
+            'status' => $reservation->status()->value,
             'cancellationTerms' => [
                 'daysThreshold' => $reservation->cancellationTerms->daysThreshold,
             ],

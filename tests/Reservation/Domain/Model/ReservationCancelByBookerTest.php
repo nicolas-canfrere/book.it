@@ -34,9 +34,9 @@ final class ReservationCancelByBookerTest extends TestCase
 
         $reservation->cancelByBooker($today);
 
-        self::assertSame(ReservationStatus::Cancelled, $reservation->status);
-        self::assertSame('2026-06-10', $reservation->cancelledAt?->format('Y-m-d'));
-        self::assertSame('booker', $reservation->cancelledBy);
+        self::assertSame(ReservationStatus::Cancelled, $reservation->status());
+        self::assertSame('2026-06-10', $reservation->cancelledAt()?->format('Y-m-d'));
+        self::assertSame('booker', $reservation->cancelledBy());
     }
 
     #[Test]
@@ -74,8 +74,19 @@ final class ReservationCancelByBookerTest extends TestCase
     #[Test]
     public function itThrowsInvalidTransitionWhenReservationIsCheckedIn(): void
     {
-        $reservation = $this->makeConfirmedReservation(checkIn: new \DateTimeImmutable('2026-06-15'));
-        $reservation->status = ReservationStatus::CheckedIn;
+        $checkIn = new \DateTimeImmutable('2026-06-15');
+        $reservation = Reservation::reconstitute(
+            id: new ReservationId(self::ID),
+            roomId: new RoomId(self::ROOM_ID),
+            bookerId: new BookerId(self::BOOKER_ID),
+            period: new DatePeriod($checkIn, $checkIn->modify('+3 days')),
+            totalPrice: 30000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
+            guestCount: new GuestCount(1),
+            createdAt: new \DateTimeImmutable(),
+            status: ReservationStatus::CheckedIn,
+        );
 
         $this->expectException(InvalidReservationTransitionException::class);
 
@@ -112,7 +123,7 @@ final class ReservationCancelByBookerTest extends TestCase
     private function makeConfirmedReservation(\DateTimeImmutable $checkIn): Reservation
     {
         $reservation = $this->makePendingReservation($checkIn);
-        $reservation->status = ReservationStatus::Confirmed;
+        $reservation->confirm();
 
         return $reservation;
     }

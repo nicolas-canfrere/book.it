@@ -48,7 +48,7 @@ final class ExpireReservationCommandHandlerTest extends TestCase
 
         ($this->handler)(new ExpireReservationCommand('res-uuid'));
 
-        self::assertSame(ReservationStatus::Expired, $reservation->status);
+        self::assertSame(ReservationStatus::Expired, $reservation->status());
     }
 
     #[Test]
@@ -64,8 +64,18 @@ final class ExpireReservationCommandHandlerTest extends TestCase
     #[Test]
     public function itIsNoopWhenReservationAlreadyConfirmed(): void
     {
-        $reservation = $this->makePendingReservation();
-        $reservation->status = ReservationStatus::Confirmed;
+        $reservation = Reservation::reconstitute(
+            id: new ReservationId('res-uuid'),
+            roomId: new RoomId('room-uuid'),
+            bookerId: new BookerId('booker-uuid'),
+            period: new DatePeriod(new \DateTimeImmutable('2030-06-01'), new \DateTimeImmutable('2030-06-05')),
+            totalPrice: 40000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
+            guestCount: new GuestCount(1),
+            createdAt: new \DateTimeImmutable(),
+            status: ReservationStatus::Confirmed,
+        );
         $this->repository->method('get')->willReturn($reservation);
         $this->repository->expects(self::never())->method('save');
         $this->eventDispatcher->expects(self::never())->method('dispatch');
@@ -76,8 +86,18 @@ final class ExpireReservationCommandHandlerTest extends TestCase
     #[Test]
     public function itIsNoopWhenReservationAlreadyExpired(): void
     {
-        $reservation = $this->makePendingReservation();
-        $reservation->status = ReservationStatus::Expired;
+        $reservation = Reservation::reconstitute(
+            id: new ReservationId('res-uuid'),
+            roomId: new RoomId('room-uuid'),
+            bookerId: new BookerId('booker-uuid'),
+            period: new DatePeriod(new \DateTimeImmutable('2030-06-01'), new \DateTimeImmutable('2030-06-05')),
+            totalPrice: 40000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: new PriceBreakdown([]),
+            guestCount: new GuestCount(1),
+            createdAt: new \DateTimeImmutable(),
+            status: ReservationStatus::Expired,
+        );
         $this->repository->method('get')->willReturn($reservation);
         $this->repository->expects(self::never())->method('save');
         $this->eventDispatcher->expects(self::never())->method('dispatch');

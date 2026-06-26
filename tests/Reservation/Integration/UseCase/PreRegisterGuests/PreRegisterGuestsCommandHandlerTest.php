@@ -55,11 +55,11 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
 
         $saved = $this->repository->get(new ReservationId('res-1'));
         self::assertNotNull($saved);
-        self::assertCount(2, $saved->guests);
-        self::assertSame('Alice', $saved->guests[0]->firstName);
-        self::assertSame('Smith', $saved->guests[0]->lastName);
-        self::assertSame('1990-01-15', $saved->guests[0]->dateOfBirth->format('Y-m-d'));
-        self::assertSame('Bob', $saved->guests[1]->firstName);
+        self::assertCount(2, $saved->guests());
+        self::assertSame('Alice', $saved->guests()[0]->firstName);
+        self::assertSame('Smith', $saved->guests()[0]->lastName);
+        self::assertSame('1990-01-15', $saved->guests()[0]->dateOfBirth->format('Y-m-d'));
+        self::assertSame('Bob', $saved->guests()[1]->firstName);
     }
 
     #[Test]
@@ -76,8 +76,24 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
     #[Test]
     public function itThrowsWhenPreRegistrationNotAllowed(): void
     {
-        $reservation = $this->makeConfirmedReservation();
-        $reservation->status = ReservationStatus::CheckedIn;
+        $reservation = Reservation::reconstitute(
+            id: new ReservationId('res-1'),
+            roomId: new RoomId('room-1'),
+            bookerId: new BookerId('booker-1'),
+            period: new DatePeriod(
+                new \DateTimeImmutable('2026-07-01'),
+                new \DateTimeImmutable('2026-07-03'),
+            ),
+            totalPrice: 10000,
+            cancellationTerms: CancellationTerms::alwaysRefundable(),
+            priceBreakdown: PriceBreakdown::fromArray([
+                ['date' => '2026-07-01', 'rateAmountCents' => 5000, 'discountPercent' => null, 'effectiveAmountCents' => 5000],
+                ['date' => '2026-07-02', 'rateAmountCents' => 5000, 'discountPercent' => null, 'effectiveAmountCents' => 5000],
+            ]),
+            guestCount: new GuestCount(2),
+            createdAt: new \DateTimeImmutable('2026-06-01'),
+            status: ReservationStatus::CheckedIn,
+        );
         $this->repository->add($reservation);
 
         $this->expectException(GuestPreRegistrationNotAllowedException::class);
@@ -90,7 +106,7 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
 
     private function makeConfirmedReservation(string $id = 'res-1'): Reservation
     {
-        $reservation = new Reservation(
+        return Reservation::reconstitute(
             id: new ReservationId($id),
             roomId: new RoomId('room-1'),
             bookerId: new BookerId('booker-1'),
@@ -106,9 +122,7 @@ final class PreRegisterGuestsCommandHandlerTest extends KernelTestCase
             ]),
             guestCount: new GuestCount(2),
             createdAt: new \DateTimeImmutable('2026-06-01'),
+            status: ReservationStatus::Confirmed,
         );
-        $reservation->status = ReservationStatus::Confirmed;
-
-        return $reservation;
     }
 }

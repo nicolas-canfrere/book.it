@@ -54,7 +54,7 @@ final class ConfirmReservationCommandHandlerTest extends KernelTestCase
         $handler = new ConfirmReservationCommandHandler($repository, $dispatcher);
         ($handler)(new ConfirmReservationCommand('res-001'));
 
-        self::assertSame(ReservationStatus::Confirmed, $reservation->status);
+        self::assertSame(ReservationStatus::Confirmed, $reservation->status());
         self::assertCount(1, $dispatchedEvents);
         self::assertSame('res-001', $dispatchedEvents[0]->reservationId);
         self::assertSame('room-001', $dispatchedEvents[0]->roomId);
