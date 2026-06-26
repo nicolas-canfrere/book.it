@@ -109,10 +109,13 @@ Important for test and code analysis use make commands !
 | `make test`                 | Run all tests (unit + functional)                                 |
 | `make unit-test`            | Unit tests only (no DB)                                           |
 | `make functional-test`      | Functional/integration tests (needs DB)                           |
-| `make lint`                 | Full analysis: CS Fixer + PHPStan + Deptrac                       |
+| `make lint`                 | Full analysis: CS Fixer (fix) + PHPStan + Deptrac + OpenAPI lint  |
+| `make lint-ci`              | Same as `lint` but checks CS without auto-fixing (for CI)         |
 | `make static-code-analysis` | PHPStan only                                                      |
 | `make deptrac`              | Architecture layer check only                                     |
 | `make apply-cs`             | Auto-fix coding standards                                         |
+| `make check-cs`             | Check coding standards without auto-fixing (dry-run)              |
+| `make lint-openapi`         | Lint `openapi.yaml` with Redocly CLI                              |
 | `make fixtures`             | Load fixtures (truncates all tables first)                        |
 | `make generate-docs`        | Regenerate `openapi.yaml`, `domainevents.yaml`, `contextmap.yaml` |
 | `make openapi`              | Regenerate `openapi.yaml` from route/OA attributes                |
