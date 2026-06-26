@@ -21,6 +21,7 @@ final readonly class HandlePaymentFailureController
     #[Route('/payment/webhooks/failed', name: 'payment_webhook_failed', methods: ['POST'])]
     #[OA\Post(
         summary: 'Payment failure webhook',
+        security: [['webhookSignature' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: new Model(type: HandlePaymentFailureRequest::class)),

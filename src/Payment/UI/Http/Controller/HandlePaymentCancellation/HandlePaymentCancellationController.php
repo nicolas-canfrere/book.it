@@ -21,6 +21,7 @@ final readonly class HandlePaymentCancellationController
     #[Route('/payment/webhooks/cancel', name: 'payment_webhook_cancel', methods: ['POST'])]
     #[OA\Post(
         summary: 'Payment cancellation webhook',
+        security: [['webhookSignature' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: new Model(type: HandlePaymentCancellationRequest::class)),

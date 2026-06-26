@@ -21,6 +21,7 @@ final readonly class HandlePaymentSuccessController
     #[Route('/payment/webhooks/success', name: 'payment_webhook_success', methods: ['POST'])]
     #[OA\Post(
         summary: 'Payment success webhook',
+        security: [['webhookSignature' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: new Model(type: HandlePaymentSuccessRequest::class)),

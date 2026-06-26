@@ -23,6 +23,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 )]
 #[OA\Get(
     summary: 'Search available room types',
+    security: [],
     tags: ['Search'],
     parameters: [
         new OA\Parameter(

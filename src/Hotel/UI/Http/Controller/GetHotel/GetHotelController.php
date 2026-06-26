@@ -26,6 +26,7 @@ final readonly class GetHotelController
     #[Route('/hotels/{id}', name: 'hotel_get_hotel', requirements: ['id' => Requirement::UUID_V4], methods: ['GET'])]
     #[OA\Get(
         summary: 'Get a hotel by ID',
+        security: [],
         tags: ['Hotels'],
         parameters: [
             new OA\Parameter(name: 'id', in: 'path', required: true, schema: new OA\Schema(type: 'string', format: 'uuid')),

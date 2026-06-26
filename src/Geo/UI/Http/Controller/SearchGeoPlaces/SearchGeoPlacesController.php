@@ -21,6 +21,7 @@ use Symfony\Component\Routing\Attribute\Route;
 )]
 #[OA\Get(
     summary: 'Search Geo Places by fuzzy name match',
+    security: [],
     tags: ['Geo'],
     responses: [
         new OA\Response(
