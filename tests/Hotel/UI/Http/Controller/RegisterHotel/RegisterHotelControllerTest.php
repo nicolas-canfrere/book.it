@@ -188,7 +188,7 @@ final class RegisterHotelControllerTest extends AuthenticatedWebTestCase
             method: 'POST',
             uri: '/api/v1/hotels',
             server: ['CONTENT_TYPE' => 'application/json'],
-            content: json_encode(['name' => 'A'], \JSON_THROW_ON_ERROR),
+            content: json_encode([], \JSON_THROW_ON_ERROR),
         );
 
         $response = $client->getResponse();

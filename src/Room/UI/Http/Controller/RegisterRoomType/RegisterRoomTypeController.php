@@ -83,12 +83,12 @@ final readonly class RegisterRoomTypeController
     ): Response {
         $command = $this->commandFactory->create(
             hotelId: $hotelId,
-            name: $request->name ?? throw new \LogicException('name is required'),
-            livingSpaceCount: $request->livingSpaceCount ?? throw new \LogicException('livingSpaceCount is required'),
+            name: $request->name,
+            livingSpaceCount: $request->livingSpaceCount,
             surfaceM2: $request->surfaceM2,
-            guestCapacity: $request->guestCapacity ?? throw new \LogicException('guestCapacity is required'),
-            isAccessible: $request->isAccessible ?? throw new \LogicException('isAccessible is required'),
-            bedEntries: $request->bedComposition ?? throw new \LogicException('bedComposition is required'),
+            guestCapacity: $request->guestCapacity,
+            isAccessible: $request->isAccessible,
+            bedEntries: $request->bedComposition,
         );
         $this->commandBus->execute($command);
 

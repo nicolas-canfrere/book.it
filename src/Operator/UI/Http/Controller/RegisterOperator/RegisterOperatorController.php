@@ -68,11 +68,11 @@ final readonly class RegisterOperatorController
         RegisterOperatorRequest $request,
     ): Response {
         $command = $this->commandFactory->create(
-            $request->firstName ?? '',
-            $request->lastName ?? '',
-            $request->email ?? '',
-            $request->phone ?? '',
-            $request->password ?? '',
+            $request->firstName,
+            $request->lastName,
+            $request->email,
+            $request->phone,
+            $request->password,
         );
         $this->commandBus->execute($command);
 

@@ -2528,40 +2528,36 @@ components:
           default: null
       type: object
     RegisterHotelRequest:
+      required:
+        - name
+        - streetAddress
+        - postalCode
+        - city
+        - country
       properties:
         name:
           type: string
           example: 'Hotel Ibis Paris'
-          nullable: true
-          default: null
           maxLength: 255
           minLength: 2
         streetAddress:
           type: string
           example: '15 rue de Rivoli'
-          nullable: true
-          default: null
           maxLength: 255
           minLength: 2
         postalCode:
           type: string
           example: '75001'
-          nullable: true
-          default: null
           maxLength: 20
           minLength: 1
         city:
           type: string
           example: Paris
-          nullable: true
-          default: null
           maxLength: 255
           minLength: 1
         country:
           type: string
           example: FR
-          nullable: true
-          default: null
           maxLength: 2
           minLength: 2
         stars:
@@ -2643,55 +2639,47 @@ components:
           minimum: 1
       type: object
     RegisterRoomRequest:
+      required:
+        - number
+        - floor
+        - roomTypeId
       properties:
         number:
           type: string
           example: '101'
-          nullable: true
-          default: null
           maxLength: 50
           minLength: 1
         floor:
           type: integer
           example: 1
-          default: null
           maximum: 300
           minimum: -20
         roomTypeId:
           type: string
           format: uuid
           example: 7f4d1234-0000-4000-8000-000000000001
-          nullable: true
-          default: null
       type: object
     RegisterRoomTypeRequest:
       required:
+        - name
+        - livingSpaceCount
+        - guestCapacity
         - isAccessible
+        - bedComposition
       properties:
         name:
           type: string
           example: 'Suite Royale'
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 1
         livingSpaceCount:
           type: integer
           example: 2
-          default: null
           maximum: 20
-          minimum: 1
-        surfaceM2:
-          type: integer
-          example: 80
-          nullable: true
-          default: null
-          maximum: 2000
           minimum: 1
         guestCapacity:
           type: integer
           example: 2
-          default: null
           maximum: 20
           minimum: 1
         isAccessible:
@@ -2716,38 +2704,36 @@ components:
                 maximum: 10
                 minimum: 1
             type: object
+          minItems: 1
+        surfaceM2:
+          type: integer
+          example: 80
           nullable: true
           default: null
-          minItems: 1
+          maximum: 2000
+          minimum: 1
       type: object
     UpdateRoomTypeRequest:
       required:
+        - name
+        - livingSpaceCount
+        - guestCapacity
         - isAccessible
+        - bedComposition
       properties:
         name:
           type: string
           example: 'Suite Royale'
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 1
         livingSpaceCount:
           type: integer
           example: 2
-          default: null
           maximum: 20
-          minimum: 1
-        surfaceM2:
-          type: integer
-          example: 80
-          nullable: true
-          default: null
-          maximum: 2000
           minimum: 1
         guestCapacity:
           type: integer
           example: 2
-          default: null
           maximum: 20
           minimum: 1
         isAccessible:
@@ -2772,67 +2758,66 @@ components:
                 maximum: 10
                 minimum: 1
             type: object
+          minItems: 1
+        surfaceM2:
+          type: integer
+          example: 80
           nullable: true
           default: null
-          minItems: 1
+          maximum: 2000
+          minimum: 1
       type: object
     RegisterBookerRequest:
+      required:
+        - firstName
+        - lastName
+        - email
+        - phone
+        - dateOfBirth
+        - password
       properties:
         firstName:
           type: string
           example: Jean
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 1
         lastName:
           type: string
           example: Dupont
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 1
         email:
           type: string
           format: email
           example: jean.dupont@example.com
-          nullable: true
-          default: null
         phone:
           type: string
           example: '+33612345678'
-          nullable: true
-          default: null
           maxLength: 50
           minLength: 5
         dateOfBirth:
           type: string
           format: date
           example: '1990-05-15'
-          nullable: true
-          default: null
         password:
           type: string
           example: MySecurePassword123!
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 8
       type: object
     BlockPeriodRequest:
+      required:
+        - checkIn
+        - checkOut
       properties:
         checkIn:
           type: string
           format: date
           example: '2025-06-10'
-          nullable: true
-          default: null
         checkOut:
           type: string
           format: date
           example: '2025-06-13'
-          nullable: true
-          default: null
       type: object
     CheckAvailabilityRequest:
       required:
@@ -2845,47 +2830,43 @@ components:
           type: string
       type: object
     CreatePromotionRequest:
+      required:
+        - checkIn
+        - checkOut
+        - discountPercent
       properties:
         checkIn:
           type: string
           format: date
           example: '2025-07-01'
-          nullable: true
-          default: null
         checkOut:
           type: string
           format: date
           example: '2025-08-31'
-          nullable: true
-          default: null
         discountPercent:
           type: integer
           example: 20
-          nullable: true
-          default: null
           maximum: 99
           minimum: 1
       type: object
     CreateRatePeriodRequest:
+      required:
+        - checkIn
+        - checkOut
+        - amount
       properties:
         checkIn:
           type: string
           format: date
           example: '2025-07-01'
-          nullable: true
-          default: null
         checkOut:
           type: string
           format: date
           example: '2025-08-31'
-          nullable: true
-          default: null
         amount:
           type: number
           format: float
           example: 150
-          nullable: true
-          default: null
           minimum: 0
           exclusiveMinimum: true
       type: object
@@ -2900,13 +2881,13 @@ components:
           type: string
       type: object
     SetBaseRateRequest:
+      required:
+        - amount
       properties:
         amount:
           type: number
           format: float
           example: 120
-          nullable: true
-          default: null
           minimum: 0
           exclusiveMinimum: true
       type: object
@@ -2921,47 +2902,43 @@ components:
           exclusiveMinimum: true
       type: object
     UpdatePromotionRequest:
+      required:
+        - checkIn
+        - checkOut
+        - discountPercent
       properties:
         checkIn:
           type: string
           format: date
           example: '2025-07-01'
-          nullable: true
-          default: null
         checkOut:
           type: string
           format: date
           example: '2025-08-31'
-          nullable: true
-          default: null
         discountPercent:
           type: integer
           example: 20
-          nullable: true
-          default: null
           maximum: 99
           minimum: 1
       type: object
     UpdateRatePeriodRequest:
+      required:
+        - checkIn
+        - checkOut
+        - amount
       properties:
         checkIn:
           type: string
           format: date
           example: '2025-07-01'
-          nullable: true
-          default: null
         checkOut:
           type: string
           format: date
           example: '2025-08-31'
-          nullable: true
-          default: null
         amount:
           type: number
           format: float
           example: 160
-          nullable: true
-          default: null
           minimum: 0
           exclusiveMinimum: true
       type: object
@@ -2994,34 +2971,30 @@ components:
           example: '2026-06-13'
       type: object
     CreateReservationRequest:
+      required:
+        - roomTypeId
+        - bookerId
+        - checkIn
+        - checkOut
+        - guestCount
       properties:
         roomTypeId:
           type: string
           format: uuid
-          nullable: true
-          default: null
         bookerId:
           type: string
           format: uuid
-          nullable: true
-          default: null
         checkIn:
           type: string
           format: date
           example: '2026-06-01'
-          nullable: true
-          default: null
         checkOut:
           type: string
           format: date
           example: '2026-06-05'
-          nullable: true
-          default: null
         guestCount:
           type: integer
           example: 2
-          nullable: true
-          default: null
           maximum: 20
           minimum: 1
       type: object
@@ -3080,39 +3053,35 @@ components:
           default: []
       type: object
     RegisterOperatorRequest:
+      required:
+        - firstName
+        - lastName
+        - email
+        - phone
+        - password
       properties:
         firstName:
           type: string
           example: Alice
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 1
         lastName:
           type: string
           example: Martin
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 1
         email:
           type: string
           format: email
           example: alice.martin@hotel.com
-          nullable: true
-          default: null
         phone:
           type: string
           example: '+33612345678'
-          nullable: true
-          default: null
           maxLength: 50
           minLength: 5
         password:
           type: string
           example: MySecurePassword123!
-          nullable: true
-          default: null
           maxLength: 100
           minLength: 8
       type: object
