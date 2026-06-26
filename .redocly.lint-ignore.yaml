@@ -14,3 +14,4 @@ openapi.yaml:
     - '#/components/schemas/ListBookerReservationsRequest'
     - '#/components/schemas/SearchGeoPlacesRequest'
     - '#/components/schemas/GetTranslationRequest'
+    - '#/components/schemas/SearchAvailableRoomTypesRequest'
