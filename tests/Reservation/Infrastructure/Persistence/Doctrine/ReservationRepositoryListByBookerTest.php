@@ -99,7 +99,7 @@ final class ReservationRepositoryListByBookerTest extends KernelTestCase
 
     private function addReservation(string $id, string $checkInOffset, string $checkOutOffset, ReservationStatus $status): void
     {
-        $reservation = new Reservation(
+        $reservation = Reservation::reconstitute(
             id: new ReservationId($id),
             roomId: new RoomId(self::ROOM_ID),
             bookerId: new BookerId(self::BOOKER_ID),
@@ -112,8 +112,8 @@ final class ReservationRepositoryListByBookerTest extends KernelTestCase
             priceBreakdown: PriceBreakdown::fromArray([]),
             guestCount: new GuestCount(1),
             createdAt: new \DateTimeImmutable(),
+            status: $status,
         );
-        $reservation->status = $status;
 
         $this->repository->add($reservation);
     }

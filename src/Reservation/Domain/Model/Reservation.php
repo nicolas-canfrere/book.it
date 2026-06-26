@@ -19,14 +19,14 @@ use App\Shared\Domain\ValueObject\RoomId;
 
 final class Reservation
 {
-    public ReservationStatus $status;
+    private ReservationStatus $status;
 
     /** @var Guest[] */
-    public array $guests = [];
+    private array $guests = [];
 
-    public ?\DateTimeImmutable $actualDepartureDate = null;
-    public ?\DateTimeImmutable $cancelledAt = null;
-    public ?string $cancelledBy = null;
+    private ?\DateTimeImmutable $actualDepartureDate = null;
+    private ?\DateTimeImmutable $cancelledAt = null;
+    private ?string $cancelledBy = null;
 
     public function __construct(
         public readonly ReservationId $id,
@@ -40,6 +40,61 @@ final class Reservation
         public readonly \DateTimeImmutable $createdAt,
     ) {
         $this->status = ReservationStatus::Pending;
+    }
+
+    /**
+     * @param Guest[] $guests
+     */
+    public static function reconstitute(
+        ReservationId $id,
+        RoomId $roomId,
+        BookerId $bookerId,
+        DatePeriod $period,
+        int $totalPrice,
+        CancellationTerms $cancellationTerms,
+        PriceBreakdown $priceBreakdown,
+        GuestCount $guestCount,
+        \DateTimeImmutable $createdAt,
+        ReservationStatus $status,
+        array $guests = [],
+        ?\DateTimeImmutable $actualDepartureDate = null,
+        ?\DateTimeImmutable $cancelledAt = null,
+        ?string $cancelledBy = null,
+    ): self {
+        $self = new self($id, $roomId, $bookerId, $period, $totalPrice, $cancellationTerms, $priceBreakdown, $guestCount, $createdAt);
+        $self->status = $status;
+        $self->guests = $guests;
+        $self->actualDepartureDate = $actualDepartureDate;
+        $self->cancelledAt = $cancelledAt;
+        $self->cancelledBy = $cancelledBy;
+
+        return $self;
+    }
+
+    public function status(): ReservationStatus
+    {
+        return $this->status;
+    }
+
+    /** @return Guest[] */
+    public function guests(): array
+    {
+        return $this->guests;
+    }
+
+    public function actualDepartureDate(): ?\DateTimeImmutable
+    {
+        return $this->actualDepartureDate;
+    }
+
+    public function cancelledAt(): ?\DateTimeImmutable
+    {
+        return $this->cancelledAt;
+    }
+
+    public function cancelledBy(): ?string
+    {
+        return $this->cancelledBy;
     }
 
     public function expire(): void

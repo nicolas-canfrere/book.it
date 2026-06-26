@@ -54,7 +54,7 @@ final class CancelPendingReservationCommandHandlerTest extends KernelTestCase
         $handler = new CancelPendingReservationCommandHandler($repository, $dispatcher);
         ($handler)(new CancelPendingReservationCommand('res-001'));
 
-        self::assertSame(ReservationStatus::Cancelled, $reservation->status);
+        self::assertSame(ReservationStatus::Cancelled, $reservation->status());
         self::assertCount(1, $dispatchedEvents);
         self::assertSame('res-001', $dispatchedEvents[0]->reservationId);
     }

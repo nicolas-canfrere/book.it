@@ -34,7 +34,7 @@ final class ReservationGuestTest extends TestCase
 
         $reservation->preRegisterGuests([$guest], new \DateTimeImmutable('2026-06-15'));
 
-        self::assertSame([$guest], $reservation->guests);
+        self::assertSame([$guest], $reservation->guests());
     }
 
     #[Test]
@@ -45,7 +45,7 @@ final class ReservationGuestTest extends TestCase
 
         $reservation->preRegisterGuests([$guest], new \DateTimeImmutable('2026-06-15'));
 
-        self::assertSame([$guest], $reservation->guests);
+        self::assertSame([$guest], $reservation->guests());
     }
 
     #[Test]
@@ -57,8 +57,8 @@ final class ReservationGuestTest extends TestCase
         $newGuest = $this->makeGuest('g-2');
         $reservation->preRegisterGuests([$newGuest], new \DateTimeImmutable('2026-06-15'));
 
-        self::assertCount(1, $reservation->guests);
-        self::assertSame($newGuest, $reservation->guests[0]);
+        self::assertCount(1, $reservation->guests());
+        self::assertSame($newGuest, $reservation->guests()[0]);
     }
 
     #[Test]
@@ -68,7 +68,7 @@ final class ReservationGuestTest extends TestCase
         $reservation->preRegisterGuests([$this->makeGuest()], new \DateTimeImmutable('2026-06-10'));
         $reservation->preRegisterGuests([], new \DateTimeImmutable('2026-06-15'));
 
-        self::assertSame([], $reservation->guests);
+        self::assertSame([], $reservation->guests());
     }
 
     #[Test]
@@ -126,7 +126,7 @@ final class ReservationGuestTest extends TestCase
 
         $reservation->checkIn([$guest], new \DateTimeImmutable('2026-07-01'));
 
-        self::assertSame(ReservationStatus::CheckedIn, $reservation->status);
+        self::assertSame(ReservationStatus::CheckedIn, $reservation->status());
     }
 
     #[Test]
@@ -137,7 +137,7 @@ final class ReservationGuestTest extends TestCase
 
         $reservation->checkIn([$guest], new \DateTimeImmutable('2026-07-01'));
 
-        self::assertSame([$guest], $reservation->guests);
+        self::assertSame([$guest], $reservation->guests());
     }
 
     #[Test]
@@ -149,8 +149,8 @@ final class ReservationGuestTest extends TestCase
 
         $reservation->checkIn([$finalGuest], new \DateTimeImmutable('2026-07-01'));
 
-        self::assertCount(1, $reservation->guests);
-        self::assertSame($finalGuest, $reservation->guests[0]);
+        self::assertCount(1, $reservation->guests());
+        self::assertSame($finalGuest, $reservation->guests()[0]);
     }
 
     #[Test]
@@ -160,7 +160,7 @@ final class ReservationGuestTest extends TestCase
 
         $reservation->checkIn([], new \DateTimeImmutable('2026-07-02')); // day after check-in
 
-        self::assertSame(ReservationStatus::CheckedIn, $reservation->status);
+        self::assertSame(ReservationStatus::CheckedIn, $reservation->status());
     }
 
     #[Test]
@@ -201,7 +201,7 @@ final class ReservationGuestTest extends TestCase
 
     private function makeReservation(ReservationStatus $status = ReservationStatus::Confirmed): Reservation
     {
-        $reservation = new Reservation(
+        return Reservation::reconstitute(
             id: new ReservationId('res-uuid-1'),
             roomId: new RoomId('room-uuid-1'),
             bookerId: new BookerId('booker-uuid-1'),
@@ -217,10 +217,8 @@ final class ReservationGuestTest extends TestCase
             ]),
             guestCount: new GuestCount(2),
             createdAt: new \DateTimeImmutable('2026-06-01'),
+            status: $status,
         );
-        $reservation->status = $status;
-
-        return $reservation;
     }
 
     private function makeGuest(string $id = 'g-uuid-1'): Guest

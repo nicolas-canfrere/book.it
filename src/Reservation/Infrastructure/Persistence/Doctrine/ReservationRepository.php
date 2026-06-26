@@ -39,7 +39,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             'guest_count' => $reservation->guestCount->value,
             'cancellation_terms_days_threshold' => $reservation->cancellationTerms->daysThreshold,
             'price_breakdown' => json_encode($reservation->priceBreakdown->toArray()) ?: '[]',
-            'status' => $reservation->status->value,
+            'status' => $reservation->status()->value,
             'created_at' => $reservation->createdAt->format('Y-m-d H:i:s'),
         ]);
     }
@@ -49,15 +49,15 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         $connection = $this->reservationConnection;
         $connection->transactional(static function () use ($connection, $reservation): void {
             $connection->update('reservation', [
-                'status' => $reservation->status->value,
-                'actual_departure_date' => $reservation->actualDepartureDate?->format('Y-m-d'),
-                'cancelled_at' => $reservation->cancelledAt?->format('Y-m-d'),
-                'cancelled_by' => $reservation->cancelledBy,
+                'status' => $reservation->status()->value,
+                'actual_departure_date' => $reservation->actualDepartureDate()?->format('Y-m-d'),
+                'cancelled_at' => $reservation->cancelledAt()?->format('Y-m-d'),
+                'cancelled_by' => $reservation->cancelledBy(),
             ], ['id' => $reservation->id->value]);
 
             $connection->delete('guest', ['reservation_id' => $reservation->id->value]);
 
-            foreach ($reservation->guests as $guest) {
+            foreach ($reservation->guests() as $guest) {
                 $connection->insert('guest', [
                     'id' => $guest->id->value,
                     'reservation_id' => $reservation->id->value,
@@ -88,9 +88,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             return null;
         }
 
-        $reservation = $this->hydrate($rows[0]);
-
-        $reservation->guests = array_values(array_filter(array_map(
+        $guests = array_values(array_filter(array_map(
             function (array $row): ?Guest {
                 if (null === $row['g_id']) {
                     return null;
@@ -106,7 +104,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             $rows,
         )));
 
-        return $reservation;
+        return $this->hydrate($rows[0], $guests);
     }
 
     public function listByBooker(
@@ -181,8 +179,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
         $reservations = [];
         foreach ($byId as $rid => $row) {
-            $reservation = $this->hydrate($row);
-            $reservation->guests = array_map(
+            $guests = array_map(
                 fn(array $g) => new Guest(
                     id: new GuestId($g['g_id']),
                     firstName: (string) $g['first_name'],
@@ -191,7 +188,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
                 ),
                 $guestsByReservationId[$rid],
             );
-            $reservations[] = $reservation;
+            $reservations[] = $this->hydrate($row, $guests);
         }
 
         return new ReservationPage($reservations, $total);
@@ -199,8 +196,9 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
 
     /**
      * @param array{id: string, room_id: string, booker_id: string, check_in: string, check_out: string, total_price: int|string, guest_count: int|string, cancellation_terms_days_threshold: int|string|null, price_breakdown: string, status: string, created_at: string, actual_departure_date: string|null, cancelled_at: string|null, cancelled_by: string|null} $row
+     * @param Guest[] $guests
      */
-    private function hydrate(array $row): Reservation
+    private function hydrate(array $row, array $guests = []): Reservation
     {
         $threshold = $row['cancellation_terms_days_threshold'];
         $cancellationTerms = null !== $threshold
@@ -211,7 +209,7 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
         $nights = json_decode($row['price_breakdown'], true);
         $priceBreakdown = PriceBreakdown::fromArray($nights);
 
-        $reservation = new Reservation(
+        return Reservation::reconstitute(
             id: new ReservationId($row['id']),
             roomId: new RoomId($row['room_id']),
             bookerId: new BookerId($row['booker_id']),
@@ -224,16 +222,15 @@ final readonly class ReservationRepository implements ReservationRepositoryInter
             priceBreakdown: $priceBreakdown,
             guestCount: new GuestCount((int) $row['guest_count']),
             createdAt: new \DateTimeImmutable($row['created_at']),
+            status: ReservationStatus::from($row['status']),
+            guests: $guests,
+            actualDepartureDate: null !== $row['actual_departure_date']
+                ? new \DateTimeImmutable($row['actual_departure_date'])
+                : null,
+            cancelledAt: null !== $row['cancelled_at']
+                ? new \DateTimeImmutable($row['cancelled_at'])
+                : null,
+            cancelledBy: $row['cancelled_by'],
         );
-        $reservation->status = ReservationStatus::from($row['status']);
-        $reservation->actualDepartureDate = null !== $row['actual_departure_date']
-            ? new \DateTimeImmutable($row['actual_departure_date'])
-            : null;
-        $reservation->cancelledAt = null !== $row['cancelled_at']
-            ? new \DateTimeImmutable($row['cancelled_at'])
-            : null;
-        $reservation->cancelledBy = $row['cancelled_by'];
-
-        return $reservation;
     }
 }

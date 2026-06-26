@@ -23,7 +23,7 @@ final readonly class CancelPendingReservationCommandHandler implements SyncComma
     {
         $reservation = $this->repository->get(new ReservationId($command->reservationId));
 
-        if (null === $reservation || ReservationStatus::Pending !== $reservation->status) {
+        if (null === $reservation || ReservationStatus::Pending !== $reservation->status()) {
             return;
         }
 
