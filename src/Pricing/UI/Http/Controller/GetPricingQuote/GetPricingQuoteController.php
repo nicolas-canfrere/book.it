@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace App\Pricing\UI\Http\Controller\GetPricingQuote;
 
 use App\Pricing\Application\UseCase\GetPricingQuote\GetPricingQuoteQuery;
+use App\Pricing\Domain\ValueObject\NightPricingDetail;
+use App\Pricing\Domain\ValueObject\PricingQuote;
 use App\Shared\Application\Bus\SyncQueryBusInterface;
 use App\Shared\Domain\ValueObject\RoomId;
 use OpenApi\Attributes as OA;
@@ -68,22 +70,22 @@ final readonly class GetPricingQuoteController
             checkOut: new \DateTimeImmutable((string) $request->checkOut),
         );
 
-        /** @var array{roomId: string, checkIn: string, checkOut: string, totalAmountCents: int, nights: list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}>} $quote */
+        /** @var PricingQuote $quote */
         $quote = $this->queryBus->ask($query);
 
         return new JsonResponse([
-            'roomId' => $quote['roomId'],
-            'checkIn' => $quote['checkIn'],
-            'checkOut' => $quote['checkOut'],
-            'totalAmountCents' => $quote['totalAmountCents'],
+            'roomId' => $quote->roomId->value,
+            'checkIn' => $quote->checkIn->format('Y-m-d'),
+            'checkOut' => $quote->checkOut->format('Y-m-d'),
+            'totalAmountCents' => $quote->totalAmountCents,
             'nights' => array_map(
-                static fn(array $night) => [
-                    'date' => $night['date'],
-                    'amountCents' => $night['rateAmountCents'],
-                    'discountPercent' => $night['discountPercent'],
-                    'effectiveAmountCents' => $night['effectiveAmountCents'],
+                static fn(NightPricingDetail $night) => [
+                    'date' => $night->date->format('Y-m-d'),
+                    'amountCents' => $night->rateAmountCents,
+                    'discountPercent' => $night->discountPercent,
+                    'effectiveAmountCents' => $night->effectiveAmountCents,
                 ],
-                $quote['nights'],
+                $quote->nights,
             ),
         ]);
     }

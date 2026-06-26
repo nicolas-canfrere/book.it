@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace App\Pricing\Infrastructure\Contract;
 
-use App\Pricing\Application\Contract\PricingQuoteCalculatorInterface;
 use App\Pricing\Application\Contract\PricingQuoteFinderInterface;
 use App\Pricing\Application\Contract\PricingQuoteView;
+use App\Pricing\Domain\Service\PricingQuoteCalculatorInterface;
+use App\Pricing\Domain\ValueObject\NightPricingDetail;
+use App\Shared\Domain\ValueObject\RoomId;
 
 final readonly class DoctrinePricingQuoteFinder implements PricingQuoteFinderInterface
 {
@@ -14,13 +16,21 @@ final readonly class DoctrinePricingQuoteFinder implements PricingQuoteFinderInt
     {
     }
 
-    public function fetch(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteView
+    public function fetch(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteView
     {
-        $result = $this->calculator->calculate($roomId, $checkIn, $checkOut);
+        $quote = $this->calculator->calculate($roomId, $checkIn, $checkOut);
 
         return new PricingQuoteView(
-            totalAmountCents: $result['totalAmountCents'],
-            nights: $result['nights'],
+            totalAmountCents: $quote->totalAmountCents,
+            nights: array_map(
+                static fn(NightPricingDetail $n) => [
+                    'date' => $n->date->format('Y-m-d'),
+                    'rateAmountCents' => $n->rateAmountCents,
+                    'discountPercent' => $n->discountPercent,
+                    'effectiveAmountCents' => $n->effectiveAmountCents,
+                ],
+                $quote->nights,
+            ),
         );
     }
 }

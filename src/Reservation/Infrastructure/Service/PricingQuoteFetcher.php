@@ -20,7 +20,7 @@ final readonly class PricingQuoteFetcher implements PricingQuoteFetcherInterface
     public function fetch(RoomId $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): PricingQuoteSnapshot
     {
         try {
-            $view = $this->pricingFinder->fetch($roomId->value, $checkIn, $checkOut);
+            $view = $this->pricingFinder->fetch($roomId, $checkIn, $checkOut);
 
             return new PricingQuoteSnapshot(
                 $view->totalAmountCents,

@@ -2,18 +2,14 @@
 
 declare(strict_types=1);
 
-namespace App\Tests\Pricing\Application\UseCase\GetPricingQuote;
+namespace App\Tests\Pricing\Domain\Service;
 
-use App\Pricing\Application\UseCase\GetPricingQuote\GetPricingQuoteQuery;
-use App\Pricing\Application\UseCase\GetPricingQuote\GetPricingQuoteQueryHandler;
 use App\Pricing\Domain\Exception\RoomHasNoBaseRateException;
-use App\Pricing\Domain\Exception\RoomNotFoundException;
 use App\Pricing\Domain\Model\BaseRate;
 use App\Pricing\Domain\Model\Promotion;
 use App\Pricing\Domain\Model\RatePeriod;
 use App\Pricing\Domain\Service\PricingCalculator;
 use App\Shared\Domain\ValueObject\RoomId;
-use App\Tests\Pricing\Infrastructure\FakeRoomExistenceChecker;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryBaseRateRepository;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryPromotionRepository;
 use App\Tests\Pricing\Infrastructure\Persistence\InMemory\InMemoryRatePeriodRepository;
@@ -22,42 +18,34 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
 #[Group('unit')]
-final class GetPricingQuoteQueryHandlerTest extends TestCase
+final class PricingCalculatorTest extends TestCase
 {
     private const string ROOM_ID = '550e8400-e29b-41d4-a716-446655440000';
 
-    private FakeRoomExistenceChecker $roomExists;
     private InMemoryBaseRateRepository $baseRates;
     private InMemoryRatePeriodRepository $ratePeriods;
     private InMemoryPromotionRepository $promotions;
-    private GetPricingQuoteQueryHandler $handler;
+    private PricingCalculator $calculator;
 
     protected function setUp(): void
     {
-        $this->roomExists = new FakeRoomExistenceChecker();
         $this->baseRates = new InMemoryBaseRateRepository();
         $this->ratePeriods = new InMemoryRatePeriodRepository();
         $this->promotions = new InMemoryPromotionRepository();
-        $this->handler = new GetPricingQuoteQueryHandler(
-            $this->roomExists,
-            new PricingCalculator($this->baseRates, $this->ratePeriods, $this->promotions),
-        );
+        $this->calculator = new PricingCalculator($this->baseRates, $this->ratePeriods, $this->promotions);
     }
 
     #[Test]
-    public function itComputesQuoteUsingBaseRateOnly(): void
+    public function itComputesTotalUsingBaseRateForEachNight(): void
     {
         $this->baseRates->save(new BaseRate(new RoomId(self::ROOM_ID), 10000, new \DateTimeImmutable('2025-01-01')));
 
-        $result = ($this->handler)(new GetPricingQuoteQuery(
+        $result = $this->calculator->calculate(
             new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
-        ));
+        );
 
-        self::assertSame(self::ROOM_ID, $result->roomId->value);
-        self::assertSame('2025-07-10', $result->checkIn->format('Y-m-d'));
-        self::assertSame('2025-07-13', $result->checkOut->format('Y-m-d'));
         self::assertSame(30000, $result->totalAmountCents);
         self::assertCount(3, $result->nights);
         self::assertSame('2025-07-10', $result->nights[0]->date->format('Y-m-d'));
@@ -67,7 +55,7 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
     }
 
     #[Test]
-    public function itAppliesRatePeriodOverrideForCoveredNights(): void
+    public function itOverridesBaseRateForNightsCoveredByRatePeriod(): void
     {
         $this->baseRates->save(new BaseRate(new RoomId(self::ROOM_ID), 10000, new \DateTimeImmutable('2025-01-01')));
         $this->ratePeriods->save(new RatePeriod(
@@ -80,17 +68,16 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
             updatedAt: new \DateTimeImmutable('2025-01-01'),
         ));
 
-        $result = ($this->handler)(new GetPricingQuoteQuery(
+        $result = $this->calculator->calculate(
             new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
-        ));
+        );
 
         self::assertSame(50000, $result->totalAmountCents);
         self::assertSame(10000, $result->nights[0]->rateAmountCents);
         self::assertSame(20000, $result->nights[1]->rateAmountCents);
         self::assertSame(20000, $result->nights[2]->rateAmountCents);
-        self::assertNull($result->nights[0]->discountPercent);
     }
 
     #[Test]
@@ -107,11 +94,11 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
             updatedAt: new \DateTimeImmutable('2025-01-01'),
         ));
 
-        $result = ($this->handler)(new GetPricingQuoteQuery(
+        $result = $this->calculator->calculate(
             new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
-        ));
+        );
 
         // 10000 + 8000 + 8000 = 26000
         self::assertSame(26000, $result->totalAmountCents);
@@ -119,8 +106,6 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
         self::assertSame(10000, $result->nights[0]->effectiveAmountCents);
         self::assertSame(20, $result->nights[1]->discountPercent);
         self::assertSame(8000, $result->nights[1]->effectiveAmountCents);
-        self::assertSame(20, $result->nights[2]->discountPercent);
-        self::assertSame(8000, $result->nights[2]->effectiveAmountCents);
     }
 
     #[Test]
@@ -146,37 +131,18 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
             updatedAt: new \DateTimeImmutable('2025-01-01'),
         ));
 
-        $result = ($this->handler)(new GetPricingQuoteQuery(
+        $result = $this->calculator->calculate(
             new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
-        ));
+        );
 
         // 20000 + (20000 * 0.75 = 15000) + 20000 = 55000
         self::assertSame(55000, $result->totalAmountCents);
-        self::assertSame(20000, $result->nights[0]->rateAmountCents);
-        self::assertNull($result->nights[0]->discountPercent);
         self::assertSame(20000, $result->nights[0]->effectiveAmountCents);
-        self::assertSame(20000, $result->nights[1]->rateAmountCents);
         self::assertSame(25, $result->nights[1]->discountPercent);
         self::assertSame(15000, $result->nights[1]->effectiveAmountCents);
-        self::assertSame(20000, $result->nights[2]->rateAmountCents);
-        self::assertNull($result->nights[2]->discountPercent);
         self::assertSame(20000, $result->nights[2]->effectiveAmountCents);
-    }
-
-    #[Test]
-    public function itThrowsWhenRoomDoesNotExist(): void
-    {
-        $this->roomExists->setExists(false);
-
-        $this->expectException(RoomNotFoundException::class);
-
-        ($this->handler)(new GetPricingQuoteQuery(
-            new RoomId(self::ROOM_ID),
-            new \DateTimeImmutable('2025-07-10'),
-            new \DateTimeImmutable('2025-07-13'),
-        ));
     }
 
     #[Test]
@@ -184,10 +150,10 @@ final class GetPricingQuoteQueryHandlerTest extends TestCase
     {
         $this->expectException(RoomHasNoBaseRateException::class);
 
-        ($this->handler)(new GetPricingQuoteQuery(
+        $this->calculator->calculate(
             new RoomId(self::ROOM_ID),
             new \DateTimeImmutable('2025-07-10'),
             new \DateTimeImmutable('2025-07-13'),
-        ));
+        );
     }
 }

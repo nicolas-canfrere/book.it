@@ -4,97 +4,26 @@ declare(strict_types=1);
 
 namespace App\Pricing\Application\UseCase\GetPricingQuote;
 
-use App\Pricing\Application\Contract\PricingQuoteCalculatorInterface;
-use App\Pricing\Domain\Exception\RoomHasNoBaseRateException;
 use App\Pricing\Domain\Exception\RoomNotFoundException;
-use App\Pricing\Domain\Port\BaseRateRepositoryInterface;
-use App\Pricing\Domain\Port\PromotionRepositoryInterface;
-use App\Pricing\Domain\Port\RatePeriodRepositoryInterface;
 use App\Pricing\Domain\Port\RoomExistsInterface;
-use App\Pricing\Domain\ValueObject\DatePeriod;
+use App\Pricing\Domain\Service\PricingCalculator;
+use App\Pricing\Domain\ValueObject\PricingQuote;
 use App\Shared\Application\Bus\SyncQueryHandlerInterface;
-use App\Shared\Domain\ValueObject\RoomId;
 
-final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInterface, PricingQuoteCalculatorInterface
+final readonly class GetPricingQuoteQueryHandler implements SyncQueryHandlerInterface
 {
     public function __construct(
         private RoomExistsInterface $roomExists,
-        private BaseRateRepositoryInterface $baseRateRepository,
-        private RatePeriodRepositoryInterface $ratePeriodRepository,
-        private PromotionRepositoryInterface $promotionRepository,
+        private PricingCalculator $calculator,
     ) {
     }
 
-    /**
-     * @return array{
-     *     roomId: string,
-     *     checkIn: string,
-     *     checkOut: string,
-     *     totalAmountCents: int,
-     *     nights: list<array{date: string, rateAmountCents: int, discountPercent: int|null, effectiveAmountCents: int}>
-     * }
-     */
-    public function __invoke(GetPricingQuoteQuery $query): array
+    public function __invoke(GetPricingQuoteQuery $query): PricingQuote
     {
         if (!$this->roomExists->exists($query->roomId)) {
             throw new RoomNotFoundException($query->roomId);
         }
 
-        $baseRate = $this->baseRateRepository->findByRoomId($query->roomId);
-        if (null === $baseRate) {
-            throw new RoomHasNoBaseRateException($query->roomId);
-        }
-
-        $stayPeriod = new DatePeriod($query->checkIn, $query->checkOut);
-        $ratePeriods = $this->ratePeriodRepository->findOverlappingByRoomId($query->roomId, $stayPeriod);
-        $promotions = $this->promotionRepository->findOverlappingByRoomId($query->roomId, $stayPeriod);
-
-        $nights = [];
-        $total = 0;
-        $current = $query->checkIn;
-        while ($current < $query->checkOut) {
-            $rateAmountCents = $baseRate->amountCents;
-            foreach ($ratePeriods as $period) {
-                if ($period->checkIn <= $current && $current < $period->checkOut) {
-                    $rateAmountCents = $period->amountCents;
-                    break;
-                }
-            }
-
-            $discountPercent = null;
-            foreach ($promotions as $promotion) {
-                if ($promotion->getCheckIn() <= $current && $current < $promotion->getCheckOut()) {
-                    $discountPercent = $promotion->getDiscountPercent();
-                    break;
-                }
-            }
-
-            $effectiveAmountCents = null !== $discountPercent
-                ? (int) round($rateAmountCents * (1 - $discountPercent / 100))
-                : $rateAmountCents;
-
-            $nights[] = [
-                'date' => $current->format('Y-m-d'),
-                'rateAmountCents' => $rateAmountCents,
-                'discountPercent' => $discountPercent,
-                'effectiveAmountCents' => $effectiveAmountCents,
-            ];
-            $total += $effectiveAmountCents;
-
-            $current = $current->modify('+1 day');
-        }
-
-        return [
-            'roomId' => $query->roomId->value,
-            'checkIn' => $query->checkIn->format('Y-m-d'),
-            'checkOut' => $query->checkOut->format('Y-m-d'),
-            'totalAmountCents' => $total,
-            'nights' => $nights,
-        ];
-    }
-
-    public function calculate(string $roomId, \DateTimeImmutable $checkIn, \DateTimeImmutable $checkOut): array
-    {
-        return ($this)(new GetPricingQuoteQuery(new RoomId($roomId), $checkIn, $checkOut));
+        return $this->calculator->calculate($query->roomId, $query->checkIn, $query->checkOut);
     }
 }
