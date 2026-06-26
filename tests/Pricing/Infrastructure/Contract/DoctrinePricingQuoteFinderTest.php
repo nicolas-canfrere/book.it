@@ -4,9 +4,12 @@ declare(strict_types=1);
 
 namespace Tests\Pricing\Infrastructure\Contract;
 
-use App\Pricing\Application\Contract\PricingQuoteCalculatorInterface;
 use App\Pricing\Application\Contract\PricingQuoteFinderInterface;
+use App\Pricing\Domain\Service\PricingQuoteCalculatorInterface;
+use App\Pricing\Domain\ValueObject\NightPricingDetail;
+use App\Pricing\Domain\ValueObject\PricingQuote;
 use App\Pricing\Infrastructure\Contract\DoctrinePricingQuoteFinder;
+use App\Shared\Domain\ValueObject\RoomId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\Stub;
@@ -31,22 +34,27 @@ final class DoctrinePricingQuoteFinderTest extends TestCase
         $checkOut = new \DateTimeImmutable('2026-07-03');
 
         $nights = [
-            ['date' => '2026-07-01', 'rateAmountCents' => 10000, 'discountPercent' => null, 'effectiveAmountCents' => 10000],
-            ['date' => '2026-07-02', 'rateAmountCents' => 10000, 'discountPercent' => null, 'effectiveAmountCents' => 10000],
+            new NightPricingDetail(new \DateTimeImmutable('2026-07-01'), 10000, null, 10000),
+            new NightPricingDetail(new \DateTimeImmutable('2026-07-02'), 10000, null, 10000),
         ];
 
-        $this->calculator->method('calculate')->willReturn([
-            'roomId' => 'room-1',
-            'checkIn' => '2026-07-01',
-            'checkOut' => '2026-07-03',
-            'totalAmountCents' => 20000,
-            'nights' => $nights,
-        ]);
+        $roomId = new RoomId('550e8400-e29b-41d4-a716-446655440000');
 
-        $view = $this->finder->fetch('room-1', $checkIn, $checkOut);
+        $this->calculator->method('calculate')->willReturn(new PricingQuote(
+            roomId: $roomId,
+            checkIn: $checkIn,
+            checkOut: $checkOut,
+            totalAmountCents: 20000,
+            nights: $nights,
+        ));
+
+        $view = $this->finder->fetch($roomId, $checkIn, $checkOut);
 
         self::assertSame(20000, $view->totalAmountCents);
-        self::assertSame($nights, $view->nights);
+        self::assertSame('2026-07-01', $view->nights[0]['date']);
+        self::assertSame(10000, $view->nights[0]['rateAmountCents']);
+        self::assertNull($view->nights[0]['discountPercent']);
+        self::assertSame(10000, $view->nights[0]['effectiveAmountCents']);
     }
 
     #[Test]
@@ -56,6 +64,6 @@ final class DoctrinePricingQuoteFinderTest extends TestCase
 
         $this->expectException(\DomainException::class);
 
-        $this->finder->fetch('room-1', new \DateTimeImmutable('2026-07-01'), new \DateTimeImmutable('2026-07-03'));
+        $this->finder->fetch(new RoomId('550e8400-e29b-41d4-a716-446655440000'), new \DateTimeImmutable('2026-07-01'), new \DateTimeImmutable('2026-07-03'));
     }
 }
