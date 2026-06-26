@@ -62,8 +62,8 @@ static-code-analysis: ## Code analysis
 apply-cs: ## Apply coding standards with PHP CS Fixer
 	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/php-cs-fixer fix --show-progress=dots --diff --config=.php-cs-fixer.dist.php
 
-check-cs: ## Check coding standards with PHP CS Fixer (dry-run, no auto-fix)
-	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/php-cs-fixer fix --dry-run --diff --config=.php-cs-fixer.dist.php
+check-cs: ## Check coding standards with PHP CS Fixer (no auto-fix)
+	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/php-cs-fixer check --diff --config=.php-cs-fixer.dist.php
 
 deptrac: ## Check architectural layer dependencies + bounded context boundaries
 	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/deptrac analyse --no-progress
