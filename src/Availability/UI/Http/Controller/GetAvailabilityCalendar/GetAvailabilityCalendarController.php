@@ -51,6 +51,8 @@ final readonly class GetAvailabilityCalendarController
                     ],
                 ),
             ),
+            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Missing or invalid authentication token'),
+            new OA\Response(response: Response::HTTP_NOT_FOUND, description: 'Room not found', content: new OA\MediaType(mediaType: 'application/problem+json', schema: new OA\Schema(ref: '#/components/schemas/ProblemDetail'))),
         ],
     )]
     public function __invoke(string $roomId): Response

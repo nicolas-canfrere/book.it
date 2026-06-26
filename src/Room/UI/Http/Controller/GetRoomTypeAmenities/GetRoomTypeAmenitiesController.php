@@ -37,6 +37,7 @@ final readonly class GetRoomTypeAmenitiesController
                     ],
                 ),
             ),
+            new OA\Response(response: Response::HTTP_UNAUTHORIZED, description: 'Missing or invalid authentication token'),
         ],
     )]
     public function __invoke(): Response
