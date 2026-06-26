@@ -2239,20 +2239,16 @@ paths:
         -
           name: geoPlaceId
           in: query
-          description: 'GeoNames id of the place selected via Geo Place Search autocomplete — sole filtering criterion'
           required: true
           schema:
             type: string
-            example: '2988507'
             maxLength: 255
         -
           name: city
           in: query
-          description: 'Free-text city name typed by the visitor — informational only, not used for filtering'
           required: true
           schema:
             type: string
-            example: Paris
             maxLength: 255
         -
           name: checkIn
@@ -2260,23 +2256,18 @@ paths:
           required: true
           schema:
             type: string
-            format: date
-            example: '2026-07-01'
         -
           name: checkOut
           in: query
           required: true
           schema:
             type: string
-            format: date
-            example: '2026-07-05'
         -
           name: guests
           in: query
           required: true
           schema:
             type: integer
-            example: 2
             maximum: 20
             minimum: 1
       responses:
@@ -3165,6 +3156,29 @@ components:
         event_id:
           type: string
           default: ''
+      type: object
+    SearchAvailableRoomTypesRequest:
+      required:
+        - geoPlaceId
+        - city
+        - checkIn
+        - checkOut
+        - guests
+      properties:
+        geoPlaceId:
+          type: string
+          maxLength: 255
+        city:
+          type: string
+          maxLength: 255
+        checkIn:
+          type: string
+        checkOut:
+          type: string
+        guests:
+          type: integer
+          maximum: 20
+          minimum: 1
       type: object
     GetTranslationRequest:
       properties:
