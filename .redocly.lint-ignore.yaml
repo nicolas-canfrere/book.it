@@ -2,6 +2,8 @@
 # OpenAPI has no $ref mechanism for individual query parameters, so these schemas
 # are structurally unreferenceable — the warning is a false positive.
 openapi.yaml:
+  no-server-example.com:
+    - '#/servers/0'
   no-unused-components:
     - '#/components/schemas/ListHotelsRequest'
     - '#/components/schemas/ListRoomTypesRequest'

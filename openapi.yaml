@@ -4,6 +4,7 @@ info:
   description: 'Hotels management!'
   license:
     name: Proprietary
+    url: 'https://book.it/license'
   version: 1.0.0
 servers:
   -
