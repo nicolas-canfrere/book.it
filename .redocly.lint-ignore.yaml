@@ -3,7 +3,7 @@
 # are structurally unreferenceable — the warning is a false positive.
 openapi.yaml:
   no-server-example.com:
-    - '#/servers/0'
+    - '#/servers/0/url'
   no-unused-components:
     - '#/components/schemas/ListHotelsRequest'
     - '#/components/schemas/ListRoomTypesRequest'
