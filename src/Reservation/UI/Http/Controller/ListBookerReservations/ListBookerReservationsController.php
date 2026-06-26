@@ -74,7 +74,7 @@ final readonly class ListBookerReservationsController
     )]
     public function __invoke(
         #[MapQueryString(validationFailedStatusCode: Response::HTTP_UNPROCESSABLE_ENTITY)]
-        ListBookerReservationsRequest $request = new ListBookerReservationsRequest(),
+        ListBookerReservationsRequest $request,
     ): Response {
         $page = $this->queryBus->ask(new ListBookerReservationsQuery(
             new BookerId((string) $request->bookerId),
