@@ -15,7 +15,7 @@ final readonly class ListBookerReservationsRequest
         #[Assert\NotBlank]
         #[Assert\Uuid(versions: [Assert\Uuid::V4_RANDOM])]
         #[OA\Parameter(name: 'bookerId', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'uuid'))]
-        public ?string $bookerId = null,
+        public string $bookerId,
         #[Assert\GreaterThanOrEqual(1)]
         #[OA\Parameter(name: 'page', in: 'query', schema: new OA\Schema(type: 'integer', default: 1, minimum: 1))]
         public int $page = 1,

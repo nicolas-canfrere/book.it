@@ -13,7 +13,7 @@ final readonly class SearchGeoPlacesRequest
         #[Assert\NotBlank]
         #[Assert\Length(min: 2, max: 255)]
         #[OA\Parameter(name: 'query', in: 'query', required: true, schema: new OA\Schema(type: 'string', example: 'pari'))]
-        public ?string $query = null,
+        public string $query,
     ) {
     }
 }

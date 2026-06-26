@@ -13,11 +13,11 @@ final readonly class CheckAvailabilityRequest
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Parameter(in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2025-06-10'))]
-        public ?string $checkIn = null,
+        public string $checkIn,
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Parameter(in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2025-06-13'))]
-        public ?string $checkOut = null,
+        public string $checkOut,
     ) {
     }
 }

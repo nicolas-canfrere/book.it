@@ -13,12 +13,12 @@ final readonly class GetPricingQuoteRequest
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Parameter(name: 'checkIn', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2025-07-01'))]
-        public ?string $checkIn = null,
+        public string $checkIn,
         #[Assert\NotBlank]
         #[Assert\Date]
         #[Assert\GreaterThan(propertyPath: 'checkIn')]
         #[OA\Parameter(name: 'checkOut', in: 'query', required: true, schema: new OA\Schema(type: 'string', format: 'date', example: '2025-07-05'))]
-        public ?string $checkOut = null,
+        public string $checkOut,
     ) {
     }
 }
