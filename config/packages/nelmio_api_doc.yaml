@@ -4,10 +4,17 @@ nelmio_api_doc:
             title: Book.it
             description: Hotels management!
             version: 1.0.0
+            license:
+                name: Proprietary
         servers:
             - url: http://localhost:8080
               description: Local development server
         components:
+            securitySchemes:
+                bearerAuth:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
             schemas:
                 ProblemDetail:
                     type: object

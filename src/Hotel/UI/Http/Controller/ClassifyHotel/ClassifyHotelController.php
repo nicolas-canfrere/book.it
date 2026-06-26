@@ -30,6 +30,7 @@ final readonly class ClassifyHotelController
     )]
     #[OA\Patch(
         summary: 'Set or update the Star Rating of a Hotel',
+        security: [['bearerAuth' => []]],
         requestBody: new OA\RequestBody(
             required: true,
             content: new OA\JsonContent(ref: new Model(type: ClassifyHotelRequest::class)),

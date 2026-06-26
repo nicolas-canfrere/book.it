@@ -2,6 +2,8 @@ openapi: 3.0.0
 info:
   title: Book.it
   description: 'Hotels management!'
+  license:
+    name: Proprietary
   version: 1.0.0
 servers:
   -
@@ -50,6 +52,9 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security:
+        -
+          bearerAuth: []
   '/api/v1/hotels/{id}/amenities':
     patch:
       tags:
@@ -2109,17 +2114,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - reservation_id
-                - event_id
-              properties:
-                reservation_id:
-                  type: string
-                  format: uuid
-                event_id:
-                  type: string
-                  format: uuid
-              type: object
+              $ref: '#/components/schemas/HandlePaymentCancellationRequest'
       responses:
         '204':
           description: Acknowledged
@@ -2148,17 +2143,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - reservation_id
-                - event_id
-              properties:
-                reservation_id:
-                  type: string
-                  format: uuid
-                event_id:
-                  type: string
-                  format: uuid
-              type: object
+              $ref: '#/components/schemas/HandlePaymentFailureRequest'
       responses:
         '204':
           description: Acknowledged
@@ -2187,17 +2172,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - reservation_id
-                - event_id
-              properties:
-                reservation_id:
-                  type: string
-                  format: uuid
-                event_id:
-                  type: string
-                  format: uuid
-              type: object
+              $ref: '#/components/schemas/HandlePaymentSuccessRequest'
       responses:
         '204':
           description: Acknowledged
@@ -2380,17 +2355,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - locale
-                - text
-              properties:
-                locale:
-                  type: string
-                  example: fr_FR
-                text:
-                  type: string
-                  example: 'Un magnifique hôtel.'
-              type: object
+              $ref: '#/components/schemas/SetTranslationRequest'
       responses:
         '204':
           description: 'Translation set'
@@ -3186,6 +3151,11 @@ components:
           maxLength: 255
           minLength: 2
       type: object
+  securitySchemes:
+    bearerAuth:
+      type: http
+      bearerFormat: JWT
+      scheme: bearer
 tags:
   -
     name: Hotels
