@@ -2,6 +2,9 @@ openapi: 3.0.0
 info:
   title: Book.it
   description: 'Hotels management!'
+  license:
+    name: Proprietary
+    url: 'https://book.it/license'
   version: 1.0.0
 servers:
   -
@@ -50,6 +53,9 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security:
+        -
+          bearerAuth: []
   '/api/v1/hotels/{id}/amenities':
     patch:
       tags:
@@ -131,6 +137,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security: []
   /api/v1/hotel-amenities:
     get:
       tags:
@@ -146,6 +153,8 @@ paths:
                 properties:
                   amenities: { type: array, items: { type: string }, example: [pool, spa, gym] }
                 type: object
+        '401':
+          description: 'Missing or invalid authentication token'
   /api/v1/hotels:
     get:
       tags:
@@ -583,6 +592,8 @@ paths:
                 properties:
                   amenities: { type: array, items: { type: string }, example: [wifi, tv, balcony] }
                 type: object
+        '401':
+          description: 'Missing or invalid authentication token'
   '/api/v1/hotels/{hotelId}/room-types':
     get:
       tags:
@@ -991,6 +1002,14 @@ paths:
                 properties:
                   blockedPeriods: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-06-10' }, checkOut: { type: string, format: date, example: '2025-06-13' }, createdAt: { type: integer } }, type: object } }
                 type: object
+        '401':
+          description: 'Missing or invalid authentication token'
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
     post:
       tags:
         - Availability
@@ -1142,6 +1161,14 @@ paths:
                 properties:
                   promotions: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, discountPercent: { type: integer, example: 20 }, createdAt: { type: string, format: date-time } }, type: object } }
                 type: object
+        '401':
+          description: 'Missing or invalid authentication token'
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
     post:
       tags:
         - Pricing
@@ -1224,6 +1251,14 @@ paths:
                 properties:
                   ratePeriods: { type: array, items: { properties: { id: { type: string, format: uuid }, roomId: { type: string, format: uuid }, checkIn: { type: string, format: date, example: '2025-07-01' }, checkOut: { type: string, format: date, example: '2025-08-31' }, amountCents: { type: integer, example: 15000 }, createdAt: { type: string, format: date-time } }, type: object } }
                 type: object
+        '401':
+          description: 'Missing or invalid authentication token'
+        '404':
+          description: 'Room not found'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
     post:
       tags:
         - Pricing
@@ -2109,17 +2144,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - reservation_id
-                - event_id
-              properties:
-                reservation_id:
-                  type: string
-                  format: uuid
-                event_id:
-                  type: string
-                  format: uuid
-              type: object
+              $ref: '#/components/schemas/HandlePaymentCancellationRequest'
       responses:
         '204':
           description: Acknowledged
@@ -2137,6 +2162,9 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security:
+        -
+          webhookSignature: []
   /api/v1/payment/webhooks/failed:
     post:
       tags:
@@ -2148,17 +2176,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - reservation_id
-                - event_id
-              properties:
-                reservation_id:
-                  type: string
-                  format: uuid
-                event_id:
-                  type: string
-                  format: uuid
-              type: object
+              $ref: '#/components/schemas/HandlePaymentFailureRequest'
       responses:
         '204':
           description: Acknowledged
@@ -2176,6 +2194,9 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security:
+        -
+          webhookSignature: []
   /api/v1/payment/webhooks/success:
     post:
       tags:
@@ -2187,17 +2208,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - reservation_id
-                - event_id
-              properties:
-                reservation_id:
-                  type: string
-                  format: uuid
-                event_id:
-                  type: string
-                  format: uuid
-              type: object
+              $ref: '#/components/schemas/HandlePaymentSuccessRequest'
       responses:
         '204':
           description: Acknowledged
@@ -2215,6 +2226,9 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ProblemDetail'
+      security:
+        -
+          webhookSignature: []
   /api/v1/search:
     get:
       tags:
@@ -2281,6 +2295,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+      security: []
   /api/v1/translations/locales:
     get:
       tags:
@@ -2300,6 +2315,8 @@ paths:
                   supported: { type: array, items: { type: string }, example: [fr_FR, en_GB, de_DE] }
                   default: { type: string, example: en_GB }
                 type: object
+        '401':
+          description: 'Missing or invalid authentication token'
   '/api/v1/translations/{subjectType}/{subjectId}':
     get:
       tags:
@@ -2380,17 +2397,7 @@ paths:
         content:
           application/json:
             schema:
-              required:
-                - locale
-                - text
-              properties:
-                locale:
-                  type: string
-                  example: fr_FR
-                text:
-                  type: string
-                  example: 'Un magnifique hôtel.'
-              type: object
+              $ref: '#/components/schemas/SetTranslationRequest'
       responses:
         '204':
           description: 'Translation set'
@@ -2438,6 +2445,7 @@ paths:
             application/problem+json:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
+      security: []
 components:
   schemas:
     ProblemDetail:
@@ -3186,6 +3194,18 @@ components:
           maxLength: 255
           minLength: 2
       type: object
+  securitySchemes:
+    bearerAuth:
+      type: http
+      bearerFormat: JWT
+      scheme: bearer
+    webhookSignature:
+      type: apiKey
+      name: X-Webhook-Signature
+      in: header
+security:
+  -
+    bearerAuth: []
 tags:
   -
     name: Hotels

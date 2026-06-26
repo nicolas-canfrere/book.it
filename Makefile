@@ -66,7 +66,7 @@ deptrac: ## Check architectural layer dependencies + bounded context boundaries
 	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/deptrac analyse --no-progress
 	$(DOCKER_COMPOSE_RUN) --no-deps php vendor/bin/deptrac --config-file=deptrac-contexts.yaml analyse --no-progress
 
-lint: static-code-analysis apply-cs deptrac ## Full code analysis (cs fixer, phpstan and deptrac)
+lint: static-code-analysis apply-cs deptrac lint-openapi ## Full code analysis (cs fixer, phpstan, deptrac and openapi)
 
 ##@ Tests
 DOCKER_COMPOSE_TEST = docker compose --progress quiet -p bookit-test -f compose.test.yaml --env-file .env --env-file .env.compose
@@ -110,6 +110,10 @@ down: ## Stop all services
 ##@ OpenApi doc
 openapi: ## write openapi doc in yaml file at the root directory: openapi.yaml
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console nelmio:apidoc:dump --format=yaml > openapi.yaml
+	$(MAKE) lint-openapi
+
+lint-openapi: ## Lint openapi.yaml with Redocly
+	docker run --rm -v ${PWD}:/spec -w /spec redocly/cli lint openapi.yaml
 
 events: ## Generate domainevents.yaml from registered domain event listeners
 	$(DOCKER_COMPOSE_RUN) --no-deps php bin/console app:events:catalog

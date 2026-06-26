@@ -6,6 +6,7 @@ namespace App\Payment\UI\Http\Controller\HandlePaymentSuccess;
 
 use App\Payment\Application\UseCase\HandlePaymentSuccess\HandlePaymentSuccessCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -20,15 +21,10 @@ final readonly class HandlePaymentSuccessController
     #[Route('/payment/webhooks/success', name: 'payment_webhook_success', methods: ['POST'])]
     #[OA\Post(
         summary: 'Payment success webhook',
+        security: [['webhookSignature' => []]],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                required: ['reservation_id', 'event_id'],
-                properties: [
-                    new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid'),
-                    new OA\Property(property: 'event_id', type: 'string', format: 'uuid'),
-                ],
-            ),
+            content: new OA\JsonContent(ref: new Model(type: HandlePaymentSuccessRequest::class)),
         ),
         tags: ['Payment'],
         responses: [

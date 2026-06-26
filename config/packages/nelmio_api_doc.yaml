@@ -4,10 +4,24 @@ nelmio_api_doc:
             title: Book.it
             description: Hotels management!
             version: 1.0.0
+            license:
+                name: Proprietary
+                url: 'https://book.it/license'
         servers:
             - url: http://localhost:8080
               description: Local development server
+        security:
+            - bearerAuth: []
         components:
+            securitySchemes:
+                bearerAuth:
+                    type: http
+                    scheme: bearer
+                    bearerFormat: JWT
+                webhookSignature:
+                    type: apiKey
+                    in: header
+                    name: X-Webhook-Signature
             schemas:
                 ProblemDetail:
                     type: object

@@ -7,6 +7,7 @@ namespace App\Translation\UI\Http\Controller\SetTranslation;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
 use App\Translation\Application\UseCase\SetTranslation\SetTranslationCommand;
 use App\Translation\Domain\ValueObject\SubjectType;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -29,13 +30,7 @@ final readonly class SetTranslationController
         summary: 'Set a translation for a hotel or room type',
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                required: ['locale', 'text'],
-                properties: [
-                    new OA\Property(property: 'locale', type: 'string', example: 'fr_FR'),
-                    new OA\Property(property: 'text', type: 'string', example: 'Un magnifique hôtel.'),
-                ],
-            ),
+            content: new OA\JsonContent(ref: new Model(type: SetTranslationRequest::class)),
         ),
         tags: ['Translation'],
         parameters: [

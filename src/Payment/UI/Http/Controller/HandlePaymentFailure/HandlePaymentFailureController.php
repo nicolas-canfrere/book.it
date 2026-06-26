@@ -6,6 +6,7 @@ namespace App\Payment\UI\Http\Controller\HandlePaymentFailure;
 
 use App\Payment\Application\UseCase\HandlePaymentFailure\HandlePaymentFailureCommand;
 use App\Shared\Application\Bus\SyncCommandBusInterface;
+use Nelmio\ApiDocBundle\Attribute\Model;
 use OpenApi\Attributes as OA;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Attribute\MapRequestPayload;
@@ -20,15 +21,10 @@ final readonly class HandlePaymentFailureController
     #[Route('/payment/webhooks/failed', name: 'payment_webhook_failed', methods: ['POST'])]
     #[OA\Post(
         summary: 'Payment failure webhook',
+        security: [['webhookSignature' => []]],
         requestBody: new OA\RequestBody(
             required: true,
-            content: new OA\JsonContent(
-                required: ['reservation_id', 'event_id'],
-                properties: [
-                    new OA\Property(property: 'reservation_id', type: 'string', format: 'uuid'),
-                    new OA\Property(property: 'event_id', type: 'string', format: 'uuid'),
-                ],
-            ),
+            content: new OA\JsonContent(ref: new Model(type: HandlePaymentFailureRequest::class)),
         ),
         tags: ['Payment'],
         responses: [
