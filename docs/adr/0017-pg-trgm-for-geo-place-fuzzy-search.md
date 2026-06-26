@@ -1,4 +1,4 @@
-# ADR-0016 — pg_trgm for Geo Place fuzzy search
+# ADR-0017 — pg_trgm for Geo Place fuzzy search
 
 `Geo Place Search` must tolerate partial and misspelled input (e.g. "pari" matching "Paris"), unlike PostgreSQL full-text search (`tsvector`/`tsquery`), which matches whole words or explicit prefixes (`pari:*`) but not typos or substrings. We use the `pg_trgm` extension with a GIN trigram index on `name`/`asciiname` instead, ranking results by `similarity()`.
 
