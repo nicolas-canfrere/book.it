@@ -13,7 +13,7 @@ final readonly class SetBaseRateRequest
         #[Assert\NotBlank]
         #[Assert\Positive]
         #[OA\Property(type: 'number', format: 'float', example: 120.00)]
-        public ?float $amount = null,
+        public float $amount,
     ) {
     }
 }

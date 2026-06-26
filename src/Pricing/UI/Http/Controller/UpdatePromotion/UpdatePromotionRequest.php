@@ -13,16 +13,16 @@ final readonly class UpdatePromotionRequest
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Property(type: 'string', format: 'date', example: '2025-07-01')]
-        public ?string $checkIn = null,
+        public string $checkIn,
         #[Assert\NotBlank]
         #[Assert\Date]
         #[Assert\GreaterThan(propertyPath: 'checkIn')]
         #[OA\Property(type: 'string', format: 'date', example: '2025-08-31')]
-        public ?string $checkOut = null,
+        public string $checkOut,
         #[Assert\NotBlank]
         #[Assert\Range(min: 1, max: 99)]
         #[OA\Property(type: 'integer', example: 20)]
-        public ?int $discountPercent = null,
+        public int $discountPercent,
     ) {
     }
 }

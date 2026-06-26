@@ -13,16 +13,16 @@ final readonly class CreateRatePeriodRequest
         #[Assert\NotBlank]
         #[Assert\Date]
         #[OA\Property(type: 'string', format: 'date', example: '2025-07-01')]
-        public ?string $checkIn = null,
+        public string $checkIn,
         #[Assert\NotBlank]
         #[Assert\Date]
         #[Assert\GreaterThan(propertyPath: 'checkIn')]
         #[OA\Property(type: 'string', format: 'date', example: '2025-08-31')]
-        public ?string $checkOut = null,
+        public string $checkOut,
         #[Assert\NotBlank]
         #[Assert\Positive]
         #[OA\Property(type: 'number', format: 'float', example: 150.00)]
-        public ?float $amount = null,
+        public float $amount,
     ) {
     }
 }
