@@ -92,4 +92,4 @@ jobs:
         run: make install
 
       - name: Run lint
-        run: make lint
+        run: make lint DOCKER_COMPOSE_FILE=compose.ci.yaml
