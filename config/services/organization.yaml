@@ -1,0 +1,47 @@
+parameters: {}
+
+services:
+    _defaults:
+        autowire: true
+        autoconfigure: true
+    _instanceof:
+        App\Shared\Application\Bus\SyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.command.bus}
+        App\Shared\Application\Bus\SyncQueryHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: sync.query.bus}
+        App\Shared\Application\Bus\AsyncCommandHandlerInterface:
+            tags:
+                - {name: messenger.message_handler, bus: messenger.bus.default}
+
+    App\Organization\Domain\:
+        resource: '../../src/Organization/Domain/'
+        exclude:
+            - '../../src/Organization/Domain/Model/'
+            - '../../src/Organization/Domain/ValueObject/'
+
+    App\Organization\Application\:
+        resource: '../../src/Organization/Application/'
+        exclude:
+            - '../../src/Organization/Application/**/*Command.php'
+            - '../../src/Organization/Application/Contract/*View.php'
+
+    App\Organization\Infrastructure\:
+        resource: '../../src/Organization/Infrastructure/'
+
+    App\Organization\Domain\Port\OrganizationRepositoryInterface:
+        class: App\Organization\Infrastructure\Persistence\Doctrine\OrganizationRepository
+
+    App\Organization\Domain\Port\OrganizationIdGeneratorInterface:
+        class: App\Organization\Infrastructure\Service\OrganizationIdGenerator
+
+    App\Organization\Application\Contract\OrganizationCheckerInterface:
+        class: App\Organization\Infrastructure\Contract\DoctrineOrganizationChecker
+
+    bookit.doctrine.middleware.search_path.organization:
+        class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
+        arguments:
+            $schema: 'organization'
+        tags:
+            - {name: doctrine.middleware, connection: organization}
