@@ -34,3 +34,6 @@ services:
         arguments:
             $projectDir: '%kernel.project_dir%'
 
+    App\Shared\Application\TenantContext:
+        shared: true
+
