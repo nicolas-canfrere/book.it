@@ -20,6 +20,7 @@ final class OperatorUser implements UserInterface
         public readonly string $id,
         public readonly string $email,
         array $roles = [],
+        public readonly ?string $organizationId = null,
     ) {
         $this->setRoles($roles);
     }

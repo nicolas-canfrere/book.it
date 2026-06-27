@@ -76,7 +76,13 @@ final class BearerTokenAuthenticator extends AbstractAuthenticator
             }
         }
 
-        $user = new OperatorUser($operator->id, $operator->email, $roles);
+        $organizationId = null;
+        $rawOrgId = $payload->organization_id ?? null;
+        if (\is_scalar($rawOrgId)) {
+            $organizationId = (string) $rawOrgId;
+        }
+
+        $user = new OperatorUser($operator->id, $operator->email, $roles, $organizationId);
 
         return new SelfValidatingPassport(
             new UserBadge($user->getUserIdentifier(), static fn() => $user)
