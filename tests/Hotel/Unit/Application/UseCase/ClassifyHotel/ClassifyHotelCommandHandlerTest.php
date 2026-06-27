@@ -12,6 +12,7 @@ use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\ValueObject\StarRating;
 use App\Shared\Domain\Event\StarRatingClassified;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 use App\Tests\Fake\FakeEventDispatcher;
 use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
 use PHPUnit\Framework\Attributes\Group;
@@ -108,6 +109,7 @@ final class ClassifyHotelCommandHandlerTest extends TestCase
             'Hotel Test',
             new Address('1 rue Test', '75001', 'Paris', 'FR'),
             new \DateTimeImmutable('2025-01-01'),
+            new OrganizationId('00000000-0000-0000-0000-000000000001'),
         );
     }
 }

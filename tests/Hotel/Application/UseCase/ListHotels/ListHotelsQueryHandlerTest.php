@@ -9,6 +9,7 @@ use App\Hotel\Application\UseCase\ListHotels\ListHotelsQueryHandler;
 use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Model\Hotel;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 use App\Tests\Hotel\Infrastructure\Persistence\InMemory\InMemoryHotelRepository;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -117,6 +118,7 @@ final class ListHotelsQueryHandlerTest extends TestCase
             $name,
             new Address('1 rue Test', '75000', $city, $country),
             new \DateTimeImmutable('2024-01-01'),
+            new OrganizationId('00000000-0000-0000-0000-000000000001'),
         );
     }
 }

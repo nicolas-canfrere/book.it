@@ -35,6 +35,9 @@ services:
         exclude:
             - '../../src/Hotel/UI/**/*Request.php'
 
+    App\Hotel\Domain\Port\HotelPublicReaderInterface:
+        class: App\Hotel\Infrastructure\Persistence\Doctrine\HotelPublicReader
+
     bookit.doctrine.middleware.search_path.hotel:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
