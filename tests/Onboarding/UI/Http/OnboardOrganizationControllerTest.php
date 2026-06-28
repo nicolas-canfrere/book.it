@@ -142,7 +142,7 @@ final class OnboardOrganizationControllerTest extends WebTestCase
     }
 
     #[Test]
-    public function itReturns401WithoutAuthentication(): void
+    public function itIsPubliclyAccessibleWithoutAuthentication(): void
     {
         // Ensures the route is not accidentally restricted to authenticated users
         // (PUBLIC_ACCESS means we should NOT get a 401/403 — we get a real response)
