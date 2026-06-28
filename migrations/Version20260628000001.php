@@ -11,23 +11,31 @@ final class Version20260628000001 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Make operator_organization_id_fkey deferrable to support cross-connection onboarding writes in tests';
+        return 'Drop cross-schema FK constraints; add COMMENT ON for hotel and operator columns';
     }
 
     public function up(Schema $schema): void
     {
-        // The FK operator.operator(organization_id) → organization.organizations(id) is a cross-schema constraint.
-        // During onboarding, both the organization and the operator are created in a single request, using two
-        // separate DBAL connections (organization + operator). In test environments, DAMADoctrineTestBundle wraps
-        // each connection in its own transaction; without deferral, the FK check fires before the organization
-        // insert is visible to the operator connection. Making the constraint DEFERRABLE INITIALLY DEFERRED means
-        // the check runs at COMMIT time — which in DAMA tests is never (they roll back), and in production is
-        // per-statement in auto-commit mode (equivalent to IMMEDIATE).
-        $this->addSql('ALTER TABLE operator.operator ALTER CONSTRAINT operator_organization_id_fkey DEFERRABLE INITIALLY DEFERRED');
+        // Les FK inter-schema créées dans Version20260627000001 sont supprimées.
+        // L'intégrité référentielle organization_id est garantie au niveau applicatif,
+        // pas au niveau base de données, conformément à la règle d'isolation inter-contexte.
+        $this->addSql('ALTER TABLE hotel.hotel    DROP CONSTRAINT IF EXISTS hotel_organization_id_fkey');
+        $this->addSql('ALTER TABLE operator.operator DROP CONSTRAINT IF EXISTS operator_organization_id_fkey');
+
+        $this->addSql("COMMENT ON COLUMN hotel.hotel.organization_id             IS 'UUID of the owning organization (no cross-schema FK — enforced at application level)'");
+        $this->addSql("COMMENT ON COLUMN operator.operator.organization_id       IS 'UUID of the operator''s organization (no cross-schema FK — enforced at application level)'");
+        $this->addSql("COMMENT ON COLUMN operator.operator.role                  IS 'Operator role within the organization: owner | staff'");
     }
 
     public function down(Schema $schema): void
     {
-        $this->addSql('ALTER TABLE operator.operator ALTER CONSTRAINT operator_organization_id_fkey NOT DEFERRABLE');
+        $this->addSql("COMMENT ON COLUMN operator.operator.role            IS NULL");
+        $this->addSql("COMMENT ON COLUMN operator.operator.organization_id IS NULL");
+        $this->addSql("COMMENT ON COLUMN hotel.hotel.organization_id       IS NULL");
+
+        $this->addSql('ALTER TABLE operator.operator DROP CONSTRAINT IF EXISTS operator_organization_id_fkey');
+        $this->addSql('ALTER TABLE hotel.hotel       DROP CONSTRAINT IF EXISTS hotel_organization_id_fkey');
+        $this->addSql('ALTER TABLE operator.operator ADD CONSTRAINT operator_organization_id_fkey FOREIGN KEY (organization_id) REFERENCES organization.organizations(id)');
+        $this->addSql('ALTER TABLE hotel.hotel       ADD CONSTRAINT hotel_organization_id_fkey    FOREIGN KEY (organization_id) REFERENCES organization.organizations(id)');
     }
 }

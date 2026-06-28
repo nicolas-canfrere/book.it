@@ -28,7 +28,14 @@ final class Version20260627000001 extends AbstractMigration
             )
         ');
 
-        // Organisation de migration pour les données existantes
+        $this->addSql("COMMENT ON TABLE  organization.organizations              IS 'Registered hotel organizations (tenants)'");
+        $this->addSql("COMMENT ON COLUMN organization.organizations.id           IS 'UUID v4 — internal organization identifier'");
+        $this->addSql("COMMENT ON COLUMN organization.organizations.name         IS 'Display name of the organization'");
+        $this->addSql("COMMENT ON COLUMN organization.organizations.contact_email IS 'Primary contact email; also used as the owner operator email at onboarding'");
+        $this->addSql("COMMENT ON COLUMN organization.organizations.status       IS 'Lifecycle status: pending | active | suspended'");
+        $this->addSql("COMMENT ON COLUMN organization.organizations.registered_at IS 'UTC timestamp of the initial registration request'");
+
+        // Données de migration pour les enregistrements existants
         $this->addSql("
             INSERT INTO organization.organizations (id, name, contact_email, status, registered_at)
             VALUES (
@@ -41,24 +48,26 @@ final class Version20260627000001 extends AbstractMigration
         ");
 
         // Ajouter organization_id sur hotel.hotel (NOT NULL avec valeur par défaut pour la migration atomique)
+        // Pas de FK inter-schema : l'intégrité référentielle est garantie au niveau applicatif.
         $this->addSql("
             ALTER TABLE hotel.hotel
                 ADD COLUMN organization_id UUID NOT NULL
                     DEFAULT '00000000-0000-0000-0000-000000000001'
-                    REFERENCES organization.organizations(id)
         ");
         $this->addSql('ALTER TABLE hotel.hotel ALTER COLUMN organization_id DROP DEFAULT');
+        $this->addSql("COMMENT ON COLUMN hotel.hotel.organization_id IS 'UUID of the owning organization (no cross-schema FK — enforced at application level)'");
 
         // Ajouter organization_id et role sur operator.operator
+        // Pas de FK inter-schema : l'intégrité référentielle est garantie au niveau applicatif.
         $this->addSql("
             ALTER TABLE operator.operator
                 ADD COLUMN organization_id UUID NOT NULL
-                    DEFAULT '00000000-0000-0000-0000-000000000001'
-                    REFERENCES organization.organizations(id),
+                    DEFAULT '00000000-0000-0000-0000-000000000001',
                 ADD COLUMN role VARCHAR(20) NOT NULL DEFAULT 'owner'
         ");
         $this->addSql('ALTER TABLE operator.operator ALTER COLUMN organization_id DROP DEFAULT');
-        // Garder DEFAULT 'owner' sur role — nouveau opérateur sans rôle explicite = owner
+        $this->addSql("COMMENT ON COLUMN operator.operator.organization_id IS 'UUID of the operator''s organization (no cross-schema FK — enforced at application level)'");
+        $this->addSql("COMMENT ON COLUMN operator.operator.role            IS 'Operator role within the organization: owner | staff'");
     }
 
     public function down(Schema $schema): void
