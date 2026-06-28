@@ -108,3 +108,6 @@ deptrac:
             - External
         ExternalPsr: ~
         External: ~
+    skip_violations:
+        App\Shared\Infrastructure\Http\TenantContextMiddleware:
+            - App\Security\Infrastructure\Keycloak\OperatorUser

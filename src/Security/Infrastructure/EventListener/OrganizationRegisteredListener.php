@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace App\Security\Infrastructure\EventListener;
 
-use App\Security\Infrastructure\Keycloak\KeycloakHttpClientInterface;
-use App\Security\Infrastructure\Persistence\IdentityMappingRepository;
 use App\Shared\Domain\Event\OrganizationRegistered;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
@@ -13,11 +11,8 @@ use Symfony\Component\EventDispatcher\Attribute\AsEventListener;
 #[AsEventListener(event: OrganizationRegistered::class)]
 final readonly class OrganizationRegisteredListener
 {
-    public function __construct(
-        private KeycloakHttpClientInterface $keycloakClient,
-        private IdentityMappingRepository $identityMapping,
-        private LoggerInterface $logger,
-    ) {
+    public function __construct(private LoggerInterface $logger)
+    {
     }
 
     public function __invoke(OrganizationRegistered $event): void

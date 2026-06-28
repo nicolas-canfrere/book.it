@@ -180,6 +180,25 @@ deptrac:
                     type: classLike
                     value: 'App\\Search\\.*'
         -
+            name: Organization
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Organization\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Organization\\Application\\Contract\\.*'
+        -
+            name: OrganizationContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Organization\\Application\\Contract\\.*'
+        -
             name: Security
             collectors:
                 -
@@ -251,6 +270,10 @@ deptrac:
             - ReservationContract
             - Shared
             - Vendor
+        Organization:
+            - OrganizationContract
+            - Shared
+            - Vendor
         Operator:
             - OperatorContract
             - SecurityContract
@@ -287,6 +310,7 @@ deptrac:
         Security:
             - SecurityContract
             - OperatorContract
+            - OrganizationContract
             - Shared
             - Vendor
         # Les contrats publiés sont des DTO/interfaces purs : aucune dépendance
@@ -301,6 +325,8 @@ deptrac:
             - Shared
         NotificationContract: ~
         OperatorContract: ~
+        OrganizationContract:
+            - Shared
         PricingContract:
             - Shared
         ReservationContract:
@@ -311,3 +337,6 @@ deptrac:
         Shared:
             - Vendor
         Vendor: ~
+    skip_violations:
+        App\Shared\Infrastructure\Http\TenantContextMiddleware:
+            - App\Security\Infrastructure\Keycloak\OperatorUser
