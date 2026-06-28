@@ -13,6 +13,7 @@ use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Shared\Domain\Event\HotelAmenityDeclared;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 use App\Tests\Fake\FakeEventDispatcher;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -57,6 +58,7 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
             'Test Hotel',
             new Address('1 rue Test', '75001', 'Paris', 'FR'),
             new \DateTimeImmutable(),
+            new OrganizationId('00000000-0000-0000-0000-000000000001'),
         );
         $repository->method('get')->willReturn($hotel);
         $repository
@@ -86,6 +88,7 @@ final class DeclareHotelAmenitiesCommandHandlerTest extends TestCase
             'Test Hotel',
             new Address('1 rue Test', '75001', 'Paris', 'FR'),
             new \DateTimeImmutable(),
+            organizationId: new OrganizationId('00000000-0000-0000-0000-000000000001'),
             amenities: [HotelAmenity::Pool],
         );
         $repository->method('get')->willReturn($hotel);

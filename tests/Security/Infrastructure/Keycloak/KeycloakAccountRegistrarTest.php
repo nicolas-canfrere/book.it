@@ -146,4 +146,30 @@ final class KeycloakAccountRegistrarTest extends TestCase
         $this->expectException(\RuntimeException::class);
         $this->registrar->assignRole('operator-uuid', 'operator', 'ROLE_ADMIN');
     }
+
+    #[Test]
+    public function itSetsOrganizationIdAttributeOnKeycloakUser(): void
+    {
+        $this->mappingRepository->expects(self::once())
+            ->method('findExternalId')
+            ->with('operator-uuid', 'operator')
+            ->willReturn('keycloak-uuid');
+
+        $this->keycloakClient->expects(self::once())
+            ->method('setUserAttribute')
+            ->with('keycloak-uuid', 'organization_id', 'org-uuid');
+
+        $this->registrar->setOrganizationId('operator-uuid', 'operator', 'org-uuid');
+    }
+
+    #[Test]
+    public function itThrowsWhenNoMappingFoundForSetOrganizationId(): void
+    {
+        $this->mappingRepository->method('findExternalId')->willReturn(null);
+
+        $this->keycloakClient->expects(self::never())->method('setUserAttribute');
+
+        $this->expectException(\RuntimeException::class);
+        $this->registrar->setOrganizationId('operator-uuid', 'operator', 'org-uuid');
+    }
 }

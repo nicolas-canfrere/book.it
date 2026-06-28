@@ -10,18 +10,25 @@ use App\Hotel\Domain\Model\HotelPage;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Application\TenantContext;
 use App\Shared\Domain\ValueObject\GeoPlaceId;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 use Doctrine\DBAL\Types\Types;
 use Symfony\Component\String\Slugger\SluggerInterface;
 
-final readonly class HotelRepository implements HotelRepositoryInterface
+final class HotelRepository implements HotelRepositoryInterface
 {
+    private readonly TenantContext $tenantContext;
+
     public function __construct(
-        private Connection $hotelConnection,
-        private SluggerInterface $slugger,
+        private readonly Connection $hotelConnection,
+        private readonly SluggerInterface $slugger,
+        TenantContext $tenantContext,
     ) {
+        $this->tenantContext = $tenantContext;
     }
 
     public function add(Hotel $hotel): void
@@ -39,6 +46,7 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
             'amenities' => $this->serializeAmenities($hotel->amenities),
+            'organization_id' => $hotel->organizationId->value,
         ], [
             'superior' => Types::BOOLEAN,
         ]);
@@ -50,34 +58,44 @@ final readonly class HotelRepository implements HotelRepositoryInterface
             'stars' => $hotel->starRating?->stars,
             'superior' => null !== $hotel->starRating ? $hotel->starRating->superior : false,
             'amenities' => $this->serializeAmenities($hotel->amenities),
-        ], ['id' => $hotel->id->value], [
+        ], [
+            'id' => $hotel->id->value,
+            'organization_id' => $this->tenantContext->getOrganizationId()->value,
+        ], [
             'superior' => Types::BOOLEAN,
         ]);
     }
 
     public function get(HotelId $id): ?Hotel
     {
-        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}|false $row */
-        $row = $this->hotelConnection->fetchAssociative(
-            'SELECT id, name, street_address, postal_code, city, country, geo_place_id, created_at, stars, superior, amenities FROM hotel WHERE id = :id',
-            ['id' => $id->value],
-        );
+        $qb = $this->hotelConnection->createQueryBuilder()
+            ->select('h.id, h.name, h.street_address, h.postal_code, h.city, h.country, h.geo_place_id, h.created_at, h.stars, h.superior, h.amenities, h.organization_id')
+            ->from('hotel', 'h')
+            ->where('h.id = :id')
+            ->setParameter('id', $id->value);
 
-        if (false === $row) {
-            return null;
-        }
+        $this->applyTenantScope($qb, 'h');
 
-        return $this->hydrate($row);
+        /** @var array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string, organization_id: string}|false $row */
+        $row = $qb->fetchAssociative();
+
+        return false === $row ? null : $this->hydrate($row);
     }
 
     public function existsByNameAndAddress(string $name, Address $address): bool
     {
-        $count = $this->hotelConnection->fetchOne(
-            'SELECT COUNT(*) FROM hotel WHERE search_key = :key',
-            ['key' => $this->buildSearchKey($name, $address)],
-        );
+        $qb = $this->hotelConnection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from('hotel', 'h')
+            ->where('h.search_key = :key')
+            ->setParameter('key', $this->buildSearchKey($name, $address));
 
-        return $count > 0;
+        $this->applyTenantScope($qb, 'h');
+
+        /** @var int|string $count */
+        $count = $qb->fetchOne();
+
+        return (int) $count > 0;
     }
 
     /**
@@ -85,52 +103,44 @@ final readonly class HotelRepository implements HotelRepositoryInterface
      */
     public function list(int $page, int $limit, ?string $city, ?string $country, ?int $minStars = null, ?array $amenities = null): HotelPage
     {
-        $conditions = [];
-        $params = [];
+        $qb = $this->hotelConnection->createQueryBuilder()
+            ->select('h.id, h.name, h.street_address, h.postal_code, h.city, h.country, h.geo_place_id, h.created_at, h.stars, h.superior, h.amenities, h.organization_id')
+            ->from('hotel', 'h');
+
+        $this->applyTenantScope($qb, 'h');
 
         if (null !== $city) {
-            $conditions[] = 'city = :city';
-            $params['city'] = $city;
+            $qb->andWhere('h.city = :city')->setParameter('city', $city);
         }
-
         if (null !== $country) {
-            $conditions[] = 'country = :country';
-            $params['country'] = $country;
+            $qb->andWhere('h.country = :country')->setParameter('country', $country);
         }
-
         if (null !== $minStars) {
-            $conditions[] = 'stars >= :minStars';
-            $params['minStars'] = $minStars;
+            $qb->andWhere('h.stars >= :minStars')->setParameter('minStars', $minStars);
         }
-
         if (null !== $amenities && [] !== $amenities) {
-            $conditions[] = 'amenities @> :amenities::text[]';
-            $params['amenities'] = $this->serializeAmenities($amenities);
+            $qb->andWhere('h.amenities @> :amenities::text[]')
+               ->setParameter('amenities', $this->serializeAmenities($amenities));
         }
 
-        $where = $conditions ? 'WHERE ' . implode(' AND ', $conditions) : '';
-
+        $countQb = clone $qb;
+        $countQb->select('COUNT(*)');
         /** @var int|string $count */
-        $count = $this->hotelConnection->fetchOne(
-            "SELECT COUNT(*) FROM hotel {$where}",
-            $params,
-        );
+        $count = $countQb->fetchOne();
         $total = (int) $count;
 
-        $params['limit'] = $limit;
-        $params['offset'] = ($page - 1) * $limit;
+        $qb->orderBy('h.name', 'ASC')
+           ->setMaxResults($limit)
+           ->setFirstResult(($page - 1) * $limit);
 
-        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string}> $rows */
-        $rows = $this->hotelConnection->fetchAllAssociative(
-            "SELECT id, name, street_address, postal_code, city, country, geo_place_id, created_at, stars, superior, amenities FROM hotel {$where} ORDER BY name ASC LIMIT :limit OFFSET :offset",
-            $params,
-        );
+        /** @var list<array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string, organization_id: string}> $rows */
+        $rows = $qb->fetchAllAssociative();
 
         return new HotelPage(array_map($this->hydrate(...), $rows), $total);
     }
 
     /**
-     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string} $row
+     * @param array{id: string, name: string, street_address: string, postal_code: string, city: string, country: string, geo_place_id: string|null, created_at: string, stars: int|null, superior: string|bool, amenities: string, organization_id: string} $row
      */
     private function hydrate(array $row): Hotel
     {
@@ -149,9 +159,16 @@ final readonly class HotelRepository implements HotelRepositoryInterface
                 null !== $row['geo_place_id'] ? new GeoPlaceId((string) $row['geo_place_id']) : null,
             ),
             new \DateTimeImmutable($row['created_at']),
+            new OrganizationId($row['organization_id']),
             $starRating,
             $this->parseAmenities($row['amenities']),
         );
+    }
+
+    private function applyTenantScope(QueryBuilder $qb, string $tableAlias = 't'): void
+    {
+        $qb->andWhere("{$tableAlias}.organization_id = :tenant_id")
+           ->setParameter('tenant_id', $this->tenantContext->getOrganizationId()->value);
     }
 
     private function buildSearchKey(string $name, Address $address): string

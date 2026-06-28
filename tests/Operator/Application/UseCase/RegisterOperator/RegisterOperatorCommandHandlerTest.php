@@ -9,7 +9,9 @@ use App\Operator\Application\UseCase\RegisterOperator\RegisterOperatorCommandHan
 use App\Operator\Domain\Exception\OperatorAlreadyExistsException;
 use App\Operator\Domain\Port\ExternalAccountRegistrarInterface;
 use App\Operator\Domain\Port\OperatorRepositoryInterface;
+use App\Shared\Application\TenantContext;
 use App\Shared\Domain\ValueObject\OperatorId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -29,7 +31,7 @@ final class RegisterOperatorCommandHandlerTest extends TestCase
         $accountRegistrar = $this->createMock(ExternalAccountRegistrarInterface::class);
         $accountRegistrar->expects(self::never())->method('register');
 
-        $handler = new RegisterOperatorCommandHandler($repository, $accountRegistrar, new NullLogger());
+        $handler = new RegisterOperatorCommandHandler($repository, $accountRegistrar, new NullLogger(), $this->makeTenantContext());
 
         $this->expectException(OperatorAlreadyExistsException::class);
         ($handler)($this->makeCommand());
@@ -47,7 +49,7 @@ final class RegisterOperatorCommandHandlerTest extends TestCase
         $accountRegistrar->expects(self::once())->method('register');
         $accountRegistrar->expects(self::once())->method('unregister')->with(new OperatorId('uuid-1'));
 
-        $handler = new RegisterOperatorCommandHandler($repository, $accountRegistrar, new NullLogger());
+        $handler = new RegisterOperatorCommandHandler($repository, $accountRegistrar, new NullLogger(), $this->makeTenantContext());
 
         $this->expectException(\RuntimeException::class);
         ($handler)($this->makeCommand());
@@ -68,9 +70,17 @@ final class RegisterOperatorCommandHandlerTest extends TestCase
             ->with(new OperatorId('uuid-1'), 'alice@hotel.com', 'password123');
         $accountRegistrar->expects(self::never())->method('unregister');
 
-        $handler = new RegisterOperatorCommandHandler($repository, $accountRegistrar, new NullLogger());
+        $handler = new RegisterOperatorCommandHandler($repository, $accountRegistrar, new NullLogger(), $this->makeTenantContext());
 
         ($handler)($this->makeCommand());
+    }
+
+    private function makeTenantContext(): TenantContext
+    {
+        $context = new TenantContext();
+        $context->set(new OrganizationId('00000000-0000-0000-0000-000000000001'));
+
+        return $context;
     }
 
     private function makeCommand(

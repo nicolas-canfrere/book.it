@@ -164,3 +164,11 @@ services:
                     type: 'https://book.it/problems/unsupported-locale'
                     title: 'Unsupported Locale'
                     status: 422
+                App\Organization\Domain\Exception\OrganizationNotFoundException:
+                    type: 'https://book.it/problems/organization-not-found'
+                    title: 'Organization Not Found'
+                    status: 404
+                App\Organization\Domain\Exception\OrganizationAlreadyExistsException:
+                    type: 'https://book.it/problems/organization-already-exists'
+                    title: 'Organization Already Exists'
+                    status: 409

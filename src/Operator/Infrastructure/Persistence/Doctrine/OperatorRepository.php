@@ -6,13 +6,19 @@ namespace App\Operator\Infrastructure\Persistence\Doctrine;
 
 use App\Operator\Domain\Model\Operator;
 use App\Operator\Domain\Port\OperatorRepositoryInterface;
+use App\Shared\Application\TenantContext;
 use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Query\QueryBuilder;
 
-final readonly class OperatorRepository implements OperatorRepositoryInterface
+final class OperatorRepository implements OperatorRepositoryInterface
 {
+    private readonly TenantContext $tenantContext;
+
     public function __construct(
-        private Connection $operatorConnection,
+        private readonly Connection $operatorConnection,
+        TenantContext $tenantContext,
     ) {
+        $this->tenantContext = $tenantContext;
     }
 
     public function add(Operator $operator): void
@@ -24,17 +30,33 @@ final readonly class OperatorRepository implements OperatorRepositoryInterface
             'email' => $operator->email,
             'phone' => $operator->phone,
             'registered_at' => $operator->registeredAt->format('Y-m-d H:i:s'),
+            'organization_id' => $operator->organizationId->value,
+            'role' => $operator->role->value,
         ]);
     }
 
     public function existsByEmail(string $email): bool
     {
+        $qb = $this->operatorConnection->createQueryBuilder()
+            ->select('COUNT(*)')
+            ->from('operator', 'o')
+            ->where('LOWER(o.email) = LOWER(:email)')
+            ->setParameter('email', $email);
+
+        if ($this->tenantContext->isInitialized()) {
+            $this->applyTenantScope($qb, 'o');
+        }
+
         /** @var int|string $count */
-        $count = $this->operatorConnection->fetchOne(
-            'SELECT COUNT(*) FROM operator WHERE LOWER(email) = LOWER(:email)',
-            ['email' => $email],
-        );
+        $count = $qb->fetchOne();
 
         return (int) $count > 0;
+    }
+
+    private function applyTenantScope(QueryBuilder $qb, string $tableAlias = 't'): void
+    {
+        $qb
+            ->andWhere("{$tableAlias}.organization_id = :tenant_id")
+            ->setParameter('tenant_id', $this->tenantContext->getOrganizationId()->value);
     }
 }

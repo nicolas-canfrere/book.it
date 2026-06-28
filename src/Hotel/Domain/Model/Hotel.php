@@ -7,6 +7,7 @@ namespace App\Hotel\Domain\Model;
 use App\Hotel\Domain\ValueObject\HotelAmenity;
 use App\Hotel\Domain\ValueObject\StarRating;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 
 final readonly class Hotel
 {
@@ -18,6 +19,7 @@ final readonly class Hotel
         public string $name,
         public Address $address,
         public \DateTimeImmutable $createdAt,
+        public OrganizationId $organizationId,
         public ?StarRating $starRating = null,
         public array $amenities = [],
     ) {
@@ -30,6 +32,7 @@ final readonly class Hotel
             name: $this->name,
             address: $this->address,
             createdAt: $this->createdAt,
+            organizationId: $this->organizationId,
             starRating: $starRating,
             amenities: $this->amenities,
         );
@@ -45,6 +48,7 @@ final readonly class Hotel
             name: $this->name,
             address: $this->address,
             createdAt: $this->createdAt,
+            organizationId: $this->organizationId,
             starRating: $this->starRating,
             amenities: $amenities,
         );

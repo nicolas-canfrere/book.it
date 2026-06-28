@@ -180,6 +180,31 @@ deptrac:
                     type: classLike
                     value: 'App\\Search\\.*'
         -
+            name: Organization
+            collectors:
+                -
+                    type: bool
+                    must:
+                        -
+                            type: classLike
+                            value: 'App\\Organization\\.*'
+                    must_not:
+                        -
+                            type: classLike
+                            value: 'App\\Organization\\Application\\Contract\\.*'
+        -
+            name: OrganizationContract
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Organization\\Application\\Contract\\.*'
+        -
+            name: Onboarding
+            collectors:
+                -
+                    type: classLike
+                    value: 'App\\Onboarding\\.*'
+        -
             name: Security
             collectors:
                 -
@@ -251,6 +276,15 @@ deptrac:
             - ReservationContract
             - Shared
             - Vendor
+        Onboarding:
+            - OrganizationContract
+            - OperatorContract
+            - Shared
+            - Vendor
+        Organization:
+            - OrganizationContract
+            - Shared
+            - Vendor
         Operator:
             - OperatorContract
             - SecurityContract
@@ -301,6 +335,8 @@ deptrac:
             - Shared
         NotificationContract: ~
         OperatorContract: ~
+        OrganizationContract:
+            - Shared
         PricingContract:
             - Shared
         ReservationContract:

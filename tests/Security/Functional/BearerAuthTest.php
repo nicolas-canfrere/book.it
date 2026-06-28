@@ -130,6 +130,7 @@ final class BearerAuthTest extends WebTestCase
             'iss' => 'http://localhost:9000/realms/bookit',
             'iat' => time(),
             'exp' => time() + 3600,
+            'organization_id' => '00000000-0000-0000-0000-000000000001',
         ], $overrides);
 
         return JWT::encode($payload, $this->privateKey, 'RS256');

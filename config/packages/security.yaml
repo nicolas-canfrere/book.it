@@ -16,6 +16,7 @@ security:
 
     access_control:
         - { path: ^/api/v1/payment/webhooks, roles: ROLE_WEBHOOK }
+        - { path: ^/api/v1/onboarding$, roles: PUBLIC_ACCESS, methods: [POST] }
         - { path: ^/api/v1/search$, roles: PUBLIC_ACCESS, methods: [ GET ] }
         - { path: ^/api/v1/geo/places$, roles: PUBLIC_ACCESS, methods: [ GET ] }
         # Hotel detail is non-sensitive public-facing data (name, address, amenities, rating) — intentionally public

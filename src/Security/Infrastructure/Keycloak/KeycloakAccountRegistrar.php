@@ -97,4 +97,14 @@ final class KeycloakAccountRegistrar implements AccountRegistrarInterface
             'role' => $roleName,
         ]);
     }
+
+    public function setOrganizationId(string $internalId, string $context, string $organizationId): void
+    {
+        $keycloakId = $this->mappingRepository->findExternalId($internalId, $context);
+        if (null === $keycloakId) {
+            throw new \RuntimeException("No Keycloak mapping found for {$internalId} (context: {$context})");
+        }
+
+        $this->keycloakClient->setUserAttribute($keycloakId, 'organization_id', $organizationId);
+    }
 }

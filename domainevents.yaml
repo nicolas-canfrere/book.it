@@ -1,4 +1,4 @@
-generated_at: '2026-06-20T15:22:50+00:00'
+generated_at: '2026-06-28T07:55:31+00:00'
 events:
   ReservationCancelled:
     class: App\Shared\Domain\Event\ReservationCancelled
@@ -185,3 +185,18 @@ events:
       starRating: '?int'
     listeners:
       - { context: Search, class: App\Search\Infrastructure\EventListener\StarRatingClassifiedListener }
+  OrganizationRegistered:
+    class: App\Shared\Domain\Event\OrganizationRegistered
+    properties:
+      organizationId: string
+      contactEmail: string
+      registeredAt: DateTimeImmutable
+    listeners:
+      - { context: Security, class: App\Security\Infrastructure\EventListener\OrganizationRegisteredListener }
+  OrganizationSuspended:
+    class: App\Shared\Domain\Event\OrganizationSuspended
+    properties:
+      organizationId: string
+      suspendedAt: DateTimeImmutable
+    listeners:
+      - { context: Security, class: App\Security\Infrastructure\EventListener\OrganizationSuspendedListener }

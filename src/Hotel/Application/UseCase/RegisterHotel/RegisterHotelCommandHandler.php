@@ -10,6 +10,7 @@ use App\Hotel\Domain\Model\Hotel;
 use App\Hotel\Domain\Port\GeoPlaceCheckerInterface;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Application\TenantContext;
 use App\Shared\Domain\Event\HotelRegistered;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
@@ -19,6 +20,7 @@ final readonly class RegisterHotelCommandHandler implements SyncCommandHandlerIn
         private HotelRepositoryInterface $hotelRepository,
         private EventDispatcherInterface $eventDispatcher,
         private GeoPlaceCheckerInterface $geoPlaceChecker,
+        private TenantContext $tenantContext,
     ) {
     }
 
@@ -33,7 +35,14 @@ final readonly class RegisterHotelCommandHandler implements SyncCommandHandlerIn
             throw new InvalidGeoPlaceException($geoPlaceId->value);
         }
 
-        $hotel = new Hotel($command->id, $command->name, $command->address, $command->createdAt, $command->starRating);
+        $hotel = new Hotel(
+            $command->id,
+            $command->name,
+            $command->address,
+            $command->createdAt,
+            $this->tenantContext->getOrganizationId(),
+            $command->starRating,
+        );
 
         $this->hotelRepository->add($hotel);
 

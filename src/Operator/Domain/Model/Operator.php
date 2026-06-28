@@ -4,7 +4,9 @@ declare(strict_types=1);
 
 namespace App\Operator\Domain\Model;
 
+use App\Operator\Domain\ValueObject\OperatorRole;
 use App\Shared\Domain\ValueObject\OperatorId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 
 final readonly class Operator
 {
@@ -15,6 +17,8 @@ final readonly class Operator
         public string $email,
         public string $phone,
         public \DateTimeImmutable $registeredAt,
+        public OrganizationId $organizationId,
+        public OperatorRole $role = OperatorRole::Owner,
     ) {
     }
 }

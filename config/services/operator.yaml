@@ -40,6 +40,9 @@ services:
 
     App\Operator\Domain\Port\ExternalAccountRegistrarInterface: '@App\Operator\Infrastructure\Contract\SecurityAccountRegistrarAdapter'
 
+    App\Operator\Application\Contract\OwnerOperatorRegistrarInterface:
+        class: App\Operator\Infrastructure\Contract\DoctrineOwnerOperatorRegistrar
+
     bookit.doctrine.middleware.search_path.operator:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:

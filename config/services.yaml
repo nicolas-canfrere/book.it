@@ -14,6 +14,8 @@ imports:
     - { resource: './services/security.yaml' }
     - { resource: './services/translation.yaml' }
     - { resource: './services/geo.yaml' }
+    - { resource: './services/organization.yaml' }
+    - { resource: './services/onboarding.yaml' }
 
 parameters:
     app.supported_locales: ['fr_FR', 'en_GB', 'de_DE']
