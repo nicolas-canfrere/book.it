@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace App\Shared\Infrastructure\Http;
 
-use App\Security\Infrastructure\Keycloak\OperatorUser;
 use App\Shared\Application\TenantContext;
+use App\Shared\Domain\Security\TenantCarrierInterface;
 use App\Shared\Domain\ValueObject\OrganizationId;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpKernel\Event\RequestEvent;
@@ -39,12 +39,13 @@ final readonly class TenantContextMiddleware implements EventSubscriberInterface
         }
 
         $user = $token->getUser();
-        if (!$user instanceof OperatorUser) {
+        if (!$user instanceof TenantCarrierInterface) {
             return;
         }
 
-        if (null !== $user->organizationId) {
-            $this->tenantContext->set(new OrganizationId($user->organizationId));
+        $organizationId = $user->getOrganizationId();
+        if (null !== $organizationId) {
+            $this->tenantContext->set(new OrganizationId($organizationId));
         }
     }
 }

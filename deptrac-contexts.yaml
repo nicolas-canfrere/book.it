@@ -337,6 +337,3 @@ deptrac:
         Shared:
             - Vendor
         Vendor: ~
-    skip_violations:
-        App\Shared\Infrastructure\Http\TenantContextMiddleware:
-            - App\Security\Infrastructure\Keycloak\OperatorUser

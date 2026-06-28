@@ -4,9 +4,10 @@ declare(strict_types=1);
 
 namespace App\Security\Infrastructure\Keycloak;
 
+use App\Shared\Domain\Security\TenantCarrierInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 
-final class OperatorUser implements UserInterface
+final class OperatorUser implements UserInterface, TenantCarrierInterface
 {
     /**
      * @var list<string>
@@ -23,6 +24,11 @@ final class OperatorUser implements UserInterface
         public readonly ?string $organizationId = null,
     ) {
         $this->setRoles($roles);
+    }
+
+    public function getOrganizationId(): ?string
+    {
+        return $this->organizationId;
     }
 
     public function getUserIdentifier(): string
