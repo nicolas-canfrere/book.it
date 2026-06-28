@@ -158,24 +158,46 @@ _Avoid_: booker creation, account creation, sign-up
 
 ---
 
+**Organization**:
+A registered entity representing a hotel group or independent hotel on the platform. An Organization is the tenant root — all Hotels, Rooms, rates, and Reservations managed through the platform belong to exactly one Organization. An Organization registers itself (self-registration) and may own one or more Hotels.
+_Avoid_: tenant, customer, client, account, hotel chain (when used generically)
+
+**Organization Registration**:
+The act of an Organization signing up for the platform. Self-service — no administrator intervention required. Rejected if an Organization with the same contact email already exists. Creates the Organization with status `pending` and provisions the Organization Owner account.
+_Avoid_: organization creation, account creation, sign-up
+
+**Organization Status**:
+The lifecycle state of an Organization: `pending` (registered, awaiting activation), `active` (fully operational — Hotels can be listed and Reservations accepted), or `suspended` (access revoked by the platform). Operators belonging to a `suspended` Organization cannot authenticate.
+_Avoid_: account status, tenant status
+
+**Organization Owner**:
+The Operator who performed the Organization Registration. Holds the `owner` role within the Organization — the highest privilege level. Provisioned automatically at Organization Registration. Exactly one per Organization.
+_Avoid_: admin, super-admin, account owner
+
+**Operator Role**:
+The privilege level of an Operator within their Organization: `owner` (full control, assigned at Organization Registration), `manager` (can manage Hotels and Rooms), or `staff` (read-only or limited operational access).
+_Avoid_: user role, permission level
+
 **Operator**:
-A registered professional account representing a person who manages one or more Hotels on the platform. Created by an administrator — not self-registered. An Operator is a persistent account, not a per-Hotel identity.
+A registered professional account representing a person who manages Hotels on the platform on behalf of an Organization. An Operator belongs to exactly one Organization. The Organization Owner is provisioned at Organization Registration; additional Operators are added by the Owner. An Operator is a persistent account, not a per-Hotel identity.
 _Avoid_: manager, admin, hotel owner, staff
 
 **Operator Registration**:
-The act of an administrator creating an Operator account. Rejected if an Operator with the same email already exists. No age requirement applies.
+The act of provisioning an Operator account within an Organization. The first Operator (Organization Owner) is created automatically at Organization Registration. Subsequent Operators are added by the Organization Owner. Rejected if an Operator with the same email already exists.
 _Avoid_: operator creation, account creation
 
 ## Relationships
 
+- An **Organization** is uniquely identified by its contact email
+- An **Organization** has a name and a contact email
+- An **Organization Registration** produces exactly one **Organization** and exactly one **Operator** (the Organization Owner), or raises a conflict if the contact email is already taken
+- An **Organization** has exactly one **Organization Status** at any point in time
+- An **Operator** belongs to exactly one **Organization**
+- An **Operator** has exactly one **Operator Role** within their Organization
 - An **Operator** is uniquely identified by their email address
 - An **Operator** has a first name, last name, email, and phone number
 - An **Operator Registration** produces exactly one **Operator**, or raises a conflict if the email is already taken
-- The association between an **Operator** and a **Hotel** is established separately, after **Operator Registration**
-
-## Flagged ambiguities
-
-- Operator endpoint authentication is deferred — the registration endpoint is currently unprotected; a Keycloak `admin` role guard is planned for a later iteration
+- A **Hotel** belongs to exactly one **Organization**
 
 ---
 

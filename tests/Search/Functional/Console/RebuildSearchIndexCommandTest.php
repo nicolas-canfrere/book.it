@@ -153,8 +153,8 @@ final class RebuildSearchIndexCommandTest extends KernelTestCase
     private function insertFixtures(): void
     {
         $this->hotelConnection->executeStatement(
-            'INSERT INTO hotel (id, name, street_address, postal_code, city, country, search_key, created_at)
-             VALUES (:id, :name, :street, :postal, :city, :country, :key, NOW())',
+            'INSERT INTO hotel (id, name, street_address, postal_code, city, country, search_key, created_at, organization_id)
+             VALUES (:id, :name, :street, :postal, :city, :country, :key, NOW(), :orgId)',
             [
                 'id' => self::HOTEL_ID,
                 'name' => 'Test Hotel',
@@ -163,6 +163,7 @@ final class RebuildSearchIndexCommandTest extends KernelTestCase
                 'city' => 'Paris',
                 'country' => 'FR',
                 'key' => 'test-hotel-paris-fr',
+                'orgId' => '00000000-0000-0000-0000-000000000001',
             ],
         );
 

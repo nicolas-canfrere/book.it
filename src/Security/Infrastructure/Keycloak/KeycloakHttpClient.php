@@ -65,6 +65,27 @@ final class KeycloakHttpClient implements KeycloakHttpClientInterface
         );
     }
 
+    public function setUserAttribute(string $keycloakId, string $attribute, string $value): void
+    {
+        $this->request('PUT', "/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}", [
+            'json' => [
+                'attributes' => [$attribute => [$value]],
+            ],
+        ]);
+    }
+
+    public function disableUser(string $keycloakId): void
+    {
+        $this->request('PUT', "/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}", [
+            'json' => ['enabled' => false],
+        ]);
+    }
+
+    public function revokeUserSessions(string $keycloakId): void
+    {
+        $this->request('DELETE', "/admin/realms/{$this->keycloakRealm}/users/{$keycloakId}/sessions");
+    }
+
     /**
      * @param array<string, mixed> $options
      */

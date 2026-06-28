@@ -86,6 +86,7 @@ abstract class AuthenticatedWebTestCase extends WebTestCase
             'iat' => time(),
             'exp' => time() + 3600,
             'realm_access' => ['roles' => $roles],
+            'organization_id' => '00000000-0000-0000-0000-000000000001',
         ], self::$privateKey, 'RS256');
 
         $client->setServerParameter('HTTP_AUTHORIZATION', "Bearer {$token}");

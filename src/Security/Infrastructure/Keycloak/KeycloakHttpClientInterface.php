@@ -13,4 +13,10 @@ interface KeycloakHttpClientInterface
     public function deleteUser(string $keycloakId): void;
 
     public function assignRealmRole(string $keycloakId, string $roleName): void;
+
+    public function setUserAttribute(string $keycloakId, string $attribute, string $value): void;
+
+    public function disableUser(string $keycloakId): void;
+
+    public function revokeUserSessions(string $keycloakId): void;
 }

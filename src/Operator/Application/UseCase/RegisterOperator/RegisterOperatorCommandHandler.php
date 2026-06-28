@@ -9,6 +9,7 @@ use App\Operator\Domain\Model\Operator;
 use App\Operator\Domain\Port\ExternalAccountRegistrarInterface;
 use App\Operator\Domain\Port\OperatorRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Application\TenantContext;
 use Psr\Log\LoggerInterface;
 
 final readonly class RegisterOperatorCommandHandler implements SyncCommandHandlerInterface
@@ -17,6 +18,7 @@ final readonly class RegisterOperatorCommandHandler implements SyncCommandHandle
         private OperatorRepositoryInterface $operatorRepository,
         private ExternalAccountRegistrarInterface $accountRegistrar,
         private LoggerInterface $logger,
+        private TenantContext $tenantContext,
     ) {
     }
 
@@ -36,6 +38,7 @@ final readonly class RegisterOperatorCommandHandler implements SyncCommandHandle
                 $command->email,
                 $command->phone,
                 $command->registeredAt,
+                $this->tenantContext->getOrganizationId(),
             ));
         } catch (\Throwable $e) {
             $this->logger->error('Operator persistence failed after account creation — compensating', [

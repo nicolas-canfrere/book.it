@@ -11,9 +11,11 @@ use App\Hotel\Domain\Model\Address;
 use App\Hotel\Domain\Port\GeoPlaceCheckerInterface;
 use App\Hotel\Domain\Port\HotelRepositoryInterface;
 use App\Hotel\Domain\ValueObject\StarRating;
+use App\Shared\Application\TenantContext;
 use App\Shared\Domain\Event\HotelRegistered;
 use App\Shared\Domain\ValueObject\GeoPlaceId;
 use App\Shared\Domain\ValueObject\HotelId;
+use App\Shared\Domain\ValueObject\OrganizationId;
 use App\Tests\Fake\FakeEventDispatcher;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -22,6 +24,14 @@ use PHPUnit\Framework\TestCase;
 #[Group('unit')]
 final class RegisterHotelCommandHandlerTest extends TestCase
 {
+    private TenantContext $tenantContext;
+
+    protected function setUp(): void
+    {
+        $this->tenantContext = new TenantContext();
+        $this->tenantContext->set(new OrganizationId('00000000-0000-0000-0000-000000000001'));
+    }
+
     #[Test]
     public function itDispatchesHotelRegisteredOnSuccess(): void
     {
@@ -31,7 +41,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
 
         $repository->method('existsByNameAndAddress')->willReturn(false);
 
-        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker);
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker, $this->tenantContext);
         ($handler)(new RegisterHotelCommand(
             id: new HotelId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11'),
             name: 'Le Grand Hôtel',
@@ -57,7 +67,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
 
         $repository->method('existsByNameAndAddress')->willReturn(false);
 
-        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker);
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker, $this->tenantContext);
         ($handler)(new RegisterHotelCommand(
             id: new HotelId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12'),
             name: 'Luxury Palace',
@@ -80,7 +90,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
 
         $repository->method('existsByNameAndAddress')->willReturn(true);
 
-        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker);
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker, $this->tenantContext);
 
         try {
             ($handler)(new RegisterHotelCommand(
@@ -107,7 +117,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
         $repository->method('existsByNameAndAddress')->willReturn(false);
         $geoPlaceChecker->method('exists')->willReturn(true);
 
-        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker);
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker, $this->tenantContext);
         ($handler)(new RegisterHotelCommand(
             id: new HotelId('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a14'),
             name: 'Hotel Ibis Paris',
@@ -128,7 +138,7 @@ final class RegisterHotelCommandHandlerTest extends TestCase
         $repository->method('existsByNameAndAddress')->willReturn(false);
         $geoPlaceChecker->method('exists')->willReturn(false);
 
-        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker);
+        $handler = new RegisterHotelCommandHandler($repository, $dispatcher, $geoPlaceChecker, $this->tenantContext);
 
         try {
             ($handler)(new RegisterHotelCommand(
