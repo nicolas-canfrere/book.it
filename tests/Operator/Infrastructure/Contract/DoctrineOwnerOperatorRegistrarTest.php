@@ -4,13 +4,11 @@ declare(strict_types=1);
 
 namespace App\Tests\Operator\Infrastructure\Contract;
 
-use App\Operator\Application\Contract\OwnerOperatorRegistrarInterface;
 use App\Operator\Domain\Exception\OperatorAlreadyExistsException;
 use App\Operator\Domain\Port\OperatorRepositoryInterface;
 use App\Operator\Infrastructure\Contract\DoctrineOwnerOperatorRegistrar;
 use App\Security\Application\Contract\AccountRegistrarInterface;
 use App\Tests\Operator\Infrastructure\Persistence\InMemory\InMemoryOperatorRepository;
-use App\Tests\Security\Infrastructure\NullAccountRegistrar;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
