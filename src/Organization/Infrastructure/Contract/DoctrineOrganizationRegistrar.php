@@ -12,12 +12,14 @@ use App\Organization\Domain\ValueObject\OrganizationEmail;
 use App\Organization\Domain\ValueObject\OrganizationName;
 use App\Shared\Domain\ValueObject\OrganizationId;
 use Psr\EventDispatcher\EventDispatcherInterface;
+use Psr\Log\LoggerInterface;
 
 final readonly class DoctrineOrganizationRegistrar implements OrganizationRegistrarInterface
 {
     public function __construct(
         private OrganizationRepositoryInterface $repository,
         private EventDispatcherInterface $eventDispatcher,
+        private LoggerInterface $logger,
     ) {
     }
 
@@ -42,6 +44,18 @@ final readonly class DoctrineOrganizationRegistrar implements OrganizationRegist
 
         foreach ($organization->pullEvents() as $event) {
             $this->eventDispatcher->dispatch($event);
+        }
+    }
+
+    public function remove(string $organizationId): void
+    {
+        try {
+            $this->repository->remove(new OrganizationId($organizationId));
+        } catch (\Throwable $e) {
+            $this->logger->warning('Failed to remove organization during compensation', [
+                'organizationId' => $organizationId,
+                'error' => $e->getMessage(),
+            ]);
         }
     }
 }

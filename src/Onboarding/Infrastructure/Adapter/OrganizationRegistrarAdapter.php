@@ -21,4 +21,9 @@ final readonly class OrganizationRegistrarAdapter implements OrganizationRegistr
     ): void {
         $this->contract->register($organizationId, $name, $contactEmail, $registeredAt);
     }
+
+    public function removeOrganization(string $organizationId): void
+    {
+        $this->contract->remove($organizationId);
+    }
 }

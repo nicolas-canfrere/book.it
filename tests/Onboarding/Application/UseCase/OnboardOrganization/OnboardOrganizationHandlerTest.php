@@ -12,6 +12,7 @@ use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\NullLogger;
 
 #[Group('unit')]
 final class OnboardOrganizationHandlerTest extends TestCase
@@ -27,6 +28,7 @@ final class OnboardOrganizationHandlerTest extends TestCase
         $this->handler = new OnboardOrganizationHandler(
             $this->organizationRegistrar,
             $this->ownerRegistrar,
+            new NullLogger(),
         );
     }
 
@@ -86,6 +88,39 @@ final class OnboardOrganizationHandlerTest extends TestCase
             ownerPhone: '+33612345678',
             password: 'Passw0rd!',
             registeredAt: new \DateTimeImmutable(),
+        ));
+    }
+
+    #[Test]
+    public function itCompensatesOrganizationWhenOwnerRegistrationFails(): void
+    {
+        $at = new \DateTimeImmutable('2026-06-28T10:00:00Z');
+
+        $this->organizationRegistrar->expects(self::once())
+            ->method('register')
+            ->with('org-uuid', 'Hôtel ABC', 'owner@hotel.com', $at);
+
+        $this->ownerRegistrar->expects(self::once())
+            ->method('registerOwner')
+            ->willThrowException(new \RuntimeException('Keycloak unavailable'));
+
+        $this->organizationRegistrar->expects(self::once())
+            ->method('removeOrganization')
+            ->with('org-uuid');
+
+        $this->expectException(\RuntimeException::class);
+        $this->expectExceptionMessage('Keycloak unavailable');
+
+        ($this->handler)(new OnboardOrganizationCommand(
+            organizationId: 'org-uuid',
+            operatorId: 'op-uuid',
+            organizationName: 'Hôtel ABC',
+            contactEmail: 'owner@hotel.com',
+            ownerFirstName: 'Alice',
+            ownerLastName: 'Martin',
+            ownerPhone: '+33612345678',
+            password: 'Passw0rd!',
+            registeredAt: $at,
         ));
     }
 }

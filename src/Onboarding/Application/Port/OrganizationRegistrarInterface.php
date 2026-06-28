@@ -12,4 +12,6 @@ interface OrganizationRegistrarInterface
         string $contactEmail,
         \DateTimeImmutable $registeredAt,
     ): void;
+
+    public function removeOrganization(string $organizationId): void;
 }

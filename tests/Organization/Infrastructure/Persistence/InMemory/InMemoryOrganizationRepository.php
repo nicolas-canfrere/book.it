@@ -38,4 +38,9 @@ final class InMemoryOrganizationRepository implements OrganizationRepositoryInte
 
         return false;
     }
+
+    public function remove(OrganizationId $id): void
+    {
+        unset($this->store[$id->value]);
+    }
 }

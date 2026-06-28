@@ -16,4 +16,6 @@ interface OrganizationRepositoryInterface
     public function get(OrganizationId $id): ?Organization;
 
     public function existsByContactEmail(string $email): bool;
+
+    public function remove(OrganizationId $id): void;
 }

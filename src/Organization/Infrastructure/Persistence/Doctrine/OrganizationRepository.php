@@ -51,6 +51,11 @@ final readonly class OrganizationRepository implements OrganizationRepositoryInt
         return $this->hydrate($row);
     }
 
+    public function remove(OrganizationId $id): void
+    {
+        $this->organizationConnection->delete('organizations', ['id' => $id->value]);
+    }
+
     public function existsByContactEmail(string $email): bool
     {
         /** @var int|string $count */
