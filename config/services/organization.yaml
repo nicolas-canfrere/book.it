@@ -39,6 +39,9 @@ services:
     App\Organization\Application\Contract\OrganizationCheckerInterface:
         class: App\Organization\Infrastructure\Contract\DoctrineOrganizationChecker
 
+    App\Organization\Application\Contract\OrganizationRegistrarInterface:
+        class: App\Organization\Infrastructure\Contract\DoctrineOrganizationRegistrar
+
     bookit.doctrine.middleware.search_path.organization:
         class: App\Shared\Infrastructure\Doctrine\SearchPathMiddleware
         arguments:
