@@ -1,6 +1,6 @@
 # Generated — do not edit manually. Run: make contextmap
 version: '1.0'
-generated_at: '2026-06-20T15:22:07+00:00'
+generated_at: '2026-06-28T07:58:13+00:00'
 contexts:
   Availability:
     open_host_services:
@@ -53,28 +53,52 @@ contexts:
         context: Booker
       -
         context: Reservation
+  Onboarding:
+    open_host_services:
+      interfaces: {  }
+      published_language: {  }
+    consumed_by: {  }
+    consumes:
+      -
+        context: Organization
+      -
+        context: Operator
   Operator:
     open_host_services:
       interfaces:
         - App\Operator\Application\Contract\OperatorFinderInterface
+        - App\Operator\Application\Contract\OwnerOperatorRegistrarInterface
       published_language:
         - App\Operator\Application\Contract\OperatorView
     consumed_by:
+      - Onboarding
       - Security
     consumes:
       -
         context: Security
+  Organization:
+    open_host_services:
+      interfaces:
+        - App\Organization\Application\Contract\OrganizationCheckerInterface
+        - App\Organization\Application\Contract\OrganizationRegistrarInterface
+      published_language:
+        - App\Organization\Application\Contract\OrganizationView
+    consumed_by:
+      - Onboarding
+    consumes: {  }
   Pricing:
     open_host_services:
       interfaces:
+        - App\Pricing\Application\Contract\BaseRateFinderInterface
         - App\Pricing\Application\Contract\CancellationPolicyFinderInterface
-        - App\Pricing\Application\Contract\PricingQuoteCalculatorInterface
         - App\Pricing\Application\Contract\PricingQuoteFinderInterface
       published_language:
+        - App\Pricing\Application\Contract\BaseRateView
         - App\Pricing\Application\Contract\CancellationPolicyView
         - App\Pricing\Application\Contract\PricingQuoteView
     consumed_by:
       - Reservation
+      - Room
     consumes:
       -
         context: Room
@@ -109,6 +133,8 @@ contexts:
     consumes:
       -
         context: Hotel
+      -
+        context: Pricing
   Security:
     open_host_services:
       interfaces:

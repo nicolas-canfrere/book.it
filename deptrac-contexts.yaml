@@ -321,7 +321,6 @@ deptrac:
         Security:
             - SecurityContract
             - OperatorContract
-            - OrganizationContract
             - Shared
             - Vendor
         # Les contrats publiés sont des DTO/interfaces purs : aucune dépendance
