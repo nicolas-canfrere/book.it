@@ -10,6 +10,7 @@ use App\Organization\Domain\Model\Organization;
 use App\Organization\Domain\Port\OrganizationRepositoryInterface;
 use App\Organization\Domain\ValueObject\OrganizationEmail;
 use App\Organization\Domain\ValueObject\OrganizationName;
+use App\Shared\Domain\Event\OrganizationRegistered;
 use App\Shared\Domain\ValueObject\OrganizationId;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Psr\Log\LoggerInterface;
@@ -42,9 +43,11 @@ final readonly class DoctrineOrganizationRegistrar implements OrganizationRegist
 
         $this->repository->add($organization);
 
-        foreach ($organization->pullEvents() as $event) {
-            $this->eventDispatcher->dispatch($event);
-        }
+        $this->eventDispatcher->dispatch(new OrganizationRegistered(
+            organizationId: $organizationId,
+            contactEmail: $contactEmail,
+            registeredAt: $registeredAt,
+        ));
     }
 
     public function remove(string $organizationId): void

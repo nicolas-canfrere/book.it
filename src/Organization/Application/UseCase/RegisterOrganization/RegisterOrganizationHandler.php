@@ -8,6 +8,7 @@ use App\Organization\Domain\Exception\OrganizationAlreadyExistsException;
 use App\Organization\Domain\Model\Organization;
 use App\Organization\Domain\Port\OrganizationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\OrganizationRegistered;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class RegisterOrganizationHandler implements SyncCommandHandlerInterface
@@ -33,8 +34,10 @@ final readonly class RegisterOrganizationHandler implements SyncCommandHandlerIn
 
         $this->repository->add($organization);
 
-        foreach ($organization->pullEvents() as $event) {
-            $this->eventDispatcher->dispatch($event);
-        }
+        $this->eventDispatcher->dispatch(new OrganizationRegistered(
+            organizationId: $command->id->value,
+            contactEmail: $command->contactEmail->value,
+            registeredAt: $command->registeredAt,
+        ));
     }
 }

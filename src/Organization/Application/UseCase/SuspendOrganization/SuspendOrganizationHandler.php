@@ -7,6 +7,7 @@ namespace App\Organization\Application\UseCase\SuspendOrganization;
 use App\Organization\Domain\Exception\OrganizationNotFoundException;
 use App\Organization\Domain\Port\OrganizationRepositoryInterface;
 use App\Shared\Application\Bus\SyncCommandHandlerInterface;
+use App\Shared\Domain\Event\OrganizationSuspended;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 final readonly class SuspendOrganizationHandler implements SyncCommandHandlerInterface
@@ -24,11 +25,12 @@ final readonly class SuspendOrganizationHandler implements SyncCommandHandlerInt
             throw new OrganizationNotFoundException($command->id);
         }
 
-        $organization->suspend($command->suspendedAt);
+        $organization->suspend();
         $this->repository->save($organization);
 
-        foreach ($organization->pullEvents() as $event) {
-            $this->eventDispatcher->dispatch($event);
-        }
+        $this->eventDispatcher->dispatch(new OrganizationSuspended(
+            organizationId: $organization->id->value,
+            suspendedAt: $command->suspendedAt,
+        ));
     }
 }
