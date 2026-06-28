@@ -27,4 +27,15 @@ final class InMemoryOperatorRepository implements OperatorRepositoryInterface
 
         return false;
     }
+
+    public function findByEmail(string $email): ?\App\Operator\Domain\Model\Operator
+    {
+        foreach ($this->operators as $operator) {
+            if (strtolower($operator->email) === strtolower($email)) {
+                return $operator;
+            }
+        }
+
+        return null;
+    }
 }
