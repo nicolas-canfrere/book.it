@@ -42,8 +42,14 @@ final class OnboardOrganizationHandlerTest extends TestCase
         $this->ownerRegistrar->expects(self::once())
             ->method('registerOwner')
             ->with(
-                'op-uuid', 'Alice', 'Martin', 'owner@hotel.com',
-                '+33612345678', 'Passw0rd!', 'org-uuid', $at,
+                'op-uuid',
+                'Alice',
+                'Martin',
+                'owner@hotel.com',
+                '+33612345678',
+                'Passw0rd!',
+                'org-uuid',
+                $at,
             );
 
         ($this->handler)(new OnboardOrganizationCommand(

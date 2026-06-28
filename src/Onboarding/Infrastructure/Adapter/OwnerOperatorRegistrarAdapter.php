@@ -24,8 +24,14 @@ final readonly class OwnerOperatorRegistrarAdapter implements OwnerOperatorRegis
         \DateTimeImmutable $registeredAt,
     ): void {
         $this->contract->registerOwner(
-            $operatorId, $firstName, $lastName, $email, $phone,
-            $password, $organizationId, $registeredAt,
+            $operatorId,
+            $firstName,
+            $lastName,
+            $email,
+            $phone,
+            $password,
+            $organizationId,
+            $registeredAt,
         );
     }
 }

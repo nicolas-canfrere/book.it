@@ -38,7 +38,10 @@ final class DoctrineOwnerOperatorRegistrarTest extends TestCase
     {
         $this->operatorRepository->add(new \App\Operator\Domain\Model\Operator(
             new \App\Shared\Domain\ValueObject\OperatorId('existing-op-id'),
-            'Bob', 'Dupont', 'owner@hotel.com', '+33600000001',
+            'Bob',
+            'Dupont',
+            'owner@hotel.com',
+            '+33600000001',
             new \DateTimeImmutable(),
             new \App\Shared\Domain\ValueObject\OrganizationId('some-org-id'),
             \App\Operator\Domain\ValueObject\OperatorRole::Owner,
@@ -93,16 +96,28 @@ final class DoctrineOwnerOperatorRegistrarTest extends TestCase
 
         $this->expectException(\RuntimeException::class);
         $registrar->registerOwner(
-            'op-uuid', 'Alice', 'Martin', 'alice@hotel.com', '+33612345678',
-            'Passw0rd!', 'org-uuid', new \DateTimeImmutable(),
+            'op-uuid',
+            'Alice',
+            'Martin',
+            'alice@hotel.com',
+            '+33612345678',
+            'Passw0rd!',
+            'org-uuid',
+            new \DateTimeImmutable(),
         );
     }
 
     private function callRegisterOwner(string $email): void
     {
         $this->registrar->registerOwner(
-            'op-uuid', 'Alice', 'Martin', $email, '+33612345678',
-            'Passw0rd!', 'org-uuid', new \DateTimeImmutable('2026-06-28T10:00:00Z'),
+            'op-uuid',
+            'Alice',
+            'Martin',
+            $email,
+            '+33612345678',
+            'Passw0rd!',
+            'org-uuid',
+            new \DateTimeImmutable('2026-06-28T10:00:00Z'),
         );
     }
 }

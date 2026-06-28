@@ -14,6 +14,11 @@ services:
         exclude:
             - '../../src/Onboarding/Application/**/*Command.php'
 
+    App\Onboarding\UI\:
+        resource: '../../src/Onboarding/UI/'
+        exclude:
+            - '../../src/Onboarding/UI/**/*Request.php'
+
     App\Onboarding\Infrastructure\:
         resource: '../../src/Onboarding/Infrastructure/'
 

@@ -43,7 +43,9 @@ final class OperatorRepository implements OperatorRepositoryInterface
             ->where('LOWER(o.email) = LOWER(:email)')
             ->setParameter('email', $email);
 
-        $this->applyTenantScope($qb, 'o');
+        if ($this->tenantContext->isInitialized()) {
+            $this->applyTenantScope($qb, 'o');
+        }
 
         /** @var int|string $count */
         $count = $qb->fetchOne();

@@ -2425,6 +2425,46 @@ paths:
               schema:
                 $ref: '#/components/schemas/ValidationProblemDetail'
       security: []
+  /api/v1/onboarding:
+    post:
+      tags:
+        - Onboarding
+      summary: 'Self-service hotel onboarding — creates an Organization and its owner Operator'
+      operationId: post_onboarding_register
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OnboardOrganizationRequest'
+      responses:
+        '201':
+          description: 'Organization and owner Operator created (Organization status: pending)'
+          content:
+            application/json:
+              schema:
+                properties:
+                  organizationId: { type: string, format: uuid }
+                  operatorId: { type: string, format: uuid }
+                type: object
+        '409':
+          description: 'Email already registered'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
+        '422':
+          description: 'Validation error'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ValidationProblemDetail'
+        '415':
+          description: 'Unsupported media type'
+          content:
+            application/problem+json:
+              schema:
+                $ref: '#/components/schemas/ProblemDetail'
 components:
   schemas:
     ProblemDetail:
@@ -3163,6 +3203,45 @@ components:
           maxLength: 255
           minLength: 2
       type: object
+    OnboardOrganizationRequest:
+      required:
+        - organizationName
+        - contactEmail
+        - ownerFirstName
+        - ownerLastName
+        - ownerPhone
+        - password
+      properties:
+        organizationName:
+          type: string
+          example: 'Hôtel Bellevue'
+          maxLength: 255
+          minLength: 1
+        contactEmail:
+          type: string
+          format: email
+          example: owner@bellevue.com
+        ownerFirstName:
+          type: string
+          example: Alice
+          maxLength: 100
+          minLength: 1
+        ownerLastName:
+          type: string
+          example: Martin
+          maxLength: 100
+          minLength: 1
+        ownerPhone:
+          type: string
+          example: '+33612345678'
+          maxLength: 50
+          minLength: 5
+        password:
+          type: string
+          example: MySecurePassword123!
+          maxLength: 100
+          minLength: 8
+      type: object
   securitySchemes:
     bearerAuth:
       type: http
@@ -3212,4 +3291,7 @@ tags:
   -
     name: Geo
     description: Geo
+  -
+    name: Onboarding
+    description: Onboarding
 
