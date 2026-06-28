@@ -37,3 +37,7 @@ services:
     App\Shared\Application\TenantContext:
         shared: true
 
+    App\Shared\Infrastructure\Http\TenantContextMiddleware:
+        tags:
+            - {name: kernel.event_subscriber}
+
